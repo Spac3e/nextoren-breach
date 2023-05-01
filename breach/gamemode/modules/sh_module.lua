@@ -31,7 +31,7 @@ TEAM_AMERICA = 18
 TEAM_ARENA = 19
 TEAM_SPEC = 20
 
-MINPLAYERS = 2
+MINPLAYERS = 5
 // Team setup
 team.SetUp(1, "Oh you got an ass on you alright. See, thats what he's talking about. Spread your ass open dude. You could do the rump shaker huh, the thug shaker, give me the thug shaker dude shake your ass. Take your hands off it and shake that shit, pull your shirt up I know you can shake it, shake it! Yeah that's some thug ass right there. Oh yeah, that'll work. You got the booty dude. God damn. It look good bro? Yeah. Yeah, nice huh. Alright that'll work for him. Put that condom on, you ready to sit on that shit? You got- Lets just get it over with. Alright lets get it over with, you- your alright.", Color(0, 255, 0))
 
@@ -387,7 +387,7 @@ if !ConVarExists("br_premium_display") then CreateConVar("br_premium_display", "
 if !ConVarExists("br_stamina_enable") then CreateConVar("br_stamina_enable", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Is stamina allowed?" ) end
 if !ConVarExists("br_stamina_scale") then CreateConVar("br_stamina_scale", "1, 1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Stamina regen and use. ('x, y') where x is how many stamina you will receive, and y how many stamina you will lose" ) end
 if !ConVarExists("br_rounds") then CreateConVar("br_rounds", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "How many round before map restart? 0 - dont restart" ) end
-if !ConVarExists("br_min_players") then CreateConVar("br_min_players", "2", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Minimum players to start round" ) end
+if !ConVarExists("br_min_players") then CreateConVar("br_min_players", "5", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Minimum players to start round" ) end
 if !ConVarExists("br_firstround_debug") then CreateConVar("br_firstround_debug", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Skip first round" ) end
 if !ConVarExists("br_force_specialround") then CreateConVar("br_force_specialround", "", {FCVAR_SERVER_CAN_EXECUTE}, "Available special rounds [ infect, multi ]" ) end
 if !ConVarExists("br_specialround_pct") then CreateConVar("br_specialround_pct", "10", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Skip first round" ) end

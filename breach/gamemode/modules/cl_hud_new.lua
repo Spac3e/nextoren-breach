@@ -3375,7 +3375,7 @@ function CreateInspectPanel(ply)
 		end
 
 		if ply:GTeam() == TEAM_SCP and !ply:GetModel():find("/scp/") then
-			mdl:MakeZombie()
+			--mdl:MakeZombie()
 		end
 
 	end)

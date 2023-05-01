@@ -369,9 +369,11 @@ end
 function mply:ApplyRoleStats( role )
 	self:SetNClass( role.name )
 	self:SetGTeam( role.team )
-	for k, v in pairs( role.weapons ) do
-		self:Give( v )
-	end
+        timer.Simple(1, function()
+			for k, v in pairs( role.weapons ) do
+				self:Give( v )
+			end
+		end)
 	if role.keycard and role.keycard != "" then
 		local card = self:Give( "br_keycard" )
 		if card then
