@@ -4,7 +4,7 @@ util.AddNetworkString("progressbarstate")
 util.AddNetworkString("StopBreachProgressBar")
 util.AddNetworkString("progress_bar")
 
-function mply:ProgressBar(id, time, display_string, icon, canmove, target, startcallback, stopcallback, finishcallback)
+function mply:ProgressBar(display_string, time, icon, target, canmove, startcallback, stopcallback, finishcallback)
 
     self.ProgressBarData = {
         canmove = canmove == true,
