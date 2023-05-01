@@ -566,8 +566,14 @@ function GM:PlayerCanPickupItem( ply, item )
 end
 
 function GM:AllowPlayerPickup( ply, ent )
-	return ply:IsAdmin()
+	return
 end
+
+hook.Add( "PlayerCanPickupWeapon", "noDoublePickup", function( ply, weapon )
+    if ( ply:HasWeapon( weapon:GetClass() ) ) then
+		return false
+	end
+end )
 
 // usesounds = true,
 function IsInTolerance( spos, dpos, tolerance )
