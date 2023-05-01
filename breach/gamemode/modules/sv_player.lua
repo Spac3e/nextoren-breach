@@ -410,9 +410,7 @@ function mply:ApplyRoleStats( role )
 	self:SetModel( table.Random(role.models) )
 	self:Flashlight( false )
 	self:AllowFlashlight( role.flashlight )
-	if role.bodygroups then
-		self:SetBodyGroups( role.bodygroups)
-	end
+        self:SetBodyGroups( role.bodygroups)
 	if role.vest != nil then
 		self:ApplyArmor(role.vest)
 	end
