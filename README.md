@@ -12,5 +12,7 @@ TO-DO:
 3. Нету позиций для спавна уникальных энтити
 4. Смешын
 
+Баги
+1. Регдолы клонируются (Пофикшено)
 Контент: https://steamcommunity.com/sharedfiles/filedetails/?id=2966605711
 Карта: br_site19_vault

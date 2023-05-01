@@ -569,7 +569,7 @@ net.Receive("PrepClient", function(len)
 
 	Monitors_Activated = 0
 
-	--hook.Remove( "PostDrawTranslucentRenderables", "cult_draw_mark" )
+	hook.Remove( "PostDrawTranslucentRenderables", "cult_draw_mark" )
 
 	local client = LocalPlayer()
 	client.no_signal = nil
@@ -632,10 +632,9 @@ net.Receive( "PrepStart", function( len )
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
 	if LocalPlayer():GTeam() == TEAM_GUARD then
 		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
+		RunConsoleCommand("intro_start_mog")
 		LocalPlayer().cantopeninventory = true
 		hook.Add("HUDShouldDraw", "MTF_HIDEHUD", function()
-			net.Start("MOGStart")
-			net.SendToServer()
 			if LocalPlayer():GTeam() == TEAM_GUARD then
 				return false
 			else
