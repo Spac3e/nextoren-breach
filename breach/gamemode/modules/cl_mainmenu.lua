@@ -253,7 +253,7 @@ local size = 0
     end
 
 
-    draw.SimpleText( "Created by -Spac3, Maleyvich and VAULT Team", "MainMenuFont", scrw * 0.1, scrh * 0.93, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
+    draw.SimpleText( "Created by -Spac3, Imperator, Maleyvich and VAULT Team", "MainMenuFont", scrw * 0.1, scrh * 0.93, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
 
   end
 
