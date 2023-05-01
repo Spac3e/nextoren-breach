@@ -1,7 +1,6 @@
 local mply = FindMetaTable("Player")
 util.AddNetworkString("StartBreachProgressBar")
 util.AddNetworkString("progressbarstate")
-util.AddNetworkString("StopBreachProgressBar")
 util.AddNetworkString("progress_bar")
 
 function mply:ProgressBar(display_string, time, icon, target, canmove, startcallback, stopcallback, finishcallback)
