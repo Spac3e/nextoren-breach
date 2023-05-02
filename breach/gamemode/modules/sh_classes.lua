@@ -156,6 +156,8 @@ CLASSDMODELS = {
 	
 				 showmodel = nil,
 	
+				 rsdm = true,
+
 				 level = 0,
 	
 		   staminascale = 2,
@@ -195,6 +197,8 @@ CLASSDMODELS = {
 				 showmodel = nil,
 	
 				 level = 5,
+
+				 rsdm = true,
 	
 				 customcheck = nil,
 	
@@ -238,6 +242,8 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
+
+				 rsdm = true,
 	
 				 max = 2
 	
@@ -270,6 +276,8 @@ CLASSDMODELS = {
 				 models = CLASSDMODELS,
 	
 				 showmodel = nil,
+
+				 rsdm = true,
 	
 				 level = 9,
 	
@@ -308,6 +316,8 @@ CLASSDMODELS = {
 				 models = CLASSDMODELS,
 	
 				 showmodel = nil,
+
+				 rsdm = true,
 	
 				 level = 12,
 	
@@ -390,6 +400,8 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
+
+				 rsdm = true,
 	
 				 max = 3
 	
@@ -428,6 +440,8 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
+
+				 rsdm = true,
 	
 				 max = 3
 	
@@ -511,7 +525,7 @@ CLASSDMODELS = {
 	
 		 },
 	
-				{name = ROLES.ROLE_LODSOFMONEY,
+				{name = ROLES.ROLE_FARTINHALER,
 	
 				 team = TEAM_CLASSD,
 	

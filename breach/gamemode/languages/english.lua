@@ -1518,7 +1518,7 @@ english.starttexts = {
 
 
 
-	ROLE_LODSOFMONEY = {
+	ROLE_FARTINHALER = {
 
 
 
@@ -2614,7 +2614,7 @@ english.ROLES.ROLE_Can = "Класс-Д Каннибал"
 
 
 
-english.ROLES.ROLE_LODSOFMONEY = "Класс-Д Барыга"
+english.ROLES.ROLE_FARTINHALER = "Класс-Д Водолаз"
 
 
 

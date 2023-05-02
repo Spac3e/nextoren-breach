@@ -251,7 +251,7 @@ ROLES.ROLE_MEDIC = "Medic"
 
 ROLES.ROLE_CLASSD = "Class D Personnel"
 
-ROLES.ROLE_LODSOFMONEY = "Class D Money"
+ROLES.ROLE_FARTINHALER = "Class D Fart Inhaler"
 
 ROLES.ROLE_Killer = "Class D Killer"
 

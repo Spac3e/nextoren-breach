@@ -133,8 +133,8 @@ BREACH.Descriptions.english[ROLES.ROLE_CLASSD] = "You - are the Class-D Personne
 BREACH.Descriptions.russian[ROLES.ROLE_GOCSPY] = "Вы - Шпион ГОК\n\nВы посланный шпион организации \"Глобальная Оккультная Коалиция\" под маскировкой Класса-Д\n\nНайдите форму в Офисной Зоне и активируйте Боеголовку!"
 BREACH.Descriptions.english[ROLES.ROLE_GOCSPY] = "You - are the GOC Spy\n\nYou are a special spy of organisation \"Global Occult Coalition\" disguised as a Class-D\n\nFind the uniform in entrance zone and enable the Warhead!"
 
-BREACH.Descriptions.russian[ROLES.ROLE_LODSOFMONEY] = "Вы сотрудник Д.... В течение долгих лет вы нюхали пердеж качка и жирного, поэтому ваш нос больше не ощущает никакие запахи\n\nКажется, что даже токсичный газ не в силах вас остановить.\n\nИспользуйте это преимущество с умом."
-BREACH.Descriptions.english[ROLES.ROLE_LODSOFMONEY] = "Вы сотрудник Д.... В течение долгих лет вы нюхали пердеж качка и жирного, поэтому ваш нос больше не ощущает никакие запахи\n\nКажется, что даже токсичный газ не в силах вас остановить.\n\nИспользуйте это преимущество с умом."
+BREACH.Descriptions.russian[ROLES.ROLE_FARTINHALER] = "Вы сотрудник Д.... В течение долгих лет вы нюхали пердеж качка и жирного, поэтому ваш нос больше не ощущает никакие запахи\n\nКажется, что даже токсичный газ не в силах вас остановить.\n\nИспользуйте это преимущество с умом."
+BREACH.Descriptions.english[ROLES.ROLE_FARTINHALER] = "Вы сотрудник Д.... В течение долгих лет вы нюхали пердеж качка и жирного, поэтому ваш нос больше не ощущает никакие запахи\n\nКажется, что даже токсичный газ не в силах вас остановить.\n\nИспользуйте это преимущество с умом."
 
 BREACH.Descriptions.russian[ROLES.ROLE_VOR] = "Вы - Сотрудник Класса-Д\n\nВы довольно проворны, поэтому вы можете воровать предметы у других людей\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_VOR] = "You - are the Class-D Personnel\n\nYou are a thief, so you have good skills to steal items from the players\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"

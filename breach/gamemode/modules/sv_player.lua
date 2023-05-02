@@ -425,9 +425,17 @@ function mply:ApplyRoleStats( role )
        if role.ability_max then
 	   self:SetSpecialMax( role["ability_max"] )
     end
-end
+end 
+    if role.skin then
+		self:SetSkin(role.skin)
+	end
 	if role.vest != nil then
 		self:ApplyArmor(role.vest)
+	end
+	if  role.rsdm and role.rsdm != nil then
+		self:SetSkin(math.random(0,7))
+		self:SetBodygroup(0,math.random(0,4))
+		self:SetBodygroup(1,math.random(0,7))
 	end
 	if role.pmcolor != nil then
 		self:SetPlayerColor(Vector(role.pmcolor.r / 255, role.pmcolor.g / 255, role.pmcolor.b / 255))
