@@ -100,7 +100,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 135,
 	} )
 
-	RegisterSCP( "SCP0492", "models/cultist/scp/scp_049_2.mdl", "weapon_br_zombie", {
+	RegisterSCP( "SCP0492", "models/cultist/scp/scp_049_2.mdl", "weapon_scp_049_2_1", {
 		jump_power = 200,
 		no_spawn = true,
 		no_select = true,
@@ -115,7 +115,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 	end )
 
 
-	RegisterSCP( "SCP076", "models/cultist/scp/scp_076.mdl", "scp_076", {
+	RegisterSCP( "SCP076", "models/cultist/scp/scp_076.mdl", "weapon_scp_076", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -127,7 +127,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 	}, nil, function( ply )
 	end )
 
-	RegisterSCP( "SCP082", "models/cultist/scp/scp_082_funny.mdl", "weapon_scp_0822", {
+	RegisterSCP( "SCP082", "models/cultist/scp/scp_082_funny.mdl", "weapon_scp_082", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -150,7 +150,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 500,
 	} )
 
-	RegisterSCP( "SCP106", "models/cultist/scp/scp_106.mdl", "weapon_scp_1068", {
+	RegisterSCP( "SCP106", "models/cultist/scp/scp_106.mdl", "weapon_scp_106", {
 		jump_power = 200,
 	}, {
 		base_health = 2000,
@@ -159,7 +159,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 170,
 		max_speed = 170,
 	} )
-	RegisterSCP( "SCP062DE", "models/cultist/scp/scp_062de.mdl", "weapon_scp_1068", {
+	RegisterSCP( "SCP062DE", "models/cultist/scp/scp_062de.mdl", "cw_kk_ins2_kar62de", {
 		jump_power = 200,
 	}, {
 		base_health = 1000,
@@ -168,7 +168,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 170,
 		max_speed = 170,
 	} )
-	RegisterSCP( "SCP173", "models/cultist/scp/173.mdl", "weapon_scp_1732", {
+	RegisterSCP( "SCP173", "models/cultist/scp/173.mdl", "weapon_scp_173", {
 		jump_power = 200,
 		no_ragdoll = true,
 	}, {
@@ -179,7 +179,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 400,
 	} )
 
-	RegisterSCP( "SCP457", "models/cultist/scp/scp_457.mdl", "weapon_scp_4578", {
+	RegisterSCP( "SCP457", "models/cultist/scp/scp_457.mdl", "weapon_scp_457", {
 		jump_power = 200,
 		//no_draw = true,
 	}, {
@@ -210,7 +210,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 190,
 		max_speed = 190,
 	} )
-	RegisterSCP( "SCP062FR", "models/cultist/scp/scp_062fr.mdl", "weapon_ttt_evolveknife", {
+	RegisterSCP( "SCP062FR", "models/cultist/scp/scp_062fr.mdl", "weapon_scp_062", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -220,7 +220,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 190,
 		max_speed = 190,
 	} )
-	RegisterSCP( "SCP966", "models/cultist/scp/scp_966.mdl", "weapon_scp_9668", {
+	RegisterSCP( "SCP966", "models/cultist/scp/scp_966.mdl", "weapon_scp_966", {
 		jump_power = 200,
 	}, {
 		base_health = 800,
@@ -240,7 +240,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 150,
 	} )
 
-	RegisterSCP( "SCP542", "models/cultist/scp/scp_542.mdl", "weapon_scp_1048A", {
+	RegisterSCP( "SCP542", "models/cultist/scp/scp_542.mdl", "weapon_scp_542", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -251,7 +251,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 135,
 	} )
 
-	RegisterSCP( "SCP2012", "models/cultist/scp/scp2012/scp_2012.mdl", "weapon_scp_1048B", {
+	RegisterSCP( "SCP2012", "models/cultist/scp/scp2012/scp_2012.mdl", "weapon_scp_2012", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -262,7 +262,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 165,
 	} )
 
-	RegisterSCP( "SCP1471", "models/cultist/scp/scp_1471.mdl", "weapon_scp_1471", {
+	--[[RegisterSCP( "SCP1471", "models/cultist/scp/scp_1471.mdl", "weapon_scp_1471", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
@@ -271,6 +271,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		base_speed = 160,
 		run_speed = 325,
 		max_speed = 160,
-	} )
+	} )--]]
 end )
 
