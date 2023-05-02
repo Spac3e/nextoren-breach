@@ -1,3 +1,4 @@
+
 /**
 * Derma Emoticons 
 **/
@@ -27,6 +28,26 @@ LOUNGE_CHAT.DermaEmoticonsRestrictions = {
 -- Two examples are provided for you to copy.
 LOUNGE_CHAT.CustomEmoticons = {
 	-- This creates a "grin" emoticon with the material "vgui/face/grin"
+	["breachisreal3"] = {
+		url = "https://i.imgur.com/CkNwlxh.png",
+		w = 70/1.6,
+		h = 112/1.6,
+	},
+	["breachisreal2"] = {
+		url = "https://i.imgur.com/WxL74l6.png",
+		w = 192/2,
+		h = 108/2,
+	},
+	["breachisreal"] = {
+		url = "https://i.imgur.com/iwwCuCf.png",
+		w = 44,
+		h = 62,
+	},
+	["yeet"] = {
+		url = "https://i.imgur.com/6ojDGvL.png",
+		w = 22,
+		h = 22,
+	},
 	["grin"] = {
 		path = "vgui/face/grin",
 		w = 64,
@@ -36,13 +57,6 @@ LOUNGE_CHAT.CustomEmoticons = {
 	-- This creates a "awesomeface" emoticon with the URL "http://i.imgur.com/YBUpyZg.png"
 	["awesomeface"] = {
 		url = "http://i.imgur.com/YBUpyZg.png",
-		w = 32,
-		h = 32,
-	},
-
-	// FA emoticons
-	["kami"] = {
-		url = "https://vgy.me/pzfz8k.png",
 		w = 32,
 		h = 32,
 	},
@@ -60,6 +74,81 @@ LOUNGE_CHAT.CustomEmoticons = {
 		url = "http://i.imgur.com/00Xaj13.png",
 		w = 32,
 		h = 32,
+	},
+	["nerdbob"] = {
+		url = "https://i.imgur.com/OQD4cnF.jpg",
+		w = 32,
+		h = 32,
+	},
+	["glaze"] = {
+		url = "https://i.imgur.com/ckrw1pj.png",
+		w = 32,
+		h = 32
+	},
+	["begotten"] = {
+		url = "https://i.imgur.com/PGue00w.png",
+		w = 32,
+		h = 32
+	},
+	["fuckfuckfuck"] = {
+		url = "https://i.imgur.com/NWQqxLC.png",
+		w = 32,
+		h = 32
+	},
+	["fuckerjoe"] = {
+		url = "https://i.imgur.com/1JvZNJg.png",
+		w = 32,
+		h = 32
+	},
+	["holyhierarchy"] = {
+		url = "https://i.imgur.com/N4Ml1UY.png",
+		w = 32,
+		h = 32
+	},
+	["rjomba"] = {
+		url = "https://i.imgur.com/j2uUb4h.jpg",
+		w = 32,
+		h = 32,
+	},
+	["bogdan"] = {
+		url = "https://i.imgur.com/oUtCJ48.png",
+		w = 50,
+		h = 55,
+	},
+	["vanya1"] = {
+		url = "https://i.imgur.com/MQvth85.jpg",
+		w = 50,
+		h = 55,
+	},
+	["vanya2"] = {
+		url = "https://i.imgur.com/HHyvUqy.png",
+		w = 42,
+		h = 42
+	},
+	["umoritelno"] = {
+		url = "https://i.imgur.com/NAo3Zrt.png",
+		w = 32,
+		h = 32,
+	},
+	["solyanka"] = {
+		url = "https://i.imgur.com/PBuQSgU.png",
+		w = 50,
+		h = 42,
+	},
+	["jasonluv"] = {
+		url = "https://i.imgur.com/2N5rEUU.png",
+		w = 45,
+		h = 45,
+	},
+	["dreamybull"] = {
+		url = "https://i.imgur.com/1f0AtKn.png",
+		w = 45,
+		h = 45,
+	},
+	["durakonline"] = {
+		url = "https://i.imgur.com/on7oX1e.png",
+		w = 64,
+		h = 64,
 	},
 }
 
