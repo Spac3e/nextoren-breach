@@ -118,7 +118,7 @@ CLASSDMODELS = {
 }
 	
 	CLASSDMODELSMALES = {
-	"models/cultist/humans/class_d/class_d.mdl",
+	"models/cultist/humans/class_d/class_d.mdl.mdl",
 	}
 	ALLCLASSES = {
 	
@@ -199,9 +199,6 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
-
-				 
-				 ability = {"Thief", 45, "Украдите у человека предмет который он держит на данный момент!", "nextoren/gui/special_abilities/ability_thief.png", false},
 	
 				 max = 3
 	
@@ -211,7 +208,7 @@ CLASSDMODELS = {
 	
 				 team = TEAM_GOC,
 	
-				 weapons = {"br_holster", "weapon_flashlight", "item_knife"},
+				 weapons = {"br_holster", "weapon_flashlight", "class_d_zatoshka", "weapon_ai_scanner"},
 	
 				 showweapons = {"Фонарик", "Заточка", "Сканер"},
 	
@@ -449,7 +446,7 @@ CLASSDMODELS = {
 	
 				 walkspeed = 0.98,
 	
-				 weapons = {"br_holster"},
+				 weapons = {"big_nigga_hands"},
 	
 				 runspeed = 1.02,
 	
@@ -1034,7 +1031,7 @@ CLASSDMODELS = {
 	
 				 importancelevel = 3,
 
-				 bodygroups = "11101"
+				 bodygroups = "0101"
 	
 				},
 	
@@ -1075,10 +1072,6 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 4,
-
-				 ability = {"Anti-SCP Turret", 1, "Вы ставите турель.", "nextoren/gui/ability/engineer_turret.png", true},
-
-				 ability_max = 1,
 	
 				 importancelevel = 3
 	
@@ -1335,8 +1328,6 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 16,
-
-				 ability = {"Cameras Scan", 120, "None Provided", "nextoren/gui/special_abilities/special_ntf_commander.png", false},
 	
 				 max = 1
 	
@@ -1531,8 +1522,6 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 14,
-
-				 ability = {"Cloak", 80, "None Provided", "nextoren/gui/special_abilities/special_goc_invisibility.png", false},
 	
 				 max = 1
 	
@@ -1609,8 +1598,6 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 7,
-
-				 ability = {"Intelligence", 45, "None Provided", "nextoren/gui/special_abilities/special_fbi_commander.png", false},
 	
 				 max = 1
 	
@@ -1649,10 +1636,6 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 5,
-
-				 ability = {"Portal", 90, "None Provided", "nextoren/gui/special_abilities/special_dz_portal.png", false},
-
-				 ability_max = 1,
 	
 				 max = 3
 	
@@ -1701,8 +1684,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 800,
-
-				 ability = {"AOE Heal", 75, "Исцеляет людей в некотором радиусе от вас.", "nextoren/gui/special_abilities/special_heal.png", false},
 	
 				 max = 1
 	
@@ -1719,6 +1700,8 @@ CLASSDMODELS = {
 				 showweapons = {"Специальная способность - Обнаружение всех живых СЦП объектов в течении 10 секунд"},
 	
 				 ammo = {{"Pistol", 20}},
+	
+	
 	
 				 health = 110,
 	
@@ -1739,8 +1722,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 0,
-
-				 ability = {"Special Vision", 60, "Вы начинаете видеть SCP через стены.", "nextoren/gui/special_abilities/spy_chaos_focus.png", false},
 	
 				 max = 1
 	
@@ -1779,8 +1760,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 8,
-
-				 ability = {"Slow", 85, "Замедляет SCP в некотором радиусе от вас.", "nextoren/gui/special_abilities/special_slow.png", false},
 	
 				 max = 1
 	
@@ -1819,8 +1798,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 24,
-
-				 ability = {"Special Shield", 80, "Вы создаёте вокруг себя щит, не пропускающий SCP-объекты.", "nextoren/gui/special_abilities/special_shield.png", false},
 	
 				 max = 1
 	
@@ -1899,10 +1876,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 22,
-
-				 ability = {"Anti-SCP mine", 3, "Вы ставите Anti-SCP мину.", "nextoren/gui/special_abilities/special_mine.png", true},
-
-				 ability_max = 3,
 	
 				 max = 1
 	
@@ -1941,8 +1914,6 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 19,
-
-				 ability = {"Damage Boost", 75, "Вы увеличиваете урон людям в радиусе, урон по SCP.", "nextoren/gui/special_abilities/special_debuffscp.png", false},
 	
 				 max = 1
 	

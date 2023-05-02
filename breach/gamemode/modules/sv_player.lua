@@ -399,6 +399,13 @@ function mply:ApplyRoleStats( role )
 			end
 		end
 	end
+	self:SetSpecialMax(0)
+	self:SetNWString("AbilityName", "")
+	self.AbilityTAB = nil
+	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
+    if role.ability then
+		self:SetNWString("AbilityName", (role["ability"][1]))
+	end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	self:SetWalkSpeed(100 * role.walkspeed)
@@ -408,24 +415,6 @@ function mply:ApplyRoleStats( role )
 	self:Flashlight( false )
 	self:AllowFlashlight( role.flashlight )
     self:SetBodyGroups( role.bodygroups)
-	self:SetNWString("AbilityName", "")
-	self.AbilityTAB = nil
-	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
-	self:SetSpecialMax(0)
-	self:SetSpecialCD(10)
-	if role.ability then
-        net.Start("SpecialSCIHUD")
-        net.WriteString(role["ability"][1])
-        net.WriteUInt(role["ability"][2], 9)
-        net.WriteString(role["ability"][3])
-        net.WriteString(role["ability"][4])
-        net.WriteBool(role["ability"][5])
-        net.Send(self)
-        self:SetNWString("AbilityName", (role["ability"][1]))
-       if role.ability_max then
-	   self:SetSpecialMax( role["ability_max"] )
-    end
-end
 	if role.vest != nil then
 		self:ApplyArmor(role.vest)
 	end
