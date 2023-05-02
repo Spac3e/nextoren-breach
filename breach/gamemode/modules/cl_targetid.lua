@@ -506,7 +506,7 @@ local function DrawTargetID()
 
 			local plyrole = ply:GetNClass()
 			
-			if plyrole == ROLES.ROLE_MTFCOM or plyrole == ROLES.ROLE_MTFGeneral then
+			if plyrole == ROLES.ROLE_MTFCOM or plyrole == ROLES.ROLE_HOF then
 
 		    surface.SetDrawColor( 0, 0, 255, 255 )
 

@@ -175,7 +175,7 @@ ROLES.ROLE_SCP8602 = "SCP-860-2"
 
 ROLES.ROLE_SCP062DE = "SCP-062-DE"
 
-ROLES.ROLE_SCP1471 = "SCP-1471"
+ROLES.ROLE_SCP973 = "SCP-973"
 
 ROLES.ROLE_SCP082 = "SCP-082"
 
@@ -277,11 +277,9 @@ ROLES.ROLE_VETERAN = "Veteran"
 
 ROLES.ROLE_SECURITY = "Security Officer"
 
-ROLES.ROLE_MTFGeneral = "Head of Foundation"
+ROLES.ROLE_HOF = "Head of Foundation"
 
-ROLES.ROLE_BIO = "MTF Chemist"
-
-
+ROLES.ROLE_SPECIALIST = "MTF Specialist"
 
 ROLES.ROLE_MTFJAG = "MTF Juggernaut"
 
@@ -293,7 +291,7 @@ ROLES.ROLE_Engi = "MTF Engineer"
 
 ROLES.ROLE_MTFL = "MTF Lieutenant"
 
-ROLES.ROLE_HAZMAT = "MTF Special"
+ROLES.ROLE_MTFCHEMIST = "MTF Chemist"
 
 ROLES.ROLE_MTFNTF = "MTF Nine Tailed Fox"
 

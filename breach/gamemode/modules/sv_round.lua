@@ -56,7 +56,6 @@ function CleanUpPlayers()
 		v.MaxUses = nil
 		v.blinkedby173 = false
 		v.scp173allow = false
-		v.scp1471stacks = 1
 		v.usedeyedrops = false
 		v.isescaping = false
 		v:SendLua( "CamEnable = false" )

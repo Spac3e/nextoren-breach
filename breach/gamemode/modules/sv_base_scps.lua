@@ -137,7 +137,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 160,
 		max_speed = 160,
 	}, nil, function( ply )
-		ply:SetBodygroup( ply:FindBodygroupByName( "Mask" ), 1 )
 	end )
 
 	RegisterSCP( "SCP096", "models/cultist/scp/scp_096.mdl", "weapon_scp_096", {
@@ -262,15 +261,15 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		max_speed = 165,
 	} )
 
-	--[[RegisterSCP( "SCP1471", "models/cultist/scp/scp_1471.mdl", "weapon_scp_1471", {
-		jump_power = 200,
+	RegisterSCP( "SCP973", "models/cultist/scp/scp_973/scp_973.mdl", "weapon_scp_973", {
+		jump_power = 0,
 		prep_freeze = true,
 	}, {
-		base_health = 3000,
-		max_health = 3000,
+		base_health = 2500,
+		max_health = 2500,
 		base_speed = 160,
 		run_speed = 325,
 		max_speed = 160,
-	} )--]]
+	} )
 end )
 

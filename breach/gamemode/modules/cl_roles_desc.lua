@@ -170,14 +170,14 @@ BREACH.Descriptions.english[ROLES.ROLE_MTFMEDIC] = "You - are the Mobile Task Fo
 BREACH.Descriptions.russian[ROLES.ROLE_MTFL] = "Вы - Лейтенант Мобильной Оперативной группы, вы ниже всех командиров МОГ по званию\n\nСлушайтесь Командиров выше рангом, выдавайте приказы и Выполняйте поставленную задачу"
 BREACH.Descriptions.english[ROLES.ROLE_MTFL] = "You - are the Mobile Task Force Leutenant\n\nFollow the orders of higher rank commanders, give the orders to your Grunts\n\ncomplete your tasks"
 
-BREACH.Descriptions.russian[ROLES.ROLE_HAZMAT] = "Вы - Химик Мобильной Оперативной группы, на вас одет химический костюм\n\nПоэтому вам не страшен газ в Легкой Зоне и вы имеете иммунитет к SCP-409\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
-BREACH.Descriptions.english[ROLES.ROLE_HAZMAT] = "You - are the Mobile Task Force Chemist, you are wearing chemical suit\n\nSo you dont fear the gas in the Light Zone, and you have immunity to SCP-409\n\nFollow the orders of your commanders and complete your tasks"
+BREACH.Descriptions.russian[ROLES.ROLE_MTFCHEMIST] = "Вы - Химик Мобильной Оперативной группы, на вас одет химический костюм\n\nПоэтому вам не страшен газ в Легкой Зоне и вы имеете иммунитет к SCP-409\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
+BREACH.Descriptions.english[ROLES.ROLE_MTFCHEMIST] = "You - are the Mobile Task Force Chemist, you are wearing chemical suit\n\nSo you dont fear the gas in the Light Zone, and you have immunity to SCP-409\n\nFollow the orders of your commanders and complete your tasks"
 
 BREACH.Descriptions.russian[ROLES.ROLE_MTFSHOCK] = "Вы - Штурмовик Мобильной Оперативной группы, при себе вы имеете Зажигательную гранату\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
 BREACH.Descriptions.english[ROLES.ROLE_MTFSHOCK] = "You - are the Mobile Task Force ShockTrooper, you have incendiary grenade\n\nFollow the orders of your commanders and complete your tasks"
 
-BREACH.Descriptions.russian[ROLES.ROLE_BIO] = "Вы - Специалист Мобильной Оперативной группы, при себе вы имеете Автомат \"Blackout\"\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
-BREACH.Descriptions.english[ROLES.ROLE_BIO] = "You - are the Mobile Task Force Specialist, you have \"Blackout\" Rifle\n\nFollow the orders of your commanders and complete your tasks"
+BREACH.Descriptions.russian[ROLES.ROLE_SPECIALIST] = "Вы - Специалист Мобильной Оперативной группы, при себе вы имеете Автомат \"Blackout\"\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
+BREACH.Descriptions.english[ROLES.ROLE_SPECIALIST] = "You - are the Mobile Task Force Specialist, you have \"Blackout\" Rifle\n\nFollow the orders of your commanders and complete your tasks"
 
 BREACH.Descriptions.russian[ROLES.ROLE_MTFCOM] = "Вы - Командир Мобильной Оперативной группы, вы можете приказывать своим солдатам и Лейтенанту МОГ\n\nСлушайтесь своего Главы Комплекса и Выполняйте поставленную задачу"
 BREACH.Descriptions.english[ROLES.ROLE_MTFCOM] = "You - are the Mobile Task Force Commander, you can give orders to the Leutenant and your soldiers\n\nFollow the orders of the Head Of Facility and complete your tasks"
@@ -185,8 +185,8 @@ BREACH.Descriptions.english[ROLES.ROLE_MTFCOM] = "You - are the Mobile Task Forc
 BREACH.Descriptions.russian[ROLES.ROLE_Engi] = "Вы - Инженер Мобильной Оперативной группы, при себе вы имеете Турель\n\nПочините 5 генераторов, разбросанные по всей карты что бы восстановить свет по всему комплексу\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
 BREACH.Descriptions.english[ROLES.ROLE_Engi] = "You - are the Mobile Task Force Engineer, you have the special turret against the SCPs\n\nFix all 5 generators, to recover the light all around the facility\n\nFollow the orders of your commanders and complete your tasks"
 
-BREACH.Descriptions.russian[ROLES.ROLE_MTFGeneral] = "Вы - Глава Комплекса\n\nВы можете приказывать любому сотруднику фонда кроме оперативников НТФ\n\nВыполняйте поставленную задачу и по желанию призовите дополнительный Спец. Отряд ОСН"
-BREACH.Descriptions.english[ROLES.ROLE_MTFGeneral] = "You - are the head of facility\n\nYou can give orders to anyone except of the NTF\n\nComplete your tasks and optionally summon a Spec. Squad STS"
+BREACH.Descriptions.russian[ROLES.ROLE_HOF] = "Вы - Глава Комплекса\n\nВы можете приказывать любому сотруднику фонда кроме оперативников НТФ\n\nВыполняйте поставленную задачу и по желанию призовите дополнительный Спец. Отряд ОСН"
+BREACH.Descriptions.english[ROLES.ROLE_HOF] = "You - are the head of facility\n\nYou can give orders to anyone except of the NTF\n\nComplete your tasks and optionally summon a Spec. Squad STS"
 
 BREACH.Descriptions.russian[ROLES.ROLE_MTFJAG] = "Вы - Тяжеловес Мобильной Оперативной группы, при себе вы имеете Пулемет и броню высокой защиты\n\nВы специальная оборона МОГ с очень сильной защитой\n\nСлушайтесь своего Командира и Выполняйте поставленную задачу"
 BREACH.Descriptions.english[ROLES.ROLE_MTFJAG] = "You - are the Mobile Task Force Juggernaut\n\nFollow the orders of your commanders and complete your tasks"

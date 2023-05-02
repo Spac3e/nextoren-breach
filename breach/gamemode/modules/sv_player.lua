@@ -332,7 +332,6 @@ function mply:SetupNormal()
 	self:StripWeapons()
 	self.canblink = true
 	self.noragdoll = false
-	self.scp1471stacks = 1
 end
 
 function mply:SetupAdmin()

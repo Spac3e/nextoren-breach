@@ -480,15 +480,15 @@ english.starttexts = {
 
 
 
-	ROLE_SCP1471 = {
+	ROLE_SCP973 = {
 
 
 
-		"Вы SCP 1471",
+		"Вы SCP 973",
 
 
 
-		{"Вы полностью невидимы",
+		{"Вы коп",
 
 
 
@@ -772,7 +772,7 @@ english.starttexts = {
 
 
 
-		ROLE_HAZMAT = {
+	ROLE_MTFCHEMIST = {
 
 
 
@@ -2127,7 +2127,7 @@ english.starttexts = {
 
 
 
-	ROLE_MTFGeneral = {
+	ROLE_HOF = {
 
 
 
@@ -2354,7 +2354,7 @@ english.ROLES.ROLE_SCP106 = "SCP-106"
 
 
 
-english.ROLES.ROLE_SCP1471 = "SCP-1471"
+english.ROLES.ROLE_SCP973 = "SCP-973"
 
 
 
@@ -2570,11 +2570,11 @@ english.ROLES.ROLE_SECURITY = "Служба Безопасности"
 
 
 
-english.ROLES.ROLE_BIO = "МОГ Химик"
+english.ROLES.ROLE_SPECIALIST = "МОГ Специалист"
 
 
 
-english.ROLES.ROLE_MTFGeneral = "Глава Комплекса"
+english.ROLES.ROLE_HOF = "Глава Комплекса"
 
 
 
@@ -2630,7 +2630,7 @@ english.ROLES.ROLE_MTFNTF = "МОГ Эпсилон-11"
 
 
 
-english.ROLES.ROLE_HAZMAT = "МОГ Специалист"
+english.ROLES.ROLE_MTFCHEMIST = "МОГ Химик"
 
 
 

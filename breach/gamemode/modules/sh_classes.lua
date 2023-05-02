@@ -859,7 +859,7 @@ CLASSDMODELS = {
 	
 				 armor = 30,
 	
-		   walkspeed = 1,
+		         walkspeed = 1,
 	
 				 runspeed = 1.2,
 	
@@ -881,6 +881,8 @@ CLASSDMODELS = {
 	
 				 sorting = 0,
 	
+				 bodygroups = "1110000001",
+
 				 importancelevel = 1
 	
 				},
@@ -920,6 +922,10 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 3,
+
+				 skin = 1,
+
+				 bodygroups = "1110000001",
 	
 				 importancelevel = 1
 	
@@ -962,6 +968,8 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 4,
+
+				 bodygroups = "01211002",
 	
 				 importancelevel = 1
 	
@@ -1003,6 +1011,8 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 6,
+
+				 bodygroups = "31301002",
 	
 				 importancelevel = 3
 	
@@ -1048,7 +1058,7 @@ CLASSDMODELS = {
 	
 				 importancelevel = 3,
 
-				 bodygroups = "11101"
+				 bodygroups = "122011110"
 	
 				},
 	
@@ -1093,12 +1103,14 @@ CLASSDMODELS = {
 				 ability = {"Anti-SCP Turret", 1, "Вы ставите турель.", "nextoren/gui/ability/engineer_turret.png", true},
 
 				 ability_max = 1,
+
+				 bodygroups = "4131000001",
 	
 				 importancelevel = 3
 	
 				},
 	
-				{name = ROLES.ROLE_HAZMAT,
+				{name = ROLES.ROLE_MTFCHEMIST,
 	
 				 team = TEAM_GUARD,
 	
@@ -1135,12 +1147,14 @@ CLASSDMODELS = {
 				 max = 2,
 	
 				 sorting = 1,
+
+				 bodygroups = "1",
 	
 				 importancelevel = 1
 	
 				},
 	
-				{name = ROLES.ROLE_BIO,
+				{name = ROLES.ROLE_SPECIALIST,
 	
 				 team = TEAM_GUARD,
 	
@@ -1177,6 +1191,8 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 3,
+
+				 bodygroups = "21201",
 	
 				 importancelevel = 1
 	
@@ -1224,7 +1240,7 @@ CLASSDMODELS = {
 	
 				},
 	
-				{name = ROLES.ROLE_MTFGeneral,
+				{name = ROLES.ROLE_HOF,
 	
 				 team = TEAM_GUARD,
 	
@@ -1311,6 +1327,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 0,
+
+				 bodygroups = "1011111111",
 	
 				 max = 3
 	
@@ -1351,6 +1369,8 @@ CLASSDMODELS = {
 				 level = 16,
 
 				 ability = {"Cameras Scan", 120, "None Provided", "nextoren/gui/special_abilities/special_ntf_commander.png", false},
+
+				 bodygroups = "1021110111",
 	
 				 max = 1
 	
@@ -1391,6 +1411,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 0,
+
+                 bodygroups = "0101111",
 	
 				 max = 2
 	
@@ -1431,6 +1453,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 20,
+
+				 bodygroups = "0001201",
 	
 				 max = 1
 	
@@ -1469,6 +1493,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 0,
+
+				 bodygroups = "1002011",
 	
 				 max = 1
 	
@@ -1546,6 +1572,8 @@ CLASSDMODELS = {
 	
 				 level = 14,
 
+				 bodygroups = "33",
+
 				 ability = {"Cloak", 80, "None Provided", "nextoren/gui/special_abilities/special_goc_invisibility.png", false},
 	
 				 max = 1
@@ -1585,6 +1613,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 5,
+
+				 bodygroups = "1001",
 	
 				 max = 3
 	
@@ -1623,6 +1653,8 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 7,
+
+				 bodygroups = "2001",
 
 				 ability = {"Intelligence", 45, "None Provided", "nextoren/gui/special_abilities/special_fbi_commander.png", false},
 	
@@ -1667,6 +1699,8 @@ CLASSDMODELS = {
 				 ability = {"Portal", 90, "None Provided", "nextoren/gui/special_abilities/special_dz_portal.png", false},
 
 				 ability_max = 1,
+
+				 bodygroups = "12001",
 	
 				 max = 3
 	
