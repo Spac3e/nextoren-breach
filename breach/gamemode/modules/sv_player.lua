@@ -369,9 +369,11 @@ end
 function mply:ApplyRoleStats( role )
 	self:SetNClass( role.name )
 	self:SetGTeam( role.team )
-	for k, v in pairs( role.weapons ) do
-		self:Give( v )
-	end
+        timer.Simple(1, function()
+			for k, v in pairs( role.weapons ) do
+				self:Give( v )
+			end
+		end)
 	if role.keycard and role.keycard != "" then
 		local card = self:Give( "br_keycard" )
 		if card then
@@ -397,9 +399,6 @@ function mply:ApplyRoleStats( role )
 			end
 		end
 	end
-    if role.ability then
-		self:SetNWString("AbilityName", (role["ability"]))
-	end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	self:SetWalkSpeed(100 * role.walkspeed)
@@ -408,9 +407,25 @@ function mply:ApplyRoleStats( role )
 	self:SetModel( table.Random(role.models) )
 	self:Flashlight( false )
 	self:AllowFlashlight( role.flashlight )
-	if role.bodygroups then
-		self:SetBodyGroups( role.bodygroups)
-	end
+    self:SetBodyGroups( role.bodygroups)
+	self:SetNWString("AbilityName", "")
+	self.AbilityTAB = nil
+	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
+	self:SetSpecialMax(0)
+	self:SetSpecialCD(10)
+	if role.ability then
+        net.Start("SpecialSCIHUD")
+        net.WriteString(role["ability"][1])
+        net.WriteUInt(role["ability"][2], 9)
+        net.WriteString(role["ability"][3])
+        net.WriteString(role["ability"][4])
+        net.WriteBool(role["ability"][5])
+        net.Send(self)
+        self:SetNWString("AbilityName", (role["ability"][1]))
+       if role.ability_max then
+	   self:SetSpecialMax( role["ability_max"] )
+    end
+end
 	if role.vest != nil then
 		self:ApplyArmor(role.vest)
 	end

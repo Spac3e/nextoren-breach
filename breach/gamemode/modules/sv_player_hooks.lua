@@ -154,6 +154,10 @@ function GM:PlayerNoClip( ply, desiredState )
 end
 
 function GM:PlayerDeath( victim, inflictor, attacker )
+	victim:SetSpecialMax(0)
+	victim:SetNWString("AbilityName", "")
+	victim.AbilityTAB = nil
+	victim:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
@@ -448,7 +452,6 @@ function GM:PlayerDeathSound(ply)
 	if !ply:IsFemale() then
 	ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/death_" .. math.random( 1, 58 ) .. ".mp3" )
 	elseif ply:IsFemale() then ply:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/death_" .. math.random( 1, 75 ) .. ".mp3" )
-		return false
 end
 end
 
@@ -567,8 +570,14 @@ function GM:PlayerCanPickupItem( ply, item )
 end
 
 function GM:AllowPlayerPickup( ply, ent )
-	return ply:IsAdmin()
+	return
 end
+
+hook.Add( "PlayerCanPickupWeapon", "noDoublePickup", function( ply, weapon )
+    if ( ply:HasWeapon( weapon:GetClass() ) ) then
+		return false
+	end
+end )
 
 // usesounds = true,
 function IsInTolerance( spos, dpos, tolerance )

@@ -2598,7 +2598,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_LESSION) then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_HUI) then
 
 			if ply:GetSpecialMax() <= 0 then return end
 
@@ -2631,7 +2631,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:EmitSound("nextoren/vo/special_sci/trapper/trapper_"..math.random(1,10)..".mp3")
 
 
-		elseif ( ply:HaveSpecialAb(ROLES.ROLE_TOPKEK) or ply.KACHOKABILITY == true ) and SERVER then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_TOPKEK) then
 			local angle_zero = Angle(0,0,0)
 			ply:LagCompensation(true)
 		local DASUKADAIMNEEGO = util.TraceLine( {
@@ -2647,7 +2647,12 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetSpecialCD(CurTime() + 3)
 			return
 		end
-		if !IsValid(target) or !target.GTeam or ( target:GTeam() == TEAM_SCP and !target.IsZombie ) or target:GTeam() == TEAM_SPEC then
+		if !IsValid(target) or !target.GTeam or target:GTeam() == TEAM_SPEC then
+			ply:RXSENDNotify("Для прогиба смотрите на цель.")
+			ply:SetSpecialCD(CurTime() + 3)
+			return
+		end
+		if !ply:IsSuperAdmin() and target:GTeam() == TEAM_SCP and !target.IsZombie then
 			ply:RXSENDNotify("Для прогиба смотрите на цель.")
 			ply:SetSpecialCD(CurTime() + 3)
 			return

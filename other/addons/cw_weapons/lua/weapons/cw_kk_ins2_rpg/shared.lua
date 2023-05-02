@@ -217,7 +217,7 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.Primary.ClipSize		= 1
 SWEP.Primary.DefaultClip = 0 --	= 1
 SWEP.Primary.Automatic		= true
-SWEP.Primary.Ammo			= "PG-7VM Grenade"
+SWEP.Primary.Ammo			= "RPG_Rocket"
 
 SWEP.FireDelay = 0.5
 SWEP.FireSound = "CW_KK_INS2_RPG_FIRE"

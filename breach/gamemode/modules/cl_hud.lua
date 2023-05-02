@@ -1478,7 +1478,7 @@ function DrawSpecialAbility( tbl )
 
 	local client = LocalPlayer()
 
- -- client.AbilityKey = string.upper(input.GetKeyName(GetConVar("breach_config_useability"):GetInt()))
+  client.AbilityKey = string.upper(input.GetKeyName(GetConVar("breach_config_useability"):GetInt()))
   client.AbilityKeyCode = GetConVar("breach_config_useability"):GetInt()
 
 	local name, current_team = client:GetName(), client:GTeam()

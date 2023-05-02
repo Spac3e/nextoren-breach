@@ -253,7 +253,7 @@ local size = 0
     end
 
 
-    draw.SimpleText( "Created by -Spac3, Maleyvich and VAULT Team", "MainMenuFont", scrw * 0.1, scrh * 0.93, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
+    draw.SimpleText( "Created by -Spac3, Imperator, Maleyvich and VAULT Team", "MainMenuFont", scrw * 0.1, scrh * 0.93, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
 
   end
 
@@ -822,7 +822,7 @@ CreateConVar("breach_config_draw_spec", 0, FCVAR_ARCHIVE, "Draw spectators while
 CreateConVar("breach_config_draw_spec_alive", 0, FCVAR_ARCHIVE, "Draw spectators while alive. Developers only", 0, 1)
 CreateConVar("breach_config_screenshot_mode", 0, FCVAR_ARCHIVE, "Completely disables HUD. Can be buggy", 0, 1)
 CreateConVar("breach_config_draw_legs", 1, FCVAR_ARCHIVE, "Draw legs")
-CreateConVar("breach_config_useability", KEY_H, FCVAR_ARCHIVE, "number you will use ability with")
+CreateConVar("breach_config_useability", 18, FCVAR_ARCHIVE, "number you will use ability with")
 
 RunConsoleCommand("breach_config_language", GetConVar("breach_config_language"):GetString())
 local function ChangeServerValue(id, bool)

@@ -281,15 +281,15 @@ function SpawnAllItems()
 			WakeEntity( wep )
 		end
 	end
-	
-/*	for k,v in pairs(SPAWN_AMMO_G) do
-		local wep = ents.Create("cw_ammo_40mm")
-		if IsValid( wep ) then
-			wep:Spawn()
-			wep:SetPos( v )
-			WakeEntity(wep)
+		for k,v in pairs(SPAWN_WEAPONRY) do
+		local ent = ents.Create("ent_weaponry")
+		if IsValid( ent ) then
+			ent:Spawn()
+			ent:SetPos( v )
+			ent:SetAngles(Angle(0, -90, 0))
+			WakeEntity(ent)
 		end
-	end */
+	end
 	
 	if GetConVar("br_allow_vehicle"):GetInt() != 0 then
 	
@@ -301,7 +301,7 @@ function SpawnAllItems()
 				car:SetModel("models/tdmcars/jeep_wrangler_fnf.mdl")
 				car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
 			car:SetPos( v )
-			car:SetAngles( Angle( 0, 270, 0 ) )
+			car:SetAngles( Angle( 0, -90, 0 ) )
 			car:Spawn()
 			WakeEntity( car )
 		end

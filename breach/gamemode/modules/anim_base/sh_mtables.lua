@@ -766,7 +766,7 @@ function GM:PlayerWeaponChanged( client, weapon, force )
   if ( !holdType ) then return end
 
   if ( plytable.AnimationHoldType && plytable.AnimationHoldType == holdType && plytable.Old_Model == client:GetModel() ) then return end
-  --[[
+
 
   if SERVER then
       net.Start("GestureClientNetworking")
@@ -775,7 +775,7 @@ function GM:PlayerWeaponChanged( client, weapon, force )
           net.WriteUInt(GESTURE_SLOT_CUSTOM, 3)
           net.WriteBool(true)
         net.Broadcast()
-  end]]
+  end
 
   plytable.AnimationHoldType = holdType
   plytable.AnimationRole = client:GetNClass()

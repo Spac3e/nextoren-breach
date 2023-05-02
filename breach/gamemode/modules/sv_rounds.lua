@@ -12,7 +12,7 @@ ROUNDS = {
 				SpawnNTFS()
 			end )
 			timer.Create("MTFDebug", 2, 1, function()
-				local fent = ents.FindInSphere(MTF_DEBUG, 750)
+				local fent = ents.FindInSphere(SPAWN_GUARD, 750)
 				for k, v in pairs( player.GetAll() ) do
 					if v:GTeam() == TEAM_GUARD or v:GetNClass() == ROLE_CHAOSSPY then
 						local found = false
@@ -23,7 +23,7 @@ ROUNDS = {
 							end
 						end
 						if !found then
-							v:SetPos(MTF_DEBUG)
+							v:SetPos(SPAWN_GUARD)
 						end
 					end
 				end
@@ -118,7 +118,7 @@ ROUNDS = {
 		postround = function() end,
 		cleanup = function() end,
 	}, */
-	infect = {
+	--[[infect = {
 		name = "Infect",
 		setup = function()
 			MAPBUTTONS = table.Copy(BUTTONS)
@@ -154,7 +154,7 @@ ROUNDS = {
 				why = "there are only SCPs"
 			end		
 		end,
-	},
+	},--]] -- Мб потом сделаем, а может и не надо... идея хуйня
 	multi = {
 		name = "Multi Breach",
 		setup = function()

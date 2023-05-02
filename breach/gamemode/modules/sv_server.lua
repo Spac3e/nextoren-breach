@@ -1,7 +1,7 @@
 util.AddNetworkString("PlayerBlink")
 util.AddNetworkString("DropWeapon")
 util.AddNetworkString("DropCurWeapon")
---util.AddNetworkString("RequestGateA")
+util.AddNetworkString("Change_player_settings_id")
 util.AddNetworkString("RequestEscorting")
 util.AddNetworkString("PrepStart")
 util.AddNetworkString("RoundStart")
@@ -46,7 +46,8 @@ util.AddNetworkString("ProceedUnfreezeSUP")
 util.AddNetworkString("MOGStart")
 util.AddNetworkString("SpecialSCIHUD")
 util.AddNetworkString("Load_player_data")
-
+util.AddNetworkString("NightvisionOn")
+util.AddNetworkString("NightvisionOff")
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end
