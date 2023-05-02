@@ -154,6 +154,10 @@ function GM:PlayerNoClip( ply, desiredState )
 end
 
 function GM:PlayerDeath( victim, inflictor, attacker )
+	victim:SetSpecialMax(0)
+	victim:SetNWString("AbilityName", "")
+	victim.AbilityTAB = nil
+	victim:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )

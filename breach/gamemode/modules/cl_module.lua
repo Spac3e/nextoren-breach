@@ -630,7 +630,7 @@ net.Receive( "PrepStart", function( len )
 	end
 	timefromround = CurTime() + 10
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
-	
+	--[[
 	if LocalPlayer():GTeam() == TEAM_GUARD then
 		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
 		LocalPlayer().cantopeninventory = true
@@ -644,6 +644,8 @@ net.Receive( "PrepStart", function( len )
 			end
 		end)
 	end
+	]]-- 
+	-- хуйня переделывай
 	timer.Destroy("IntroStart")
 	timer.Create("IntroStart", 66, 1, function()
 		BREACH.Round.GeneratorsActivated = false

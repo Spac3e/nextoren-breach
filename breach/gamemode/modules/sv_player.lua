@@ -399,8 +399,12 @@ function mply:ApplyRoleStats( role )
 			end
 		end
 	end
+	self:SetSpecialMax(0)
+	self:SetNWString("AbilityName", "")
+	self.AbilityTAB = nil
+	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
     if role.ability then
-		self:SetNWString("AbilityName", (role["ability"]))
+		self:SetNWString("AbilityName", (role["ability"][1]))
 	end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
@@ -410,7 +414,7 @@ function mply:ApplyRoleStats( role )
 	self:SetModel( table.Random(role.models) )
 	self:Flashlight( false )
 	self:AllowFlashlight( role.flashlight )
-        self:SetBodyGroups( role.bodygroups)
+    self:SetBodyGroups( role.bodygroups)
 	if role.vest != nil then
 		self:ApplyArmor(role.vest)
 	end

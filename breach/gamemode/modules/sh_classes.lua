@@ -463,6 +463,8 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
+
+				 ability = {"Бросок", 45, "Вы кидаете на прогиб человека напротив вас.", "nextoren/gui/special_abilities/special_bor_takedown.png", false},
 	
 				 max = 3
 	
@@ -830,9 +832,9 @@ CLASSDMODELS = {
 	
 				 team = TEAM_GUARD,
 	
-				 weapons = {"br_holster", "weapon_pass_guard", "wep_jack_job_drpradio", "cw_kk_ins2_cstm_mp7", "weapon_flashlight", "br_keycard_5", "item_nvg"},
+				 weapons = {"br_holster", "weapon_pass_guard", "wep_jack_job_drpradio", "cw_kk_ins2_cstm_mp7", "weapon_flashlight", "br_keycard_5", "item_nightvision_blue"},
 	
-				 showweapons = {"Ключ карта 3", "Радио", "MP7"},
+				 showweapons = {"Ключ карта 3", "Радио", "MP7",},
 	
 				 ammo = {{"SMG1", 400}},
 	
@@ -849,8 +851,6 @@ CLASSDMODELS = {
 				 vest = nil,
 	
 				 models = MTFMODEL,
-	
-	
 	
 				 showmodel = nil,
 	
@@ -1031,12 +1031,7 @@ CLASSDMODELS = {
 	
 				 importancelevel = 3,
 
-				 bodygroups = {0101},
-
-				 bodygroup0 = 2,
-				 bodygroup1 = 2,
-				 bodygroup4 = 1,
-				 bodygroup5 = 1
+				 bodygroups = "0101"
 	
 				},
 	
