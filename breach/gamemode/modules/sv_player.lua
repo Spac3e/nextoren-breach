@@ -1,6 +1,17 @@
 
 local mply = FindMetaTable( "Player" )
 
+function mply:ClearBodyGroups(ply, ent)
+	for i = 1, self:GetNumBodyGroups() do
+		self:SetBodygroup( i, 0 )
+	end
+end
+function mply:AddToStatistics(ply, ent) -- надо сделать новую exp систему nextoren like, u know?
+	if ply then
+		ply:AddExp(100, true)
+	end
+end
+
 function mply:PrintTranslatedMessage( string )
 	net.Start( "TranslatedMessage" )
 		net.WriteString( string )

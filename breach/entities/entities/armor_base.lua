@@ -96,7 +96,7 @@ if ply:GetNClass() == ROLES.ROLE_CLASSDPIDORAS and !ply:GetModel():find("class_d
 if self.IsUsedAlready then return end
 if self.Team and ply:GTeam() != self.Team and ply:GetNClass() != ROLES.ROLE_GOCSPY then ply:RXSENDNotify("Вы не можете надеть данное снаряжение!") return end
 
-	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == ROLES.ROLE_GOCSPY or ply:GetNClass() == ROLES.ROLE_USASPY or ply:GetNClass() == ROLES.ROLE_DZDZ ) and ply:GetNClass() != role.ClassD_Fat and ply:GetNClass() != role.ClassD_Bor then
+	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == ROLES.ROLE_GOCSPY or ply:GetNClass() == ROLES.ROLE_USASPY or ply:GetNClass() == ROLES.ROLE_DZDZ ) and ply:GetNClass() != ROLES.ROLE_FAT and ply:GetNClass() != ROLES.ROLE_TOPKEK then
 		nextuse = CurTime() + delay
 		if SERVER then
 			if string.len(ply:GetUsingCloth()) > 0 then

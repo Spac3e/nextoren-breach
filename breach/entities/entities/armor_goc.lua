@@ -77,7 +77,7 @@ if ( CLIENT ) then
 
     local client = LocalPlayer()
 
-    if ( client:GetNClass() == role.ClassD_GOCSpy ) then
+    if ( client:GetNClass() == ROLES.ROLE_GOCSPY ) then
 
       self:DrawModel()
 

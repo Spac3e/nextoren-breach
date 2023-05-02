@@ -3,56 +3,53 @@ util.AddNetworkString("StartBreachProgressBar")
 util.AddNetworkString("progressbarstate")
 util.AddNetworkString("progress_bar")
 
-function mply:ProgressBar(display_string, time, icon, target, canmove, startcallback, stopcallback, finishcallback)
-
+function mply:BrProgressBar( name, time, icon, target, canmove, finishcallback, startcallback, stopcallback )
+	if istable(self.ProgressBarData) and self.ProgressBarData.name == name then return end
+    local timername = "BREACH_ProgressBar"..self:SteamID64()
+    if timer.Exists(timername) then timer.Remove(timername) end
+    if canmove == nil then canmove = true end
     self.ProgressBarData = {
-        canmove = canmove == true,
+    	name = name,
         target = target,
-        stop = stopcallback,
-        finish = finishcallback
+        canmove = canmove,
+        stopcallback = stopcallback,
     }
-
-    if isfunction(startcallback) then startcallback() end    
-
-    net.Start("progress_bar")
-    net.WriteFloat(time)
-    net.WriteString(display_string || "")
-    if icon then net.WriteString(icon) end
-    net.Send(self)
-
-    timer.Create("progress_bar_"..self:SteamID64(), time, 1, function()
-
-        if isfunction(self.ProgressBarData.finish) then self.ProgressBarData.finish() end
+    
+	net.Start( "StartBreachProgressBar" )
+	    net.WriteString( name )
+		net.WriteFloat( time )
+		net.WriteString( icon )
+	net.Send( self )
+    if isfunction(startcallback) then startcallback() end
+    timer.Create(timername, time, 1, function()
+        if isfunction(finishcallback) then finishcallback() end
         self.ProgressBarData = nil
-
     end)
-
-    if canmove != true then
-        local uniq = "can_move_think_"..self:SteamID64()
-        hook.Add("Think", uniq, function()
-            if IsValid(self) and self.ProgressBarData and self.ProgressBarData.canmove != true then
-                if self:GetVelocity():Length2D() > 0.25 then
-                    self:StopProgressBar()
-                    hook.Remove("Think", uniq)
-                end
-            else
-                hook.Remove("Think", uniq)
-            end
-        end)
-    end
-
-    if IsValid(target) then
-        local uniq = "target_progress_think_"..self:SteamID64()
-        hook.Add("Think", uniq, function()
-            if IsValid(self) and self.ProgressBarData and IsValid(self.ProgressBarData.target) then
-                if self:GetEyeTrace().Entity != self.ProgressBarData.target then
-                    self:StopProgressBar()
-                    hook.Remove("Think", uniq)
-                end
-            else
-                hook.Remove("Think", uniq)
-            end
-        end)
-    end
-
+    
 end
+
+function mply:BrStopProgressBar()
+    self:ConCommand("stopprogress")
+    if self.ProgressBarData and isfunction(self.ProgressBarData.stopcallback) then
+        self.ProgressBarData.stopcallback()
+    end
+    self.ProgressBarData = nil
+    timer.Remove("BREACH_ProgressBar"..self:SteamID64())
+end
+
+local BREACH_DISTANCEREACH = 150
+hook.Add("PlayerTick", "BREACH_ProgressBarCheck", function( ply )
+    if !ply.ProgressBarData then return end
+    if !ply.ProgressBarData.canmove then
+        if ply:GetVelocity():LengthSqr() > 0.0625 then
+            ply:BrStopProgressBar()
+        end
+    end
+    if ply.ProgressBarData and IsValid(ply.ProgressBarData.target) then
+        local dist = BREACH_DISTANCEREACH * BREACH_DISTANCEREACH
+        if !( ply:GetEyeTrace().Entity == ply.ProgressBarData.target ) or ply.ProgressBarData.target:GetPos():DistToSqr(ply:GetPos()) > dist then-- or (IsValid(ply.ProgressBarData.target) and ply.ProgressBarData.target:GetPos():DistToSqr(ply:GetPos()) < dist) then
+            ply:BrStopProgressBar()
+        end
+    end
+    if ply:GTeam() == TEAM_SPEC or !ply:Alive() then ply:BrStopProgressBar() end
+end)
