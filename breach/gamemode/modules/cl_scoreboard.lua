@@ -649,7 +649,7 @@ function PANEL:Paint()
 
     surface.SetDrawColor(color_white)
     surface.SetMaterial(BREACH.FLAGS[ply:GetNWString("country", "RU")])
-    surface.DrawTexturedRect(pingx-199, 3, 20, 15)
+    surface.DrawTexturedRect(pingx-155, 3, 20, 15)
 
     local ping = ply:Ping()
 
@@ -933,7 +933,7 @@ function PANEL:DoRightClick()
   end )
   country:SetIcon( "flags16/"..menu.Player:GetNWString("country", "RU")..".png" )
   country.Paint = function(self, w, h)
-    draw.DrawText(name, "HUDFont", 15, 2)
+    draw.DrawText(name, "HUDFont", 30, 2)
   end
 
   menu:AddSpacer()
