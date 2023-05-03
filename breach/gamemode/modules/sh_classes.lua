@@ -1728,12 +1728,10 @@ CLASSDMODELS = {
 	
 				 weapons = {"br_holster", "weapon_flashlight", "br_keycard_3", "item_nvg"},
 	
-				 showweapons = {"временно убран"},--{"Специальная способность - Исцеление по области"},
+				 showweapons = {"Специальная способность - Исцеление по области"},
 	
 				 ammo = {{"Pistol", 20}},
-	
-	
-	
+		
 				 health = 120,
 	
 				 armor = 0,
@@ -1752,7 +1750,7 @@ CLASSDMODELS = {
 	
 				 flashlight = false,
 	
-				 level = 800,
+				 level = 0,
 
 				 ability = {"AOE Heal", 75, "Исцеляет людей в некотором радиусе от вас.", "nextoren/gui/special_abilities/special_heal.png", false},
 	
