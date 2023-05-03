@@ -94,7 +94,6 @@ function PANEL:Init()
   self.cols = {}
   self:AddColumn( "Ping" )
   self:AddColumn( "Level" )
-  self:AddColumn( "Ach" )
   self:AddColumn( "Score" )
 
   local country = self:AddColumn( "Country" )
@@ -934,7 +933,7 @@ function PANEL:DoRightClick()
   end )
   country:SetIcon( "flags16/"..menu.Player:GetNWString("country", "RU")..".png" )
   country.Paint = function(self, w, h)
-    draw.DrawText(name, "HUDFont", 30, 2)
+    draw.DrawText(name, "HUDFont", 15, 2)
   end
 
   menu:AddSpacer()

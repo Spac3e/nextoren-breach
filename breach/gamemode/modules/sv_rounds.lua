@@ -11,22 +11,7 @@ ROUNDS = {
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
 				SpawnNTFS()
 			end )
-				local fent = ents.FindInSphere(MTF_DEBUG, 750)
-				for k, v in pairs( player.GetAll() ) do
-					if v:GTeam() == TEAM_GUARD then
-						local found = false
-						for k0, v0 in pairs(fent) do
-							if v == v0 then
-								found = true
-								break
-							end
-						end
-						if !found then
-							v:SetPos(MTF_DEBUG)
-						end
-					end
-				end
-		end,
+end,
 		roundstart = function()
 			OpenSCPDoors()
 		end,
@@ -165,23 +150,6 @@ ROUNDS = {
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
 				SpawnNTFS()
 			end )
-			timer.Create("MTFDebug", 2, 1, function()
-				local fent = ents.FindInSphere(SPAWN_GUARD, 750)
-				for k, v in pairs( player.GetAll() ) do
-					if v:GTeam() == TEAM_GUARD or v:GetNClass() == ROLE_CHAOSSPY then
-						local found = false
-						for k0, v0 in pairs(fent) do
-							if v == v0 then
-								found = true
-								break
-							end
-						end
-						if !found then
-							v:SetPos(SPAWN_GUARD)
-						end
-					end
-				end
-			end )	
 		end,
 		roundstart = function()
 			OpenSCPDoors()

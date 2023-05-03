@@ -1,6 +1,6 @@
 // Script by Sofi
 // sofi.pink
-
+--[[
 CreateConVar("sv_manualweaponpickup", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Is manual weapon pickup enabled?")
 CreateConVar("sv_manualweaponpickup_aim", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Must the player be aiming at the weapon?")
 CreateConVar("sv_manualweaponpickup_auto", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Holding use key picks up weapons automatically.")
@@ -155,3 +155,4 @@ hook.Add("PlayerCanPickupItem", "ManualWeaponPickup_CanPickupItem", function(pl,
 end)
 
 // sofi.pink
+--]]

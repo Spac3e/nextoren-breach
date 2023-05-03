@@ -140,10 +140,6 @@ function SWEP:OnRemove()
 
 	hook.Remove( "PlayerButtonDown", "SCP_062_ABILITY" )
 
-	if SERVER then
-		self.Owner:RunConsoleCommand( "-forward" )
-	end
-
 end
 
 function SWEP:Initialize()
