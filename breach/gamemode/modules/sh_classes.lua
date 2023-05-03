@@ -604,6 +604,8 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 0,
+
+				 bodygroup = "001",
 	
 				 max = 36
 	
@@ -640,6 +642,8 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 20,
+
+				 bodygroup = "001",
 	
 				 max = 1
 	
@@ -676,6 +680,8 @@ CLASSDMODELS = {
 				flashlight = false,
 	
 				 level = 4,
+
+				 bodygroup = "010111",
 	
 				max = 3
 	
@@ -712,6 +718,8 @@ CLASSDMODELS = {
 				flashlight = false,
 	
 				 level = 2,
+
+				 bodygroup = "021",
 	
 				max = 3
 	
@@ -1013,7 +1021,7 @@ CLASSDMODELS = {
 	
 				 sorting = 6,
 
-				 bodygroups = "31301002",
+				 bodygroups = "31201",
 	
 				 importancelevel = 3
 	
@@ -1101,7 +1109,7 @@ CLASSDMODELS = {
 	
 				 sorting = 4,
 
-				 ability = {"Anti-SCP Turret", 1, "Вы ставите турель.", "nextoren/gui/ability/engineer_turret.png", true},
+				 ability = {"Anti-SCP Turret", 1, "Вы ставите турель.", "nextoren/gui/special_abilities/engineer_turret.png", true},
 
 				 ability_max = 1,
 
@@ -1666,7 +1674,7 @@ CLASSDMODELS = {
 	
 				},
 	
-		  {name = ROLES.ROLE_DZ,
+		  {name = ROLES.ROLE_DZCMD,
 	
 				 team = TEAM_DZ,
 	
@@ -1700,15 +1708,52 @@ CLASSDMODELS = {
 	
 				 level = 5,
 
-				 ability = {"Portal", 90, "None Provided", "nextoren/gui/special_abilities/special_dz_portal.png", false},
-
-				 ability_max = 1,
-
 				 bodygroups = "12001",
 	
-				 max = 3
+				 max = 4
 	
-				}
+				},
+				{name = ROLES.ROLE_DZCMD,
+	
+				team = TEAM_DZ,
+   
+				weapons = {"br_holster",  "wep_jack_job_drpradio", "cw_kk_ins2_mk18", "weapon_flashlight", "br_keycard_8"},
+   
+				showweapons = {"???", "Ключ-карта ???", "Информация недоступна", "████████████"},
+   
+				ammo = {{"SMG1", 800}},
+   
+   
+   
+				health = 210,
+   
+				armor = 0,
+   
+				walkspeed = 1,
+   
+				runspeed = 1.2,
+   
+				jumppower = 0.85,
+   
+				vest = nil,
+   
+				models = DZMODELS,
+   
+				showmodel = nil,
+   
+				pmcolor = nil,
+   
+				flashlight = true,
+   
+				level = 7,
+
+				ability = {"Portal", 45, "None Provided", "nextoren/gui/special_abilities/special_dz_portal.png", false},
+
+				bodygroups = "12001",
+   
+				max = 1
+   
+			   }
 	
 			}
 	

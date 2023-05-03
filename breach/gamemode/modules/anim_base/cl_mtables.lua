@@ -1,3 +1,5 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/anim_base/cl_mtables.lua
 local Breach = GM || GAMEMODE
 
 local Derma_StringRequest = Derma_StringRequest;
@@ -51,3 +53,4 @@ net.Receive( "UpdateClientHoldType", function()
   end
 
 end )
+

@@ -1,3 +1,15 @@
+--[[
+Server Name: [RXSEND] Breach 2.6.0
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/sh_optimize.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 hook.Add("Initialize", "Breach_Optimize", function()
 
  	hook.Remove("PlayerTick", "TickWidgets")
@@ -33,11 +45,12 @@ hook.Add("Initialize", "Breach_Optimize", function()
 		RunConsoleCommand("gm_demo_icon", "0")
 		RunConsoleCommand("cw_simple_telescopics", "0")
 		RunConsoleCommand("r_radiosity", "4")
-		RunConsoleCommand("mat_specular", "0")
+		--RunConsoleCommand("mat_specular", "0")
 		RunConsoleCommand("cl_cmdrate", "101")
 		RunConsoleCommand("cl_updaterate", "101")
 		RunConsoleCommand("cl_interp", "0.07")
 		RunConsoleCommand("cl_interp_npcs", "1")
+		RunConsoleCommand("cl_timeout", "2400")
 
 		hook.Remove("RenderScreenspaceEffects", "RenderColorModify")
 		hook.Remove("RenderScreenspaceEffects", "RenderBloom")

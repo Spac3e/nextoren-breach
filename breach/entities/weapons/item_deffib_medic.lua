@@ -71,7 +71,7 @@ function SWEP:RevivePlayer( ply, body )
 
 	if body.__Team == TEAM_SCP then return end
 
-	if body.DieWhen + 30 <= CurTime() then self.Owner:RXSENDNotify("Тело пролежало достаточно долго и его нельзя возродить.") return end
+	--if body.DieWhen + 30 <= CurTime() then self.Owner:RXSENDNotify("Тело пролежало достаточно долго и его нельзя возродить.") return end
 
 	if body.KilledByWeapon and body.LastHit == HITGROUP_HEAD then self.Owner:RXSENDNotify("Данный игрок был убит в голову, ", Color(255,0,0), "возрождение невозможно.") return end
 
@@ -94,11 +94,8 @@ function SWEP:RevivePlayer( ply, body )
 		ply:SetModel(body:GetModel())
 		ply:SetSkin(body:GetSkin())
 		ply:SetGTeam(body.__Team)
-		ply:SetRoleName(body.Role)
-		ply:SetMaxHealth(body.__Health)
+		ply:SetRoleName(body.role.name)
 		ply:SetHealth(ply:GetMaxHealth() * .3)
-		ply:SetUsingCloth(body.Cloth)
-		ply:SetNamesurvivor(body.__Name)
 		ply.OldSkin = body.OldSkin
 		ply.OldModel = body.OldModel
 		ply.OldBodygroups = body.OldBodygroups

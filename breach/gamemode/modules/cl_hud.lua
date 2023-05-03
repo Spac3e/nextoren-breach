@@ -558,7 +558,6 @@ net.Receive("NTF_Intro", function()
 		end)
 	end)
 end)
-concommand.Add("intro_ntf_helicop", NTF_Intro)
 
 net.Receive("LevelBar", function()
 	local client = LocalPlayer()
@@ -1030,8 +1029,7 @@ function Death_Scene( ply )
 	end)
 end
 concommand.Add("Death_Scene", Death_Scene)
-net.Receive("Death_Scene", Death_Scene)
-
+net.Receive('Death_Scene', Death_Scene )
 function ANGLE:CalculateVectorDot( vec )
 
 

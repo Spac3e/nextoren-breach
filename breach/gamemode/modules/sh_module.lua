@@ -1,11 +1,11 @@
 // Shared file
 GM.Name 	= "Breach"
-GM.Author 	= "Kanade, edited by danx91"
+GM.Author 	= "VAULT"
 GM.Email 	= ""
 GM.Website 	= ""
 
-VERSION = "0.32"
-DATE = "19/04/2019"
+VERSION = "2.6.9"
+DATE = "03.05.2023"
 
 function GM:Initialize()
 	self.BaseClass.Initialize( self )
@@ -335,7 +335,8 @@ ROLES.ROLE_USACMD = "UIU Commander"
 
 // DZ
 
-ROLES.ROLE_DZ = "Serpent's Hand"
+ROLES.ROLE_DZ = "SH Soldier"
+ROLES.ROLE_DZCMD = "SH Commander"
 
 // Other
 
@@ -595,6 +596,7 @@ function table.Random(tab, issequential)
 end
 
 function BREACH.GroundPos( pos )
+
 	local trace = { }
 	trace.start = pos;
 	trace.endpos = trace.start - vec_up
@@ -603,12 +605,15 @@ function BREACH.GroundPos( pos )
 	local tr = util.TraceLine( trace )
 
 	if ( tr.Hit ) then
+
 		return tr.HitPos
+
 	end
 
 	return pos
 
 end
+
 
 local AllowedModels = {
 

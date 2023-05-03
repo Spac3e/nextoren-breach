@@ -1,3 +1,5 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/anim_base/sh_animations.lua
 local Breach  = BREACH
 local string  = string;
 local math    = math;
@@ -268,8 +270,8 @@ BREACH.AnimationTable.Soldiers = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL", -- Safe-mode
-    "DOD_StandAim_PISTOL", -- Fire-mode
-    "DOD_StandAim_PISTOL" -- Aim-mode
+    "AHL_StandAim_PISTOL", -- Fire-mode
+    "AHL_StandAim_PISTOL" -- Aim-mode
 
   },
   [ "revolver_run" ] = {
@@ -281,8 +283,8 @@ BREACH.AnimationTable.Soldiers = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "DOD_w_WalkAim_PISTOL",
-    "DOD_w_WalkAim_PISTOL"
+    "AHL_w_WalkAim_50AE",
+    "AHL_w_WalkAim_50AE"
 
   },
   [ "revolver_crouch" ] = {
@@ -1040,8 +1042,8 @@ BREACH.AnimationTable.SCPS = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL", -- Safe-mode
-    "DOD_StandAim_PISTOL", -- Fire-mode
-    "DOD_StandAim_PISTOL" -- Aim-mode
+    "AHL_StandAim_PISTOL", -- Fire-mode
+    "AHL_StandAim_PISTOL" -- Aim-mode
 
   },
   [ "revolver_run" ] = {
@@ -1053,8 +1055,8 @@ BREACH.AnimationTable.SCPS = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "DOD_w_WalkAim_PISTOL",
-    "DOD_w_WalkAim_PISTOL"
+    "AHL_w_WalkAim_50AE",
+    "AHL_w_WalkAim_50AE"
 
   },
   [ "revolver_crouch" ] = {
@@ -1909,8 +1911,8 @@ BREACH.AnimationTable.Guards = {
   [ "revolver_idle" ] = {
 
     "DOD_StandIdle_PISTOL",
-    "DOD_StandAim_PISTOL",
-    "DOD_StandAim_PISTOL"
+    "AHL_StandAim_PISTOL",
+    "AHL_StandAim_PISTOL"
 
   },
   [ "revolver_run" ] = {
@@ -1922,8 +1924,8 @@ BREACH.AnimationTable.Guards = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "DOD_w_WalkAim_PISTOL",
-    "DOD_w_WalkAim_PISTOL"
+    "AHL_w_WalkAim_50AE",
+    "AHL_w_WalkAim_50AE"
 
   },
   [ "revolver_crouch" ] = {
@@ -2655,8 +2657,8 @@ BREACH.AnimationTable.maleHuman = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL",
-    "DOD_StandAim_PISTOL",
-    "DOD_StandAim_PISTOL"
+    "AHL_StandAim_PISTOL",
+    "AHL_StandAim_PISTOL"
 
   },
   ["revolver_run"] = {
@@ -2668,8 +2670,8 @@ BREACH.AnimationTable.maleHuman = {
   ["revolver_walk"] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "DOD_w_WalkAim_PISTOL",
-    "DOD_w_WalkAim_PISTOL"
+    "AHL_w_WalkAim_50AE",
+    "AHL_w_WalkAim_50AE"
 
   },
   ["revolver_crouch"] = {
@@ -2952,18 +2954,11 @@ local soldier_models = {
   [ "models/cultist/humans/russian/russians.mdl" ] = true,
   [ "models/cultist/humans/chaos/chaos.mdl" ] = true,
   [ "models/cultist/humans/obr/obr.mdl" ] = true,
-  [ "models/cultist/humans/obr/obr_new.mdl" ] = true,
   [ "models/cultist/humans/osn/osn.mdl" ] = true,
 }
 
 local banned_roles = {
-
-  [ "CI Spy" ] = true,
   [ "GOC Spy" ] = true,
-  [ "SH Spy" ] = true,
-  [ "UIU Spy" ] = true,
-  [ "Dispatcher" ] = true,
-
 }
 
 function Breach.AnimationTable:GetTable( player, model )
@@ -3023,3 +3018,4 @@ function GetSequenceList( ply )
 
 end
 --concommand.Add("GetID", GetSequenceList)
+

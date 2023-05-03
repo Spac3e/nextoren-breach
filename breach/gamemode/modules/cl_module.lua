@@ -614,6 +614,7 @@ net.Receive( "RolesSelected", function( len )
 end)
 
 net.Receive( "PrepStart", function( len )
+	ply = LocalPlayer()
 	GAMEMODE:ScoreboardHide() --DICKHEADS!!!
 	RunConsoleCommand("stopsound")
 	cltime = net.ReadInt(8)
@@ -630,22 +631,22 @@ net.Receive( "PrepStart", function( len )
 	end
 	timefromround = CurTime() + 10
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
-	--[[
 	if LocalPlayer():GTeam() == TEAM_GUARD then
 		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
 		LocalPlayer().cantopeninventory = true
 		hook.Add("HUDShouldDraw", "MTF_HIDEHUD", function()
-		        RunConsoleCommand("intro_start_mog")
 			if LocalPlayer():GTeam() == TEAM_GUARD then
+				net.Start("mogstart_pizdec")
+				net.SendToServer()
 				return false
 			else
+				net.Start("mogstart_pizdec")
+				net.SendToServer()
 				LocalPlayer().cantopeninventory = nil
 				hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
 			end
 		end)
 	end
-	]]-- 
-	-- хуйня переделывай
 	timer.Destroy("IntroStart")
 	timer.Create("IntroStart", 66, 1, function()
 		BREACH.Round.GeneratorsActivated = false
@@ -1373,8 +1374,9 @@ function MOGStart()
 	end)
 
 end
+net.Receive("mogstart_pizdec", MOGStart)
 concommand.Add("intro_start_mog", MOGStart)
-net.Receive("MOGStart", MOGStart)
+
 net.Receive("bettersendlua", function()
 
 	local code = net.ReadString()

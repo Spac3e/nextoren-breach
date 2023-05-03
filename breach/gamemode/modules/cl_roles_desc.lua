@@ -75,6 +75,8 @@ BREACH.Descriptions.english[ROLES.ROLE_GoPCMD] = "You - are the Global Occult Co
 
 BREACH.Descriptions.russian[ROLES.ROLE_DZ] = "Вы - Солдат Длани Змей\n\nЗащитите и Эвакуируйте SCP!"
 BREACH.Descriptions.english[ROLES.ROLE_DZ] = "You - are the Serpent Hands Grunt\n\nHelp and Evacuate SCPs!"
+BREACH.Descriptions.russian[ROLES.ROLE_DZCMD] = "Вы - Командир Длани Змей\n\nУ вас есть специальный телепорт, который может вас телепортировать в случайную точку.\n\nбудьте осторожны, кто знает куда вас забросит..\n\nЗащитите и Эвакуируйте SCP!"
+BREACH.Descriptions.english[ROLES.ROLE_DZCMD] = "You - are the Serpent Hands Commander\n\nYou have the ability to summon a portal to random location\n\nbe careful, who know where it will teleport you..\n\nHelp and Evacuate SCPs!"
 
 // Служба Безопасности
 BREACH.Descriptions.russian[ROLES.ROLE_GuardSci] = "Вы - Офицер Службы Безопасности\n\nЗащитите ученых и сбегите с комплекса!"

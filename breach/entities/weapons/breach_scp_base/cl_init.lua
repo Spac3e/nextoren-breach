@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: [RXSEND] Breach 2.6.0
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/breach_scp_base/cl_init.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -80,7 +80,7 @@ local function ShowAbilityDesc( name, text, cooldown, x, y )
     drawMultiLine( name, "HUDFont", w, 16, 5, 0, clrred, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 
     local namewidth, nameheight = surface.GetTextSize( name )
-    drawMultiLine( text, "HUDFont", w + 32, 16, 5, nameheight * 1.4, clrgray, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+    drawMultiLine( text, "HUDFont", 170, 16, 5, nameheight + 5, clrgray, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 
     local line_height = nameheight * 1.15
 
@@ -109,13 +109,13 @@ function SWEP:ChooseAbility( table )
   BREACH.Abilities:SetPos( ScrW() / 2 - ( 32 * #BREACH.Abilities.AbilityIcons ), ScrH() / 1.2 )
   BREACH.Abilities:SetSize( 64 * #BREACH.Abilities.AbilityIcons, 64 )
   BREACH.Abilities:SetText( "" )
-  BREACH.Abilities.SCP_Name = LocalPlayer():GetNClass()
+  BREACH.Abilities.SCP_Name = LocalPlayer():GetRoleName()
   BREACH.Abilities.Alpha = 1
   BREACH.Abilities.Paint = function( self, w, h )
 
     local client = LocalPlayer()
 
-    if ( client:Health() <= 0 || client:GetNClass() != self.SCP_Name ) then
+    if ( client:Health() <= 0 || client:GetRoleName() != self.SCP_Name ) then
 
       self:Remove()
 
@@ -129,7 +129,7 @@ function SWEP:ChooseAbility( table )
     end
 
     surface.SetDrawColor( color_white )
-    draw.OutlinedBox( 0, 0, w, h, 4, color_black )
+    --draw.OutlinedBox( 0, 0, w, h, 4, color_black )
 
   end
 
@@ -195,26 +195,40 @@ function SWEP:ChooseAbility( table )
         return
       end
 
-      surface.SetDrawColor( color_white )
-      surface.SetMaterial( iconmaterial )
-      surface.DrawTexturedRect( 0, 0, 64, 64 )
+      local press = false
 
       if ( c_key && input.IsKeyDown( c_key ) && !client:IsTyping() ) then
 
-        draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( clrgray, 70 ) )
+        press = true
 
       end
 
       if key == "RMB" and input.IsMouseDown(MOUSE_RIGHT) then
 
-        draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( clrgray, 70 ) )
+        press = true
         
       end
 
       if key == "LMB" and input.IsMouseDown(MOUSE_LEFT) then
 
-        draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( clrgray, 70 ) )
+        press = true
         
+      end
+
+      if ( ( ( BREACH.Abilities.AbilityIcons[ i ].CooldownTime || 0 ) - CurTime() ) > 0 ) then
+        press = true
+      end
+
+      surface.SetDrawColor( color_white )
+      surface.SetMaterial( iconmaterial )
+      if press then
+        surface.DrawTexturedRect( 5, 5, 54, 54 )
+      else
+        surface.DrawTexturedRect( 0, 0, 64, 64 )
+      end
+
+      if press then
+        draw.RoundedBox( 0, 5, 5, 54, 54, ColorAlpha( clrgray, 70 ) )
       end
 
       if ( BREACH.Abilities && !BREACH.Abilities.AbilityIcons[ i ].Using || BREACH.Abilities && BREACH.Abilities.AbilityIcons[ i ].Forbidden ) then
@@ -244,7 +258,7 @@ function SWEP:ChooseAbility( table )
 
       elseif ( BREACH.Abilities.AbilityIcons[ i ].Forbidden ) then
 
-        if ( client:GetNClass() != "SCP973" ) then return end
+        if ( client:GetRoleName() != "SCP973" ) then return end
 
         local primary_wep = client:GetWeapon( "weapon_scp_973" )
 

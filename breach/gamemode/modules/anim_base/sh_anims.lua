@@ -1,3 +1,5 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/anim_base/sh_anims.lua
 local tblGestureAnimsToPlay = {
 
   1223,
@@ -100,3 +102,4 @@ function GM:DoChatGesture( ply, cmd, text )
   net.SendPVS( ply:GetPos() )
 
 end
+

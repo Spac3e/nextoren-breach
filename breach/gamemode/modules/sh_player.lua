@@ -491,7 +491,6 @@ function GroundPos( pos )
 	return pos
 
 end
-
 ---- Инвентарь
 
 net.Receive( "hideinventory", function()
@@ -2911,7 +2910,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end)
 
 			end
-		elseif ply:HaveSpecialAb(ROLES.ROLE_DZ) then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_DZCMD) then
 
 			ply:SetSpecialCD( CurTime() + 90 )
 		
@@ -2947,6 +2946,30 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			net.Start("Chaos_SpyAbility")
 			net.Send(ply)
+		elseif ply:HaveSpecialAb(ROLES.ROLE_Engi) then
+
+			if ply:GetSpecialMax() <= 0 then return end
+
+			if CLIENT then return end
+			ply:LagCompensation(true)
+			local DASUKADAIMNEEGO = util.TraceLine( {
+				start = ply:GetShootPos(),
+				endpos = ply:GetShootPos() + ply:GetAimVector() * 130,
+				filter = ply
+			} )
+			ply:LagCompensation(false)
+
+			if !DASUKADAIMNEEGO.Hit then
+				ply:RXSENDNotify("Туррель должнна быть на земле.")
+				ply:SetSpecialCD(CurTime() + 5)
+				return
+			end
+
+			local tur = ents.Create("ent_engineer_turret")
+			tur:SetPos(DASUKADAIMNEEGO.HitPos)
+			tur:SetOwner(ply)
+			tur:Spawn()
+			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
 
 		elseif ply:HaveSpecialAb(ROLES.ROLE_CULTSPEC) then
 

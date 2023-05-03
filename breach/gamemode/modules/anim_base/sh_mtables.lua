@@ -1,3 +1,5 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/anim_base/sh_mtables.lua
 local BREACH_GM = GM || GAMEMODE
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -25,6 +27,7 @@ local function custom_FindSequenceIDFromTable( str, tbl )
 
 end
 
+--[[
 if SERVER then
   util.AddNetworkString("WeaponChangeGesture")
 
@@ -34,7 +37,7 @@ if SERVER then
     ply:AddVCDSequenceToGestureSlot(GESTURE_SLOT_CUSTOM, ply:LookupSequence("ahl_holster_ar"), 0, true)
   end)
 end
-
+--]]
 
 function GenerateSCPTable( holdtype, player )
 
@@ -599,13 +602,7 @@ function BREACH_GM:MouthMoveAnimation( ply )
 
 	local flex = { plytable.HeadEnt:GetFlexIDByName( "Eyes" ), plytable.HeadEnt:GetFlexIDByName( "Mounth" ) }
 
-  local multiplier = 1/GetConVar("voice_scale"):GetFloat() 
-
-	local weight = ply:IsSpeaking() && !plytable.DisableMouthAnimation && math.min( ply:VoiceVolume() * multiplier * 6, 1 ) || 0
-
-  if ply:IsSuperAdmin() then
-    weight = weight * 5
-  end
+	local weight = ply:IsSpeaking() && !plytable.DisableMouthAnimation && math.min( ply:VoiceVolume() * 6, 1 ) || 0
 
   if ( flex[ 1 ] ) then
 
@@ -741,11 +738,9 @@ function GM:PlayerWeaponChanged( client, weapon, force )
 
   if ( weptable.CW20Weapon && !weptable.CW20Weapon && !force ) then return end
 
-  local stored_wep = weapons.GetStored( weapon:GetClass() )
-
   local is_scp = client:GetModel():find( "/scp/" ) && client:GTeam() == TEAM_SCP
   
-  if ( !plytable.DrawAnimation && !is_scp && stored_wep ) then
+  if ( !plytable.DrawAnimation && !is_scp ) then
 
     plytable.DrawAnimation = true
     client:AddVCDSequenceToGestureSlot( GESTURE_SLOT_CUSTOM, 3289, 0, true )
@@ -766,7 +761,7 @@ function GM:PlayerWeaponChanged( client, weapon, force )
   if ( !holdType ) then return end
 
   if ( plytable.AnimationHoldType && plytable.AnimationHoldType == holdType && plytable.Old_Model == client:GetModel() ) then return end
-
+  --[[
 
   if SERVER then
       net.Start("GestureClientNetworking")
@@ -775,7 +770,7 @@ function GM:PlayerWeaponChanged( client, weapon, force )
           net.WriteUInt(GESTURE_SLOT_CUSTOM, 3)
           net.WriteBool(true)
         net.Broadcast()
-  end
+  end]]
 
   plytable.AnimationHoldType = holdType
   plytable.AnimationRole = client:GetNClass()
@@ -784,8 +779,8 @@ function GM:PlayerWeaponChanged( client, weapon, force )
   plytable.GestureAnimationWalk = nil
   plytable.GestureAnimationRun  = nil
 
-  local animations_table = animations_table
-  local is_scp = client:GetModel():find( "/scp/" ) && client:GTeam() == TEAM_SCP
+  local animations_table
+
   if ( !is_scp ) then
 
     animations_table = AnimationTableGetTable( client, client:GetModel() )[ plytable.AnimationHoldType ]
@@ -1337,3 +1332,4 @@ function BREACH_GM:DoAnimationEvent(player, event, data)
 	return nil
 
 end
+

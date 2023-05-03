@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: [RXSEND] Breach 2.6.0
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_076.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -10,548 +10,501 @@ File Path:   gamemodes/breach/entities/weapons/weapon_scp_076.lua
                                      /____/                                 /____/_____/                                  
 --]]
 
-AddCSLuaFile()
-
-SWEP.Base 					= "weapon_scp_base"
-SWEP.PrintName				= "SCP-076-2"
-
-SWEP.ViewModel				= "models/weapons/tfa_l4d2/c_kf2_katana.mdl"
-SWEP.WorldModel				= "models/weapons/tfa_l4d2/w_kf2_katana.mdl"
-
-SWEP.HoldType 				= "katana"
-
-
-
-SWEP.NextPrimary = 0
+SWEP.Category = "BREACH SCP"
+SWEP.PrintName = "SCP-076-2"
+SWEP.Base = "breach_scp_base"
+SWEP.Slot = 1
+SWEP.SlotPos = 1
+SWEP.DrawCrosshair = false
+SWEP.ViewModel        = "models/weapons/tfa_l4d2/c_kf2_katana.mdl"
+SWEP.WorldModel       = "models/weapons/tfa_l4d2/w_kf2_katana.mdl"
 SWEP.UseHands = true
+SWEP.ViewModelFOV = 65
 
-BREACH.Abilities = BREACH.Abilities || {}
+SWEP.UnDroppable = true
+SWEP.droppable = false
 
-local clrgray = Color( 198, 198, 198 )
-local clrgray2 = Color( 180, 180, 180 )
-local clrred = Color( 255, 0, 0 )
-local clrred2 = Color( 198, 0, 0 )
-local blackalpha = Color( 0, 0, 0, 180 )
+SWEP.Pos = Vector( -17,0,-3 )
+SWEP.Ang = Angle( -90,-160,-90 )
 
-local function ForbidTalant()
+SWEP.IdlePos = Vector( -14,0,-3 )
+SWEP.IdleAng = Angle( -105,-160,-115 )
 
-  local is_forbidden = net.ReadBool()
-  local talant_id = net.ReadUInt( 4 )
-
-  if ( !IsValid( BREACH.Abilities ) || #BREACH.Abilities.Buttons == 0 ) then return end
-
-  LocalPlayer():GetActiveWeapon().AbilityIcons[ talant_id ].Forbidden = is_forbidden
-
-
-end
-net.Receive( "ForbidTalant", ForbidTalant )
-
-local function ShowAbilityDesc( name, text, cooldown, x, y )
-
-  if ( IsValid( BREACH.Abilities.TipWindow ) ) then
-
-    BREACH.Abilities.TipWindow:Remove()
-
-  end
-
-  surface.SetFont( "HUDFont" )
-  local stringwidth, stringheight = surface.GetTextSize( text )
-  BREACH.Abilities.TipWindow = vgui.Create( "DPanel" )
-  BREACH.Abilities.TipWindow:SetAlpha( 0 )
-  BREACH.Abilities.TipWindow:SetPos( x + 10, ScrH() - 80  )
-  BREACH.Abilities.TipWindow:SetSize( 180, stringheight + 76 )
-  BREACH.Abilities.TipWindow:SetText( "" )
-  BREACH.Abilities.TipWindow:MakePopup()
-  BREACH.Abilities.TipWindow.Paint = function( self, w, h )
-
-    if ( !vgui.CursorVisible() ) then
-
-      self:Remove()
-
-    end
-
-    self:SetPos( gui.MouseX() + 15, gui.MouseY() )
-    if ( self && self:IsValid() && self:GetAlpha() <= 0 ) then
-
-      self:SetAlpha( 255 )
-
-    end
-    DrawBlurPanel( self )
-    draw.OutlinedBox( 0, 0, w, h, 2, clrgray2 )
-    drawMultiLine( name, "HUDFont", w, 16, 5, 0, clrred, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-
-    local namewidth, nameheight = surface.GetTextSize( name )
-    drawMultiLine( text, "HUDFont", w + 32, 16, 5, nameheight * 1.4, clrgray, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-
-    local line_height = nameheight * 1.15
-
-    surface.DrawLine( 0, line_height, w, line_height )
-    surface.DrawLine( 0, line_height + 1, w, line_height + 1 )
-
-    draw.SimpleTextOutlined( cooldown, "HUDFont", w - 8, 3, clrred2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT, 1, blackalpha )
-
-  end
-
-end
-
-local scp_team_index = TEAM_SCP
-local darkgray = Color( 105, 105, 105 )
-
-function SWEP:ChooseAbility( table )
-
-  if ( IsValid( BREACH.Abilities ) ) then
-
-    BREACH.Abilities:Remove()
-
-  end
-
-  BREACH.Abilities = vgui.Create( "DPanel" )
-  BREACH.Abilities.AbilityIcons = table
-  BREACH.Abilities:SetPos( ScrW() / 2 - ( 32 * #BREACH.Abilities.AbilityIcons ), ScrH() / 1.2 )
-  BREACH.Abilities:SetSize( 64 * #BREACH.Abilities.AbilityIcons, 64 )
-  BREACH.Abilities:SetText( "" )
-  BREACH.Abilities.SCP_Name = LocalPlayer():GetNClass()
-  BREACH.Abilities.Alpha = 1
-  BREACH.Abilities.Paint = function( self, w, h )
-
-    local client = LocalPlayer()
-
-    if ( client:Health() <= 0 || client:GetNClass() != self.SCP_Name ) then
-
-      self:Remove()
-
-    end
-
-    if ( self.Alpha != 255 ) then
-
-      self.Alpha = math.Approach( self.Alpha, 255, RealFrameTime() * 512 )
-      self:SetAlpha( self.Alpha )
-
-    end
-
-    surface.SetDrawColor( color_white )
-    draw.OutlinedBox( 0, 0, w, h, 4, color_black )
-
-  end
-
-  BREACH.Abilities.OnRemove = function()
-
-    gui.EnableScreenClicker( false )
-
-    if ( IsValid( BREACH.Abilities ) && IsValid( BREACH.Abilities.TipWindow ) ) then
-
-      BREACH.Abilities.TipWindow:Remove()
-
-    end
-
-  end
-
-  for i = 1, #BREACH.Abilities.AbilityIcons do
-
-    BREACH.Abilities.Buttons = BREACH.Abilities.Buttons || {}
-    BREACH.Abilities.Buttons[ i ] = vgui.Create( "DButton", BREACH.Abilities )
-    BREACH.Abilities.Buttons[ i ]:SetPos( 64 * ( i - 1 ), 0 )
-    BREACH.Abilities.Buttons[ i ]:SetSize( 64, 64 )
-    BREACH.Abilities.Buttons[ i ]:SetText( "" )
-    BREACH.Abilities.Buttons[ i ].ID = iForbidTalant
-    BREACH.Abilities.Buttons[ i ].OnCursorEntered = function( self )
-
-      ShowAbilityDesc( BREACH.Abilities.AbilityIcons[ i ].Name, BREACH.Abilities.AbilityIcons[ i ].Description, BREACH.Abilities.AbilityIcons[ i ].Cooldown, gui.MouseX(), ( gui.MouseY() || 5 ) )
-
-    end
-    BREACH.Abilities.Buttons[ i ].OnCursorExited = function()
-
-      if ( BREACH.Abilities.TipWindow && BREACH.Abilities.TipWindow:Remove() ) then
-
-        BREACH.Abilities.TipWindow:Remove()
-
-      end
-
-    end
-
-    BREACH.Abilities.Buttons[ i ].DoClick = function()  end
-
-    local iconmaterial = Material( BREACH.Abilities.AbilityIcons[ i ].Icon )
-    local key = BREACH.Abilities.AbilityIcons[ i ].KEY
-    local c_key
-
-    if ( isnumber( key ) ) then
-
-      c_key = key
-      key = string.upper( input.GetKeyName( key ) )
-
-    end
-
-    surface.SetFont( "HUDFont" )
-    local text_sizew = surface.GetTextSize( key ) + 16
-
-    BREACH.Abilities.Buttons[ i ].Paint = function( self, w, h )
-
-      local client = LocalPlayer()
-
-      if ( !BREACH.Abilities || !BREACH.Abilities.AbilityIcons[ i ] ) then
-
-        self:Remove()
-
-        return
-      end
-
-      surface.SetDrawColor( color_white )
-      surface.SetMaterial( iconmaterial )
-      surface.DrawTexturedRect( 0, 0, 64, 64 )
-
-      if ( c_key && input.IsKeyDown( c_key ) && !client:IsTyping() ) then
-
-        draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( clrgray, 70 ) )
-
-      end
-
-      if ( BREACH.Abilities && !BREACH.Abilities.AbilityIcons[ i ].Using || BREACH.Abilities && BREACH.Abilities.AbilityIcons[ i ].Forbidden ) then
-
-        draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( darkgray, 190 ) )
-
-      end
-
-      draw.SimpleTextOutlined( key, "HUDFont", w - ( text_sizew / 4 ), 4, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT, 1.5, color_black )
-
-      if ( self.PaintOverride && isfunction( self.PaintOverride ) ) then
-
-        self:PaintOverride( w, h )
-
-        return
-      end
-
-      if ( ( ( BREACH.Abilities.AbilityIcons[ i ].CooldownTime || 0 ) - CurTime() ) > 0 ) then
-
-        if ( BREACH.Abilities.AbilityIcons[ i ].Using ) then
-
-          BREACH.Abilities.AbilityIcons[ i ].Using = false
-
-        end
-
-        draw.SimpleTextOutlined( math.Round( BREACH.Abilities.AbilityIcons[ i ].CooldownTime - CurTime() ), "HUDFont", 32, 32, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1.5, color_black )
-
-      elseif ( BREACH.Abilities.AbilityIcons[ i ].Forbidden ) then
-
-        if ( client:GetNClass() != "SCP973" ) then return end
-
-        local primary_wep = client:GetWeapon( "weapon_scp_973" )
-
-        if ( !( primary_wep && primary_wep:IsValid() ) ) then return end
-
-        local number_cooldown = tonumber( BREACH.Abilities.AbilityIcons[ i ].Cooldown )
-        if ( ( primary_wep:GetRage() || 0 ) < number_cooldown ) then
-
-          local value = math.Round( number_cooldown - primary_wep:GetRage() )
-          draw.SimpleText( value, "HUDFont", 32, 32, ColorAlpha( color_white, 210 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-
-        end
-
-      else
-
-        if ( !BREACH.Abilities.AbilityIcons[ i ].Using ) then
-
-          BREACH.Abilities.AbilityIcons[ i ].Using = true
-
-        end
-
-      end
-
-    end
-
-  end
-
-end
-
-function SWEP:OnRemove()
-
-  if ( self.RemoveCustomFunc && isfunction( self.RemoveCustomFunc ) ) then
-
-    self.RemoveCustomFunc()
-
-  end
-
-end
-
-function SWEP:Holster()
-
-  if ( self.RemoveCustomFunc && isfunction( self.RemoveCustomFunc ) ) then
-
-    self.RemoveCustomFunc()
-
-  end
-
-end
-
-function SWEP:DrawHUD()
-
-  if ( !IsValid( BREACH.Abilities ) ) then
-
-    self:ChooseAbility( self.AbilityIcons )
-
-  end
-
-  if ( input.IsKeyDown( KEY_F3 ) && ( self.NextPush || 0 ) <= CurTime() ) then
-
-    self.NextPush = CurTime() + .5
-    gui.EnableScreenClicker( !vgui.CursorVisible() )
-
-  end
-
-end
+SWEP.HoldType         = "katana"
 
 SWEP.AbilityIcons = {
 
-  [ 1 ] = {
+  {
 
-    Name = "Защитная стойка",
-    Description = "Вы переходите в защитную стойку.",
-    Cooldown = 10,
-    CooldownTime = 0,
-    KEY = _G[ "KEY_R" ],
-    Icon = "nextoren/gui/special_abilities/scp_076_secondary.png"
-
-  },
-  [ 2 ] = {
-
-    Name = "Мгновенный рывок",
-    Description = "Вы кидаете сюрикен",
-    Cooldown = 25,
-    CooldownTime = 0,
-    activetime = 10,
-    KEY = "RMB",
-    Icon = "nextoren/gui/special_abilities/scp_076_throw.png"
+    [ "Name" ] = "Special",
+    [ "Description" ] = "Вы делаете специальную атаку которая убивает всех.",
+    [ "Cooldown" ] = 100,
+    [ "CooldownTime" ] = 0,
+    [ "KEY" ] = _G["KEY_Q"],
+    [ "Using" ] = false,
+    [ "Icon" ] = "shaky/scp062/special_attack.png",
+    [ "Abillity" ] = nil
 
   },
-  [ 3 ] = {
 
-    Name = "",
-    Description = "Вы отражаете атаки",
-    Cooldown = 25,
-    CooldownTime = 0,
-    activetime = 10,
-    KEY = "RMB",
-    Icon = "nextoren/gui/special_abilities/scp_076_throw.png"
+  {
+
+    [ "Name" ] = "Shuriken",
+    [ "Description" ] = "Вы бросаете сюрикен.",
+    [ "Cooldown" ] = 50,
+    [ "CooldownTime" ] = 0,
+    [ "KEY" ] = "RMB",
+    [ "Using" ] = false,
+    [ "Icon" ] = "shaky/scp062/shuriken.png",
+    [ "Abillity" ] = nil
 
   },
-  [ 4 ] = {
 
-    Name = "Ярость",
-    Description = "Вы переходите в ярость",
-    Cooldown = 320,
-    CooldownTime = 0,
-    KEY = _G[ "KEY_H" ],
-    Icon = "nextoren/gui/special_abilities/scp_076_run.png"
+  {
 
-  }
+    [ "Name" ] = "speed",
+    [ "Description" ] = "Вы ускоряетесь и атакуете значительно быстрее в течении 15 секунд.",
+    [ "Cooldown" ] = 80,
+    [ "CooldownTime" ] = 0,
+    [ "KEY" ] = _G["KEY_R"],
+    [ "Using" ] = false,
+    [ "Icon" ] = "shaky/scp062/speed.png",
+    [ "Abillity" ] = nil
+
+  },
 
 }
 
 function SWEP:SetupDataTables()
-	self:NetworkVar("Bool", 0, "Charging");
-end;
 
-function SWEP:Initialize()
-	self:SendWeaponAnim( ACT_VM_DRAW )
-	self.NextPrimary = CurTime() + 1
-  self:SetHoldType(self.HoldType)
-	self:EmitSound( "weapons/l4d2_kf2_katana/knife_deploy.wav" )
-	local anim_katana = "wos_phalanx_unsheathe_hip"
+  self:NetworkVar("Bool", 0, "InSeq")
+  
+  self:SetInSeq(false)
 
-  self.Owner.GestureSeqForced = anim_katana
-  time = self.Owner:SequenceDuration(anim_katana)
-  timer.Simple(.3, function()
-    if (IsValid(self.Owner)) then
-      self.Owner.GestureSeqForced = nil
-    end
-  end)
 end
+
+function SWEP:AnimationsChange(rage)
+
+  if ( SERVER ) then
+
+    net.Start( "ChangeAnimations" )
+
+      net.WriteEntity( self.Owner )
+      net.WriteBool( rage )
+
+    net.Broadcast()
+
+  end
+
+  if ( rage ) then
+
+    self.Owner.SafeModelWalk = self.Owner:LookupSequence( "wos_phalanx_r_run" )
+    self.Owner.SafeRun = self.Owner:LookupSequence( "wos_phalanx_r_run" )
+
+  else
+
+    self.Owner.SafeModelWalk = self.Owner:LookupSequence( "s_run" )
+    self.Owner.SafeRun = self.Owner:LookupSequence( "s_run" )
+
+  end
+
+end
+
+function SWEP:CreateWorldModel()
+
+  if ( !self.WModel ) then
+
+    self.WModel = ClientsideModel( self.WorldModel, RENDERGROUP_OPAQUE )
+    self.WModel:SetNoDraw( true )
+
+  end
+
+  return self.WModel
+
+end
+
+function SWEP:DrawWorldModel()
+
+  local pl = self:GetOwner()
+
+  if ( pl && pl:IsValid() ) and !self:GetInSeq() then
+
+    local bone = self.Owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
+    if ( !bone ) then return end
+
+    local wm = self:CreateWorldModel()
+    local pos, ang = self.Owner:GetBonePosition( bone )
+
+    if ( wm && wm:IsValid() ) then
+
+      local use_ang = self.Ang
+      local use_pos = self.Pos
+
+      if self.Owner:GetVelocity():Length2DSqr() <= .25 then
+
+        use_ang = self.IdleAng
+        use_pos = self.IdlePos
+
+      end
+
+      ang:RotateAroundAxis( ang:Right(), use_ang.p )
+      ang:RotateAroundAxis( ang:Forward(), use_ang.y )
+      ang:RotateAroundAxis( ang:Up(), use_ang.r )
+
+      wm:SetRenderOrigin( pos + ang:Right() * use_pos.x + ang:Forward() * use_pos.y + ang:Up() * use_pos.z )
+      wm:SetRenderAngles( ang )
+      wm:DrawModel()
+
+    end
+
+  else
+
+    self:SetRenderOrigin( nil )
+    self:SetRenderAngles( nil )
+    self:DrawModel()
+
+  end
+
+end
+
+local sequence = "wos_judge_h_left_t3"
 
 function SWEP:Deploy()
-end
 
-function SWEP:CancelBlink()
-	self:SetCharging(false);
-	self.Owner:SetNWBool("showBlink", false);
-end;
+  self:SetHoldType( self.HoldType )
 
-function SWEP:GetEyeHeight()
-	return self.Owner:EyePos() - self.Owner:GetPos();
-end;
+  if ( SERVER ) then
 
-function SWEP:Flashcut()
+    self.Owner.forward_076 = false
 
-  if ( ( self.NextCall || 0 ) >= CurTime() ) then return end
-	
-  self.NextCall = CurTime() + 1
-  
-  self.Owner.GestureSeqForced = "wos_phalanx_unsheathe_hip"
-  time = self.Owner:SequenceDuration("wos_phalanx_unsheathe_hip")
-  timer.Simple(.3, function()
-    if (IsValid(self.Owner)) then
-      self.Owner.GestureSeqForced = nil
-    end
-  end)
-
-  timer.Create("Flashcut", 1, 1, function()
-
-    local speed = 4000;
-    local bFoundEdge = false;
-  
-    self.Owner:SetNWBool("showBlink", false);
-  
-    local hullTrace = util.TraceHull({
-      start = self.Owner:EyePos(),
-      endpos = self.Owner:EyePos() + self.Owner:EyeAngles():Forward() * 4000,
-      filter = self.Owner,
-      mins = Vector(-16, -16, 0),
-      maxs = Vector(16, 16, 9)
-    });
-  
-    local groundTrace = util.TraceEntity({
-      start = hullTrace.HitPos + Vector(0, 0, 1),
-      endpos = hullTrace.HitPos - self:GetEyeHeight(),
-      filter = self.Owner
-    }, self.Owner);
-  
-    local edgeTrace;
-  
-    if (hullTrace.Hit and hullTrace.HitNormal.z <= 0) then
-      local ledgeForward = Angle(0, hullTrace.HitNormal:Angle().y, 0):Forward();
-      edgeTrace = util.TraceEntity({
-        start = hullTrace.HitPos - ledgeForward * 33 + Vector(0, 0, 40),
-        endpos = hullTrace.HitPos - ledgeForward * 33,
-        filter = self.Owner
-      }, self.Owner);
-  
-      if (edgeTrace.Hit and !edgeTrace.AllSolid) then
-        local clearTrace = util.TraceHull({
-          start = hullTrace.HitPos,
-          endpos = hullTrace.HitPos + Vector(0, 0, 35),
-          mins = Vector(-16, -16, 0),
-          maxs = Vector(16, 16, 1),
-          filter = self.Owner
-        });
-  
-        bFoundEdge = !clearTrace.Hit;
-      end;
-    end;
-  
-    if (!bFoundEdge and groundTrace.AllSolid) then
-      self:CancelBlink();
-      return;
-    end;
-  
-    local endPos = bFoundEdge and edgeTrace.HitPos or groundTrace.HitPos;
-    local travelTime = (endPos - self.Owner:EyePos()):Length() / (speed);
-  
-    self.Owner:SetPos(endPos);
-
-    self.Owner.GestureSeqForced = "wos_phalanx_a_s1_t1"
-    time = self.Owner:SequenceDuration("wos_phalanx_a_s1_t1")
-    timer.Simple(.3, function()
-      if (IsValid(self.Owner)) then
-        self.Owner.GestureSeqForced = nil
+    hook.Add( "SetupMove", "SCP_076_move_forward", function(ply, mv, cu)
+      if ply.forward_076 and ply:GetNClass() == SCP076 then
+        mv:SetForwardSpeed(115)
+        mv:SetSideSpeed(0)
+        mv:SetUpSpeed(0)
       end
     end)
 
-    local pos = self.Owner:GetShootPos()
-    local aim = self.Owner:GetAimVector()
-    local dist = 75
-  
-    local tr = util.TraceHull( {
-      start = pos,
-      endpos = pos + aim * dist,
-      filter = self.Owner,
-      mask = MASK_SHOT_HULL,
-      mins = Vector( -10, -5, -5 ),
-      maxs = Vector( 10, 5, 5 )
-    } )
-    if tr.Hit then
-      local ent = tr.Entity
-      if ent:IsPlayer() then
-        if ent:GTeam() != TEAM_SPEC and ent:GTeam() != TEAM_SCP then
-          self:EmitSound( "weapons/l4d2_kf2_katana/melee_katana_0"..math.random(1,3)..".wav" )
-          if SERVER and ent:GTeam() != TEAM_SCP then
-            local dmg = math.random( ent:GetMaxHealth() * 2 )
-            local dist = 75
-          
-            local damage = DamageInfo()
-            damage:SetDamage( dmg )
-            damage:SetDamageType( DMG_SLASH )
-            damage:SetAttacker( self.Owner )
-            damage:SetInflictor( self )
-            damage:SetDamageForce( aim * 300 )
+    hook.Add( "PlayerButtonDown", "SCP_076_abil", function( ply, butt )
 
-            ent:TakeDamageInfo( damage )
+      if ( butt == KEY_Q ) then
+
+        if ( ply:GetNClass() == "SCP076" ) then
+
+          if self.AbilityIcons[1].CooldownTime <= CurTime() then
+
+            self:Cooldown(1, self.AbilityIcons[1].Cooldown)
+
+            if self.AbilityIcons[2].CooldownTime < CurTime() + 3 then
+
+              self:Cooldown(2, 3)
+
+            end
+
+            ply.forward_076 = true
+
+            self:SetInSeq(true)
+
+            self.noattack = true
+
+            ply:SetForcedAnimation(sequence, ply:SequenceDuration(ply:LookupSequence(sequence)), nil, function()
+              self.killmode = false
+              ply:SetRunSpeed(ply.rememberspeed)
+              ply:SetWalkSpeed(ply.rememberspeed)
+              ply:SetNoCollideWithTeammates(false)
+              self.noattack = false
+            end)
+
+            net.Start("ThirdPersonCutscene2")
+              net.WriteUInt(2, 4)
+              net.WriteBool(false)
+            net.Send(ply)
+
+            timer.Create("slash_076_"..ply:SteamID64(), 1.1, 1, function()
+              ply.forward_076 = false
+              local pos = ply:GetPos()
+              local ang = ply:GetAngles()
+             -- ang.r = 0
+              local endpos = ply:EyePos() + ang:Forward() * 150
+              endpos.z = ply:GetPos().z
+              local trace = util.TraceLine({
+                filter = player.GetAll(),
+                start = ply:GetPos(),
+                endpos = endpos
+              })
+              self.killmode = true
+              ply.rememberspeed = ply:GetRunSpeed()
+              ply:SetRunSpeed(0)
+              ply:SetWalkSpeed(0)
+              ply:SetNoCollideWithTeammates(true)
+              ply:SetVelocity(ang:Forward()*3000)
+            end)
+
           end
+
+
         end
+
       end
+
+    end )
+
+  end
+
+  if ( !IsFirstTimePredicted() ) then
+
+    return
+
+  else
+
+    self.ShouldDraw = nil
+    self.HolsterDelay = nil
+
+  end
+
+  if ( !self.OldWeapon || self.Old_Weapon && self.OldWeapon != self.Owner.Old_Weapon:GetClass() ) then
+
+    if ( self.Owner.Old_Weapon && self.Owner.Old_Weapon:IsValid() && self.Owner:HasWeapon( self.Owner.Old_Weapon:GetClass() ) ) then
+
+      self.OldWeapon = self.Owner.Old_Weapon:GetClass()
+
     end
-    
-    self.Owner:LagCompensation( false )
-    
-    self:SendWeaponAnim( table.Random({ACT_VM_MISSLEFT, ACT_VM_MISSRIGHT}) )
 
+  end
 
+  self.IdleDelay = CurTime() + 1.46
+  self:PlaySequence( "deploy" )
 
-  end)
+ -- self:EmitSound( "weapons/universal/uni_weapon_draw_02.wav", 75, 80, 1, CHAN_WEAPON )
+  timer.Simple(0.55, function() self:EmitSound("weapons/l4d2_kf2_katana/knife_deploy.wav", 75, 80, 1, CHAN_WEAPON ) end)
+
+  timer.Simple( 0, function()
+
+    if ( self && self:IsValid() ) then
+
+      self.ShouldDraw = true
+
+    end
+
+  end )
+
+end
+
+local gestures = {
+  "l4d_katana_swing_w2e_layer",
+  "wos_phalanx_h_s1_t2",
+  "wos_phalanx_b_s2_t2"
+}
+
+local cycles = {
+  ["wos_phalanx_h_s1_t2"] = 0.3,
+}
+
+local maxs = Vector(16,16,72)
+local mins = Vector(-16,-16,0)
+
+function SWEP:PrimaryAttack()
+
+  if self.Owner.ForceAnimSequence then return end
+
+  if !IsFirstTimePredicted() then return end
+
+  if SERVER then
+    if self.fasterattack then
+      self:SetNextPrimaryFire(CurTime() + 0.25)
+    else
+      self:SetNextPrimaryFire(CurTime() + 0.6)
+    end
+  end
+
+  self.Owner:LagCompensation(true)
+  local trace = util.TraceHull({
+    start = self.Owner:GetShootPos(),
+    endpos = self.Owner:GetShootPos() + self.Owner:EyeAngles():Forward()*75,
+    filter = self.Owner,
+    ignoreworld = true,
+    mask = MASK_SHOT_HULL,
+    mins = mins,
+    maxs = maxs
+  })
+  self.Owner:LagCompensation(false)
+  local target = trace.Entity
+
+ -- if SERVER then
+
+    if ( target && target:IsValid() && target:IsPlayer() && target:GTeam() != TEAM_SCP ) then
+
+      if SERVER then
+
+        local dmg = DamageInfo()
+
+        dmg:SetDamage(target:GetMaxHealth()*.35)
+
+        dmg:SetDamageType(DMG_SLASH)
+        dmg:SetInflictor(self)
+        dmg:SetAttacker(self.Owner)
+        dmg:SetDamageForce(200 * self.Owner:GetAimVector())
+
+        target:TakeDamageInfo(dmg)
+
+      else
+
+        local effectData = EffectData()
+        effectData:SetOrigin( trace.HitPos )
+        effectData:SetEntity( target )
+        util.Effect( "BloodImpact", effectData )
+
+      end
+
+    end
+  --end
+
+  local sequence = math.random(2, 5)
+  self.IdlePlaying = false
+  self.IdleDelay = CurTime() + 1
+  if SERVER then self:PlaySequence( sequence ) end
+
+  if SERVER then
+    if self.Owner:GetEyeTrace().Hit and (!IsValid(trace.Entity) or !trace.Entity:IsPlayer()) and self.Owner:GetEyeTrace().HitPos:DistToSqr(self.Owner:GetShootPos()) < 9300 then
+      self.Owner:EmitSound("weapons/l4d2_kf2_katana/katana_impact_world"..math.random(1,2)..".wav")
+    elseif IsValid(target) and target:IsPlayer() and target:GTeam() != TEAM_SCP then
+      self.Owner:EmitSound("weapons/l4d2_kf2_katana/melee_katana_0"..math.random(1,3)..".wav")
+    else
+      self.Owner:EmitSound("weapons/l4d2_kf2_katana/katana_swing_miss"..math.random(1,2)..".wav")
+    end
+  end
+
+  if SERVER then
+    local cycle = 0
+    local gesture = gestures[math.random(1,#gestures)]
+    if cycles[gesture] then cycle = cycles[gesture] end
+    self.Owner:PlayGestureSequence(self.Owner:LookupSequence(gesture), GESTURE_SLOT_ATTACK_AND_RELOAD, nil, cycle)
+  end
+
+end
+
+function SWEP:SecondaryAttack()
+
+  if self.Owner.ForceAnimSequence then return end
+
+  self:SetNextSecondaryFire(CurTime() + self.AbilityIcons[2].Cooldown)
+  self.AbilityIcons[2].CooldownTime = CurTime() + self.AbilityIcons[2].Cooldown
+
+  if SERVER then
+    self:SetNoDraw(true)
+    self.Owner:PlayGestureSequence(self.Owner:LookupSequence("wos_phalanx_unsheathe_hip"), GESTURE_SLOT_CUSTOM)
+   -- self.Owner:SetNWEntity("NTF1Entity", self.Owner)
+    timer.Create("throw", 0.6, 1, function()
+      local current_angles = self.Owner:GetAngles()
+      local projectile = ents.Create( "ent_scp_shuriken" )
+      projectile:SetOwner( self.Owner )
+      projectile:SetPos( self.Owner:GetShootPos() + current_angles:Forward() * 48 )
+      projectile:SetAngles( current_angles )
+      projectile:SetVelocity( self.Owner:GetAimVector() * 2100 )
+      projectile:SetGravity( .05 )
+      projectile:Spawn()
+      local phy = projectile:GetPhysicsObject()
+      if IsValid(phy) then
+        phy:SetVelocity(self.Owner:EyeAngles():Forward()*100)
+      end
+      timer.Simple(0.7, function()
+        self:SetNoDraw(false)
+        --self.Owner:SetNWEntity("NTF1Entity", NULL)
+      end)
+    end)
+  end
 
 end
 
 function SWEP:Reload()
-  self.Owner:SelectWeapon("weapon_scp_076_defend")
+  if self.Owner.ForceAnimSequence then return end
+  if self.AbilityIcons[3].CooldownTime > CurTime() then return end
+    self.AbilityIcons[3].CooldownTime = CurTime() + self.AbilityIcons[3].Cooldown
+    if self.AbilityIcons[2].CooldownTime < CurTime() + 15 then
+      self.AbilityIcons[2].CooldownTime = CurTime() + 15
+      self:SetNextSecondaryFire(CurTime() + 15)
+    end
+    if self.AbilityIcons[1].CooldownTime < CurTime() + 15 then
+      self.AbilityIcons[1].CooldownTime = CurTime() + 15
+    end
+    self:AnimationsChange(true)
+    self.Owner.rememberspeed = self.Owner:GetWalkSpeed()
+    self.Owner:SetWalkSpeed(self.Owner.rememberspeed + 100)
+    self.Owner:SetRunSpeed(self.Owner:GetWalkSpeed())
+    local savedmodifier = self.Owner.DamageModifier
+    if SERVER then
+      self.Owner.DamageModifier = math.Max(savedmodifier - 0.3, 0.1)
+    end
+    self.fasterattack = true
+    if SERVER then
+      net.Start("ThirdPersonCutscene2")
+        net.WriteUInt(9, 4)
+        net.WriteBool(false)
+      net.Send(self.Owner)
+    end
+    timer.Simple(9, function()
+      self.fasterattack = false
+      self.Owner.DamageModifier = savedmodifier
+      self.Owner:SetWalkSpeed(self.Owner.rememberspeed)
+      self.Owner:SetRunSpeed(self.Owner:GetWalkSpeed())
+      self:AnimationsChange(false)
+    end)
 end
 
-function SWEP:SecondaryAttack()
-  self:Flashcut()
+function SWEP:GetPrimaryAmmoType()
+  return SHOTGUN_AMMO
 end
 
-function SWEP:Holster()
-  timer.Remove("Flashcut")
-  BREACH.Abilities:Remove()
+function SWEP:Think()
+
+  if SERVER then
+
+    if self.killmode and self.Owner:Health() > 0 and self.Owner:Alive() then
+      local Ents = ents.FindInSphere(self.Owner:GetPos(), 100)
+
+      for _, ply in ipairs(Ents) do
+        if ply and ply:IsValid() and ply:IsLineOfSightClear(self.Owner:GetPos()) and ply:IsPlayer() and ply:GTeam() != TEAM_DZ and ply:Health() > 0 and ply:Alive() and ply:GTeam() != TEAM_SCP and ply:GTeam() != TEAM_SPEC then
+        
+          local dmginfo = DamageInfo()
+          dmginfo:SetDamage(210312)
+          dmginfo:SetDamageForce(Vector(0,0,0))
+          dmginfo:SetInflictor(self)
+          dmginfo:SetAttacker(self.Owner)
+          ply.forceremovehead = true
+          ply:TakeDamageInfo(dmginfo)
+          sound.Play("weapons/l4d2_kf2_katana/melee_katana_0"..math.random(1,3)..".wav", ply:GetPos(), 45, 100, 100)
+         -- ply:EmitSound("weapons/l4d2_kf2_katana/melee_katana_0"..math.random(1,3)..".wav")
+
+        end
+      end
+
+    end
+
+  end
+
+  if ( ( self.IdleDelay || 0 ) < CurTime() && !self.IdlePlaying ) then
+
+    self.IdlePlaying = true
+    self:PlaySequence( "idle", true )
+
+  end
+
 end
 
-function SWEP:PrimaryAttack()
-	if postround then return end
-	if self.NextPrimary > CurTime() then return end
-	self.NextPrimary = CurTime() + 1
-	self:EmitSound( "weapons/l4d2_kf2_katana/katana_swing_miss"..math.random(1,2)..".wav" )
-	self.Owner:LagCompensation( true )
-	
-	local pos = self.Owner:GetShootPos()
-	local aim = self.Owner:GetAimVector()
-	local dmg = math.random( 25, 35 )
-	local dist = 75
 
-	local damage = DamageInfo()
-	damage:SetDamage( dmg )
-	damage:SetDamageType( DMG_SLASH )
-	damage:SetAttacker( self.Owner )
-	damage:SetInflictor( self )
-	damage:SetDamageForce( aim * 300 )
+function SWEP:OnRemove()
 
-	local tr = util.TraceHull( {
-		start = pos,
-		endpos = pos + aim * dist,
-		filter = self.Owner,
-		mask = MASK_SHOT_HULL,
-		mins = Vector( -10, -5, -5 ),
-		maxs = Vector( 10, 5, 5 )
-	} )
-	if tr.Hit then
-		local ent = tr.Entity
-		if ent:IsPlayer() then
-			if ent:GTeam() != TEAM_SPEC and ent:GTeam() != TEAM_SCP then
-				self:EmitSound( "weapons/l4d2_kf2_katana/melee_katana_0"..math.random(1,3)..".wav" )
-				if SERVER and ent:GTeam() != TEAM_SCP then
-					ent:TakeDamageInfo( damage )
-				end
-			end
-		end
-	end
-	
-	self.Owner:LagCompensation( false )
-	self:SendWeaponAnim( table.Random({ACT_VM_MISSLEFT, ACT_VM_MISSRIGHT}) )
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
+  local players = player.GetAll()
+
+  for i = 1, #players do
+
+    local player = players[ i ]
+
+    if ( player && player:IsValid() && player:GetNClass() == "SCP0762" ) then return end
+
+  end
+
+  hook.Remove( "PlayerButtonDown", "SCP_076_abil" )
+  hook.Remove( "SetupMove", "SCP_076_move_forward" )
+
 end

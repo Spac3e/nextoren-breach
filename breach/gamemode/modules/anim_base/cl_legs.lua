@@ -1,4 +1,8 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/anim_base/cl_legs.lua
 Shaky_LEGS = Shaky_LEGS || {}
+
+local LegsEnabled = CreateClientConVar("br_legs", 1, true, false, "", 0, 1)
 
 Shaky_LEGS.legEnt = Shaky_LEGS.legEnt || nil
 Shaky_LEGS.playBackRate = 1
@@ -75,7 +79,7 @@ function META:ShouldDrawLegs()
 
   return Shaky_LEGS.legEnt && Shaky_LEGS.legEnt:IsValid() && self:Alive()
   && !self:InVehicle() && self:GetViewEntity() == self
-  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && GetConVar("breach_config_draw_legs"):GetBool()
+  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && LegsEnabled:GetBool()
 
 end
 
@@ -463,3 +467,4 @@ function Shaky_LEGS:RenderScreenspaceEffects()
 
 end
 hook.Add( "PostDrawOpaqueRenderables", "Legs_ScreenSpaceEffects", Shaky_LEGS.RenderScreenspaceEffects )
+

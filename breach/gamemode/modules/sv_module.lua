@@ -7,13 +7,7 @@ roundcount = 0
 MAPBUTTONS = table.Copy(BUTTONS)
 
 function GM:PlayerSpray( ply )
-	if ply:GTeam() == TEAM_SPEC then
-		return true
-	end
-	if ply:GetPos():WithinAABox( POCKETD_MINS, POCKETD_MAXS ) then
-		ply:PrintMessage( HUD_PRINTCENTER, "You can't use spray in Pocket Dimension" )
-		return true
-	end
+return ply:IsSuperAdmin()
 end
 
 function GetActivePlayers()
@@ -500,10 +494,11 @@ function SpawnNTFS()
 			break
 		end
 	end
-
+	if usechaos then
+		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
+	end
 	if !usechaos then
-		PrintMessage( HUD_PRINTTALK, "MTF Units NTF has entered the facility" )
-		BroadcastLua( 'surface.PlaySound( "EneteredFacility.ogg" )' )
+		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
 	end
 end
 

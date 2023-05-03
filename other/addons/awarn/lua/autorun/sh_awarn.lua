@@ -1,3 +1,15 @@
+--[[
+Server Name: [RXSEND] Breach 2.6.0
+Server IP:   46.174.50.119:27015
+File Path:   addons/[admin]_awarn2/lua/autorun/sh_awarn.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 CreateConVar( "awarn_kick", "1", bit.bxor( FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED ), "Allow AWarn to kick players who reach the kick threshold. 1=Enabled 0=Disabled" )

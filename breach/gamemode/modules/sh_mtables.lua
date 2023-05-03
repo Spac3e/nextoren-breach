@@ -1,3 +1,5 @@
+-- oink.industries
+-- lua source: gamemodes/breach/gamemode/modules/sh_mtables.lua
 local BREACH_GM = GM || GAMEMODE
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -1161,3 +1163,4 @@ function BREACH_GM:DoAnimationEvent(player, event, data)
 	return nil
 
 end
+

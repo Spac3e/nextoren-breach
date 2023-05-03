@@ -89,12 +89,12 @@ function SWEP:Heal( target )
 
     if ( target:Health() >= target:GetMaxHealth() ) then
 
-      --BREACH.Players:ChatPrint( self.Owner, true, true, target:GetName() .. " не нуждается в лечении." )
+      --BREACH.Players:ChatPrint( self.Owner, true, true, target:GetNamesurvivor() .. " не нуждается в лечении." )
 
       return
     end
 
-    --BREACH.Players:ChatPrint( target, true, true, "Подождите: " .. self.Owner:GetName() .. " пытается Вас вылечить." )
+    --BREACH.Players:ChatPrint( target, true, true, "Подождите: " .. self.Owner:GetNamesurvivor() .. " пытается Вас вылечить." )
 
     animation = "l4d_Heal_Friend_Standing"
 
@@ -102,16 +102,16 @@ function SWEP:Heal( target )
 
     self.Healing = true
 
-    self.Owner:BrProgressBar( "Лечение " .. target:GetName() .. "...", heal_time, self.ProgressIcon, target, false, function()
+    self.Owner:BrProgressBar( "Лечение " .. target:GetNamesurvivor() .. "...", heal_time, self.ProgressIcon, target, false, function()
 
       self.Heal_Left = self.Heal_Left - 1
 
       self.Healing = false
 
-      --BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetName() .. " восстановлено." )
-      --BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetName() )
+      --BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetNamesurvivor() .. " восстановлено." )
+      --BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetNamesurvivor() )
 
-      target:AnimatedHeal( target:GetMaxHealth() * self.PercentHeal, target:GetMaxHealth() )
+      target:SetHealth( math.min( target:Health() + target:GetMaxHealth() * self.PercentHeal, target:GetMaxHealth() ) )
 
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
@@ -141,7 +141,7 @@ function SWEP:Heal( target )
 
       BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Ваше здоровье было восстановлено." )
 
-      self.Owner:AnimatedHeal( self.Owner:GetMaxHealth() * self.PercentHeal )
+      self.Owner:SetHealth( math.min( self.Owner:Health() + self.Owner:GetMaxHealth() * self.PercentHeal, self.Owner:GetMaxHealth() ) )
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
       self.Heal_Left = self.Heal_Left - 1

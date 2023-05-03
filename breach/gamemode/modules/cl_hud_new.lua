@@ -3701,7 +3701,6 @@ function HelicopterStart()
 		end
 	end
 end
---concommand.Add( "helikop", HelicopterStart )
 
 local clr_gray = Color( 198, 198, 198 )
 local clr_green = Color( 0, 180, 0 )

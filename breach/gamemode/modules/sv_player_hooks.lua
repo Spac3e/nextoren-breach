@@ -129,6 +129,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 end
 
 function GM:PlayerDeathThink( ply )
+
 	if ply:GetNClass() == ROLES.ROLE_SCP076 and IsValid( SCP0761 ) then
 		if ply.n076nextspawn and ply.n076nextspawn < CurTime() then
 			--ply:SetSCP076()
@@ -152,7 +153,7 @@ function GM:PlayerNoClip( ply, desiredState )
 	if ply:GTeam() == TEAM_SPEC and desiredState == true then return true end
 end
 
-function GM:PlayerDeath( victim, inflictor, attacker )
+function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	victim:SetSpecialMax(0)
 	victim:SetNWString("AbilityName", "")
 	victim.AbilityTAB = nil
@@ -160,10 +161,13 @@ function GM:PlayerDeath( victim, inflictor, attacker )
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
-
 	net.Start( "957Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
+	net.Start( "Death_Scene" )
+	net.WriteString("Death_Scene", true)
+	net.Send( victim )
+
 
 	victim:SetModelScale( 1 )
 	if attacker:IsPlayer() then

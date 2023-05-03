@@ -127,7 +127,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 	}, nil, function( ply )
 	end )
 
-	RegisterSCP( "SCP082", "models/cultist/scp/scp_082_funny.mdl", "weapon_scp_082", {
+	RegisterSCP( "SCP082", "models/cultist/scp/scp_082.mdl", "weapon_scp_082", {
 		jump_power = 200,
 		prep_freeze = true,
 	}, {
