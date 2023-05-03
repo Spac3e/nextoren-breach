@@ -1,16 +1,3 @@
---[[
-Server Name: [RXSEND] Breach 2.6.0
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/entities/ent_weaponry.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
-
 AddCSLuaFile()
 
 ENT.Type        = "anim"
@@ -43,6 +30,43 @@ if ( SERVER ) then
 
   local Teams_Setup = {
 
+    [ ROLES.ROLE_GuardSci ] = {
+
+      weapon = { "cw_kk_ins2_cstm_mp7" },
+      ammo = {"cw_kk_ins2_cstm_mp7", 120},
+      bodygroups = "11001001",
+      damage_modifiers = {
+        ["HITGROUP_HEAD"] = 1,
+        ["HITGROUP_CHEST"] = 0.8,
+        ["HITGROUP_LEFTARM"] = 1,
+        ["HITGROUP_RIGHTARM"] = 1,
+        ["HITGROUP_STOMACH"] = 0.8,
+        ["HITGROUP_GEAR"] = 0.8,
+        ["HITGROUP_LEFTLEG"] = 1,
+        ["HITGROUP_RIGHTLEG"] = 1
+       },
+
+    },
+
+    [ ROLES.ROLE_CSECURITY ] = {
+
+      weapon = { "cw_kk_ins2_uar556" },
+      ammo = {"cw_kk_ins2_uar556", 180},
+      bodygroups = "12001001",
+      bonemerge = "models/cultist/humans/balaclavas_new/balaclava_full.mdl",
+      damage_modifiers = {
+        ["HITGROUP_HEAD"] = 1,
+        ["HITGROUP_CHEST"] = 0.8,
+        ["HITGROUP_LEFTARM"] = 1,
+        ["HITGROUP_RIGHTARM"] = 1,
+        ["HITGROUP_STOMACH"] = 0.8,
+        ["HITGROUP_GEAR"] = 0.8,
+        ["HITGROUP_LEFTLEG"] = 1,
+        ["HITGROUP_RIGHTLEG"] = 1
+       },
+
+    },
+
  }
 
   function ENT:Use( survivor )
@@ -53,7 +77,7 @@ if ( SERVER ) then
 
     local gteam = survivor:GTeam()
 
-    if ( gteam != TEAM_SECURITY and gteam != TEAM_GUARD ) or survivor:GetNClass() == ROLES.ROLE_DISPATCHER then
+    if ( gteam != TEAM_SCI and gteam != TEAM_GUARD ) or survivor:GetNClass() == ROLES.ROLE_DISPATCHER then
       survivor:RXSENDNotify("Вы не можете взаимодействовать с данным объектом!")
       return
     end
@@ -88,12 +112,12 @@ if ( SERVER ) then
       survivor:EmitSound( "nextoren/equipment/ammo_pickup.wav", 75, math.random( 95, 105 ), .75, CHAN_STATIC )
 
 
-    elseif gteam == TEAM_SECURITY then
-      if gteam == TEAM_SECURITY and survivor:GetModel():find("mog.mdl") then
+    elseif gteam == TEAM_SCI then
+      if gteam == TEAM_SCI and survivor:GetModel():find("mog.mdl") then
         survivor:RXSENDNotify("На вас уже надето вооружение!")
         return
       end
-      if gteam != TEAM_SECURITY or !Teams_Setup[survivor:GetNClass()] then
+      if gteam != TEAM_SCI or !Teams_Setup[survivor:GetNClass()] then
         survivor:RXSENDNotify("Вы не можете взаимодействовать с данным объектом!")
         return
       end
@@ -109,7 +133,7 @@ if ( SERVER ) then
 
       self.BannedUsers[survivor:GetName()] = true
       
-      survivor:CompleteAchievement("weaponry")
+      --survivor:CompleteAchievement("weaponry")
       local tab = Teams_Setup[survivor:GetNClass()]
       survivor:EmitSound( Sound("nextoren/others/cloth_pickup.wav"), 125, 100, 1.25, CHAN_VOICE)
       survivor:ScreenFade(SCREENFADE.IN, color_black, 1, 1)

@@ -788,9 +788,9 @@ function GM:PlayerWeaponChanged( client, weapon, force )
   local is_scp = client:GetModel():find( "/scp/" ) && client:GTeam() == TEAM_SCP
   if ( !is_scp ) then
 
-    animations_table = AnimationTableGetTable( client, client:GetModel() )[ plytable.AnimationHoldType ]
+   -- animations_table = AnimationTableGetTable( client, client:GetModel() )[ plytable.AnimationHoldType ]
 
-  else
+ -- else
 
     animations_table = GenerateSCPTable( plytable.AnimationHoldType, client )
 

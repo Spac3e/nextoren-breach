@@ -17,13 +17,6 @@ local DeriveGamemode = DeriveGamemode;
 local util = util
 local net = net
 local player = player
-BREACH.ParticlesPrecached = BREACH.ParticlesPrecached or false
-
-if BREACH.ParticlesPrecached then
-  return
-end
-
-BREACH.ParticlesPrecached = true
 
 --[[Particles]]--
 game.AddParticles( "particles/paect_fx.pcf" );

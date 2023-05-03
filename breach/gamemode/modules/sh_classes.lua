@@ -205,7 +205,7 @@ CLASSDMODELS = {
 				 flashlight = false,
 
 				 
-				 ability = {"Thief", 45, "Украдите у человека предмет который он держит на данный момент!", "nextoren/gui/special_abilities/ability_thief.png", false},
+				 ability = {"Thief", 45, "Украдите у человека предмет который он держит на данный момент!", "nextoren/gui/special_abilities/ability_placeholder.png", false},
 	
 				 max = 3
 	
@@ -732,7 +732,6 @@ CLASSDMODELS = {
 				 armor = 0,
 	
 				 walkspeed = 1,
-	
 	
 	
 				 runspeed = 1.01,
