@@ -405,9 +405,10 @@ end
 
 	sclass_model:SetModel( smodel )
 	
-	if selectedclass.bodygroups then
-		sclass_model:SetBodyGroups( selectedclass.bodygroups )
-	end
+	--if selectedclass.bodygroups then
+		--sclass_model:SetBodyGroups( selectedclass.bodygroups )
+	--end
+
 	function sclass_model:LayoutEntity( entity )
 
 		entity:SetAngles(Angle(0,18,0))
