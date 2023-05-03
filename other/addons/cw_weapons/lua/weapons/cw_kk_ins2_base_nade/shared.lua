@@ -502,6 +502,11 @@ end
 local CT
 local keyPress = {IN_ATTACK, IN_ATTACK2}
 
+function SWEP:PlayGestureSequence( sequence )
+	local sequencestring = self:LookupSequence( sequence )
+	self:AddGestureSequence( sequencestring, true )
+end
+
 function SWEP:_attack(key)
 	if self:IsOwnerCrawling() then
 		return

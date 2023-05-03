@@ -2598,7 +2598,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_HUI) then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_LESSION) then
 
 			if ply:GetSpecialMax() <= 0 then return end
 
@@ -2630,6 +2630,36 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetSpecialCD(CurTime() + 40)
 			ply:EmitSound("nextoren/vo/special_sci/trapper/trapper_"..math.random(1,10)..".mp3")
 
+		elseif ply:HaveSpecialAb(ROLES.ROLE_CHAOSDESTROYER) then
+
+			if ply:GetSpecialMax() <= 0 then return end
+
+			if CLIENT then return end
+			ply:LagCompensation(true)
+			local DASUKADAIMNEEGO = util.TraceLine( {
+				start = ply:GetShootPos(),
+				endpos = ply:GetShootPos() + ply:GetAimVector() * 130,
+				filter = ply
+			} )
+			ply:LagCompensation(false)
+			if !DASUKADAIMNEEGO.Hit then
+				ply:RXSENDNotify("Похоже, вы слишком далеко от точки на которой хотите поставить мину")
+				ply:SetSpecialCD(CurTime() + 5)
+				return
+			end
+
+			if !DASUKADAIMNEEGO.Hit then
+				ply:RXSENDNotify("Мина должна стоять на полу!")
+				ply:SetSpecialCD(CurTime() + 5)
+				return
+			end
+
+			local claymore = ents.Create("ent_chaos_mine")
+			claymore:SetPos(DASUKADAIMNEEGO.HitPos)
+			claymore:SetOwner(ply)
+			claymore:Spawn()
+			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
+			ply:SetSpecialCD(CurTime() + 4)
 
 		elseif ply:HaveSpecialAb(ROLES.ROLE_TOPKEK) then
 			local angle_zero = Angle(0,0,0)

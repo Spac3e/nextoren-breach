@@ -5,7 +5,7 @@
 
 -- Enable Derma emoticons?
 -- You can see the full list here: http://www.famfamfam.com/lab/icons/silk/previews/index_abc.png
-LOUNGE_CHAT.EnableDermaEmoticons = false
+LOUNGE_CHAT.EnableDermaEmoticons = true
 
 -- Restrict Derma emoticons?
 -- You can configure the restrictions in the "DermaEmoticonsRestrictions" option.

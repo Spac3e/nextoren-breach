@@ -379,6 +379,7 @@ end
 function mply:ApplyRoleStats( role )
 	self:SetNClass( role.name )
 	self:SetGTeam( role.team )
+	self:SetSkin(0)
         timer.Simple(1, function()
 			for k, v in pairs( role.weapons ) do
 				self:Give( v )

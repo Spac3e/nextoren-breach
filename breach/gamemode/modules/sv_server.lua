@@ -48,6 +48,8 @@ util.AddNetworkString("SpecialSCIHUD")
 util.AddNetworkString("Load_player_data")
 util.AddNetworkString("NightvisionOn")
 util.AddNetworkString("NightvisionOff")
+util.AddNetworkString("CreateParticleAtPos")
+
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end

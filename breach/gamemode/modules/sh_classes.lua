@@ -750,6 +750,8 @@ CLASSDMODELS = {
 				 flashlight = false,
 	
 				 level = 6,
+
+				 bodygroups = "120004100",
 	
 				 max = 3,
 	
@@ -768,8 +770,6 @@ CLASSDMODELS = {
 				 health = 180,
 	
 				 armor = 80,
-	
-	
 	
 				 walkspeed = 0.9,
 	
@@ -792,6 +792,8 @@ CLASSDMODELS = {
 				 max = 1,
 	
 				 sorting = 5,
+
+				 bodygroups = "042110",
 	
 				 importancelevel = 2
 	
@@ -1134,7 +1136,7 @@ CLASSDMODELS = {
 	
 				 vest = nil,
 	
-				 models = MTFMODEL,
+				 models = CHLENIST,
 	
 				 showmodel = nil,
 	
@@ -1178,7 +1180,7 @@ CLASSDMODELS = {
 	
 				 vest = nil,
 	
-				 models = CHLENIST,
+				 models = MTFMODEL,
 	
 				 showmodel = nil,
 	
@@ -1464,7 +1466,7 @@ CLASSDMODELS = {
 	
 				 team = TEAM_CHAOS,
 	
-				 weapons = {"br_holster", "cw_kk_ins2_cstm_spas12", "cw_kk_ins2_nade_molotov", "wep_jack_job_drpradio", "weapon_flashlight", "br_keycard_8", "cw_kk_ins2_nade_ied", "cw_kk_ins2_rpg"},
+				 weapons = {"br_holster", "cw_kk_ins2_cstm_spas12", "cw_kk_ins2_nade_molotov", "wep_jack_job_drpradio", "weapon_flashlight", "br_keycard_8", "cw_kk_ins2_rpg", "cw_kk_ins2_rpg"},
 	
 				 showweapons = {"Ключ карта 5", "RPG", "C4", "Дробовик"},
 	
@@ -1474,10 +1476,8 @@ CLASSDMODELS = {
 	
 				 armor = 80,
 	
-			walkspeed = 0.9,
-	
-	
-	
+			     walkspeed = 0.9,
+		
 				 runspeed = 1.2,
 	
 				 jumppower = 0.90,
@@ -1494,7 +1494,12 @@ CLASSDMODELS = {
 	
 				 level = 0,
 
-				 bodygroups = "1002011",
+				 bodygroups = "1002001",
+
+				 ability = {"Claymore", 1, "Вы ставите мину на пол.", "nextoren/gui/special_abilities/special_chaos_claymore.png", true},
+
+				 ability_max = 3,
+
 	
 				 max = 1
 	
