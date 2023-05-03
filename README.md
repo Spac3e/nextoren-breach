@@ -1,19 +1,19 @@
-# vault-breach
- Брич ваулта емае!!
 
-TO-DO:
+![Logo](https://media.discordapp.net/attachments/883312100385099776/1103240948823109632/vault_breach_iconka_1.png)
+# [VAULT] Breach 2.6.0
 
-Доделать систему способок (база есть осталась выдача при спавне)
-Доделать систему интро (база есть работает как костыль runconcomand а надо через net-ы)
-Сделать систему ключ-карточек (есть база с nextoren но она использует кастомные способы для получения доступа)
-Настроить конфигурацию сервера
-1. Нету позиций для спавна айтемов (новых)
-2. Не все позиции для спавна людей настроены
-3. Нету позиций для спавна уникальных энтити
-4. Смешын
 
-Баги
-1. Регдолы клонируются (Пофикшено)
-2. Инветарь работает не правильно, можно брать оружки которые у тебя уже есть в инвенторе и те что поднял просто пропадет.
-Контент: https://steamcommunity.com/sharedfiles/filedetails/?id=2966605711
-Карта: br_site19_vault
+## [Task List](https://trello.com/b/2gCQkeRt/breach-260)
+
+## Authors
+- [Spac3e](https://github.com/Spac3e)
+- [Imperator](https://github.com/ImperioRator)
+
+##  Links
+[![discord](https://img.shields.io/badge/%3CVAULT%3E%20-%237289DA.svg?&style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/vaultcommunity)
+
+
+## Credits
+NextOren Team, VAULT Team and others who helped with creation of this server
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
