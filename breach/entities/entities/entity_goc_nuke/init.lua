@@ -9,6 +9,7 @@ function ENT:Initialize()
 	//self:PhysicsInit( SOLID_VPHYSICS )
 	//self:SetMoveType( MOVETYPE_VPHYSICS )
 	self:SetSolid( SOLID_VPHYSICS )
+	self:SetModel("models/props_junk/watermelon01.mdl")
 
     //local phys = self:GetPhysicsObject()
 	//if (phys:IsValid()) then

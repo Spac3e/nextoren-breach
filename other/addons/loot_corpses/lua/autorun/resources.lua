@@ -1,1 +1,0 @@
-resource.AddSingleFile("resource/fonts/BebasNeue.otf")

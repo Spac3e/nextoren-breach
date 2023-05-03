@@ -128,7 +128,6 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	ply:AddDeaths(1)
 end
 
-
 function GM:PlayerDeathThink( ply )
 	if ply:GetNClass() == ROLES.ROLE_SCP076 and IsValid( SCP0761 ) then
 		if ply.n076nextspawn and ply.n076nextspawn < CurTime() then

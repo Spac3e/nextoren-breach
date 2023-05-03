@@ -49,6 +49,8 @@ util.AddNetworkString("Load_player_data")
 util.AddNetworkString("NightvisionOn")
 util.AddNetworkString("NightvisionOff")
 util.AddNetworkString("CreateParticleAtPos")
+util.AddNetworkString("CreateClientParticleSystem")
+util.AddNetworkString("NTF_Special_1")
 
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN

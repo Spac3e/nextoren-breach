@@ -61,7 +61,7 @@ end
 
     end
     local owner = self:GetOwner()
-    if !(IsValid(owner) and owner:HaveSpecialAb(role.SCI_SPECIAL_SHIELD) and owner:Health() > 0 and owner:Alive()) and SERVER then
+    if !(IsValid(owner) and owner:HaveSpecialAb(ROLES.ROLE_SHIELD) and owner:Health() > 0 and owner:Alive()) and SERVER then
       self:Remove()
     end
     self:SetPos(owner:GetPos())

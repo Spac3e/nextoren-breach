@@ -1580,7 +1580,107 @@ timer.Simple( 1, function()
 	net.Start( "PlayerReady" )
 	net.SendToServer()
 end )
+function HedwigAbility()
+	local client = LocalPlayer()
+	if !client:HaveSpecialAb(ROLES.ROLE_SPECIALRESS) then return end
+	hook.Remove( "PostDrawTranslucentRenderables", "Hedwig_Ability" )
 
+    clr_red = .08
+    clr_green = .08
+    clr_blue = .08
+
+    local hedwigdietime = CurTime() + 20
+
+    hook.Add( "PostDrawTranslucentRenderables", "Hedwig_Ability", function()
+
+      local client = LocalPlayer()
+
+      local playerpos = client:GetPos()
+      local eyespos = client:EyePos() + client:EyeAngles():Forward() * 8
+      local eyeang = client:EyeAngles()
+      eyeang = Angle( eyeang.p + 90, eyeang.y, 0 )
+      if hedwigdietime < CurTime() then hook.Remove( "PostDrawTranslucentRenderables", "Hedwig_Ability" ) end
+      render.ClearStencil()
+
+      render.SetStencilEnable( true )
+
+        render.SetStencilWriteMask( 255 )
+        render.SetStencilTestMask( 255 )
+        render.SetStencilReferenceValue( 1 )
+
+        for _, ent in ipairs( player.GetAll() ) do
+
+          if ( ent:IsPlayer() || ent:IsNPC() ) then
+
+            if ( ent == client ) then
+
+              if ( ent:Health() <= 0 || !ent:HaveSpecialAb(ROLES.ROLE_SPECIALRESS) ) then
+
+                hook.Remove( "PostDrawTranslucentRenderables", "Hedwig_Ability" )
+
+                return
+              end
+
+            else
+
+              local current_team = ent:IsPlayer() && ent:GTeam()
+
+              if ( ent:IsPlayer() && current_team == TEAM_SPEC ) then continue end
+
+              if ( current_team == TEAM_SCP && !ent:IsSolid() ) then continue end
+              if current_team != TEAM_SCP then continue end
+              if ent:IsPlayer() and ent:Health() <= 0 then continue end
+              if ent:IsPlayer() and !ent:Alive() then continue end
+
+              render.SetStencilCompareFunction( STENCIL_ALWAYS )
+              render.SetStencilZFailOperation( STENCIL_REPLACE )
+
+              render.SetStencilPassOperation( STENCIL_REPLACE )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+              ent:DrawModel()
+
+              local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", ent )
+
+              if ( tbl_bonemerged && istable( tbl_bonemerged ) ) then
+
+                for _, v in ipairs( tbl_bonemerged ) do
+
+                  if ( v && v:IsValid() ) then
+
+                    v:DrawModel()
+
+                  end
+
+                end
+
+              end
+
+              render.SetStencilCompareFunction( STENCIL_EQUAL )
+              render.SetStencilZFailOperation( STENCIL_KEEP )
+              render.SetStencilPassOperation( STENCIL_KEEP )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+
+              cam.Start3D2D( eyespos, eyeang, 1 )
+              
+                surface.SetDrawColor( 255, 0, 0, 80 )
+                surface.DrawRect( -ScrW(), -ScrH(), ScrW() * 2, ScrH() * 2 )
+
+              cam.End3D2D()
+
+            end
+
+          end
+
+        end
+
+        render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
+        render.SetStencilZFailOperation( STENCIL_KEEP )
+        render.SetStencilPassOperation( STENCIL_KEEP )
+        render.SetStencilFailOperation( STENCIL_KEEP )
+
+      render.SetStencilEnable( false )
+    end)
+end
 function StartSceneClientSide( ply )
 
 	local character = ents.CreateClientside( "base_gmodentity" )
