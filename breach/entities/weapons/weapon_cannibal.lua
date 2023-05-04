@@ -1,16 +1,3 @@
---[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   gamemodes/breach/entities/weapons/weapon_cannibal.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
-
 if ( CLIENT ) then
 	SWEP.PrintName = "Каннибализм"
 	SWEP.BounceWeaponIcon = false
@@ -47,9 +34,6 @@ SWEP.LockPickTime = 60
 
 SWEP.CorpseEated = 0
 
-/*---------------------------------------------------------
-Name: SWEP:Initialize()
-Desc: Called when the weapon is first loaded
 ---------------------------------------------------------*/
 function SWEP:Initialize()
 
@@ -57,10 +41,6 @@ function SWEP:Initialize()
 
 end
 
-/*---------------------------------------------------------
-Name: SWEP:PrimaryAttack()
-Desc: +attack1 has been pressed
----------------------------------------------------------*/
 SWEP.SoundList = {
 
   "nextoren/others/cannibal/gibbing1.wav",
@@ -84,104 +64,76 @@ function SWEP:Think() end
 
 function SWEP:PrimaryAttack()
 
-	if ( ( self.NextTry || 0 ) >= CurTime() ) then return end
-	self.NextTry = CurTime() + 2
-
-	local tr = self.Owner:GetEyeTraceNoCursor()
-	local time;
-	local ent = tr.Entity
-	self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
-
-	if ( ent:GetClass() == "prop_ragdoll" && !ent.AlreadyEaten ) then
-
-		self.Owner:DoAnimationEvent(ACT_IDLE_AIM_STEALTH)
-
-		timer.Create("Standing" , 6.8 , 1, function()
-			self.Owner:DoAnimationEvent(ACT_RANGE_ATTACK2)
-		end)
-
-	end
-
 	if SERVER then
-		if ( ent:GetClass() == "prop_ragdoll" && !ent.AlreadyEaten ) then
-	
-			self.Owner:Freeze(true)
-	
-			if SERVER then
-				self.Owner:BrProgressBar( "Поедаю...", 8, "nextoren/gui/icons/canibal.png")
-			end
-	
-			timer.Create("Gibbing" , 1 , 1, function() 
-				if IsValid(self.Owner) then 
-					self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
-				end 
-			end)
-			timer.Create("Gibbing2" , 4 , 1, function() 
-				if IsValid(self.Owner) then 
-					self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
-				end 
-			end)
-			timer.Create("Gibbing3" , 6 , 1, function() 
-				if IsValid(self.Owner) then 
-					self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
-				end 
-			end)
-			timer.Create("Gibbing4" , 7 , 1, function() 
-				if IsValid(self.Owner) then 
-					self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
-				end 
-			end)
-			timer.Create("FinalGibbing" , 8 , 1, function()
-				if ( ent:GetClass() == "prop_ragdoll" ) then
-					ent:SetModel( "models/cultist/humans/corpse.mdl" )
-					ent:SetSkin( 2 )
-					self.Owner:Freeze(false)
-	
-					if ( ent.BoneMergedEnts ) then
-	
-						for _, v in ipairs( ent.BoneMergedEnts ) do
-	
-							if ( v && v:IsValid() ) then
-	
-								v:Remove()
-							end
-						end
-					end
-					if ( ent.BoneMergedHackerHat ) then
-	
-						for _, v in ipairs( ent.BoneMergedHackerHat ) do
-	
-							if ( v && v:IsValid() ) then
-	
-								v:Remove()
-							end
-						end
-					end
-					if ( ent.GhostBoneMergedEnts ) then
-	
-						for _, v in ipairs( ent.GhostBoneMergedEnts ) do
-	
-							if ( v && v:IsValid() ) then
-	
-								v:Remove()
-							end
-						end
-					end
 
-					ent.AlreadyEaten = true
-					ent.breachsearchable = false
-					self.Owner:SetHealth( self.Owner:Health() + 30 )
-					self.CorpseEated = self.CorpseEated + 1
-					if self.CorpseEated == 5 then
-						self.Owner:SetMaxHealth( self.Owner:GetMaxHealth() + 40 )
-					elseif self.CorpseEated >= 10 then
-						self.Owner:SetMaxHealth( self.Owner:GetMaxHealth() + 20 )
-					end
-				else
-					self.Owner:Freeze(false)
-				end
+		local tr = self.Owner:GetEyeTraceNoCursor()
+
+		local ent = tr.Entity
+
+		if !ent then return end
+		if ent:GetClass() != "prop_ragdoll" then return end
+		if ent:GetModel():find("corpse.mdl") then return end
+
+		local uniqid = "GibSound"..self.Owner:SteamID64()
+
+		local function start()
+			self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
+			timer.Create(uniqid, 1, 8, function()
+				self.Owner:EmitSound( "nextoren/others/cannibal/gibbing"..math.random(1,3)..".wav", 90, 100, 1, CHAN_AUTO )  
 			end)
 		end
+
+		local function stop()
+			timer.Remove(uniqid)
+		end
+
+		local function finish()
+			if IsValid(ent) then
+
+				ent:SetModel( "models/cultist/humans/corpse.mdl" )
+				ent:SetSkin( 2 )
+
+				if ent.vtable and ent.vtable.Weapons and table.HasValue(ent.vtable.Weapons, "item_special_document") then
+
+					table.RemoveByValue(ent.vtable.Weapons, "item_special_document")
+
+					ent:SetNWBool("HasDocument", false)
+
+					local document = ents.Create("item_special_document")
+					document:SetPos(ent:GetPos() + Vector(0,0,20))
+					document:Spawn()
+					document:GetPhysicsObject():SetVelocity(Vector(table.Random({-100,100}),table.Random({-100,100}),175))
+
+				end
+
+				if ent.IsFemale then
+					ent:SetBodygroup(0, 1)
+				else
+					ent:SetBodygroup(0, 0)
+				end
+
+				ent.AlreadyEaten = true
+				ent.breachsearchable = false
+
+				self.Owner:AddToAchievementPoint("cannibal", 1)
+				self.Owner:SetHealth( self.Owner:Health() + 30 )
+				self.CorpseEated = self.CorpseEated + 1
+
+				if self.CorpseEated == 5 then
+					self.Owner:SetMaxHealth( self.Owner:GetMaxHealth() + 40 )
+				elseif self.CorpseEated >= 10 then
+					self.Owner:SetMaxHealth( self.Owner:GetMaxHealth() + 20 )
+				end
+
+				for i, bnmrg in pairs(ent:LookupBonemerges()) do
+					bnmrg:Remove()
+				end
+
+			end
+		end
+
+		self.Owner:BrProgressBar( "Перекусываю...", 8, "nextoren/gui/icons/canibal.png", ent, false, finish, start, stop )
+
 	end
 end
 
@@ -217,5 +169,3 @@ end
 function SWEP:SecondaryAttack()
 	self:PrimaryAttack()
 end
-
-
