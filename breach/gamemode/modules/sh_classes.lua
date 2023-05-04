@@ -1443,10 +1443,8 @@ CLASSDMODELS = {
 	
 				 armor = 66,
 	
-		   walkspeed = 1,
-	
-	
-	
+		         walkspeed = 1,
+		
 				 runspeed = 1.05,
 	
 				 jumppower = 0.85,
@@ -1501,12 +1499,11 @@ CLASSDMODELS = {
 	
 				 level = 0,
 
-				 bodygroups = "1002001",
-
 				 ability = {"Claymore", 1, "Вы ставите мину на пол.", "nextoren/gui/special_abilities/special_chaos_claymore.png", true},
 
 				 ability_max = 3,
 
+				 bodygroups = "1002001",
 	
 				 max = 1
 	

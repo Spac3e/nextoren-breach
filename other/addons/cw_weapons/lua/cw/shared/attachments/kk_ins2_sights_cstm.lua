@@ -24,3 +24,7 @@ if CLIENT then
 end
 
 CustomizableWeaponry:registerAttachment(att)
+
+if (SERVER) then
+	resource.AddWorkshop("657241323") // KK INS2
+end
