@@ -580,7 +580,6 @@ SPAWN_GUARD = {
 	Vector(-1476.3962402344, 6015.6323242188, 128.03125),
 	Vector(-1497.3748779297, 5915.9501953125, 128.03125),
 	Vector(-1581.9244384766, 5913.5649414063, 128.03125),
-	--Vector(-1687.0513916016, 5911.0541992188, 95.190200805664),
 	Vector(-1777.4705810547, 5908.3735351563, 49.980590820313),
 	Vector(-1942.7578125, 5904.8666992188, 0.031234741210938),
 	Vector(-2082.2075195313, 5772.59375, 0.03125),
@@ -592,6 +591,19 @@ SPAWN_GUARD = {
 	Vector(-1322.0799560547, 5666.6015625, 0.03125),
 	Vector(-1074.3309326172, 5602.37890625, 0.03125),
 }
+for _, spawnpos in pairs(SPAWN_GUARD) do
+	local tab = {
+		name = "Комната МОГ",
+		pos = spawnpos,
+		tolerance = 8,
+		keycardnotrequired = true,
+		canactivate = function( ply, ent ) return !preparing end,
+		custom_access_granted = function(ply, ent)
+			return preparing != true
+		end
+	}
+	table.insert(BUTTONS, tab)
+end
 SPAWN_OUTSIDE = {
 	Vector(-10455.168945313, -179.97909545898, 1771.0614013672),
 	Vector(-10595.173828125, -216.10218811035, 1767.5343017578),

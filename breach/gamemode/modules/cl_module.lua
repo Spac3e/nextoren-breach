@@ -728,6 +728,44 @@ net.Receive( "PostStart", function( len )
 	StartTime()
 end)
 
+net.Receive("boom_round", function()
+
+    local player = LocalPlayer()
+
+    util.ScreenShake( vector_origin, 200, 10, 20, 32768 );
+
+    ParticleEffect( "vman_nuke", dust_vector, angle_zero );
+    ParticleEffect( "vman_nuke", particle_origin, angle_zero );
+
+    timer.Simple(7, function()
+
+        if player:GTeam() != TEAM_SPEC and player:Health() > 0 then
+          player:ViewPunch( view_punch_angle )
+        end
+
+    end)
+
+    timer.Simple(5, function()
+
+      ParticleEffect( "dustwave_tracer", dust_vector, angle_zero );
+
+    end)
+
+    timer.Simple(5, function()
+
+        util.ScreenShake( vector_origin, 200, 100, 10, 32768);
+
+        player:ScreenFade( SCREENFADE.OUT, color_black, 2.3, 10 )
+
+        timer.Simple(4, function()
+            player.no_signal = true
+        end)
+
+    end)
+
+end)
+
+
 net.Receive( "TranslatedMessage", function( len )
 	local msg = net.ReadString()
 	//local center = net.ReadBool()

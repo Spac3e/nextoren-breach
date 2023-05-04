@@ -413,6 +413,8 @@ function WinCheck()
 		print("Ending round because " .. why)
 		PrintMessage(HUD_PRINTCONSOLE, "Ending round because " .. why)
 		StopRound()
+		net.Start("boom_round")
+		net.Broadcast()
 		timer.Destroy("RoundTime")
 		preparing = false
 		postround = true

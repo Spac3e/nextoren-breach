@@ -215,7 +215,7 @@ CLASSDMODELS = {
 	
 				 team = TEAM_GOC,
 	
-				 weapons = {"br_holster", "weapon_flashlight", "item_knife"},
+				 weapons = {"br_holster", "breach_keycard_2", "item_knife"},
 	
 				 showweapons = {"Фонарик", "Заточка", "Сканер"},
 	
@@ -305,7 +305,7 @@ CLASSDMODELS = {
 	
 				 walkspeed = 1,
 	
-				 weapons = {"br_holster", "class_d_zatoshka"},
+				 weapons = {"br_holster", "item_knife"},
 	
 				 runspeed = 1,
 	
@@ -383,7 +383,7 @@ CLASSDMODELS = {
 	
 				 walkspeed = 1,
 	
-				 weapons = {"br_holster", "scp_cannibal"},
+				 weapons = {"br_holster", "weapon_cannibal"},
 	
 				 runspeed = 1,
 	
@@ -503,7 +503,7 @@ CLASSDMODELS = {
 	
 				 walkspeed = 0.86,
 	
-				 weapons = {"br_holster"},
+				 weapons = {"br_holster", "item_hamburger"},
 	
 				 runspeed = 0.90,
 	
@@ -1423,7 +1423,7 @@ CLASSDMODELS = {
 
                  bodygroups = "0101111",
 	
-				 max = 2
+				 max = 3
 	
 				},
 	
