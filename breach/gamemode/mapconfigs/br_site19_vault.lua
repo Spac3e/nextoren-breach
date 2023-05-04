@@ -591,19 +591,6 @@ SPAWN_GUARD = {
 	Vector(-1322.0799560547, 5666.6015625, 0.03125),
 	Vector(-1074.3309326172, 5602.37890625, 0.03125),
 }
-for _, spawnpos in pairs(SPAWN_GUARD) do
-	local tab = {
-		name = "Комната МОГ",
-		pos = spawnpos,
-		tolerance = 8,
-		keycardnotrequired = true,
-		canactivate = function( ply, ent ) return !preparing end,
-		custom_access_granted = function(ply, ent)
-			return preparing != true
-		end
-	}
-	table.insert(BUTTONS, tab)
-end
 SPAWN_OUTSIDE = {
 	Vector(-10455.168945313, -179.97909545898, 1771.0614013672),
 	Vector(-10595.173828125, -216.10218811035, 1767.5343017578),
@@ -3758,7 +3745,19 @@ BUTTONS = {
 	},
 
 }
-
+for _, spawnpos in pairs(SPAWN_GUARD) do
+	local tab = {
+		name = "Комната МОГ",
+		pos = spawnpos,
+		tolerance = 8,
+		keycardnotrequired = true,
+		canactivate = function( ply, ent ) return !preparing end,
+		custom_access_granted = function(ply, ent)
+			return preparing != true
+		end
+	}
+	table.insert(BUTTONS, tab)
+end
 local ClassD_DBLOKSPAWNS = {
 	Vector(7843.7001953125, -5025, 280.79800415039),
 	Vector(7843.7001953125, -5153, 280.79800415039),
