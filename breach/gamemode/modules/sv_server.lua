@@ -58,7 +58,8 @@ util.AddNetworkString("TargetsToNTFs")
 util.AddNetworkString("GestureClientNetworking")
 util.AddNetworkString("Boom_Effectus")
 util.AddNetworkString("boom_round")
-
+util.AddNetworkString("DrawMuzzleFlash")
+util.AddNetworkString("BreachFlinch")
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end

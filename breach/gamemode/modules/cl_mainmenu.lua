@@ -552,6 +552,8 @@ hook.Add("InitPostEntity", "NameColorSend", function()
     --  spawnmale = GetConVar("breach_config_spawn_male_only"):GetBool(),
     --  spawnfemale = GetConVar("breach_config_spawn_female_only"):GetBool(),
     --  displaypremiumicon = GetConVar("breach_config_display_premium_icon"):GetBool(),
+      leanright = GetConVar("breach_config_leanright"):GetInt(),
+      leanleft = GetConVar("breach_config_leanleft"):GetInt(),
       useability = GetConVar("breach_config_useability"):GetInt()
     }
     net.Start("Load_player_data")
@@ -823,6 +825,8 @@ CreateConVar("breach_config_draw_spec_alive", 0, FCVAR_ARCHIVE, "Draw spectators
 CreateConVar("breach_config_screenshot_mode", 0, FCVAR_ARCHIVE, "Completely disables HUD. Can be buggy", 0, 1)
 CreateConVar("breach_config_draw_legs", 1, FCVAR_ARCHIVE, "Draw legs")
 CreateConVar("breach_config_useability", 18, FCVAR_ARCHIVE, "number you will use ability with")
+CreateConVar("breach_config_leanright", KEY_3, FCVAR_ARCHIVE, "Leans to the right")
+CreateConVar("breach_config_leanleft", KEY_1, FCVAR_ARCHIVE, "Leans to the left")
 
 RunConsoleCommand("breach_config_language", GetConVar("breach_config_language"):GetString())
 local function ChangeServerValue(id, bool)

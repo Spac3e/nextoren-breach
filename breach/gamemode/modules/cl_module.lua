@@ -1580,8 +1580,40 @@ hook.Add( "RenderScreenspaceEffects", "blinkeffects", function()
 		DrawBloom( 0.65, bloommul, 9, 9, 1, 1, 1, 1, 1 )
 	end
 end )
+net.Receive( "DrawMuzzleFlash", function()
 
-local dropnext = 0
+
+
+	local ent = net.ReadEntity()
+
+
+
+	local ed = EffectData()
+
+	ed:SetEntity( ent )
+
+	util.Effect( "cw_kk_ins2_muzzleflash", ed, true, true )
+
+
+
+end )
+net.Receive( "BreachFlinch", function()
+
+
+
+	local ply = LocalPlayer()
+
+
+
+	ply.shotdown = true
+
+	ply.shot_EffectTime = CurTime() + .26
+
+
+
+end )
+
+ext = 0
 function GM:PlayerBindPress( ply, bind, pressed )
 	if bind == "+menu" then
 		if GetConVar( "br_new_eq" ):GetInt() != 1 then

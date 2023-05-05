@@ -229,14 +229,10 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetMaxSpeed( self.basestats.max_speed or 200 )
 	ply:SetCrouchedWalkSpeed( self.basestats.crouch_speed or 0.6 )
 	ply:SetJumpPower( self.basestats.jump_power or 200 )
-
-	if !self.basestats.no_swep then
-		local wep = ply:Give( self.swep )
-		ply:SelectWeapon( self.swep )
-
-		if IsValid( wep ) then
-			wep.ShouldFreezePlayer = self.basestats.prep_freeze == true
-		end
+	local wep = ply:Give( self.swep )
+	ply:SelectWeapon( self.swep )
+	if IsValid( wep ) then
+	wep.ShouldFreezePlayer = self.basestats.prep_freeze == true
 	end
 
 	ply:SetArmor( 0 )

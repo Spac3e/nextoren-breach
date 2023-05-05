@@ -4662,64 +4662,231 @@ local forbidden_teams = {
 
 }
 
-hook.Add( "Think", "ViewBob_Think", function()
 
-	local client = LocalPlayer()
 
-	if ( !forbidden_teams[ client:GTeam() ] && client:Health() > 0 && client:GetMoveType() != MOVETYPE_NOCLIP ) then
+local viewwell = {
 
-		vel = client:GetVelocity()
-		MovementDot = EyeAngles():CalculateVectorDot( vel )
-		--print( MovementDot )
-		step = 18
 
-		if ( client:Health() < client:GetMaxHealth() * .3 ) then
 
-			scale = 2
-			step = 20
-
+	origin = vector_origin,
+  
+	angles = angle_zero,
+  
+	fov = 90,
+  
+	drawviewer = true,
+  
+	znear = 1
+  
+  
+  
+  }
+  
+  
+  
+  hook.Add( "CalcView", "InVehicle", function( ply, origin, angles, fov )
+  
+  
+  
+	if !( ply:InVehicle() || ply.IsCI ) then return end
+  
+  
+  
+	local head = ply:LookupAttachment( "eyes" )
+  
+	head = ply:GetAttachment( head )
+  
+  
+  
+	if ( !head  ) then return end
+  
+  
+  
+	if ( !head.Pos ) then return end
+  
+  
+  
+	if ( ply.BonesRattled ) then
+  
+  
+  
+	  ply.BonesRattled = true
+  
+	  ply:InvalidateBoneCache()
+  
+	  ply:SetupBones()
+  
+	  local matrix;
+  
+  
+  
+	  for bone = 0, ( ply:GetBoneCount() || 1 ) do
+  
+  
+  
+		if ( ply:GetBoneName( bone ):lower():find( "head" ) ) then
+  
+  
+  
+		  matrix = ply:GetBoneMatrix( bone )
+  
+  
+  
+		  break
+  
+  
+  
 		end
-
-		cos = math.cos( SysTime() * step )
-		plane = ( math.max( math.abs( MovementDot.x ) - 100, 0 ) + math.max( math.abs( MovementDot.y ) - 100, 0 ) ) / 128
-
-		y = math.cos( SysTime() * step / 2 ) * plane * scale
-
+  
+  
+  
+	  end
+  
+  
+  
+	  if ( IsValid( matrix ) ) then
+  
+  
+  
+		matrix:SetScale( vector_origin )
+  
+  
+  
+	  end
+  
+  
+  
 	end
-
-end )
-
-local vec_zero = vector_origin
-
-hook.Add( "CalcViewModelView", "CalcViewModel", function( wep, v, oldPos, oldAng, ipos, iang )
-
-	local client = LocalPlayer()
-
-	if client:GetInDimension() then return end
-
-	if ( !forbidden_teams[ client:GTeam() ] && client:Health() > 0 && ( ( !isnumber( vel ) && vel:Length2DSqr() > .25 ) || client:GetVelocity():Length2DSqr() > .25 ) && client:GetMoveType() != MOVETYPE_NOCLIP ) then
-
-		local pos, ang
-
-		if ( isfunction( wep.GetViewModelPosition ) ) then
-
-			pos, ang = wep:GetViewModelPosition( ipos, iang )
-
-		else
-
-			pos = ipos
-			ang = iang
-
+  
+  
+  
+	viewwell.origin = ( head.Pos ) + head.Ang:Up() * 8 + head.Ang:Forward() * 5
+  
+	viewwell.angles = head.Ang
+  
+  
+  
+	return viewwell
+  
+  
+  
+  end )
+  
+  
+  
+  local view = {
+  
+  
+  
+	origin = vector_origin,
+  
+	angles = angle_zero,
+  
+	fov = 90,
+  
+	drawviewer = true,
+  
+	znear = 1
+  
+  
+  
+  }
+  
+  
+  
+  hook.Add( "CalcView", "firstpersondeathkk", function( ply, origin, angles, fov )
+  
+  
+  
+	if ( ply:GetNWEntity( "NTF1Entity" ) == NULL ) then return end
+  
+  
+  
+	  local ragdoll = ply:GetNWEntity( "NTF1Entity" )
+  
+  
+  
+	  if ( !( ragdoll && ragdoll:IsValid() ) ) then return end
+  
+	  local head = ragdoll:LookupAttachment( "eyes" )
+  
+	  head = ragdoll:GetAttachment( head )
+  
+  
+  
+	if ( !head || !head.Pos ) then return end
+  
+  
+  
+	  if ( !ragdoll.BonesRattled ) then
+  
+  
+  
+		ragdoll.BonesRattled = true
+  
+		ragdoll:InvalidateBoneCache()
+  
+		ragdoll:SetupBones()
+  
+		local matrix
+  
+  
+  
+		for bone = 0, ( ragdoll:GetBoneCount() || 1 ) do
+  
+  
+  
+		  if ragdoll:GetBoneName( bone ):lower():find( "head" ) then
+  
+  
+  
+			matrix = ragdoll:GetBoneMatrix( bone )
+  
+  
+  
+			break
+  
+  
+  
+		  end
+  
+  
+  
 		end
-
-		local origin = Vector( 0, y, ( cos * plane ) * scale )
-		origin:Rotate( ang )
-
-		return origin + pos - ( transition != 0 && Vector( 0, 0, transition ) || vec_zero ), ang
-
-	end
-
-end )
+  
+  
+  
+		if ( IsValid( matrix ) ) then
+  
+  
+  
+		  matrix:SetScale( vector_origin )
+  
+  
+  
+	  end
+  
+  
+  
+	  end
+  
+  
+  
+	  view.origin = head.Pos + head.Ang:Up() * 5 + head.Ang:Forward() * 5
+  
+	  view.angles = head.Ang
+  
+	view.drawviewer = true
+  
+  
+  
+	  return view
+  
+  
+  
+  end )
+  
+  
 
 ----------------------------
 

@@ -959,7 +959,8 @@ function GM:PlayerUse( ply, ent, wep )
 					return true
 				end
 				local wep = ply:GetActiveWeapon()
-				if IsValid( wep ) and string.find( wep:GetClass()) == "breach_keycard_" then
+				local weaponName = "breach_keycard_"
+				if IsValid( wep ) and string.sub(weaponName, 1, 4) then
 					local keycard = wep
 					if IsValid( keycard ) then
 						if bit.band( keycard.Access, v.access ) > 0 then
