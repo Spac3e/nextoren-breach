@@ -638,7 +638,7 @@ CLASSDMODELS = {
 	
 				 level = 0,
 
-				 bodygroup = "001",
+				 bodygroup = "101",
 	
 				 max = 36
 	
@@ -676,7 +676,7 @@ CLASSDMODELS = {
 	
 				 level = 20,
 
-				 bodygroup = "001",
+				 bodygroup = "101",
 	
 				 max = 1
 	
@@ -714,7 +714,7 @@ CLASSDMODELS = {
 	
 				 level = 4,
 
-				 bodygroup = "010111",
+				 bodygroup = "110111",
 	
 				max = 3
 	
@@ -752,7 +752,7 @@ CLASSDMODELS = {
 	
 				 level = 2,
 
-				 bodygroup = "021",
+				 bodygroup = "121",
 	
 				max = 3
 	
@@ -783,7 +783,7 @@ CLASSDMODELS = {
 	
 				 models = SECURITYMODELS,
 	
-				 showmodel = nil,
+				 showmodel = "models/cultist/humans/security/security.mdl",
 	
 				 pmcolor = nil,
 	
@@ -821,7 +821,7 @@ CLASSDMODELS = {
 	
 				 models = SECURITYMODELS,
 	
-				 showmodel = nil,
+				 showmodel = "models/cultist/humans/security/security.mdl",
 	
 				 pmcolor = nil,
 	
@@ -1190,7 +1190,7 @@ CLASSDMODELS = {
 	
 				 sorting = 1,
 
-				 bodygroups = "1",
+				 bodygroups = "01",
 	
 				 importancelevel = 1
 	
@@ -1266,7 +1266,7 @@ CLASSDMODELS = {
 	
 				 models = JAG,
 	
-				 showmodel = nil,
+				 showmodel = "models/cultist/humans/mog/mog_jagger.mdl",
 	
 				 pmcolor = nil,
 	
@@ -1494,7 +1494,7 @@ CLASSDMODELS = {
 	
 				 level = 20,
 
-				 bodygroups = "0001201",
+				 bodygroups = "0011210",
 	
 				 max = 1
 	
@@ -1704,7 +1704,7 @@ CLASSDMODELS = {
 	
 				},
 	
-		  {name = ROLES.ROLE_DZCMD,
+		  {name = ROLES.ROLE_DZ,
 	
 				 team = TEAM_DZ,
 	
@@ -1738,7 +1738,7 @@ CLASSDMODELS = {
 	
 				 level = 5,
 
-				 bodygroups = "12001",
+				 bodygroups = "300001",
 	
 				 max = 4
 	
@@ -1777,9 +1777,9 @@ CLASSDMODELS = {
    
 				level = 7,
 
-				ability = {"Portal", 45, "None Provided", "nextoren/gui/special_abilities/special_dz_portal.png", false},
+				ability = {"Portal", 45, "Вы ставите портал который случайно телепортирует вас в одну из зон комплекса", "nextoren/gui/special_abilities/special_dz_portal.png", false},
 
-				bodygroups = "12001",
+				bodygroups = "132110",
    
 				max = 1
    

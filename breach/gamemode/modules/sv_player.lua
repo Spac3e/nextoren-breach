@@ -396,7 +396,7 @@ function mply:ApplyRoleStats( role )
 	self:SetModel( table.Random(role.models) )
 	self:Flashlight( false )
 	self:AllowFlashlight( role.flashlight )
-    self:SetBodyGroups( role.bodygroups)
+	self:SetBodyGroups( role.bodygroups)
 	self:SetNWString("AbilityName", "")
 	self.AbilityTAB = nil
 	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")

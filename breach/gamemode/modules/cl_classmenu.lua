@@ -519,9 +519,6 @@ end
             local x_offset = 0
 			if faction_table[ i ].roles != nil then
 				for k, v in pairs( faction_table[ i ].roles ) do
-					
-
-
 					for i,cls in ipairs(v) do
 						local randomcount = 8
 						if cls["white"] == true then randomcount = 6 end
