@@ -435,28 +435,38 @@ function SpawnAllItems()
 
 end
 
-function SpawnNTFS()
-	if disableNTF then return end
-
-	local usechaos = math.random( 1, 100 ) <= GetConVar("br_ci_percentage"):GetInt()
-	local roles = {}
-	local plys = {}
-	local inuse = {}
-	local spawnpos = usechaos and SPAWN_OUTSIDE_CI or SPAWN_OUTSIDE
-
-	for k, v in pairs( ALLCLASSES.support.roles ) do
+function SpawnSupport()
+local usechaos = math.random( 1, 100 ) <= GetConVar("br_ci_percentage"):GetInt()
+local useuiu = math.random( 100, 100 )
+local usegop = math.random( 1, 100 )
+local roles = {}
+local plys = {}
+local inuse = {}
+local spawnpos = SPAWN_OUTSIDE
+for k, v in pairs( ALLCLASSES.support.roles ) do
 		if usechaos then
 			if v.team == TEAM_CHAOS then
 				table.insert( roles, v )
 			end
 		else
+			if useuiu then
+				if v.team == TEAM_USA then
+					table.insert( roles, v )
+				end
+			else
+				if usegop then
+					if v.team == TEAM_GOC then
+						table.insert( roles, v )
+					end
+				else
 			if v.team == TEAM_GUARD then
 				table.insert( roles, v )
-			end
 		end
 	end
-
-	for k, v in pairs( roles ) do
+end
+end
+end
+for k, v in pairs( roles ) do
 		plys[v.name] = {}
 		inuse[v.name] = 0
 		for _, ply in pairs( player.GetAll() ) do
@@ -493,6 +503,9 @@ function SpawnNTFS()
 		if #roles < 1 then
 			break
 		end
+	end
+	if usegop then
+		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.ogg" )' )
 	end
 	if usechaos then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
@@ -653,6 +666,46 @@ function GetPlayer(nick)
 end
 
 function CreateRagdollPL(victim, attacker, dmgtype)
+	if victim:GetGTeam() == TEAM_SPEC then return end
+	if not IsValid(victim) then return end
+
+	local rag = ents.Create("prop_ragdoll")
+	if not IsValid(rag) then return nil end
+
+	rag:SetPos(victim:GetPos())
+	rag:SetModel(victim:GetModel())
+	rag:SetAngles(victim:GetAngles())
+	rag:SetColor(victim:GetColor())
+
+	rag:Spawn()
+	rag:Activate()
+	
+	rag.Info = {}
+	rag.Info.CorpseID = rag:GetCreationID()
+	rag:SetNWInt( "CorpseID", rag.Info.CorpseID )
+	rag.Info.Victim = victim:Nick()
+	rag.Info.DamageType = dmgtype
+	rag.Info.Time = CurTime()
+	
+	local group = COLLISION_GROUP_DEBRIS_TRIGGER
+	rag:SetCollisionGroup(group)
+	timer.Simple( 1, function() if IsValid( rag ) then rag:CollisionRulesChanged() end end )
+	timer.Simple( 60, function() if IsValid( rag ) then rag:Remove() end end )
+	
+	local num = rag:GetPhysicsObjectCount()-1
+	local v = victim:GetVelocity() * 0.35
+	
+	for i=0, num do
+		local bone = rag:GetPhysicsObjectNum(i)
+		if IsValid(bone) then
+		local bp, ba = victim:GetBonePosition(rag:TranslatePhysBoneToBone(i))
+		if bp and ba then
+			bone:SetPos(bp)
+			bone:SetAngles(ba)
+		end
+		bone:SetVelocity(v * 1.2)
+		end
+	end
 end
 
 function ServerSound( file, ent, filter )

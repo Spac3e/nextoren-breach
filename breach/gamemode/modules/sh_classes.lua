@@ -174,7 +174,7 @@ CLASSDMODELS = {
 	
 				 team = TEAM_CLASSD,
 	
-				 weapons = {"br_holster", "gm_pickpocket_scp"},
+				 weapons = {"br_holster"},
 	
 				 showweapons = {},
 	
@@ -203,8 +203,7 @@ CLASSDMODELS = {
 				 customcheck = nil,
 	
 				 flashlight = false,
-
-				 
+	 
 				 ability = {"Thief", 45, "Украдите у человека предмет который он держит на данный момент!", "nextoren/gui/special_abilities/ability_placeholder.png", false},
 	
 				 max = 3
@@ -217,7 +216,7 @@ CLASSDMODELS = {
 	
 				 weapons = {"br_holster", "breach_keycard_2", "item_knife"},
 	
-				 showweapons = {"Фонарик", "Заточка", "Сканер"},
+				 showweapons = {"Заточка", "Ключ-Карта Общего Доступа 2"},
 	
 				ammo = {},
 	
@@ -249,19 +248,17 @@ CLASSDMODELS = {
 	
 				},
 	
-				{name = ROLES.ROLE_GAY,
+				{name = ROLES.ClassD_Probitiy,
 	
 				 team = TEAM_CLASSD,
 	
-				 weapons = {"br_holster", "weapon_flashlight", "br_keycard_3"},
+				 weapons = {"br_holster"},
 	
-				 showweapons = {"Ключ карта Ученого", "Фонарик"},
+				 showweapons = {""},
 	
 				 ammo = {},
 	
 				 health = 110,
-	
-	
 	
 				 armor = 0,
 	
@@ -288,6 +285,43 @@ CLASSDMODELS = {
 				 max = 3
 	
 				},
+				{name = ROLES.ClassD_Pron,
+	
+				team = TEAM_CLASSD,
+   
+				weapons = {"br_holster", "weapon_flashlight", "breach_keycard_1"},
+   
+				showweapons = {"Ключ карта 1 уровня общего доступа", "Фонарик"},
+   
+				ammo = {},
+   
+				health = 110,
+   
+				armor = 0,
+   
+				walkspeed = 1,
+   
+				runspeed = 1.1,
+   
+				jumppower = 1,
+   
+				vest = nil,
+   
+				models = CLASSDMODELS,
+   
+				showmodel = nil,
+
+				rsdm = true,
+   
+				level = 9,
+   
+				customcheck = nil,
+   
+				flashlight = false,
+   
+				max = 3
+   
+			   },
 	
 				{name = ROLES.ROLE_Killer,
 	
@@ -295,7 +329,7 @@ CLASSDMODELS = {
 	
 				 weapons = {},
 	
-				 showweapons = {"Нож"},
+				 showweapons = {"Заточка"},
 	
 				ammo = {},
 	
@@ -335,7 +369,7 @@ CLASSDMODELS = {
 	
 				 weapons = {},
 	
-				 showweapons = {"Телефон для взлома"},
+				 showweapons = {"Устройства для взлома"},
 	
 				ammo = {},
 	
@@ -373,7 +407,7 @@ CLASSDMODELS = {
 	
 				 weapons = {},
 	
-				 showweapons = {},
+				 showweapons = {"Каннибализм"},
 	
 				ammo = {},
 	
@@ -447,7 +481,7 @@ CLASSDMODELS = {
 	
 				},
 	
-				{name = ROLES.ROLE_TOPKEK,
+				{name = ROLES.ClassD_Bor,
 	
 				 team = TEAM_CLASSD,
 	
@@ -491,9 +525,8 @@ CLASSDMODELS = {
 	
 				 team = TEAM_CLASSD,
 	
-				 weapons = {},
 	
-				 showweapons = {},
+				 showweapons = {"Гамбургер"},
 	
 				   ammo = {},
 	
@@ -577,7 +610,7 @@ CLASSDMODELS = {
 	
 				 team = TEAM_SCI,
 	
-				 weapons = {"br_holster", "weapon_pass_sci", "weapon_flashlight", "br_keycard_3"},
+				 weapons = {"br_holster", "weapon_pass_sci", "br_keycard_3"},
 	
 				 showweapons = {"Ключ карта ученого"},
 	
@@ -1542,7 +1575,7 @@ CLASSDMODELS = {
 				 flashlight = true,
 	
 				 level = 5,
-	
+				 	
 				 max = 3
 	
 				},

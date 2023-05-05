@@ -3987,6 +3987,7 @@ if CLIENT then
 		ParticleEffectAttach(ParticleName, attachType, entity, attachmentID)
 	end)
 end
+
 function mply:WouldDieFrom( damage, hitpos )
 
 	return self:Health() <= damage

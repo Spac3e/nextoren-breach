@@ -9,7 +9,7 @@ ROUNDS = {
 		init = function()
 			SpawnAllItems()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SpawnNTFS()
+				SpawnSupport()
 			end )
 end,
 		roundstart = function()
@@ -92,7 +92,7 @@ end,
 		init = function()
 			SpawnAllItems()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SpawnNTFS()
+				SpawnSupport()
 			end )
 		end,
 		roundstart = function()
@@ -148,7 +148,7 @@ end,
 		init = function()
 			SpawnAllItems()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SpawnNTFS()
+				SpawnSupport()
 			end )
 		end,
 		roundstart = function()

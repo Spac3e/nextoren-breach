@@ -1,3 +1,15 @@
+--[[
+Server Name: Breach 2.6.0 [Alpha]
+Server IP:   94.26.255.7:27415
+File Path:   gamemodes/breach/gamemode/modules/sh_tips.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 if CLIENT then
   surface.CreateFont( "Cyb_HudTEXT",
   {
@@ -55,14 +67,14 @@ if CLIENT then
 
     TipPanels[ #TipPanels + 1 ] = tippanel
 
-    tippanel:SetSize( s1 + s2 + 80, 64 )
+    tippanel:SetSize( s1 + s2 + 100, 64 )
 
     local screenwidth = ScrW()
     local screenheight = ScrH()
 
     local pos = 70
-    tippanel:SetPos( screenwidth - ( s1 + s2 + 100 ), screenheight )
-    tippanel:MoveTo( screenwidth - ( s1 + s2 + 100 ), screenheight - 150 - pos, 0.5, 0, -10, function( data, self ) self.Moving = false end )
+    tippanel:SetPos( screenwidth - ( s1 + s2 + 120 ), screenheight )
+    tippanel:MoveTo( screenwidth - ( s1 + s2 + 120 ), screenheight - 150 - pos, 0.5, 0, -10, function( data, self ) self.Moving = false end )
     tippanel.Moving = true
 
     for _, frame in ipairs( TipPanels ) do
@@ -99,18 +111,15 @@ if CLIENT then
     col1 = col1 || color_white
     col2 = col2 || color_white
 
-    local col3 = Color(0,0,0,135)
-
     tippanel.Paint = function( self, w )
 
       draw.RoundedBox( 8, 0, 7, w, 50, boxclr )
-      draw.RoundedBoxEx( 8, 0, 7, 55, 50, col3, true, false, true, false )
 
-      draw.SimpleText( lang1, "Cyb_HudTEXT", 65, 32, col1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+      draw.SimpleText( lang1, "Cyb_HudTEXT", 80, 32, col1, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
 
       if ( lang2 != "" ) then
 
-        draw.SimpleText( " " .. lang2, "Cyb_HudTEXT", 65 + s1, 32, col2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
+        draw.SimpleText( " " .. lang2, "Cyb_HudTEXT", 80 + s1, 32, col2, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER )
 
       end
 
@@ -118,8 +127,7 @@ if CLIENT then
 
     local tipicon = vgui.Create( "DImage", tippanel )
     tipicon:SetMaterial( maticon )
-    tipicon:SetSize( 54, 54 )
-    tipicon:SetPos(0,6)
+    tipicon:SetSize( 64, 64 )
 
   end
 else

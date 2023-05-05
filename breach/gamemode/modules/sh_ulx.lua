@@ -314,7 +314,7 @@ function InitializeBreachULX()
 	adminmode:help( "Toggles admin mode" )
 
 	function ulx.requestntf( ply, silent )
-		SpawnNTFS()
+		SpawnSupport()
 		if silent then
 			ulx.fancyLogAdmin( ply, true, "#A spawned support units" )
 		else

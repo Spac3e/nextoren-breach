@@ -55,7 +55,7 @@ function mply:DropAllWeapons( strip )
 				if IsValid( wep ) then
 					wep:SetPos( pos )
 					wep:Spawn()
-					if class == "br_keycard" then
+					if string.Left( wep:GetClass(), 12 ) == "breach_keycard_" then
 						local cardtype = v.KeycardType or v:GetNWString( "K_TYPE", "safe" )
 						wep:SetKeycardType( cardtype )
 					end
@@ -277,13 +277,6 @@ function mply:SetInfectD()
 	self:SetNoTarget( false )
 	self:Give("br_holster")
 	self:Give("br_id")
-
-	local card = self:Give( "br_keycard" )
-	if card then
-		card:SetKeycardType( "safe" )
-	end
-	self:SelectWeapon( "br_keycard" )
-
 	self.BaseStats = nil
 	self.UsingArmor = nil
 end
@@ -317,12 +310,6 @@ function mply:SetInfectMTF()
 	self:Give("br_id")
 	self:Give("cw_ar15")
 	self:GiveAmmo( 60, "5.56x45MM" )
-
-	local card = self:Give( "br_keycard" )
-	if card then
-		card:SetKeycardType( "euclid" )
-	end
-	self:SelectWeapon( "br_keycard" )
 
 	self.BaseStats = nil
 	self.UsingArmor = nil
@@ -380,19 +367,9 @@ function mply:ApplyRoleStats( role )
 	self:SetNClass( role.name )
 	self:SetGTeam( role.team )
 	self:SetSkin(0)
-        timer.Simple(1, function()
-			for k, v in pairs( role.weapons ) do
-				self:Give( v )
-			end
-		end)
-	if role.keycard and role.keycard != "" then
-		local card = self:Give( "br_keycard" )
-		if card then
-			card:SetKeycardType( role.keycard )
-		end
-		self:SelectWeapon( "br_keycard" )
+	for k, v in pairs( role.weapons ) do
+		self:Give( v )
 	end
-
 	for k, v in pairs( role.ammo ) do
 		for _, wep in pairs( self:GetWeapons() ) do
 			if v[1] == wep:GetClass() then
@@ -410,6 +387,7 @@ function mply:ApplyRoleStats( role )
 			end
 		end
 	end
+	self:ClearBodyGroups()
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	self:SetWalkSpeed(100 * role.walkspeed)

@@ -80,6 +80,36 @@ hook.Add("HUDShouldDraw", "Breach_Screenshot_Mode", function(name)
 
 end)
 
+function ClientBoneMerge( ent, model )
+
+    local bonemerge_ent = ents.CreateClientside( "ent_bonemerged" )
+
+    --print( ent, model )
+
+    bonemerge_ent:SetModel( model )
+
+    bonemerge_ent:SetSkin( ent:GetSkin() || 0 )
+
+    bonemerge_ent:Spawn()
+
+    bonemerge_ent:SetParent( ent, 0 )
+
+    bonemerge_ent:SetLocalPos( vector_origin )
+
+    bonemerge_ent:SetLocalAngles( angle_zero )
+
+    bonemerge_ent:AddEffects( EF_BONEMERGE )
+
+    if ( !ent.BoneMergedEnts ) then
+
+        ent.BoneMergedEnts = {}
+
+    end
+
+    ent.BoneMergedEnts[ #ent.BoneMergedEnts + 1 ] = bonemerge_ent
+end
+
+
 local ModifiedBones = {}
 local function ShrinkBone(bone)
 	local client = LocalPlayer()
@@ -765,6 +795,467 @@ net.Receive("boom_round", function()
 
 end)
 
+local EntMats = {}
+net.Receive( "NightvisionOn", function()
+
+  local stype = net.ReadString()
+
+  local clr_red, clr_green, clr_blue = 255, 255, 255
+  local contrastv = 1
+
+  local client = LocalPlayer()
+
+  if ( stype == "green" ) then
+
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionRed" )
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionWhite" )
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionGoc" )
+    clr_red = 0
+    clr_green = .07
+    clr_blue = 0
+
+  elseif ( stype == "red" ) then
+
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionWhite" )
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionGoc" )
+
+    clr_red = .5
+    clr_green = 0
+    clr_blue = 0
+    contrastv = 0.1
+    hook.Add( "PostDrawTranslucentRenderables", "ThermalVisionRed", function()
+
+      local client = LocalPlayer()
+
+      local playerpos = client:GetPos()
+      local eyespos = client:EyePos() + client:EyeAngles():Forward() * 8
+      local eyeang = client:EyeAngles()
+      eyeang = Angle( eyeang.p + 90, eyeang.y, 0 )
+      render.ClearStencil()
+
+      render.SetStencilEnable( true )
+
+        render.SetStencilWriteMask( 255 )
+        render.SetStencilTestMask( 255 )
+        render.SetStencilReferenceValue( 1 )
+
+        for _, ent in ipairs( ents.FindInSphere( client:GetPos(), 1024 ) ) do
+
+          if ( ent:IsPlayer() || ent:IsNPC() ) then
+
+            if ( ent == client ) then
+
+              if ( ent:Health() <= 0 || !ent.NVG || !ent:HasWeapon( "item_nightvision_red" ) ) then
+
+                hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionRed" )
+
+                return
+              end
+
+            else
+
+              local current_team = ent:IsPlayer() && ent:GTeam()
+
+              if ( ent:GetPos():DistToSqr( playerpos ) > 1048576 || current_team == TEAM_SPEC ) then continue end
+
+              if ( current_team == TEAM_SCP && !ent:IsSolid() ) then continue end
+              if ent:IsPlayer() and ent:Health() <= 0 then continue end
+              if ent:IsPlayer() and !ent:Alive() then continue end
+
+              render.SetStencilCompareFunction( STENCIL_ALWAYS )
+              render.SetStencilZFailOperation( STENCIL_REPLACE )
+
+              render.SetStencilPassOperation( STENCIL_REPLACE )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+              ent:DrawModel()
+
+              local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", ent )
+
+              if ( tbl_bonemerged && istable( tbl_bonemerged ) ) then
+
+                for _, v in ipairs( tbl_bonemerged ) do
+
+                  if ( v && v:IsValid() ) then
+
+                    v:DrawModel()
+
+                  end
+
+                end
+
+              end
+
+              render.SetStencilCompareFunction( STENCIL_EQUAL )
+              render.SetStencilZFailOperation( STENCIL_KEEP )
+              render.SetStencilPassOperation( STENCIL_KEEP )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+
+              cam.Start3D2D( eyespos, eyeang, 1 )
+
+                surface.SetDrawColor( 170, 170, 170 )
+                surface.DrawRect( -ScrW(), -ScrH(), ScrW() * 2, ScrH() * 2 )
+
+              cam.End3D2D()
+
+            end
+
+          end
+
+        end
+
+        render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
+        render.SetStencilZFailOperation( STENCIL_KEEP )
+        render.SetStencilPassOperation( STENCIL_KEEP )
+        render.SetStencilFailOperation( STENCIL_KEEP )
+
+        cam.Start3D2D( eyespos, eyeang, 1 )
+
+          surface.SetDrawColor( 0, 0, 0, 240 )
+          surface.DrawRect( -ScrW(), -ScrH(), ScrW() * 2, ScrH() * 2 )
+
+        cam.End3D2D()
+
+      render.SetStencilEnable( false )
+
+    end )
+
+  elseif ( stype == "blue" ) then
+
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionRed" )
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionWhite" )
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionGoc" )
+    clr_red = 0
+    clr_green = 0
+    clr_blue = .10
+
+  elseif ( stype == "white" ) then
+
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionRed" )
+
+    clr_red = .08
+    clr_green = .08
+    clr_blue = .08
+
+    hook.Add( "PostDrawTranslucentRenderables", "ThermalVisionWhite", function()
+
+      local client = LocalPlayer()
+
+      local playerpos = client:GetPos()
+      local eyespos = client:EyePos() + client:EyeAngles():Forward() * 8
+      local eyeang = client:EyeAngles()
+      eyeang = Angle( eyeang.p + 90, eyeang.y, 0 )
+      render.ClearStencil()
+
+      render.SetStencilEnable( true )
+
+        render.SetStencilWriteMask( 255 )
+        render.SetStencilTestMask( 255 )
+        render.SetStencilReferenceValue( 1 )
+
+        for _, ent in ipairs( ents.FindInSphere( client:GetPos(), 1024 ) ) do
+
+          if ( ent:IsPlayer() || ent:IsNPC() ) then
+
+            if ( ent == client ) then
+
+              if ( ent:Health() <= 0 || !ent.NVG || !ent:HasWeapon( "item_nightvision_white" ) ) then
+
+                hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionWhite" )
+
+                return
+              end
+
+            else
+
+              local current_team = ent:IsPlayer() && ent:GTeam()
+
+              if ( !client:CanSee( ent ) || ent:IsPlayer() && current_team == TEAM_SPEC ) then continue end
+
+              if ( current_team == TEAM_SCP && !ent:IsSolid() ) then continue end
+              if ent:IsPlayer() and ent:Health() <= 0 then continue end
+              if ent:IsPlayer() and !ent:Alive() then continue end
+
+              render.SetStencilCompareFunction( STENCIL_ALWAYS )
+              render.SetStencilZFailOperation( STENCIL_REPLACE )
+
+              render.SetStencilPassOperation( STENCIL_REPLACE )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+              ent:DrawModel()
+
+              local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", ent )
+
+              if ( tbl_bonemerged && istable( tbl_bonemerged ) ) then
+
+                for _, v in ipairs( tbl_bonemerged ) do
+
+                  if ( v && v:IsValid() ) then
+
+                    v:DrawModel()
+
+                  end
+
+                end
+
+              end
+
+              render.SetStencilCompareFunction( STENCIL_EQUAL )
+              render.SetStencilZFailOperation( STENCIL_KEEP )
+              render.SetStencilPassOperation( STENCIL_KEEP )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+
+              cam.Start3D2D( eyespos, eyeang, 1 )
+              
+                surface.SetDrawColor( 255, 0, 0, 80 )
+                surface.DrawRect( -ScrW(), -ScrH(), ScrW() * 2, ScrH() * 2 )
+
+              cam.End3D2D()
+
+            end
+
+          end
+
+        end
+
+        render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
+        render.SetStencilZFailOperation( STENCIL_KEEP )
+        render.SetStencilPassOperation( STENCIL_KEEP )
+        render.SetStencilFailOperation( STENCIL_KEEP )
+
+      render.SetStencilEnable( false )
+
+    end )
+
+  elseif ( stype == "GOC" ) then
+
+    hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionRed" )
+
+    clr_red = .08
+    clr_green = .08
+    clr_blue = .08
+
+    hook.Add( "PostDrawTranslucentRenderables", "ThermalVisionGoc", function()
+
+      local client = LocalPlayer()
+
+      local clientteam = client:GTeam()
+      local playerpos = client:GetPos()
+      local eyespos = client:EyePos() + client:EyeAngles():Forward() * 8
+      local eyeang = client:EyeAngles()
+      eyeang = Angle( eyeang.p + 90, eyeang.y, 0 )
+      render.ClearStencil()
+
+      render.SetStencilEnable( true )
+
+        render.SetStencilWriteMask( 255 )
+        render.SetStencilTestMask( 255 )
+        render.SetStencilReferenceValue( 1 )
+
+        for _, ent in ipairs( ents.FindInSphere( client:GetPos(), 1024 ) ) do
+
+          if ( ent:IsPlayer() || ent:IsNPC() ) then
+
+            if ( ent == client ) then
+
+              if ( ent:Health() <= 0 || !ent.NVG || !ent:HasWeapon( "item_nightvision_goc" ) ) then
+
+                hook.Remove( "PostDrawTranslucentRenderables", "ThermalVisionGoc" ) --"ThermalVisionWhite" )
+
+                return
+              end
+
+            else
+
+              local current_team = ent:IsPlayer() && ent:GTeam()
+
+              if ( !client:CanSee( ent ) || ent:IsPlayer() && current_team == TEAM_SPEC ) then continue end
+
+              if ( current_team == TEAM_SCP && !ent:IsSolid() ) then continue end
+              if ent:IsPlayer() and ent:Health() <= 0 then continue end
+              if ent:IsPlayer() and !ent:Alive() then continue end
+
+              local entcolor = {255,0,0, 8}
+              if ent:GetModel():find("goc.mdl") or ( current_team == TEAM_GOC and clientteam == TEAM_GOC ) then
+              	entcolor = {0, 255, 0, 80}
+              end
+
+              render.SetStencilCompareFunction( STENCIL_ALWAYS )
+              render.SetStencilZFailOperation( STENCIL_REPLACE )
+
+              render.SetStencilPassOperation( STENCIL_REPLACE )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+              ent:DrawModel()
+
+              local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", ent )
+
+              if ( tbl_bonemerged && istable( tbl_bonemerged ) ) then
+
+                for _, v in ipairs( tbl_bonemerged ) do
+
+                  if ( v && v:IsValid() ) then
+
+                    v:DrawModel()
+
+                  end
+
+                end
+
+              end
+
+              render.SetStencilCompareFunction( STENCIL_EQUAL )
+              render.SetStencilZFailOperation( STENCIL_KEEP )
+              render.SetStencilPassOperation( STENCIL_KEEP )
+              render.SetStencilFailOperation( STENCIL_KEEP )
+
+              cam.Start3D2D( eyespos, eyeang, 1 )
+	            surface.SetDrawColor( unpack(entcolor) )--surface.SetDrawColor( 255, 0, 0, 80 )
+                surface.DrawRect( -ScrW(), -ScrH(), ScrW() * 2, ScrH() * 2 )
+
+              cam.End3D2D()
+
+            end
+
+          end
+
+        end
+
+        render.SetStencilCompareFunction( STENCIL_NOTEQUAL )
+        render.SetStencilZFailOperation( STENCIL_KEEP )
+        render.SetStencilPassOperation( STENCIL_KEEP )
+        render.SetStencilFailOperation( STENCIL_KEEP )
+
+      render.SetStencilEnable( false )
+
+    end )
+
+  end
+
+  client.NVG = true
+  client.CustomRenderHook = true
+
+  local mat_colornvg = Material( "pp/colour" ) -- used outside of the hook for performance
+  local red_spell = Material( "redspell.png" )
+
+  hook.Add( "RenderScreenspaceEffects", "NVGOverlayplusligthing", function()
+
+    local client = LocalPlayer()
+
+    if ( !client.NVG || !( client:HasWeapon( "item_nightvision_red" ) || client:HasWeapon( "item_nightvision_white" ) || client:HasWeapon("item_nightvision_goc") || client:HasWeapon( "item_nightvision_blue" ) || client:HasWeapon( "item_nightvision_green" ) ) ) then
+
+      clr_red = 0
+      clr_green = 0
+      clr_blue = 0
+      client.CustomRenderHook = nil
+      hook.Remove( "RenderScreenspaceEffects", "NVGOverlayplusligthing" )
+
+      return
+    end
+
+    DrawMaterialOverlay( "nextoren/nvg/drg_nvg.vmt", 0 )
+    DrawMaterialOverlay( "nextoren/nvg/drg_nvg2.vmt", 0 )
+    DrawMaterialOverlay( "nextoren/nvg/drg_nvg_goggle.vmt", 0 )
+    DrawMaterialOverlay( "models/props_c17/fisheyelens.vmt", 0.04 )
+
+    if ( clr_red == .5 ) then
+
+      DrawTexturize( 0, red_spell )
+
+    end
+
+    local dark = -.01
+    local contrast = 3
+    local colour = contrastv
+    local nvgbrightness = 0
+    local clr_r = 0
+    local clr_g = 0
+    local clr_b = 0
+    local bloommul = 1.2
+    local add_r = clr_red
+    local add_b = clr_blue
+    local add_g = clr_green
+
+    render.UpdateScreenEffectTexture()
+
+    mat_colornvg:SetTexture( "$fbtexture", render.GetScreenEffectTexture() )
+
+    mat_colornvg:SetFloat( "$pp_colour_contrast", contrast )
+    mat_colornvg:SetFloat( "$pp_colour_colour", colour )
+    mat_colornvg:SetFloat( "$pp_colour_brightness", dark )
+    mat_colornvg:SetFloat( "$pp_colour_mulr", clr_r )
+    mat_colornvg:SetFloat( "$pp_colour_mulg", clr_g )
+    mat_colornvg:SetFloat( "$pp_colour_mulb", clr_b )
+    mat_colornvg:SetFloat( "$pp_colour_addr", add_r )
+    mat_colornvg:SetFloat( "$pp_colour_addg", add_g )
+    mat_colornvg:SetFloat( "$pp_colour_addb", add_b )
+
+    render.SetMaterial( mat_colornvg )
+    render.DrawScreenQuad()
+
+  end )
+
+end )
+
+local view_punch_angle = Angle( -30, 0, 0 )
+local dust_vector = Vector( -712.862427, 6677.729492, 2225.919189 )
+local particle_origin = Vector( -525.942322, -6318.510742, -2352.465820 )
+
+net.Receive("Boom_Effectus", function()
+
+	local player = LocalPlayer()
+
+    util.ScreenShake( vector_origin, 200, 10, 20, 32768 );
+
+    ParticleEffect( "vman_nuke", dust_vector, angle_zero );
+    ParticleEffect( "vman_nuke", particle_origin, angle_zero );
+
+    timer.Simple(7, function()
+
+    	if player:GTeam() != TEAM_SPEC and player:Health() > 0 then
+          player:ViewPunch( view_punch_angle )
+        end
+
+    end)
+
+    timer.Simple(5, function()
+
+      ParticleEffect( "dustwave_tracer", dust_vector, angle_zero );
+
+    end)
+
+    timer.Simple(5, function()
+
+	    util.ScreenShake( vector_origin, 200, 100, 10, 32768);
+
+	    player:ScreenFade( SCREENFADE.OUT, color_black, 2.3, 10 )
+
+	    timer.Simple(4, function()
+	    	player.no_signal = true
+	    end)
+
+    end)
+
+end)
+
+net.Receive( "NightvisionOff", function()
+
+  LocalPlayer().NVG = false
+
+end )
+
+net.Receive( "GestureClientNetworking", function()
+
+  local gesture_ent = net.ReadEntity()
+
+  if ( !( gesture_ent && gesture_ent:IsValid() ) ) then return end
+
+  local gesture_id = net.ReadUInt( 13 )
+  local gesture_slot = net.ReadUInt( 3 )
+  local loop = net.ReadBool()
+
+  gesture_ent:AnimResetGestureSlot( gesture_slot )
+  gesture_ent:AddVCDSequenceToGestureSlot( gesture_slot, gesture_id, 0, loop )
+
+end )
+
 
 net.Receive( "TranslatedMessage", function( len )
 	local msg = net.ReadString()
@@ -1007,7 +1498,13 @@ hook.Add( "RenderScreenspaceEffects", "blinkeffects", function()
 --	end
 	local client_health = client:Health()
 	local client_team = client:GTeam()
-
+	local no_signal = Material( "nextoren_hud/overlay/no_signal" )
+	if client.no_signal then
+		no_signal:SetFloat( "$alpha", 1 )
+		no_signal:SetInt( "$ignorez", 1 )
+		render.SetMaterial( no_signal )
+		render.DrawScreenQuad()
+	end
 	if clienttable["no_signal"] then
 		if client_team != TEAM_SPEC then
 			clienttable["no_signal"] = nil
@@ -1091,7 +1588,16 @@ function GM:PlayerBindPress( ply, bind, pressed )
 			DropCurrentWeapon()
 		end
 	elseif bind == "gm_showteam" then
-		OpenClassMenu()
+
+		if ( !IsRoleMenuVisible() ) then
+
+			OpenClassMenu()
+
+		elseif ( IsRoleMenuVisible() ) then
+
+			CloseRoleMenu()
+
+		end
 	elseif bind == "+menu_context" then
 		thirdpersonenabled = !thirdpersonenabled
 	elseif bind == "noclip" and ply:IsAdmin() then
@@ -1948,6 +2454,7 @@ local outcomeResult = {
 	[ "GRU Alive Only" ] = { image = "nextoren/gui/roles_icon/gru.png" },
 
 }
+
 
 function EndRoundStats()
 	local timeout = GetTimeoutInfo()

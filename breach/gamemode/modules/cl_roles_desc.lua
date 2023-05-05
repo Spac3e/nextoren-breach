@@ -144,8 +144,8 @@ BREACH.Descriptions.english[ROLES.ROLE_VOR] = "You - are the Class-D Personnel\n
 BREACH.Descriptions.russian[ROLES.ROLE_FAT] = "Вы - Сотрудник Класса-Д\n\nУ вас очень широкая кость, что дает Вам ряд преимуществ, но в то же время ряд недостатков\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_FAT] = "You - are the Class-D Personnel\n\nYou are a fatty one, which gives you some advantages and disadvantages\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
 
-BREACH.Descriptions.russian[ROLES.ROLE_TOPKEK] = "Вы - Сотрудник Класса-Д\n\nВремя вы зря не теряли, и достаточно хорошо подкачались за время в комплексе\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
-BREACH.Descriptions.english[ROLES.ROLE_TOPKEK] = "You - are the Class-D Personnel\n\nYou didn't waste your time sitting here, so you trained every day to get muscles\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
+BREACH.Descriptions.russian[ROLES.ClassD_Bor] = "Вы - Сотрудник Класса-Д\n\nВремя вы зря не теряли, и достаточно хорошо подкачались за время в комплексе\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
+BREACH.Descriptions.english[ROLES.ClassD_Bor] = "You - are the Class-D Personnel\n\nYou didn't waste your time sitting here, so you trained every day to get muscles\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
 
 BREACH.Descriptions.russian[ROLES.ROLE_hacker] = "Вы - Сотрудник Класса-Д\n\nВы довольно умны, и можете взламывать двери своим устройством, который незаметно смастерили\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_hacker] = "You - are the Class-D Personnel\n\nYou are a smart one, you can hack the doors using your tool you secretly made while you was here\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
@@ -153,8 +153,8 @@ BREACH.Descriptions.english[ROLES.ROLE_hacker] = "You - are the Class-D Personne
 BREACH.Descriptions.russian[ROLES.ROLE_Can] = "Вы - Сотрудник Класса-Д\n\nПохоже вы слетели с катушек находясь здесь, и теперь вы достаточно безумны что бы съесть даже трупы..\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_Can] = "You - are the Class-D Personnel\n\nLook's like you gone insane while you was here, you are so insane that you could eat a corpse...\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
 
-BREACH.Descriptions.russian[ROLES.ROLE_GAY] = "Вы - Сотрудник Класса-Д\n\nПохоже ваши карманы намного больше чем у остальных\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
-BREACH.Descriptions.english[ROLES.ROLE_GAY] = "You - are the Class-D Personnel\n\nLook's like your pockets are bigger that from the others\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
+BREACH.Descriptions.russian[ROLES.ClassD_Probitiy] = "Вы - Сотрудник Класса-Д\n\nПохоже ваши карманы намного больше чем у остальных\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
+BREACH.Descriptions.english[ROLES.ClassD_Probitiy] = "You - are the Class-D Personnel\n\nLook's like your pockets are bigger that from the others\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
 
 BREACH.Descriptions.russian[ROLES.ROLE_Sport] = "Вы - Сотрудник Класса-Д\n\nВы достаточно хороший бегун\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_Sport] = "You - are the Class-D Personnel\n\nYou are a pretty fast runner\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"

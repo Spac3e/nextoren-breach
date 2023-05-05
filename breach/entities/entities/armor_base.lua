@@ -30,7 +30,7 @@ ENT.Bodygroups = {
 function ENT:Initialize()
 
 	if self:GetClass() == "armor_sci" then
-		local pickrole = BREACH_ROLES.SCI.sci.roles[table.Random({1,4,6})]
+		local pickrole = ALLCLASSES.researchers.roles[table.Random({1,4,6})]
 		for i = 0, 12 do
 			if pickrole["bodygroup"..i] then
 				self.Bodygroups[i] = tostring(pickrole["bodygroup"..i])
@@ -96,7 +96,7 @@ if ply:GetNClass() == ROLES.ROLE_CLASSDPIDORAS and !ply:GetModel():find("class_d
 if self.IsUsedAlready then return end
 if self.Team and ply:GTeam() != self.Team and ply:GetNClass() != ROLES.ROLE_GOCSPY then ply:RXSENDNotify("Вы не можете надеть данное снаряжение!") return end
 
-	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == ROLES.ROLE_GOCSPY or ply:GetNClass() == ROLES.ROLE_USASPY or ply:GetNClass() == ROLES.ROLE_DZDZ ) and ply:GetNClass() != ROLES.ROLE_FAT and ply:GetNClass() != ROLES.ROLE_TOPKEK then
+	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == ROLES.ROLE_GOCSPY or ply:GetNClass() == ROLES.ROLE_USASPY or ply:GetNClass() == ROLES.ROLE_DZDZ ) and ply:GetNClass() != ROLES.ROLE_FAT and ply:GetNClass() != ROLES.ClassD_Bor then
 		nextuse = CurTime() + delay
 		if SERVER then
 			if string.len(ply:GetUsingCloth()) > 0 then

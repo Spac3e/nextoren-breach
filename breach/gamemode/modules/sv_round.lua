@@ -194,7 +194,7 @@ end
 canescortds = true
 canescortrs = true
 function CheckEscape()
-	for k,v in pairs(ents.FindInSphere(POS_ESCAPE, 250)) do
+	for k,v in pairs(ents.FindInSphere(POS_ESCAPEALL, 250)) do
 		if v:IsPlayer() == true then
 			if v:Alive() == false then return end
 			if v.isescaping == true then return end
@@ -413,7 +413,7 @@ function WinCheck()
 		print("Ending round because " .. why)
 		PrintMessage(HUD_PRINTCONSOLE, "Ending round because " .. why)
 		StopRound()
-		net.Start("boom_round")
+		net.Start("Boom_Effectus")
 		net.Broadcast()
 		timer.Destroy("RoundTime")
 		preparing = false

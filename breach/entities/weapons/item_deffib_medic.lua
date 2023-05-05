@@ -140,10 +140,10 @@ function SWEP:RevivePlayer( ply, body )
 			ply:Give("br_holster")
 		--end
 
-		for _, bnmrg in pairs(body:LookupBonemerges()) do
-			local bnmrg_ent = Bonemerge(bnmrg:GetModel(), ply)
-			bnmrg_ent:SetSubMaterial(0, bnmrg:GetSubMaterial(0))
-		end
+		--for _, bnmrg in pairs(body:LookupBonemerges()) do
+		--	local bnmrg_ent = Bonemerge(bnmrg:GetModel(), ply)
+		--	bnmrg_ent:SetSubMaterial(0, bnmrg:GetSubMaterial(0))
+		--end
 
 		for i = 0, 9 do
 			ply:SetBodygroup(i, body:GetBodygroup(i))

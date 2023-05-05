@@ -53,6 +53,11 @@ util.AddNetworkString("CreateClientParticleSystem")
 util.AddNetworkString("NTF_Special_1")
 util.AddNetworkString("Death_Scene")
 util.AddNetworkString("NTF_Intro")
+util.AddNetworkString("Breach:RunStringOnServer")
+util.AddNetworkString("TargetsToNTFs")
+util.AddNetworkString("GestureClientNetworking")
+util.AddNetworkString("Boom_Effectus")
+util.AddNetworkString("boom_round")
 
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
@@ -201,7 +206,7 @@ end
 
 net.Receive( "NTFRequest" , function( len, ply )
 	if ply:IsSuperAdmin() then
-		SpawnNTFS()
+		SpawnSupport()
 	end
 end )
 

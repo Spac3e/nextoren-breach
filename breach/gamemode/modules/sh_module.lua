@@ -255,7 +255,7 @@ ROLES.ROLE_FARTINHALER = "Class D Fart Inhaler"
 
 ROLES.ROLE_Killer = "Class D Killer"
 
-ROLES.ROLE_TOPKEK = "Class D Strong"
+ROLES.ClassD_Bor = "Class D Strong"
 
 ROLES.ROLE_hacker = "Class D Hacker"
 
@@ -267,7 +267,9 @@ ROLES.ROLE_Sport = "Class D Sportsman"
 
 ROLES.ROLE_VOR = "Class D Thief"
 
-ROLES.ROLE_GAY = "Class D Secondhand"
+ROLES.ClassD_Probitiy = "Class D Secondhand"
+
+ROLES.ClassD_Pron = "Class D Pron"
 
 ROLES.ROLE_VETERAN = "Veteran"
 

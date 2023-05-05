@@ -1288,7 +1288,7 @@ english.starttexts = {
 
 
 
-	ROLE_GAY = {
+	ClassD_Probitiy = {
 
 
 
@@ -1309,7 +1309,27 @@ english.starttexts = {
 
 
 	},
+	ClassD_Pron = {
 
+
+
+		"Класс-Д Проныра",
+	
+	
+	
+			 {"Вы провели много времени в заключении",
+	
+	
+	
+			"За это время многое произшло и вы раздобыли",
+	
+	
+	
+			"фонарик и украли карточку у сотрудника фонда"}
+	
+	
+	
+		},
 
 
 	ROLE_Killer = {
@@ -1340,7 +1360,7 @@ english.starttexts = {
 
 
 
-	ROLE_TOPKEK = {
+	ClassD_Bor = {
 
 
 
@@ -2559,7 +2579,22 @@ english.ROLES.ROLE_MEDIC = "Медик"
 
 
 
---english.ROLES.ROLE_FOCKYOU = "ОБР Боец"
+english.ClassD = "Class-D Personnel"
+english.SCP = "SCP"
+english.SCI = "Scientific Department"
+english.SECURITY = "Security Department"
+english.GRU = "GRU ''P'' Division"
+english.UIU = "Unusual Incidents Unit"
+english.SKP = "Sonderkommando für Paranormales"
+english.DZ = "Serpent's Hand"
+english.Goc = "Global Occult Coalition"
+english.QRT = "Quick Response Team"
+english.STS = "Special Task Squad"
+english.MTF = "Mobile Task Force"
+english.NTF = "MTF Epsilon-11 ''Nine Tailed Fox''"
+english.Chaos = "Chaos Insurgency"
+english.SCI_SPECIAL = "Special Scientists"
+english.Cult = "Children of The Scarlet King"
 
 
 
@@ -2581,6 +2616,7 @@ english.ROLES.ROLE_MEDIC = "Медик"
 
 english.ROLES.ROLE_CLASSD = "Класс-Д Персонал"
 
+english.ROLES.ClassD_Pron = "Класс-Д Проныра"
 
 
 english.ROLES.ROLE_FAT = "Класс-Д Мясистый"
@@ -2615,11 +2651,12 @@ english.ROLES.ROLE_VOR = "Класс-Д Вор"
 
 
 
-english.ROLES.ROLE_GAY = "Класс-Д Проныра"
+english.ROLES.ClassD_Probitiy = "Класс-Д Пробитый"
+
+english.ROLES.ClassD_Probitiy = "Класс-Д Пробитый"
 
 
-
-english.ROLES.ROLE_TOPKEK = "Класс-Д Качок"
+english.ROLES.ClassD_Bor = "Класс-Д Качок"
 
 
 

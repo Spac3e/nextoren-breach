@@ -1,0 +1,6 @@
+"DecalModulate"
+{
+	"$basetexture" "Decals/gm_bloodstains_005"
+	"$translucent" 1
+	"$decal" "1"
+}
