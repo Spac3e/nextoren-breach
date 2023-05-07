@@ -1271,6 +1271,13 @@ english.starttexts = {
 
 	},
 
+	ROLE_GOC_JAG = {
+
+	
+	
+		},
+	
+
 
 
 	ROLE_GOCSPY = {
@@ -2557,6 +2564,7 @@ english.ROLES.ROLE_UIU_Clocker = "Устранитель ОНП"
 
 english.ROLES.ROLE_GoPCMD = "Командир ГОК"
 
+english.ROLES.ROLE_GOC_JAG = "Джаггернаут ГОК"
 
 
 english.ROLES.ROLE_NTFCMD = "Командир Эпсилон-11"

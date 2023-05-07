@@ -1616,6 +1616,45 @@ CLASSDMODELS = {
 				 max = 3
 	
 				},
+				{name = ROLES.ROLE_GOC_JAG,
+	
+				team = TEAM_GOC,
+   
+				weapons = {"br_holster", "item_radio", "cw_cultist_goc_fate", "item_nightvision_goc", "item_adrenaline"},
+   
+				showweapons = {""},
+   
+				ammo = {{"GOC", 800}},
+
+				ability = {"Shield", 75, "Активируйте щит что-бы защитить себя и своих товарищей.", "nextoren/gui/special_abilities/special_goc_shield.png", false},
+   
+				health = 220,
+   
+				armor = 100,
+   
+				walkspeed = 0.86,
+   
+				runspeed = 0.93,
+   
+				jumppower = 0.85,
+   
+				vest = nil,
+   
+				models = GOCMODELS,
+   
+				showmodel = nil,
+   
+				pmcolor = nil,
+   
+				flashlight = true,
+   
+				level = 5,
+                
+                bodygroups = "12",
+					
+				max = 1
+   
+			   },
 	
 				{name = ROLES.ROLE_GoPCMD,
 	
@@ -1625,7 +1664,7 @@ CLASSDMODELS = {
 	
 				 showweapons = {"Ключ-карта ГОКа", "Рация", "Дубинка", "Скар и сканнер"},
 	
-				 ammo = {{"AR2", 800}},
+				 ammo = {{"GOC", 410}},
 	
 	
 	

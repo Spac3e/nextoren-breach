@@ -330,6 +330,8 @@ ROLES.ROLE_GoP = "GOC Soldier"
 
 ROLES.ROLE_GoPCMD = "GOC Commander"
 
+ROLES.ROLE_GOC_JAG = "GOC Jaggernaut"
+
 // ONP
 
 ROLES.ROLE_USA = "Unusual Incidents Unit"

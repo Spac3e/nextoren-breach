@@ -2849,14 +2849,17 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				ply:BrProgressBar("Выдача снаряжения...", 8, "nextoren/gui/special_abilities/ability_recruiter.png", target, false, finishcallback)
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_GOCJUG) then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_GOC_JAG) then
 
 			ply:SetSpecialCD( CurTime() + 75)
 
-			local shield = ents.Create("ent_goc_shield")
-			shield:SetOwner(ply)
-			shield:Spawn()
+			if SERVER then
 
+				local shield = ents.Create("ent_goc_shield")
+				shield:SetOwner(ply)
+				shield:Spawn()
+
+			end
 		elseif ply:HaveSpecialAb(ROLES.ROLE_UIUSPEC) then
 
 			maxs_uiu_spec = Vector( 8, 10, 5 )

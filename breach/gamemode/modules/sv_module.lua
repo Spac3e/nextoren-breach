@@ -451,24 +451,24 @@ function SpawnSupport()
 				table.insert( roles, v )
 			end
 		else
-			if v.team == TEAM_GUARD then
-				table.insert( roles, v )
-			end
-    		else
-		   if usegoc then
+      		if usegoc then
 			if v.team == TEAM_GOC then
 				table.insert( roles, v )
 			end
-    		else
-		   if useuiu then
+		else
+        		if useuiu then
 			if v.team == TEAM_USA then
 				table.insert( roles, v )
 			end
-            end
+		else
+			if v.team == TEAM_GUARD then
+				table.insert( roles, v )
+			end
 		end
-      end
 	end
+      end
     end
+
 	for k, v in pairs( roles ) do
 		plys[v.name] = {}
 		inuse[v.name] = 0
@@ -520,7 +520,7 @@ function SpawnSupport()
 	if !usechaos and !usegoc and !useuiu then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
 	end
-  end
+end
 
 SCP914InUse = false
 function Use914( ent )

@@ -78,6 +78,12 @@ BREACH.Descriptions.english[ROLES.ROLE_GoP] = "You - are the Global Occult Coali
 BREACH.Descriptions.russian[ROLES.ROLE_GoPCMD] = "Вы - Командир Глобальной Оккультной Коалиции\n\nВы можете становиться невидимым на некоторое время\n\nВзорвите Боеголовку любой ценой!"
 BREACH.Descriptions.english[ROLES.ROLE_GoPCMD] = "You - are the Global Occult Coalition Commander\n\nYou have the ability to become invisible for some time\n\nDetonate the Alpha Warhead at all cost!"
 
+--BREACH.Descriptions.russian[role.Goc_Special] = "Вы - Специалист Глобальной Оккультной Коалиции\n\nВзорвите Боеголовку любой ценой!"
+--BREACH.Descriptions.english[role.Goc_Special] = "You - are the Global Occult Coalition Specialist\n\nDetonate the Alpha Warhead at all cost!"
+
+BREACH.Descriptions.russian[ROLES.ROLE_GOC_JAG] = "Вы - Джаггернаут Глобальной Оккультной Коалиции\n\nВы можете призвать специальный щит через который вы сможете простреливтаь, а остальные нет\n\nВзорвите Боеголовку любой ценой!"
+BREACH.Descriptions.english[ROLES.ROLE_GOC_JAG] = "You - are the Global Occult Coalition Juggernaut\n\nYou have the ability to enable special shield that you can shoot through, while others can't.\n\nDetonate the Alpha Warhead at all cost!"
+
 // Длань Змей
 
 BREACH.Descriptions.russian[ROLES.ROLE_DZ] = "Вы - Солдат Длани Змей\n\nЗащитите и Эвакуируйте SCP!"
