@@ -199,7 +199,7 @@ timer.Simple( 5, function()
 
     if ( speed > 250 ) then
 
-      ply:Tip( 3, "You cannot exit a moving vehicle!", Color( 255, 255, 0 ) )
+      ply:BrTip( 3, "[VAULT Breach]", Color( 210, 0, 0, 180), "Вы не можете выйти из вашины в движение", Color( 255, 208, 0, 180) )
       return false
 
     end
@@ -517,7 +517,7 @@ timer.Simple( 5, function()
 
     elseif ( IsFirstTimePredicted() && ply:GetVehicle().TurnedOff && !ply:HasWeapon( "item_keys" ) ) then
 
-      ply:BrEventMessage( "У вас нет ключей." )
+      ply:SetBottomMessage( "У вас нет ключей." )
 
     end
 
@@ -532,7 +532,7 @@ timer.Simple( 5, function()
 
     if ( vehicle:GetClass() == "prop_vehicle_jeep" && vehicle:GetDriver() == player ) then
 
-      player:BrEventMessage( "Нажмите клавишу \"B\" для активации двигателя.")
+      player:SetBottomMessage( "Нажмите клавишу \"B\" для активации двигателя.")
 
     end
 

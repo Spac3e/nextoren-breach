@@ -2717,7 +2717,7 @@ local alpha_color = 0
 local final_color = 255
 function make_bottom_message(msg)
 	alpha_color = 0
-final_color = 255
+    final_color = 255
     hook.Add( "HUDPaint", "BottomMessage", function()
 		alpha_color = math.Approach(alpha_color, final_color, RealFrameTime() * 128)
 		if alpha_color == final_color then
@@ -2734,14 +2734,7 @@ final_color = 255
 end
 net.Receive( "SetBottomMessage", function()
 
-    local msg = net.ReadTable()
-
-    if !msg[langtouse] then
-    	msg = msg.english
-    else
-    	msg = msg[langtouse]
-    end
-
+    local msg = net.ReadString()
     make_bottom_message(msg)
     
 end )

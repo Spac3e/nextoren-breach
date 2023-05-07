@@ -2,7 +2,7 @@ ROUNDS = {
 	normal = {
 		name = "Containment Breach",
 		setup = function()
-			MAPBUTTONS = table.Copy(BUTTONS)
+			BUTTONS = table.Copy(BUTTONS)
 			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
@@ -67,7 +67,7 @@ end,
 /*	dm = {
 		name = "MTF vs CI Deathmatch",
 		setup = function()
-			MAPBUTTONS = GetTableOverride( table.Copy(BUTTONS) ) + GetTableOverride( table.Copy(BUTTONS_DM) )
+			BUTTONS = GetTableOverride( table.Copy(BUTTONS) ) + GetTableOverride( table.Copy(BUTTONS_DM) )
 			SetupPlayers( GetRoleTableCustom( #GetActivePlayers(),  ) )
 			
 			disableNTF = false
@@ -85,7 +85,7 @@ end,
 /*	omega = {
 		name = "Omega Problem",
 		setup = function()
-			MAPBUTTONS = GetTableOverride( table.Copy(BUTTONS) ) + GetTableOverride( table.Copy(BUTTONS_OMEGA) )
+			BUTTONS = GetTableOverride( table.Copy(BUTTONS) ) + GetTableOverride( table.Copy(BUTTONS_OMEGA) )
 			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
@@ -104,7 +104,7 @@ end,
 	--[[infect = {
 		name = "Infect",
 		setup = function()
-			MAPBUTTONS = table.Copy(BUTTONS)
+			BUTTONS = table.Copy(BUTTONS)
 			SetupInfect( #GetActivePlayers() )
 			disableNTF = true
 		end,
@@ -141,7 +141,7 @@ end,
 	multi = {
 		name = "Multi Breach",
 		setup = function()
-			MAPBUTTONS = table.Copy(BUTTONS)
+			BUTTONS = table.Copy(BUTTONS)
 			SetupPlayers( GetRoleTable( #GetActivePlayers() ), true )
 			disableNTF = false
 		end,

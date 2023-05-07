@@ -300,7 +300,7 @@ function SWEP:Deploy()
 				ply:BrProgressBar("Поглощаем кровь...", 4.5, "nextoren/gui/icons/notifications/breachiconfortips.png", rag, false, function()
 					if IsValid(rag.SCP049User) and rag.SCP049User:IsPlayer() then
 						local victim = rag.SCP049User
-						ply:AnimatedHeal(math.random(150,200))
+						ply:SetHealth(math.random(150,200))
 						timer.Remove("Death_SCP049_"..victim:SteamID64())
 						victim:LevelBar()
 						victim:SetupNormal()
@@ -785,7 +785,7 @@ function SWEP:SecondaryAttack()
 
 		if ( player.IsZombie && player:Health() > 0 ) then
 
-			player:AnimatedHeal(player:GetMaxHealth() - player:Health())
+			player:SetHealth(player:GetMaxHealth() - player:Health())
 			player:SetArmor(50)
 
 			timer.Simple( 20, function()

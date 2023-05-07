@@ -19,6 +19,34 @@ english.lang_secret_nfound = "Secret has not been found"
 
 english.class_unknown = "Unknown"
 
+english.escapemessages = {
+	{
+		main = "Вы сбежали",
+		txt = "Вы сбежали из комплекса за {t} минут, отличная робота!",
+		txt2 = "Если Вас эвакуирует МТФ, то это даст больше опыта.",
+		clr = Color(237, 28, 63),
+	},
+	{
+		main = "Вы сбежали",
+		txt = "Вы сбежали из комплекса за {t} минут, отличная робота!",
+		txt2 = "Если Вас эвакуирует Хаос, то это даст больше опыта.",
+		clr = Color(237, 28, 63),
+	},
+	{
+		main = "Вы эвакуированы",
+		txt = "Вы эвакуировались из комплекса за {t} минут, отличная робота!",
+		txt2 = "",
+		clr = Color(237, 28, 63),
+	},
+	{
+		main = "Вы сбежали",
+		txt = "Вы сбежали из комплекса за {t} минут, отличная робота!",
+		txt2 = "",
+		clr = Color(237, 28, 63),
+	}
+}
+
+
 english.NRegistry = {
 	scpready = "You can be selected as SCP in next round",
 	scpwait = "You have to wait %s rounds to be able to play as SCP"
@@ -438,6 +466,15 @@ english.starttexts = {
 
 	},
 
+	ROLE_CHAOSJUGGERNAUT = {
+
+
+	},
+
+	ROLE_UIU_Clocker = {
+
+
+	},
 
 
 	ROLE_SCP0492 = {
@@ -2452,12 +2489,6 @@ english.ROLES.ROLE_SCP1027 = "SCP-1027-RU"
 
 english.ROLES.ROLE_LESSION = "Feelon"
 
-
-
-english.ROLES.ROLE_CHAOSDESTROYER = "ПХ Подрывник"
-
-
-
 english.ROLES.ROLE_SPECIALRES = "Matilda Moore"
 
 
@@ -2515,23 +2546,20 @@ english.ROLES.ROLE_SCP542 = "SCP-542"
 
 
 
-english.ROLES.ROLE_USA = "ОНП Солдат"
+english.ROLES.ROLE_USA = "Солдат ОНП"
+
+english.ROLES.ROLE_USACMD = "Командир ОНП"
+
+english.ROLES.ROLE_UIU_Clocker = "Устранитель ОНП"
 
 
 
-english.ROLES.ROLE_USACMD = "ОНП Командир"
 
-
-
-english.ROLES.ROLE_GoPCMD = "ГОК Командир"
+english.ROLES.ROLE_GoPCMD = "Командир ГОК"
 
 
 
 english.ROLES.ROLE_NTFCMD = "Командир Эпсилон-11"
-
-
-
-english.ROLES.ROLE_CHAOSCMD = "ПХ Командир"
 
 
 
@@ -2595,24 +2623,6 @@ english.NTF = "MTF Epsilon-11 ''Nine Tailed Fox''"
 english.Chaos = "Chaos Insurgency"
 english.SCI_SPECIAL = "Special Scientists"
 english.Cult = "Children of The Scarlet King"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 english.ROLES.ROLE_CLASSD = "Класс-Д Персонал"
 
@@ -2736,11 +2746,13 @@ english.ROLES.ROLE_GoP = "ГОК"
 
 
 
-english.ROLES.ROLE_CHAOS = "Повстанец Хаоса"
+english.ROLES.ROLE_CHAOS = "Солдат ПХ"
 
+english.ROLES.ROLE_CHAOSCMD = "Командир ПХ"
 
+english.ROLES.ROLE_CHAOSDESTROYER = "Подрывник ПХ"
 
-english.ROLES.ROLE_CHAOSCOM = "Командир Повстанцев Хаоса"
+english.ROLES.ROLE_CHAOSJUGGERNAUT = "Джаггернаут ПХ"
 
 
 

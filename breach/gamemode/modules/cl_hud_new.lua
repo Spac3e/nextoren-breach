@@ -62,17 +62,16 @@ function GetActivePlayers()
 		if IsValid( v ) then
 			if v.ActivePlayer == nil then
 				v.ActivePlayer = true
-				if v.SetNActive then v:SetNActive( true ) end
+				v:SetNActive( true )
 			end
 
-			if v.ActivePlayer == true and v:GetNWBool("Player_IsPlaying", false) then
+			if v.ActivePlayer == true then
 				table.ForceInsert(tab, v)
 			end
 		end
 	end
 	return tab
 end
-
 surface.CreateFont( "SpectatorTimer", {
 	font = "Conduit ITC",
 	size = 28,
@@ -4662,230 +4661,64 @@ local forbidden_teams = {
 
 }
 
+hook.Add( "Think", "ViewBob_Think", function()
 
+	local client = LocalPlayer()
 
-local viewwell = {
+	if ( !forbidden_teams[ client:GTeam() ] && client:Health() > 0 && client:GetMoveType() != MOVETYPE_NOCLIP ) then
 
+		vel = client:GetVelocity()
+		MovementDot = EyeAngles():CalculateVectorDot( vel )
+		--print( MovementDot )
+		step = 18
 
+		if ( client:Health() < client:GetMaxHealth() * .3 ) then
 
-	origin = vector_origin,
-  
-	angles = angle_zero,
-  
-	fov = 90,
-  
-	drawviewer = true,
-  
-	znear = 1
-  
-  
-  
-  }
-  
-  
-  
-  hook.Add( "CalcView", "InVehicle", function( ply, origin, angles, fov )
-  
-  
-  
-	if !( ply:InVehicle() || ply.IsCI ) then return end
-  
-  
-  
-	local head = ply:LookupAttachment( "eyes" )
-  
-	head = ply:GetAttachment( head )
-  
-  
-  
-	if ( !head  ) then return end
-  
-  
-  
-	if ( !head.Pos ) then return end
-  
-  
-  
-	if ( ply.BonesRattled ) then
-  
-  
-  
-	  ply.BonesRattled = true
-  
-	  ply:InvalidateBoneCache()
-  
-	  ply:SetupBones()
-  
-	  local matrix;
-  
-  
-  
-	  for bone = 0, ( ply:GetBoneCount() || 1 ) do
-  
-  
-  
-		if ( ply:GetBoneName( bone ):lower():find( "head" ) ) then
-  
-  
-  
-		  matrix = ply:GetBoneMatrix( bone )
-  
-  
-  
-		  break
-  
-  
-  
+			scale = 2
+			step = 20
+
 		end
-  
-  
-  
-	  end
-  
-  
-  
-	  if ( IsValid( matrix ) ) then
-  
-  
-  
-		matrix:SetScale( vector_origin )
-  
-  
-  
-	  end
-  
-  
-  
+
+		cos = math.cos( SysTime() * step )
+		plane = ( math.max( math.abs( MovementDot.x ) - 100, 0 ) + math.max( math.abs( MovementDot.y ) - 100, 0 ) ) / 128
+
+		y = math.cos( SysTime() * step / 2 ) * plane * scale
+
 	end
-  
-  
-  
-	viewwell.origin = ( head.Pos ) + head.Ang:Up() * 8 + head.Ang:Forward() * 5
-  
-	viewwell.angles = head.Ang
-  
-  
-  
-	return viewwell
-  
-  
-  
-  end )
-  
-  
-  
-  local view = {
-  
-  
-  
-	origin = vector_origin,
-  
-	angles = angle_zero,
-  
-	fov = 90,
-  
-	drawviewer = true,
-  
-	znear = 1
-  
-  
-  
-  }
-  
-  
-  
-  hook.Add( "CalcView", "firstpersondeathkk", function( ply, origin, angles, fov )
-  
-  
-  
-	if ( ply:GetNWEntity( "NTF1Entity" ) == NULL ) then return end
-  
-  
-  
-	  local ragdoll = ply:GetNWEntity( "NTF1Entity" )
-  
-  
-  
-	  if ( !( ragdoll && ragdoll:IsValid() ) ) then return end
-  
-	  local head = ragdoll:LookupAttachment( "eyes" )
-  
-	  head = ragdoll:GetAttachment( head )
-  
-  
-  
-	if ( !head || !head.Pos ) then return end
-  
-  
-  
-	  if ( !ragdoll.BonesRattled ) then
-  
-  
-  
-		ragdoll.BonesRattled = true
-  
-		ragdoll:InvalidateBoneCache()
-  
-		ragdoll:SetupBones()
-  
-		local matrix
-  
-  
-  
-		for bone = 0, ( ragdoll:GetBoneCount() || 1 ) do
-  
-  
-  
-		  if ragdoll:GetBoneName( bone ):lower():find( "head" ) then
-  
-  
-  
-			matrix = ragdoll:GetBoneMatrix( bone )
-  
-  
-  
-			break
-  
-  
-  
-		  end
-  
-  
-  
+
+end )
+
+local vec_zero = vector_origin
+
+hook.Add( "CalcViewModelView", "CalcViewModel", function( wep, v, oldPos, oldAng, ipos, iang )
+
+	local client = LocalPlayer()
+
+	if client:GetInDimension() then return end
+
+	if ( !forbidden_teams[ client:GTeam() ] && client:Health() > 0 && ( ( !isnumber( vel ) && vel:Length2DSqr() > .25 ) || client:GetVelocity():Length2DSqr() > .25 ) && client:GetMoveType() != MOVETYPE_NOCLIP ) then
+
+		local pos, ang
+
+		if ( isfunction( wep.GetViewModelPosition ) ) then
+
+			pos, ang = wep:GetViewModelPosition( ipos, iang )
+
+		else
+
+			pos = ipos
+			ang = iang
+
 		end
-  
-  
-  
-		if ( IsValid( matrix ) ) then
-  
-  
-  
-		  matrix:SetScale( vector_origin )
-  
-  
-  
-	  end
-  
-  
-  
-	  end
-  
-  
-  
-	  view.origin = head.Pos + head.Ang:Up() * 5 + head.Ang:Forward() * 5
-  
-	  view.angles = head.Ang
-  
-	view.drawviewer = true
-  
-  
-  
-	  return view
-  
-  
-  
-  end )
-  
+
+		local origin = Vector( 0, y, ( cos * plane ) * scale )
+		origin:Rotate( ang )
+
+		return origin + pos - ( transition != 0 && Vector( 0, 0, transition ) || vec_zero ), ang
+
+	end
+
+end )
   
 
 ----------------------------
@@ -5146,7 +4979,7 @@ function GM:CalcView( ply, origin, angles, fov )
 	data.fov = fov
 	data.drawviewer = false
 
-	if ply:GetInDimension() then
+	if ply:GetInDimension() and ply:GTeam() != TEAM_SCP then
 		data.angles = angles + Angle(math.Rand(-0.5,0.5),math.Rand(-0.5,0.5),0)
 		return data
 	end
@@ -5202,7 +5035,7 @@ function GM:CalcView( ply, origin, angles, fov )
 
 	end
 
-	--[[if ( ply.RealLean != 0 && ply:IsSolid() ) then
+	if ( ply.RealLean != 0 && ply:IsSolid() ) then
 
 		if ( !ply.RealLean ) then
 
@@ -5211,10 +5044,12 @@ function GM:CalcView( ply, origin, angles, fov )
 			return
 		end
 
-		data.angles:RotateAroundAxis( data.angles:Forward(), ply.RealLean )
-		data.origin = data.origin + data.angles:Right() * ply.RealLean
+		local lean = ply.RealLean
 
-	end]]
+		data.angles:RotateAroundAxis( data.angles:Forward(), lean )
+		data.origin = data.origin + data.angles:Right() * lean
+
+	end
 
 	if ( ply.FOVTest && ply.FOVTest > 0 ) then
 

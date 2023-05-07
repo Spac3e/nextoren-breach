@@ -199,8 +199,6 @@ ROLES.ROLE_DZDD = "SH Spy"
 
 ROLES.ROLE_SCP1027 = "SCP-1027"
 
-ROLES.ROLE_CHAOSDESTROYER = "Chaos Destroyer"
-
 ROLES.ROLE_LESSION = "Feelon"
 
 ROLES.ROLE_SCP939 = "SCP-939"
@@ -311,12 +309,15 @@ ROLES.ROLE_SD = "Site Director"
 
 // Chaos Insurgency
 
-ROLES.ROLE_CHAOSSPY = "Chaos Insurgency Spy"
+ROLES.ROLE_CHAOSSPY = "CI Spy"
 
-ROLES.ROLE_CHAOS = "Chaos Insurgency"
+ROLES.ROLE_CHAOS = "CI Soldier"
 
 ROLES.ROLE_CHAOSCMD = "CI Commander"
 
+ROLES.ROLE_CHAOSDESTROYER = "CI Demoman"
+
+ROLES.ROLE_CHAOSJUGGERNAUT = "CI Juggernaut"
 
 
 ROLES.ROLE_NTFCMD = "NTF Commander"
@@ -325,7 +326,7 @@ ROLES.ROLE_NTFCMD = "NTF Commander"
 
 // Global Occult C
 
-ROLES.ROLE_GoP = "Global Occult Coalition"
+ROLES.ROLE_GoP = "GOC Soldier"
 
 ROLES.ROLE_GoPCMD = "GOC Commander"
 
@@ -334,6 +335,8 @@ ROLES.ROLE_GoPCMD = "GOC Commander"
 ROLES.ROLE_USA = "Unusual Incidents Unit"
 
 ROLES.ROLE_USACMD = "UIU Commander"
+
+ROLES.ROLE_UIU_Clocker = "UIU Inflitrator"
 
 // DZ
 
@@ -407,12 +410,129 @@ if !ConVarExists("br_scale_bullet_damage") then CreateConVar("br_scale_bullet_da
 if !ConVarExists("br_new_eq") then CreateConVar("br_new_eq", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Enables new EQ" ) end
 if !ConVarExists("br_enable_warhead") then CreateConVar("br_enable_warhead", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "Enables OMEGA Warhead" ) end
 if !ConVarExists("br_scale_human_damage") then CreateConVar("br_scale_human_damage", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "Scales damage dealt by humans" ) end
-if !ConVarExists("br_scale_scp_damage") then CreateConVar("br_scale_scp_damage", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "Scales damage dealt by SCP" ) end
+if !ConVarExists("br_scale_scp_damage") then CreateConVar("br_scale_scp_damage", "0.65", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "Scales damage dealt by SCP" ) end
 if !ConVarExists("br_scp_penalty") then CreateConVar("br_scp_penalty", "3", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "" ) end
 if !ConVarExists("br_premium_penalty") then CreateConVar("br_premium_penalty", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE }, "" ) end
 
 
 MINPLAYERS = GetConVar("br_min_players"):GetInt()
+
+function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
+	local at = dmginfo:GetAttacker()
+
+	local mul = 1
+	local armormul = 1
+
+	if at:IsPlayer() then
+		if at:GTeam() == TEAM_SCP then
+			local scale = GetConVar( "br_scale_scp_damage" ):GetFloat()
+			if scale == 0 then scale = 1 end
+			scale = math.Clamp( scale, 0.1, 5 )
+			dmginfo:ScaleDamage( scale )
+		elseif at:GTeam() != TEAM_SPEC then
+			local scale = GetConVar( "br_scale_human_damage" ):GetFloat()
+			if scale == 0 then scale = 1 end
+			scale = math.Clamp( scale, 0.1, 5 )
+			dmginfo:ScaleDamage( scale )
+		end
+
+		if at.GetActiveWeapon then
+			local wep = at:GetActiveWeapon()
+			if IsValid(wep) then
+				if wep:GetClass() == "weapon_crowbar" then
+					dmginfo:ScaleDamage(0.3)
+				elseif wep:GetClass() == "weapon_stunstick" then
+					dmginfo:ScaleDamage(0.5)
+				end
+			end
+		end
+
+		if SERVER then
+			local rdm = false
+			if at != ply then
+				if at:IsPlayer() then
+					if dmginfo:IsDamageType( DMG_BULLET ) then
+						if ply.UsingArmor != nil then
+							if ply.UsingArmor != "armor_fireproof" and ply.UsingArmor != "armor_electroproof" then
+								armormul = 0.5
+							end
+						end
+					end
+					if postround == false and at.GTeam and ply.GTeam then
+						if at:GTeam() == TEAM_GUARD then
+							if ply:GTeam() == TEAM_GUARD then 
+								rdm = true
+							elseif ply:GTeam() == TEAM_SCI then
+								rdm = true
+							end
+						elseif at:GTeam() == TEAM_CHAOS then
+							if ply:GTeam() == TEAM_CHAOS or ply:GTeam() == TEAM_CLASSD then
+								rdm = true
+							end
+						elseif at:GTeam() == TEAM_SCP then
+							if ply:GTeam() == TEAM_SCP then
+								rdm = true
+							end
+						elseif at:GTeam() == TEAM_CLASSD then
+							if ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_CHAOS then
+								rdm = true
+							end
+						elseif at:GTeam() == TEAM_SCI then
+							if ply:GTeam() == TEAM_GUARD or ply:GTeam() == TEAM_SCI then 
+								rdm = true
+							end
+						end
+					end
+					if postround == false then
+						if !rdm then
+							at:AddExp( math.Round(dmginfo:GetDamage() / 2) )
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	
+	if hitgroup == HITGROUP_HEAD then
+		mul = 15
+	elseif hitgroup == HITGROUP_CHEST then
+		mul = 3
+	elseif hitgroup == HITGROUP_STOMACH then
+		mul = 3
+	elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
+		mul = 1.1
+	elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
+		mul = 1.1
+	end
+
+	if SERVER then
+		mul = mul * armormul
+		dmginfo:ScaleDamage(mul)
+		if ply:GTeam() == TEAM_SCP and OUTSIDE_BUFF( ply:GetPos() ) then
+			dmginfo:ScaleDamage( 0.75 )
+		end
+		local scale = math.Clamp( GetConVar( "br_scale_bullet_damage" ):GetFloat(), 0.1, 2 )
+		dmginfo:ScaleDamage( scale )
+
+		if ply:GetNClass() == ROLES.ROLE_SCP957 then
+			local wep = ply:GetActiveWeapon()
+			if wep and wep:BuffEnabled() then
+				dmginfo:ScaleDamage( 0.1 )
+			end
+		end
+
+		if at:IsPlayer() then
+			if at:GetNClass() == ROLES.ROLE_SCP9571 then
+				dmginfo:ScaleDamage( 0.2 )
+			end
+
+			if at:GetNClass() == ROLES.ROLE_SCP9571 and ply:GTeam() == TEAM_SCP then
+				return true
+			end
+		end
+	end
+end
 
 function GetPrepTime()
 	return GetConVar("br_time_preparing"):GetInt()
@@ -473,8 +593,9 @@ function table.Random(tab, issequential)
     return tab[rand], rand 
 end
 
-function BREACH.GroundPos( pos )
+local vec_up = Vector( 0, 0, 32768 )
 
+function BREACH.GroundPos( pos )
 	local trace = { }
 	trace.start = pos;
 	trace.endpos = trace.start - vec_up
@@ -483,15 +604,12 @@ function BREACH.GroundPos( pos )
 	local tr = util.TraceLine( trace )
 
 	if ( tr.Hit ) then
-
 		return tr.HitPos
-
 	end
 
 	return pos
 
 end
-
 
 local AllowedModels = {
 
@@ -673,25 +791,6 @@ if CLIENT then
     end)
 end
 
-function BREACH.GroundPos( pos )
-
-	local trace = { }
-	trace.start = pos;
-	trace.endpos = trace.start - vec_up
-	trace.mask = MASK_BLOCKLOS
-
-	local tr = util.TraceLine( trace )
-
-	if ( tr.Hit ) then
-
-		return tr.HitPos
-
-	end
-
-	return pos
-
-end
-
 function InGas(ply)
 	if GAS_AREAS == nil then return false end
 	for k,v in pairs(GAS_AREAS) do
@@ -735,6 +834,7 @@ local AllowedModels = {
 }
 
 local silencedwalkroles = {
+	[ROLES.ROLE_UIU_Clocker] = true,
 	["SCP457"] = true,
 	["SCP096"] = true,
 	["SCP062DE"] = true,

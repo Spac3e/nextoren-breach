@@ -60,6 +60,17 @@ util.AddNetworkString("Boom_Effectus")
 util.AddNetworkString("boom_round")
 util.AddNetworkString("DrawMuzzleFlash")
 util.AddNetworkString("BreachFlinch")
+util.AddNetworkString("BreachAnnouncer")
+util.AddNetworkString("SetBottomMessage")
+util.AddNetworkString("ChangeRunAnimation")
+
+local Player = FindMetaTable( "Player" )
+
+function Player:PlayGestureSequence( sequence )
+	local sequencestring = self:LookupSequence( sequence )
+	self:AddGestureSequence( sequencestring, true )
+end
+
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end

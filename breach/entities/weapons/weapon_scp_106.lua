@@ -1,16 +1,3 @@
---[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   gamemodes/breach/entities/weapons/weapon_scp_106.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
-
 SWEP.AbilityIcons = {
 
 	{
@@ -22,7 +9,6 @@ SWEP.AbilityIcons = {
 		Icon = "nextoren/gui/special_abilities/special_invisible.png"
 
 	},
-	--[[
 	{
 
 		Name = "Dimension Travel",
@@ -31,8 +17,7 @@ SWEP.AbilityIcons = {
 		KEY = _G[ "KEY_T" ],
 		Icon = "nextoren/gui/special_abilities/scp_106_trap.png"
 
-	},]]
-	--[[
+	},
 	{
 
 		Name = "Shadow attack",
@@ -41,11 +26,9 @@ SWEP.AbilityIcons = {
 		KEY = _G[ "KEY_J" ],
 		Icon = "nextoren/gui/special_abilities/scp_106_dimensionteleport.png"
 
-	}]]
+	}
 
 }
-
-SWEP.TeleportPosition = Vector(3679.350830, -14774.952148, -3055.968750)
 
 SWEP.PrintName = "SCP-106"
 SWEP.HoldType = "scp106"
@@ -75,11 +58,197 @@ if ( SERVER ) then
 
 	util.AddNetworkString( "DimensionSequence" )
 
+  function CheckLabirintRandom( player, origin, blink_random, initial_pos )
+
+    local all_good
+    local protect_counter = 0
+
+    while ( all_good != true ) do
+
+      protect_counter = protect_counter + 1
+
+      if ( protect_counter > 4000 ) then break end
+
+      local random_vector = Vector( math.Rand( -3050, 2 ), math.Rand( -15377, -11665 ), math.Rand( -4800, -4515 ) )
+      random_vector = navmesh.GetNearestNavArea( random_vector )
+
+      if random_vector then
+      	random_vector = random_vector:GetCenter()
+      else
+      	continue
+      end
+
+      if ( random_vector ) then
+
+        if ( random_vector.z > -4800 || random_vector == vector_origin ) then continue end
+
+        if ( !origin ) then
+
+          player:SetPos( random_vector )
+
+					if ( !blink_random && player:GTeam() != TEAM_SCP && player.canblink ) then
+
+	          CreateSearchSequence( player, random_vector, initial_pos )
+
+					end
+
+          all_good = true
+
+        else
+
+          if ( origin:DistToSqr( random_vector ) <= 1048576 ) then continue end -- 240^2
+
+          return random_vector
+
+        end
+
+      end
+
+    end
+
+  end
+
+	function CreateSearchSequence( player, player_pos, initial_pos )
+
+    local body_origin = CheckLabirintRandom( false, player_pos )
+
+    player:PlayMusic("sound/no_music/dimension/dimension_"..math.random(1,3)..".ogg", 0)
+
+    net.Start( "DimensionSequence" )
+
+      net.WriteVector( body_origin )
+      net.WriteBool( true )
+
+    net.Send( player )
+
+    player.Dimension_TouchEntity = ents.Create( "touch_entity" )
+    player.Dimension_TouchEntity:SetModel( player:GetModel() )
+    player.Dimension_TouchEntity:SetOwner( player )
+		local position_to_return = initial_pos
+		player.Dimension_TouchEntity.OwnerName = player:GetName()
+    player.Dimension_TouchEntity:SetPos( body_origin )
+    player.Dimension_TouchEntity:Spawn()
+    --print( "touch entity has been created at vector ", body_origin )
+
+		player.Dimension_TouchEntity.Think = function( self )
+
+			local owner = self:GetOwner()
+
+			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetName() != self.OwnerName || owner:GetNClass() == "Spectator" ) then
+
+				self:Remove()
+
+			end
+
+		end
+
+    player.Dimension_TouchEntity.TouchFunc = function( self, player )
+
+			net.Start( "DimensionSequence" )
+			net.Send( player )
+
+			player:Freeze( true )
+      player.canblink = nil
+
+			timer.Simple( .25, function()
+
+				if ( ( player && player:IsValid() ) && ( self && self:IsValid() ) ) then
+
+					player:ScreenFade( SCREENFADE.OUT, color_white, .1, 1.25 )
+
+					net.Start( "ForcePlaySound" )
+
+						net.WriteString( "nextoren/charactersounds/stun_in.wav" )
+
+					net.Send( player )
+
+					local unique_id = "TeleportMeAlready" .. player:SteamID64()
+
+					timer.Create( unique_id, 0, 0, function()
+
+						if ( player:GetPos():DistToSqr( position_to_return ) < 6400 ) then
+
+							timer.Remove( unique_id )
+
+							return
+						end
+
+						player:SetInDimension( false )
+						player:SetPos( position_to_return )
+
+					end )
+
+				end
+
+			end )
+
+      player:ScreenFade( SCREENFADE.IN, color_white, .6, 1.3 )
+
+      timer.Simple( .6, function()
+
+        if ( ( player && player:IsValid() ) && ( self && self:IsValid() ) ) then
+
+          player:SetForcedAnimation( "l4d_GetUpFrom_Incap_04", 5.2, function()
+
+            if ( player:IsFemale() ) then
+
+    					net.Start( "ForcePlaySound" )
+
+    						net.WriteString( "nextoren/charactersounds/breathing/breathing_female.wav" )
+
+    					net.Send( player )
+
+    				else
+
+    					net.Start( "ForcePlaySound" )
+
+    						net.WriteString( "nextoren/others/player_breathing_knockout01.wav" )
+
+    					net.Send( player )
+
+    				end
+
+            player:SetDSP( 16 )
+
+            player:Freeze( true )
+            player:SetNWEntity( "NTF1Entity", player )
+
+          end, function()
+
+            player:ScreenFade( SCREENFADE.IN, color_black, .1, .75 )
+
+            player:SetDSP( 1 )
+
+            player:Freeze( false )
+            player:SetNWEntity( "NTF1Entity", NULL )
+
+          end )
+
+          timer.Simple( 1, function()
+
+            if ( player && player:IsValid() ) then
+
+              player.canblink = true
+
+            end
+
+          end )
+
+          self:Remove()
+
+        end
+
+      end )
+
+    end
+
+  end
+
 	function SWEP:TeleportSequence( victim )
 
 		if ( !( victim && victim:IsValid() ) ) then return end
 
-		victim:SetForcedAnimation( 5324, 1.25, function()
+		victim:SetForcedAnimation( "0_106_victum", 1.25, function()
 
 			victim:SetMoveType( MOVETYPE_OBSERVER )
 			victim:SetNWEntity( "NTF1Entity", victim )
@@ -99,7 +268,13 @@ if ( SERVER ) then
 
 			victim:SetMoveType( MOVETYPE_WALK )
 			victim:SetNWEntity( "NTF1Entity", NULL )
-			victim:SetPos(self.TeleportPosition)
+			CheckLabirintRandom( victim, nil, nil, victim:GetPos() )
+
+			if ( victim.Teleported ) then
+
+				victim.Teleported = nil
+
+			end
 
 		end )
 
@@ -308,6 +483,64 @@ if ( SERVER ) then
 
 	end
 
+	function SWEP:DistantAttack()
+
+		net.Start( "ThirdPersonCutscene" )
+
+			net.WriteUInt( 4, 4 )
+			net.WriteBool( false )
+
+		net.Send( self.Owner )
+
+		self.Owner:SetForcedAnimation( "0_106_new_range_attack", 3.5, function()
+
+			self.Owner:Freeze( true )
+
+			local unique_id = "SCP106_RangeAttack"
+			local i = 1
+
+			timer.Create( unique_id, 1.3, 1, function()
+
+				if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetNClass() != "SCP106" ) then
+
+					timer.Remove( unique_id )
+
+					return
+				end
+
+				timer.Create( unique_id, .1, 24, function()
+
+					if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetNClass() != "SCP106" ) then
+
+						timer.Remove( unique_id )
+
+						return
+					end
+
+					local player_angles = self.Owner:GetAngles()
+
+					self:DrawTeleportDecal( self.Owner, self.Owner:GetForward() * ( 48 * i ) + player_angles:Right() * 20 - player_angles:Forward() * 12, true, true )
+
+					i = i + 1
+
+				end )
+
+			end )
+
+		end, function()
+
+			self.Owner:Freeze( false )
+
+			for i = 1, 2 do
+
+				self:ForbidAbility( i, false )
+
+			end
+
+		end )
+
+	end
+
 	function SWEP:Think()
 
 		if ( self:GetGhostMode() && !self.Owner:GetNoDraw() ) then
@@ -319,6 +552,216 @@ if ( SERVER ) then
 	end
 
 else -- ( CLIENT )
+
+	local function CreateClientExit( client, pos )
+
+    client.exit_ent = ents.CreateClientside( "base_gmodentity" )
+    client.exit_ent:SetPos( pos + vector_up * 4 )
+    client.exit_ent:SetModel( client:GetModel() )
+    client.exit_ent:SetOwner( client )
+    client.exit_ent:SetSkin( client:GetSkin() )
+    client.exit_ent:AddEffects( EF_BRIGHTLIGHT )
+    client.exit_ent:AddEffects( EF_NOSHADOW )
+    client.exit_ent:SetMaterial( "lights/white001" )
+    client.exit_ent:SetAutomaticFrameAdvance( true )
+    client.exit_ent:Spawn()
+
+    for id in ipairs( client:GetBodyGroups() ) do
+
+      client.exit_ent:SetBodygroup( id, client:GetBodygroup( id ) )
+
+    end
+    for _, bonemerge in ipairs( client:GetChildren() ) do
+
+      if ( bonemerge:GetClass() == "ent_bonemerged" ) then
+
+        ClientBoneMerge( client.exit_ent, bonemerge:GetModel() )
+
+      end
+
+    end
+    client.exit_ent:SetSequence( 5325 )
+    client.exit_ent:SetPlaybackRate( 1.0 )
+
+    if ( client.exit_ent.BoneMergedEnts ) then
+
+      for _, v in ipairs( client.exit_ent.BoneMergedEnts ) do
+
+        if ( v && v:IsValid() ) then
+
+          v:SetMaterial( "lights/white001" )
+
+        end
+
+      end
+
+    end
+
+    ParticleEffectAttach( "death_evil3", PATTACH_POINT_FOLLOW, client.exit_ent, 1 )
+    ParticleEffectAttach( "death_blood_slave2", PATTACH_POINT_FOLLOW, client.exit_ent, 3 )
+
+    client.exit_ent.Reverse = false
+
+    client.exit_ent.Think = function( self )
+
+			self:NextThink( CurTime() )
+
+			if ( self:GetCycle() >= .99 ) then
+
+				self:SetCycle( 0 )
+
+			end
+
+			self:SetCycle( self:GetCycle() + .001 )
+
+      if ( self.DeathTime ) then
+
+        if ( !self.EndParticleCreated ) then
+
+          self.EndParticleCreated = true
+
+          self:StopParticles()
+
+          timer.Simple( .05, function()
+
+            if ( self && self:IsValid() ) then
+
+              ParticleEffectAttach( "death_telc", PATTACH_POINT_FOLLOW, self, 1 )
+							ParticleEffectAttach( "burning_character_glow_b_white", PATTACH_POINT_FOLLOW, self, 3 )
+
+            end
+
+          end )
+
+        end
+
+        if ( self.DeathTime < CurTime() ) then
+
+					if ( !self.ForceDeath ) then
+
+	          gasblind = 8
+
+	          local owner = self:GetOwner()
+
+	          owner.FOVStartDecrease = nil
+	          owner.FOVTest = 20
+
+	          timer.Simple( 8, function()
+
+	            LocalPlayer().FOVStartDecrease = true
+
+							surface.PlaySound( "nextoren/charactersounds/stun_out.wav" )
+
+	          end )
+
+					end
+
+          self:Remove()
+
+        end
+
+      end
+
+      return true
+
+    end
+
+  end
+
+  net.Receive( "DimensionSequence", function()
+
+    local ent_origin = net.ReadVector()
+    local start = net.ReadBool()
+
+    if ( start ) then
+
+			local client = LocalPlayer()
+			client:ConCommand( "stopsound")
+
+			CreateClientExit( client, ent_origin )
+
+			client.snd_HeartBeat = CreateSound( client, "nextoren/charactersounds/heartbeat.wav" )
+			client.snd_HeartBeat:Play()
+
+			client.CustomRenderHook = true
+
+			local old_name = client:GetName()
+			local material_clr = Material( "pp/colour" )
+			local check_time = 0
+			local brightness = -.01
+
+			hook.Add( "" )
+
+			hook.Add( "RenderScreenspaceEffects", "Dimension_ScreenRender", function()
+
+				local client = LocalPlayer()
+
+				if ( client:Health() <= 0 || !client:GetInDimension() || client:GetName() != old_name || client:GTeam() == TEAM_SPEC || !( client.exit_ent && client.exit_ent:IsValid() ) ) then
+
+					if ( client.exit_ent && client.exit_ent:IsValid() && !client.exit_ent.DeathTime ) then
+
+						client.exit_ent.DeathTime = CurTime() + .25
+						client.exit_ent.ForceDeath = true
+
+					end
+
+					client.CustomRenderHook = nil
+
+					client.snd_HeartBeat:Stop()
+					client.snd_HeartBeat = nil
+
+					hook.Remove( "RenderScreenspaceEffects", "Dimension_ScreenRender" )
+
+					return
+				end
+
+				if ( check_time < CurTime() ) then
+
+					check_time = CurTime() + 1
+
+					local snd_volume = 1 - math.Clamp( client:GetPos():Distance( client.exit_ent:GetPos() ) / 1200, 0, .95 ) -- 1200 - max distance
+
+					client.snd_HeartBeat:ChangeVolume( snd_volume, 0 )
+
+				end
+
+				render.UpdateScreenEffectTexture()
+
+				if ( f_started ) then
+
+					brightness = -1
+
+				elseif ( brightness == -1 ) then
+
+					brightness = -.01
+
+				end
+
+				material_clr:SetFloat( "$pp_colour_brightness", brightness )
+				material_clr:SetFloat( "$pp_colour_contrast", 5 )
+				material_clr:SetFloat( "$pp_colour_colour", .45 )
+
+				render.SetMaterial( material_clr )
+				render.DrawScreenQuad()
+
+			end )
+
+    else
+
+      local client = LocalPlayer()
+
+      if ( client.exit_ent && client.exit_ent:IsValid() ) then
+
+        client.exit_ent:StopParticles()
+        ParticleEffectAttach( "death_telc", PATTACH_POINT_FOLLOW, client.exit_ent, 1 )
+
+        client.exit_ent.DeathTime = CurTime() + 2
+
+      end
+
+    end
+
+  end )
 
 	function SWEP:CalcViewModelView()
 
@@ -390,6 +833,41 @@ else -- ( CLIENT )
 	local clrgray = Color( 198, 198, 198 )
 	local darkgray = Color( 105, 105, 105 )
 
+	function SWEP:DrawHUDBackground()
+
+		if ( !self.Deployed ) then
+
+			self.Deployed = true
+			self:Deploy()
+
+		end
+
+		if ( self.Owner:GetInDimension() ) then -- Fake icon
+
+			local icon_x, icon_y = ScrW() / 2 - 32, ScrH() / 1.4
+
+			surface.SetDrawColor( color_white )
+			surface.SetMaterial( exit_icon )
+			surface.DrawTexturedRect( icon_x, icon_y, 64, 64 )
+
+			if ( self.Owner:IsFrozen() || ( self.AbilityIcons[ 2 ].CooldownTime || 0 ) > CurTime() ) then
+
+				draw.RoundedBox( 0, icon_x, icon_y, 64, 64, ColorAlpha( darkgray, 190 ) )
+
+			end
+
+			if ( input.IsKeyDown( KEY_H ) ) then
+
+        draw.RoundedBox( 0, icon_x, icon_y, 64, 64, ColorAlpha( clrgray, 70 ) )
+
+      end
+
+			draw.SimpleTextOutlined( "H", "HUDFont", icon_x + 64 - ( 32 / 4 ), icon_y + 4, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT, 1.5, color_black )
+
+		end
+
+	end
+
 end
 
 local prim_maxs =  Vector( 12, 4, 32 )
@@ -415,11 +893,22 @@ function SWEP:PrimaryAttack()
 
 	if ( hit_ent:IsPlayer() && hit_ent:GTeam() != TEAM_SCP && hit_ent:GetMoveType() != MOVETYPE_OBSERVER ) then
 
-		hit_ent.BodyOrigin = hit_ent:GetPos()
-		hit_ent:SetInDimension( true )
+		if ( self.Owner:GetInDimension() ) then
 
-		self:DrawTeleportDecal( hit_ent )
-		self:TeleportSequence( hit_ent )
+			self.Owner:SetHealth( math.min( self.Owner:Health() + hit_ent:Health(), self.Owner:GetMaxHealth() ) )
+			self.Owner:EmitSound( "nextoren/scp/106/laugh.ogg", 75, 100, 1, CHAN_VOICE )
+			hit_ent:Kill()
+			--self.Owner:AddToStatistics("SCP-106 Dimension kill", 150)
+
+		else
+
+			hit_ent.BodyOrigin = hit_ent:GetPos()
+			hit_ent:SetInDimension( true )
+
+			self:DrawTeleportDecal( hit_ent )
+			self:TeleportSequence( hit_ent )
+
+		end
 
 	end
 
@@ -429,8 +918,6 @@ function SWEP:CanSecondaryAttack() return false end
 
 function SWEP:Deploy()
 
-	self.Owner.ignorecollide106 = true
-
 	hook.Add( "PlayerButtonDown", "SCP106_DimensionTeleport", function( caller, button )
 
 		if ( caller:GetNClass() != "SCP106" ) then return end
@@ -438,7 +925,7 @@ function SWEP:Deploy()
 		local wep = caller:GetActiveWeapon()
 
 		if ( wep == NULL || !wep.AbilityIcons ) then return end
-		--[[
+
 		if ( button == KEY_T && !( ( wep.AbilityIcons[ 2 ].CooldownTime || 0 ) > CurTime() || self.AbilityIcons[ 2 ].Forbidden ) ) then
 
 			wep.AbilityIcons[ 2 ].CooldownTime = CurTime() + wep.AbilityIcons[ 2 ].Cooldown
@@ -480,6 +967,12 @@ function SWEP:Deploy()
 							if ( player && player:IsValid() && player != client && player:Health() > 0 && player:GTeam() != TEAM_SPEC && player:GetInDimension() ) then
 
 								to_draw[ #to_draw + 1 ] = player
+
+								local bnmrges = player:LookupBonemerges()
+
+								for i = 1, #bnmrges do
+									to_draw[ #to_draw + 1 ] = bnmrges[i]
+								end
 
 							end
 
@@ -525,7 +1018,7 @@ function SWEP:Deploy()
 
 			wep:OwnerTeleport( false, true )
 
-		end]]
+		end
 
 	end )
 
@@ -652,56 +1145,18 @@ function SWEP:Reload()
 
 		if ( check_trace.Entity && check_trace.Entity:IsValid() ) then
 
-			if !check_trace.Entity:IsPlayer() then
+			if ( CLIENT ) then
 
-				if ( CLIENT ) then
+				BREACH.Player:ChatPrint( true, true, "Вы не можете выйти из режима \"Призрака\" в этом месте." )
 
-					BREACH.Player:ChatPrint( true, true, "Вы не можете выйти из режима \"Призрака\" в этом месте." )
+			end
 
-				end
+			self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 3
 
-				self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 3
-
-				return
-			end--[[
-			else
-				if SERVER then
-					check_trace.Entity.BodyOrigin = check_trace.Entity:GetPos()
-					check_trace.Entity:SetInDimension( true )
-
-					self:DrawTeleportDecal( check_trace.Entity )
-					self:TeleportSequence( check_trace.Entity )
-				end
-
-				self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 45
-
-				--return
-			end]]
+			return
 		end
 
 	end
-
-
-
-	local userstotake = ents.FindInSphere(self.Owner:GetPos(), 55)
-
-	local performcd = false
-
-	for _, ply in pairs(userstotake) do
-		if IsValid(ply) and ply:IsPlayer() and ply:GTeam() != TEAM_SCP and ply:GTeam() != TEAM_SPEC then
-			performcd = true
-			ply.BodyOrigin = ply:GetPos()
-			ply:SetInDimension( true )
-			self:DrawTeleportDecal( ply )
-			self:TeleportSequence( ply )
-		end
-	end
-
-	if performcd and SERVER then
-		self.AbilityIcons[1].CooldownTime = CurTime() + 130
-		self.Owner:SendLua("LocalPlayer():GetActiveWeapon().CooldownTime = CurTime() + 130")
-	end
-
 
 	if ( CLIENT ) then return end
 
@@ -798,10 +1253,4 @@ function SWEP:OnRemove()
 
 	end
 
-end
-
-if SERVER then
-	hook.Add("PlayerUse", "SCP_106_Prevent_Use", function(activator)
-		if activator.Block_Use then return false end
-	end)
 end

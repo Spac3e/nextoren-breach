@@ -2736,7 +2736,6 @@ SPAWN_ELECTROPROOFARMOR = {
 
 }
 
-MAPBUTTONS = BUTTONS
 BUTTONS = {
 	{
 		name = "Побег О5",

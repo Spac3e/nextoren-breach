@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: [RXSEND] Breach 2.6.0 (Alpha)
+Server IP:   46.174.50.119:27015
 File Path:   addons/[gameplay]_lootable_corpses/lua/autorun/client/cl_lootbox.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -359,7 +359,7 @@ local function OpenLootMenu(ply, entid, entweps, victimname)
 		net.WriteString( victimname )
 	net.Send( ply )
 end
-
+--[[
 hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
     
 
@@ -424,7 +424,7 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 
 
 end)
-
+--]]
 
 net.Receive("OpenLootMenu", function( len )
     local ent = net.ReadEntity()

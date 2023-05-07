@@ -765,7 +765,7 @@ local function DrawNewInventory( notvictim, vtab )
 
 						EQHUD.weps.Equipable[ #EQHUD.weps.Equipable + 1 ] = weapon
 
-					elseif ( weapon.UnDroppable && !table.HasValue( EQHUD.weps.UndroppableItem, weapon ) ) then
+					elseif ( weapon.UnDroppable && weapon:GetClass() != "item_special_document" && !table.HasValue( EQHUD.weps.UndroppableItem, weapon ) ) then
 
 						EQHUD.weps.UndroppableItem[ #EQHUD.weps.UndroppableItem + 1 ] = weapon
 
@@ -778,8 +778,6 @@ local function DrawNewInventory( notvictim, vtab )
 			end
 
 		end
-
-		draw.OutlinedBox( 0, 0, w, h, 2, color_white )
 
 	end
 
@@ -2660,7 +2658,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
 			ply:SetSpecialCD(CurTime() + 4)
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_TOPKEK) then
+		elseif ply:HaveSpecialAb(ROLES.ClassD_Bor) then
 			local angle_zero = Angle(0,0,0)
 			ply:LagCompensation(true)
 		local DASUKADAIMNEEGO = util.TraceLine( {
@@ -2802,7 +2800,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 					ply:SetSpecialCD(CurTime() + 2)
 					return
 				end
-				if ( target:GTeam() != TEAM_CLASSD and target:GetNClass() != ROLES.ROLE_GOCSPY ) or target:GetNClass() == ROLES.ROLE_TOPKEK or target:GetNClass() == ROLES.ROLE_FAT or target:GetUsingCloth() != "" then
+				if ( target:GTeam() != TEAM_CLASSD and target:GetNClass() != ROLES.ROLE_GOCSPY ) or target:GetNClass() == ROLES.ClassD_Bor or target:GetNClass() == ROLES.ROLE_FAT or target:GetUsingCloth() != "" then
 					ply:RXSENDNotify("Вы не можете надеть снаряжение на данного игрока!")
 					ply:SetSpecialCD(CurTime() + 2)
 					return
@@ -2993,72 +2991,66 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				Choose_Faction()
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_UIU_KILLER) then
+		elseif ply:HaveSpecialAb(ROLES.ROLE_UIU_Clocker) then
 
-			ply:SetSpecialCD( CurTime() + 40 )
+			if SERVER then
 
-			ply:ScreenFade(SCREENFADE.IN, Color(255,0,0,100), 1, 0.3)
+				ply:SetSpecialCD( CurTime() + 40 )
 
-			local saveresist = table.Copy(ply.ScaleDamage)
-			local savespeed = ply:GetRunSpeed()
+				ply:ScreenFade(SCREENFADE.IN, Color(255,0,0,100), 1, 0.3)
 
-			ply.ScaleDamage = {
-				["HITGROUP_HEAD"] = 0.8,
-				["HITGROUP_CHEST"] = 0.45,
-				["HITGROUP_LEFTARM"] = 0.45,
-				["HITGROUP_RIGHTARM"] = 0.45,
-				["HITGROUP_STOMACH"] = 0.45,
-				["HITGROUP_GEAR"] = 0.45,
-				["HITGROUP_LEFTLEG"] = 0.45,
-				["HITGROUP_RIGHTLEG"] = 0.45
-			}
+				local saveresist = table.Copy(ply.ScaleDamage)
+				local savespeed = ply:GetRunSpeed()
 
-			ply:SetRunSpeed(ply:GetRunSpeed() + 65)
+				ply.Stamina = 200
+				ply:SetStamina(200)
 
-			timer.Simple(15, function()
-				if IsValid(ply) and ply:Health() > 0 and ply:Alive() and ply:HaveSpecialAb(ROLES.ROLE_UIU_KILLER) then
-					ply.ScaleDamage = saveresist
-					ply:SetRunSpeed(savespeed)
+				ply:SetArmor(255)
+
+				ply.ScaleDamage = {
+					["HITGROUP_HEAD"] = 0.4,
+					["HITGROUP_CHEST"] = 0.2,
+					["HITGROUP_LEFTARM"] = 0.2,
+					["HITGROUP_RIGHTARM"] = 0.2,
+					["HITGROUP_STOMACH"] = 0.2,
+					["HITGROUP_GEAR"] = 0.2,
+					["HITGROUP_LEFTLEG"] = 0.2,
+					["HITGROUP_RIGHTLEG"] = 0.2
+				}
+
+				ply:SetRunSpeed(ply:GetRunSpeed() + 155)
+
+				if ply:GetActiveWeapon() == ply:GetWeapon("weapon_fbi_knife") then
+
+					ply.SafeRun = ply:LookupSequence("phalanx_b_run")
+
+					net.Start("ChangeRunAnimation", true)
+					net.WriteEntity(ply)
+					net.WriteString("phalanx_b_run")
+					net.Broadcast()
+
 				end
-			end)
 
-			ply.ClockerAbilityTime = CurTime() + 15
+				timer.Simple(15, function()
+					if IsValid(ply) and ply:Health() > 0 and ply:Alive() and ply:HaveSpecialAb(ROLES.ROLE_UIU_Clocker) then
+						ply.ScaleDamage = saveresist
+						ply:SetRunSpeed(savespeed)
+						ply:SetArmor(0)
+						if ply:GetActiveWeapon() == ply:GetWeapon("weapon_fbi_knife") then
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_NTFSPEC) then
+							ply.SafeRun = ply:LookupSequence("AHL_r_RunAim_KNIFE")
 
-			maxs_uiu_spec = Vector( 8, 10, 5 )
+							net.Start("ChangeRunAnimation", true)
+							net.WriteEntity(ply)
+							net.WriteString("AHL_r_RunAim_KNIFE")
+							net.Broadcast()
 
-			local trace = {}
-
-			trace.start = ply:GetShootPos()
-
-			trace.endpos = trace.start + ply:GetAimVector() * 165
-
-			trace.filter = ply
-
-			trace.mins = -maxs_uiu_spec
-
-			trace.maxs = maxs_uiu_spec
-		
-			trace = util.TraceHull( trace )
-		
-			local target = trace.Entity
-
-			if target && target:IsValid() && target:IsPlayer() && target:GTeam() == TEAM_SCP && target:Health() > 0 && target:Alive() then
-				ply:SetSpecialCD( CurTime() + 90 )
-				target:Freeze(true)
-				old_name = target:GetName()
-				old_role = target:GetNClass()
-				if target:GetModel() == "models/cultist/scp/scp_682.mdl" then
-					target:SetForcedAnimation("0_Stun_29", false, false, 6)
-				else
-					target:SetForcedAnimation("0_SCP_542_lifedrain", false, false, 6)
-				end
-				timer.Create("UnFreezeNTF_Special"..target:SteamID(), 6, 1, function()
-					if target:GetName() != old_name && target:GetNClass() != old_role && target:GTeam() != TEAM_SCP then return end
-					target:Freeze(false)
+						end
+					end
 				end)
-			end
+
+
+		end
 
 		elseif ply:HaveSpecialAb(ROLES.ROLE_SHIELD) then
 

@@ -44,6 +44,9 @@ BREACH.Descriptions.english[ROLES.ROLE_CHAOS] = "You - are the Chaos Insurgency\
 BREACH.Descriptions.russian[ROLES.ROLE_CHAOSDESTROYER] = "Вы - Подрывник Повстанцев-Хаоса\n\nВы имеете при себе РПГ с двумя снарядми, с помощью которого вы можете подорвать вертолет/врагов, используйте с умом!\n\nСлушайтесь Командира и Выполняйте задачу!"
 BREACH.Descriptions.english[ROLES.ROLE_CHAOSDESTROYER] = "You - are the Chaos Insurgency Specialist\n\nYou have a RPG with 2 rounds, use it to explode the helicopter/your enemies, it's your choice!\n\nFollow the orders of your Commander and complete the tasks!"
 
+BREACH.Descriptions.russian[ROLES.ROLE_CHAOSJUGGERNAUT] = "Вы - Тяжеловес Повстанцев-Хаоса\n\nВы имеете при себе скорострельный Пулемет М60 и хорошую броню, убивайте всех врагов на своем пути!\n\nСлушайтесь Командира и Выполняйте задачу!"
+BREACH.Descriptions.english[ROLES.ROLE_CHAOSJUGGERNAUT] = "You - are the Chaos Insurgency Juggernaut\n\nYou have a M60 Machine gun and a pretty good armour, kill every enemy you see!\n\nFollow the orders of your Commander and complete the tasks!"
+
 BREACH.Descriptions.russian[ROLES.ROLE_CHAOSCMD] = "Вы - Командир Повстанцев-Хаоса\n\nВы имеете при себе оружие SCAR, своей способностью вы можете выдавать снаряжение Повстанца Хаоса Классу-Д\n\nВыдавайте приказы своим солдатам и Выполняйте задачу!"
 BREACH.Descriptions.english[ROLES.ROLE_CHAOSCMD] = "You - are the Chaos Insurgency Commander\n\nYou have a SCAR and ability to give a Chaos uniform to Class-D Personnel\n\nGive the orders to your soldiers and complete the tasks!"
 
@@ -62,6 +65,10 @@ BREACH.Descriptions.english[ROLES.ROLE_USA] = "You - are the Unusual Incidents U
 
 BREACH.Descriptions.russian[ROLES.ROLE_USACMD] = "Вы - Командир Отдела Необычных Происшествий\n\nВыдавайте приказы своим солдатам и Выполняйте задачу!"
 BREACH.Descriptions.english[ROLES.ROLE_USACMD] = "You - are the Unusual Incidents Unit Commander\n\nGive the orders to your soldiers and complete the tasks!"
+
+BREACH.Descriptions.russian[ROLES.ROLE_UIU_Clocker] = "Вы - Устранитель Отдела Необычных Происшествий\n\nВы крайне быстры и опасны, ваш нож крайне хорошо заточен и может пронзить даже SCP\n\nСлушайтесь Командира и Выполняйте задачу!"
+BREACH.Descriptions.english[ROLES.ROLE_UIU_Clocker] = "You - are the Unusual Incidents Unit Inflitrator\n\nYou are a fast and dangerous, your knife is extremely sharpened, it even can peice the SCPs\n\nFollow the orders of your Commander and complete the tasks!"
+
 
 // Глобальная Оккультная Коалация
 
@@ -155,6 +162,8 @@ BREACH.Descriptions.english[ROLES.ROLE_Can] = "You - are the Class-D Personnel\n
 
 BREACH.Descriptions.russian[ROLES.ClassD_Probitiy] = "Вы - Сотрудник Класса-Д\n\nПохоже ваши карманы намного больше чем у остальных\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ClassD_Probitiy] = "You - are the Class-D Personnel\n\nLook's like your pockets are bigger that from the others\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
+BREACH.Descriptions.russian[ROLES.ClassD_Pron] = "Вы - Сотрудник Класса-Д\n\nТайком вы успели украсть Ключ-Карту у сотрудника, пока он не видел\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
+BREACH.Descriptions.english[ROLES.ClassD_Pron] = "You - are the Class-D Personnel\n\nSecretly you stole the keycard from the scientist, while he wasn't watching\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"
 
 BREACH.Descriptions.russian[ROLES.ROLE_Sport] = "Вы - Сотрудник Класса-Д\n\nВы достаточно хороший бегун\n\nКооперируйтесь с другими Классами-Д для успешного побега из этого комплекса!"
 BREACH.Descriptions.english[ROLES.ROLE_Sport] = "You - are the Class-D Personnel\n\nYou are a pretty fast runner\n\nCooperate with other Class-D Personnel to successfully escape from the facility!"

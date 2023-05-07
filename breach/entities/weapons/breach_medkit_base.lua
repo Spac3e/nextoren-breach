@@ -1,28 +1,15 @@
---[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   gamemodes/breach/entities/weapons/breach_medkit_base.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
-
 SWEP.InvIcon = Material( "nextoren/gui/icons/med_1.png" )
 SWEP.ProgressIcon = "nextoren/gui/icons/med_1.png"
 
 SWEP.PrintName = "Medkit Base Name"
 
-SWEP.ViewModel		= "models/cultist/items/medkit/v_medkit.mdl"
-SWEP.WorldModel		= "models/cultist/items/medkit/w_medkit.mdl"
+SWEP.ViewModel    = "models/cultist/items/medkit/v_medkit.mdl"
+SWEP.WorldModel   = "models/cultist/items/medkit/w_medkit.mdl"
 
 SWEP.Pos = Vector( -6, -1, -2 )
 SWEP.Ang = Angle( -90, -50, 180 )
 
-SWEP.HoldType		= "heal"
+SWEP.HoldType   = "heal"
 SWEP.UseHands = true
 
 SWEP.Healing = false
@@ -48,11 +35,11 @@ end
 
 function SWEP:Deploy()
 
-	self.HolsterDelay = nil
-	self.IdleDelay = CurTime() + 1
-	self:PlaySequence( "deploy" )
+  self.HolsterDelay = nil
+  self.IdleDelay = CurTime() + 1
+  self:PlaySequence( "deploy" )
 
-	timer.Simple( .1, function()
+  timer.Simple( .1, function()
 
     if ( self && self:IsValid() ) then
 
@@ -110,7 +97,7 @@ function SWEP:Heal( target )
 
       --BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetName() .. " восстановлено." )
       --BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetName() )
-
+      --self.Owner:AddToMVP("heal", math.min(target:GetMaxHealth() - target:Health(), target:GetMaxHealth() * self.PercentHeal))
       target:SetHealth( math.min( target:Health() + target:GetMaxHealth() * self.PercentHeal, target:GetMaxHealth() ) )
 
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
@@ -141,6 +128,7 @@ function SWEP:Heal( target )
 
       BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Ваше здоровье было восстановлено." )
 
+     -- self.Owner:AddToMVP("heal", math.min(self.Owner:GetMaxHealth() - self.Owner:Health(), self.Owner:GetMaxHealth() * self.PercentHeal))
       self.Owner:SetHealth( math.min( self.Owner:Health() + self.Owner:GetMaxHealth() * self.PercentHeal, self.Owner:GetMaxHealth() ) )
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
@@ -208,26 +196,26 @@ function SWEP:Holster()
 
   if ( !self.HolsterDelay ) then
 
-		self.HolsterDelay = CurTime() + 1
+    self.HolsterDelay = CurTime() + 1
     self.IdleDelay = CurTime() + 3
 
-  	self:PlaySequence( "deploy_off" )
+    self:PlaySequence( "deploy_off" )
     self:EmitSound( "weapons/m249/handling/m249_armmovement_01.wav", 75, math.random( 80, 100 ), 1, CHAN_WEAPON )
 
-	end
+  end
 
-	if ( ( self.HolsterDelay || 0 ) < CurTime() ) then return true end
+  if ( ( self.HolsterDelay || 0 ) < CurTime() ) then return true end
 
 end
 
 function SWEP:Think()
 
-	if ( ( self.IdleDelay || 0 ) < CurTime() && !self.IdlePlaying ) then
+  if ( ( self.IdleDelay || 0 ) < CurTime() && !self.IdlePlaying ) then
 
-		self.IdlePlaying = true
-		self:PlaySequence( "idle", true )
+    self.IdlePlaying = true
+    self:PlaySequence( "idle", true )
 
-	end
+  end
 
   if ( SERVER ) then
 
@@ -254,58 +242,58 @@ end
 
 function SWEP:CreateWorldModel()
 
-	if ( !self.WModel ) then
+  if ( !self.WModel ) then
 
-		self.WModel = ClientsideModel( self.WorldModel, RENDERGROUP_OPAQUE )
-		self.WModel:SetNoDraw( true )
+    self.WModel = ClientsideModel( self.WorldModel, RENDERGROUP_OPAQUE )
+    self.WModel:SetNoDraw( true )
 
-	end
+  end
 
-	return self.WModel
+  return self.WModel
 
 end
 
 function SWEP:DrawWorldModel()
 
-	local pl = self.Owner
+  local pl = self.Owner
 
-	if ( pl && pl:IsValid() ) then
+  if ( pl && pl:IsValid() ) then
 
-		local wm = self:CreateWorldModel()
+    local wm = self:CreateWorldModel()
 
-		local bone = self.Owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
-		if ( !bone ) then return end
+    local bone = self.Owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
+    if ( !bone ) then return end
 
-		local pos, ang = self.Owner:GetBonePosition( bone )
+    local pos, ang = self.Owner:GetBonePosition( bone )
 
-		if ( wm && wm:IsValid() ) then
+    if ( wm && wm:IsValid() ) then
 
-			ang:RotateAroundAxis( ang:Right(), self.Ang.p )
-			ang:RotateAroundAxis( ang:Forward(), self.Ang.y )
-			ang:RotateAroundAxis( ang:Up(), self.Ang.r )
+      ang:RotateAroundAxis( ang:Right(), self.Ang.p )
+      ang:RotateAroundAxis( ang:Forward(), self.Ang.y )
+      ang:RotateAroundAxis( ang:Up(), self.Ang.r )
 
-			wm:SetRenderOrigin( pos + ang:Right() * self.Pos.x + ang:Forward() * self.Pos.y + ang:Up() * self.Pos.z )
-			wm:SetRenderAngles( ang )
+      wm:SetRenderOrigin( pos + ang:Right() * self.Pos.x + ang:Forward() * self.Pos.y + ang:Up() * self.Pos.z )
+      wm:SetRenderAngles( ang )
 
-			if ( wm:GetSkin() != self.Skin ) then
+      if ( wm:GetSkin() != self.Skin ) then
 
-      	wm:SetSkin( self.Skin )
+        wm:SetSkin( self.Skin )
 
-			end
+      end
 
-			wm:DrawModel()
+      wm:DrawModel()
 
-		end
+    end
 
-	else
+  else
 
     if ( self:GetSkin() != self.Skin ) then
 
       self:SetSkin( self.Skin )
 
     end
-		self:DrawModel()
+    self:DrawModel()
 
-	end
+  end
 
 end

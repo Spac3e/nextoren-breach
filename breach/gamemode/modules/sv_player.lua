@@ -361,15 +361,15 @@ function mply:SetupAdmin()
 	self:Give( "weapon_physgun" )
 end
 
-
-
 function mply:ApplyRoleStats( role )
 	self:SetNClass( role.name )
 	self:SetGTeam( role.team )
 	self:SetSkin(0)
-	for k, v in pairs( role.weapons ) do
-		self:Give( v )
-	end
+	timer.Simple(0.1, function()
+		for k, v in pairs( role.weapons ) do
+			self:Give( v )
+		end
+	end)
 	for k, v in pairs( role.ammo ) do
 		for _, wep in pairs( self:GetWeapons() ) do
 			if v[1] == wep:GetClass() then
@@ -484,6 +484,7 @@ function mply:SetSecurityI1()
 	self:SetupNormal()
 	self:ApplyRoleStats(thebestone)
 end
+
 
 function mply:SetClassD()
 	self:SetRoleBestFrom("classds")

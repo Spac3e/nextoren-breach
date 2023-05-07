@@ -4,7 +4,7 @@ gamestarted = gamestarted or false
 preparing = false
 postround = false
 roundcount = 0
-MAPBUTTONS = table.Copy(BUTTONS)
+BUTTONS = table.Copy(BUTTONS)
 
 function GM:PlayerSpray( ply )
 return ply:IsSuperAdmin()
@@ -436,37 +436,40 @@ function SpawnAllItems()
 end
 
 function SpawnSupport()
-local usechaos = math.random( 1, 100 ) <= GetConVar("br_ci_percentage"):GetInt()
-local useuiu = math.random( 100, 100 )
-local usegop = math.random( 1, 100 )
-local roles = {}
-local plys = {}
-local inuse = {}
-local spawnpos = SPAWN_OUTSIDE
-for k, v in pairs( ALLCLASSES.support.roles ) do
+	local usechaos = math.random( 35, 100 )
+	local usegoc = math.random( 15, 100 )
+	local useuiu math.random( 5, 100 )
+	local usentf = math.random( 45, 100 )
+	local roles = {}
+	local plys = {}
+	local inuse = {}
+	local spawnpos = SPAWN_OUTSIDE
+
+	for k, v in pairs( ALLCLASSES.support.roles ) do
 		if usechaos then
 			if v.team == TEAM_CHAOS then
 				table.insert( roles, v )
 			end
 		else
-			if useuiu then
-				if v.team == TEAM_USA then
-					table.insert( roles, v )
-				end
-			else
-				if usegop then
-					if v.team == TEAM_GOC then
-						table.insert( roles, v )
-					end
-				else
 			if v.team == TEAM_GUARD then
 				table.insert( roles, v )
+			end
+    		else
+		   if usegoc then
+			if v.team == TEAM_GOC then
+				table.insert( roles, v )
+			end
+    		else
+		   if useuiu then
+			if v.team == TEAM_USA then
+				table.insert( roles, v )
+			end
+            end
 		end
+      end
 	end
-end
-end
-end
-for k, v in pairs( roles ) do
+    end
+	for k, v in pairs( roles ) do
 		plys[v.name] = {}
 		inuse[v.name] = 0
 		for _, ply in pairs( player.GetAll() ) do
@@ -504,16 +507,20 @@ for k, v in pairs( roles ) do
 			break
 		end
 	end
-	if usegop then
+
+	if usegoc then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.ogg" )' )
+	end
+	if useuiu then
+          print("")
 	end
 	if usechaos then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
 	end
-	if !usechaos then
+	if !usechaos and !usegoc and !useuiu then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
 	end
-end
+  end
 
 SCP914InUse = false
 function Use914( ent )

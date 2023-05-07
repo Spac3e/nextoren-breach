@@ -1,4 +1,10 @@
-// Serverside file for all player related functions
+local Player = FindMetaTable( "Player" )
+
+function Player:SetBottomMessage( msg )
+    net.Start( "SetBottomMessage" )
+        net.WriteString( msg )
+    net.Send( self )
+end
 
 function IsPremium( ply, silent )
 	ply:SetNPremium( false )
@@ -497,364 +503,12 @@ hook.Add( "SetupPlayerVisibility", "CCTVPVS", function( ply, viewentity )
 	end
 end )
 
---[[
-	function PlayerCanPickupWeapon( ply, weap )
-
-
-
-	if ( ( ply.NextPickup || 0 ) > CurTime() ) then return false end
-
-
-
-	if ( ply.ForceToGive && weap:GetClass() == ply.ForceToGive ) then
-
-
-
-		ply.HasWeaponCheck = { class = ply.ForceToGive, ent = weap }
-
-
-
-	 	--ply.NextPickup = CurTime() + 1
-
-
-
-		timer.Simple( .1, function()
-
-
-
-			if ( ply.HasWeaponCheck && ply.HasWeaponCheck.class && !ply:HasWeapon( ply.HasWeaponCheck.class ) ) then
-
-
-
-				if ( ply.HasWeaponCheck.ent && ply.HasWeaponCheck.ent:IsValid() ) then
-
-
-
-					ply.HasWeaponCheck.ent:Remove()
-
-
-
-				end
-
-
-
-				ply:Give( ply.HasWeaponCheck.class, false )
-
-
-
-			end
-
-
-
-			ply.HasWeaponCheck = nil
-
-
-
-		end )
-
-
-
-		ply.ForceToGive = nil
-
-
-
-		return true
-
-
-
- 	end
-
-
-
-	if ( !ply:KeyDown( IN_USE ) ) then return false end
-
-
-
-	if ( ply:Team() == TEAM_SCP || ply:Team() == TEAM_SPEC || ply:Health() <= 0 ) then return false end
-
-
-
-	local tr = ply:GetEyeTrace()
-
-
-
-	local wepent = tr.Entity
-
-
-
-	--[[if ( ply.Stance == "Crouching" ) then
-
-
-
-    tr.StartPos = tr.StartPos - vec_down_ctrl
-
-
-
-    wepent = ply:StanceVision( tr )
-
-
-
-  end]]
-
-
-
-	--if ( !( tr.Entity && tr.Entity:IsValid() ) ) then return false end--]]
-
-
---[[
-	if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( ply:GetPos() ) <= 6400 ) then
-
-
-
-		local ent_class = wepent:GetClass()
-
-
-
-		if ( ply:HasWeapon( ent_class ) ) then
-
-
-
-			ply.NextPickup = CurTime() + 1
-
-			BREACH.Players:ChatPrint( ply, true, true, "У Вас уже есть данный предмет." )
-
-
-
-			return false
-
-		end
-
-
-
-		local maximumdefaultslots = ply:GetMaxSlots()
-
-		local maximumitemsslots = 6
-
-		local maximumnotdroppableslots = 6
-
-
-
-		local countdefault = 0
-
-		local countitem = 0
-
-		local countnotdropable = 0
-
-
-
-		local is_cw = wepent.CW20Weapon
-
-
-
-		for _, weapon in ipairs( ply:GetWeapons() ) do
-
-
-
-			if ( is_cw && weapon.CW20Weapon && weapon.Primary.Ammo == wepent.Primary.Ammo ) then
-
-
-
-				ply.NextPickup = CurTime() + 1
-
-				BREACH.Players:ChatPrint( ply, true, true, "У Вас уже есть данный тип оружия." )
-
-
-
-				return
-
-			end
-
-
-
-			if ( !weapon.Equipableitem && !weapon.UnDroppable ) then
-
-
-
-				countdefault = countdefault + 1
-
-
-
-			elseif ( weapon.Equipableitem ) then
-
-
-
-				countitem = countitem + 1
-
-
-
-			elseif ( weapon.UnDroppable ) then
-
-
-
-				countnotdropable = countnotdropable + 1
-
-
-
-			end
-
-
-
-		end
-
-
-
-		if ( !wepent.Equipableitem && !wepent.UnDroppable && countdefault >= maximumdefaultslots ) then
-
-
-
-			ply:BrEventMessage( "Your main inventory is full" )
-
-
-
-			return false
-
-
-
-		elseif ( wepent.Equipableitem && countitem >= maximumitemsslots ) then
-
-
-
-			ply:BrEventMessage( "Your second inventory is full" )
-
-
-
-			return false
-
-
-
-		elseif ( wepent.UnDroppable && countnotdropable >= maximumnotdroppableslots ) then
-
-
-
-			ply:BrEventMessage( "Your main inventory is full" )
-
-
-
-			return false
-
-
-
-		end
-
-
-
-		local physobj = wepent:GetPhysicsObject()
-
-
-
-		if ( physobj && physobj:IsValid() ) then
-
-
-
-			physobj:EnableMotion( false )
-
-
-
-		end
-
-
-
-		ply:BrProgressBar( "Поднятие вещи...", 1, "nextoren/gui/icons/notifications/breachiconfortips.png", ent, true, function()
-
-
-
-			if ( wepent:IsWeapon() ) then
-
-
-
-				ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
-
-				ply:Give( ent_class, true )
-
-
-
-				local wep_index = wepent:EntIndex()
-
-
-
-				timer.Simple( .7, function()
-
-
-
-					if ( ply && ply:IsValid() && !ply:HasWeapon( ent_class ) ) then
-
-
-
-						for _, v in ipairs( ents.FindInSphere( ply:GetPos(), 100 ) ) do
-
-
-
-							if ( v:IsWeapon() && v:GetClass() == ent_class && v:EntIndex() == wep_index ) then
-
-
-
-								ply:Give( v:GetClass() )
-
-								v:Remove()
-
-
-
-							end
-
-
-
-						end
-
-
-
-					end
-
-
-
-				end )
-
-
-
-			end
-
-
-
-		end, nil, function() if ( physobj && physobj:IsValid() ) then physobj:EnableMotion( true ) end end )
-
-		return false
-
-
-
-	end
-
-
-
-	return false
-
-end
-
-hook.Add( "PlayerCanPickupWeapon", "UseWeapon", PlayerCanPickupWeapon )
---]]
 function GM:PlayerCanPickupWeapon( ply, wep )
-	//if ply.lastwcheck == nil then ply.lastwcheck = 0 end
-	//if ply.lastwcheck > CurTime() then return end
-	//ply.lastwcheck = CurTime() + 0.5
-	-- if wep.IDK != nil then
-	-- 	for k,v in pairs(ply:GetWeapons()) do
-	-- 		if wep.Slot == v.Slot then return false end
-	-- 	end
-	-- end
-
 	if ply:GTeam() == TEAM_SCP and ply:GetNClass() != ROLES.ROLE_SCP9571 then
 		if wep.ISSCP then
 			return true
 		end
-
 		return false
-		/*if not wep.ISSCP then
-			return false
-		else
-			if wep.ISSCP == true then
-				return true
-			else
-				return false
-			end
-		end*/
 	end
 
 	if ply:GTeam() != TEAM_SPEC then
@@ -904,13 +558,15 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 	end
 end
 
+
 function GM:PlayerCanPickupItem( ply, item )
 	return ply:GTeam() != TEAM_SPEC or ply:GetNClass() == ROLES.ADMIN
 end
 
 function GM:AllowPlayerPickup( ply, ent )
-	return false
+return
 end
+
 
 // usesounds = true,
 function IsInTolerance( spos, dpos, tolerance )
@@ -936,7 +592,7 @@ function IsInTolerance( spos, dpos, tolerance )
 	return true
 end
 
-function GM:PlayerUse( ply, ent, wep )
+function GM:PlayerUse( ply, ent )
 	if ply:GTeam() == TEAM_SPEC and ply:GetNClass() != ROLES.ADMIN then return false end
 	if ply:GetNClass() == ROLES.ADMIN then return true end
 	if ply.lastuse == nil then ply.lastuse = 0 end
@@ -958,17 +614,17 @@ function GM:PlayerUse( ply, ent, wep )
 				if v.levelOverride and v.levelOverride( ply ) then
 					return true
 				end
+
 				local wep = ply:GetActiveWeapon()
-				local weaponName = "breach_keycard_"
-				if IsValid( wep ) and string.sub(weaponName, 1, 4) then
+				if IsValid( wep ) and wep:GetClass() == "br_keycard" then
 					local keycard = wep
 					if IsValid( keycard ) then
 						if bit.band( keycard.Access, v.access ) > 0 then
 							if !v.nosound then
-								ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
+								ply:EmitSound( "KeycardUse1.ogg" )
 							end
 
-							ply:PrintMessage( HUD_PRINTCENTER, v.custom_access or "Access granted to "..v.name )
+							ply:SetBottomMessage("Access Granted")
 
 							if v.custom_access_granted then
 								return v.custom_access_granted( ply, ent ) or false
@@ -977,41 +633,42 @@ function GM:PlayerUse( ply, ent, wep )
 							end
 						else
 							if !v.nosound then
-								ply:EmitSound( "nextoren/weapons/keycard/keycarduse_2.ogg" )
+								ply:EmitSound( "KeycardUse2.ogg" )
 							end
 
-							ply:PrintMessage( HUD_PRINTCENTER, v.custom_deny or "You cannot operate this door with this keycard" )
+							ply:SetBottomMessage("Access Denied")
 
 							return false
 						end
 					end
 				else
-					ply:PrintMessage( HUD_PRINTCENTER, v.custom_nocard or "A keycard is required to operate this door" )
+					ply:SetBottomMessage("You need Keycard to operate this door")
 					return false
 				end
 			end
 
 			if v.canactivate == nil or v.canactivate( ply, ent ) then
 				if !v.nosound then
-					ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
+					ply:EmitSound( "KeycardUse1.ogg" )
 				end
 
 				if v.customaccessmsg then
 					ply:PrintMessage( HUD_PRINTCENTER, v.customaccessmsg )
 				else
-					ply:PrintMessage( HUD_PRINTCENTER, "Access granted to " .. v["name"] )
+					ply:SetBottomMessage("Access Granted")
+
 				end
 
 				return true
 			else
 				if !v.nosound then
-					ply:EmitSound( "nextoren/weapons/keycard/keycarduse_2.ogg" )
+					ply:EmitSound( "KeycardUse2.ogg" )
 				end
 
 				if v.customdenymsg then
-					ply:PrintMessage( HUD_PRINTCENTER, v.customdenymsg )
+					ply:SetBottomMessage( v.customdenymsg )
 				else
-					ply:PrintMessage( HUD_PRINTCENTER, "Access denied" )
+					ply:SetBottomMessage( "Access denied" )
 				end
 
 				return false
@@ -1019,7 +676,6 @@ function GM:PlayerUse( ply, ent, wep )
 		end
 	end
 end
-
 function GM:CanPlayerSuicide( ply )
 	return false
 end

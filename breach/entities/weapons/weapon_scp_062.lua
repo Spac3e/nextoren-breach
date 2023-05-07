@@ -1,15 +1,3 @@
---[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   gamemodes/breach/entities/weapons/weapon_scp_062.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 AddCSLuaFile()
 
 SWEP.AbilityIcons = {
@@ -140,6 +128,10 @@ function SWEP:OnRemove()
 
 	hook.Remove( "PlayerButtonDown", "SCP_062_ABILITY" )
 
+	if SERVER then
+	--	self.Owner:ConCommand( "-forward" )
+	end
+
 end
 
 function SWEP:Initialize()
@@ -179,13 +171,13 @@ function SWEP:Initialize()
 					self:SetNWAngle( "ViewAngles", self:GetAngles() )
 					self:EmitSound( "nextoren/scp/scp_hunter/eating.mp3" , 89, 100, 1, CHAN_VOICE, 0, 0 )
 					net.Start("ThirdPersonCutscene")
-			        net.WriteUInt(self:SequenceDuration(13), 4)
+			        net.WriteUInt(7, 4)
 			        net.WriteBool(false)
 			        net.Send(self)
 
-			        wep:Cooldown(1, self:SequenceDuration(13))
+			        wep:Cooldown(1, 7)
 
-					activator:SetForcedAnimation(13, activator:SequenceDuration(13), nil, function()
+					activator:SetForcedAnimation(13, 7, nil, function()
 						self:SetHealth(math.Approach(self:Health(), self:GetMaxHealth(), 235))
 						--wep:Cooldown(1, 15)
 						wep:SetBodies(wep:GetBodies() + 1)

@@ -289,9 +289,9 @@ CLASSDMODELS = {
 	
 				team = TEAM_CLASSD,
    
-				weapons = {"br_holster", "weapon_flashlight", "breach_keycard_1"},
+				weapons = {"br_holster", "item_screwdriver", "breach_keycard_1"},
    
-				showweapons = {"Ключ карта 1 уровня общего доступа", "Фонарик"},
+				showweapons = {"Ключ карта 1 уровня общего доступа"},
    
 				ammo = {},
    
@@ -562,29 +562,29 @@ CLASSDMODELS = {
 	
 				 team = TEAM_CLASSD,
 	
-				 weapons = {"lods"},
+				 weapons = {"br_holster", "breach_keycard_guard_4", "item_tazer"},
 	
 				 showweapons = {},
 	
 				 ammo = {},
 	
-				 health = 200,
+				 health = 310,
 	
-				 armor = 50,
+				 armor = 150,
 	
 				 walkspeed = 1.12,
 	
-				 runspeed = 1.30,
+				 runspeed = 1.6,
 	
-				 jumppower = 1,
+				 jumppower = 3,
 	
 				 vest = nil,
 	
-				 models = CLASSDMODELS,
+				 models = CLASSDMODELSMALES,
 	
 				 showmodel = nil,
 	
-				 level = 800,
+				 level = 45,
 	
 				 customcheck = nil,
 	
@@ -1494,7 +1494,7 @@ CLASSDMODELS = {
 	
 				 level = 20,
 
-				 bodygroups = "0011210",
+				 bodygroups = "00011201",
 	
 				 max = 1
 	
@@ -1510,11 +1510,11 @@ CLASSDMODELS = {
 	
 				 ammo = {{"SMG1", 560}},
 	
-				 health = 220,
+				 health = 210,
 	
 				 armor = 80,
 	
-			     walkspeed = 0.9,
+			     walkspeed = 1,
 		
 				 runspeed = 1.2,
 	
@@ -1541,6 +1541,43 @@ CLASSDMODELS = {
 				 max = 1
 	
 				},
+				{name = ROLES.ROLE_CHAOSJUGGERNAUT,
+	
+				team = TEAM_CHAOS,
+   
+				weapons = {"br_holster", "cw_cultist_machinegun_m60", "item_syringe", "br_keycard_8"},
+   
+				showweapons = {""},
+   
+				ammo = {{"AR2", 500}},
+   
+				health = 220,
+   
+				armor = 150,
+   
+				walkspeed = 0.86,
+	   
+				runspeed = 0.93,
+   
+				jumppower = 0.85,
+   
+				vest = nil,
+   
+				models = CHAOSMODELS,
+   
+				showmodel = nil,
+   
+				pmcolor = nil,
+   
+				flashlight = true,
+   
+				level = 0,
+
+				bodygroups = "20031101",
+   
+				max = 1
+   
+			   },
 	
 				{name = ROLES.ROLE_GoP,
 	
@@ -1661,6 +1698,56 @@ CLASSDMODELS = {
 				 max = 3
 	
 				},
+				{name = ROLES.ROLE_UIU_Clocker,
+	
+				team = TEAM_USA,
+   
+				weapons = {"br_holster", "item_radio", "cw_fbi_revolver", "weapon_fbi_knife", "cw_kk_ins2_nade_m84", "item_nightvision_blue"},
+   
+				showweapons = {""},
+   
+				ammo = {{"cw_fbi_revolver", 48}},
+   
+   
+				health = 200,
+   
+				armor = 90,
+   
+				walkspeed = 0.86,
+				runspeed = 1.2,
+				jumppower = 0.85,
+   
+				vest = nil,
+   
+				models = USAMODELS,
+   
+				showmodel = nil,
+   
+				pmcolor = nil,
+   
+				flashlight = true,
+   
+				level = 5,
+
+				bodygroups = "3100",
+
+				ability = {"Rage", 75, "Increases your movement speed by a minute", "nextoren/gui/special_abilities/special_fbi_clocker.png", false},
+
+				damage_modifiers = {
+					["HITGROUP_HEAD"] = 0.7,
+					["HITGROUP_CHEST"] = 0.6,
+					["HITGROUP_LEFTARM"] = 0.8,
+					["HITGROUP_RIGHTARM"] = 0.8,
+					["HITGROUP_STOMACH"] = 0.6,
+					["HITGROUP_GEAR"] = 0.6,
+					["HITGROUP_LEFTLEG"] = 0.8,
+					["HITGROUP_RIGHTLEG"] = 0.8
+				},
+
+   
+				max = 3
+   
+			   },
 	
 				{name = ROLES.ROLE_USACMD,
 	

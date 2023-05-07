@@ -33,7 +33,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "LMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp999_abil/ability_4.png",
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_4.png",
 
   },
 
@@ -45,7 +45,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "RMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp999_abil/ability_3.png",
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_3.png",
 
   },
 
@@ -57,7 +57,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_F"],
     [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp999_abil/ability_2.png",
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_2.png",
 
   },
 
@@ -69,7 +69,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_G"],
     [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp999_abil/ability_1.png",
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_1.png",
 
   },
 
@@ -177,7 +177,7 @@ function SWEP:PrimaryAttack()
           ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 0.5, 0)
           self.Owner:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 0.5, 0)
 
-          ply:AnimatedHeal(10)
+          ply:SetHealth(10)
 
         end
 
@@ -188,18 +188,18 @@ function SWEP:PrimaryAttack()
     local function finish()
       self.AntiInfiniteHeal = nil
       if ply:GTeam() == TEAM_SCP then
-        ply:AnimatedHeal(95)
+        ply:SetHealth(95)
         ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
         self:Cooldown(1, 40)
         self:SetNextPrimaryFire(CurTime() + 40)
-        self.Owner:AddToStatistics("Healing", 100)
+      --  self.Owner:AddToStatistics("Healing", 100)
         self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+100 exp", color_white)
       else
-        ply:AnimatedHeal(ply:GetMaxHealth() - ply:Health())
+        ply:SetHealth(ply:GetMaxHealth() - ply:Health())
         ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
         self:Cooldown(1, self.AbilityIcons[1].Cooldown)
         self:SetNextPrimaryFire(CurTime() + self.AbilityIcons[1].Cooldown)
-        self.Owner:AddToStatistics("Healing", 45)
+      --  self.Owner:AddToStatistics("Healing", 45)
         self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+45 exp", color_white)
       end
     end
@@ -233,11 +233,11 @@ function SWEP:SecondaryAttack()
         v:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
 
         if v:GTeam() == TEAM_SCP then
-          v:AnimatedHeal(155)
+          v:SetHealth(155)
           if v != self.Owner then exp = exp + 50 end
         else
           if v:Health() < v:GetMaxHealth() then
-            v:AnimatedHeal(v:GetMaxHealth() - v:Health())
+            v:SetHealth(v:GetMaxHealth() - v:Health())
             exp = exp + 40
           end
         end
@@ -246,8 +246,8 @@ function SWEP:SecondaryAttack()
 
     end
     if exp != 0 then
-      self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+"..tostring(exp).." exp", color_white)
-      self.Owner:AddToStatistics("Healing", exp)
+     self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+"..tostring(exp).." exp", color_white)
+    --  self.Owner:AddToStatistics("Healing", exp)
     end
   end
 

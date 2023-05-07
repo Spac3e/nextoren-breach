@@ -117,7 +117,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
 	RegisterSCP( "SCP076", "models/cultist/scp/scp_076.mdl", "weapon_scp_076", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 300,
 		max_health = 300,
@@ -129,7 +128,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
 	RegisterSCP( "SCP082", "models/cultist/scp/scp_082.mdl", "weapon_scp_082", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 2300,
 		max_health = 2800,
@@ -201,7 +199,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 	} )
 	RegisterSCP( "SCP939", "models/cultist/scp/scp_939.mdl", "weapon_scp_939", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 2000,
 		max_health = 2000,
@@ -211,7 +208,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 	} )
 	RegisterSCP( "SCP062FR", "models/cultist/scp/scp_062fr.mdl", "weapon_scp_062", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 2000,
 		max_health = 2000,
@@ -241,7 +237,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
 	RegisterSCP( "SCP542", "models/cultist/scp/scp_542.mdl", "weapon_scp_542", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 1500,
 		max_health = 1500,
@@ -252,7 +247,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
 	RegisterSCP( "SCP2012", "models/cultist/scp/scp2012/scp_2012.mdl", "weapon_scp_2012", {
 		jump_power = 200,
-		prep_freeze = true,
 	}, {
 		base_health = 2000,
 		max_health = 2000,
@@ -263,7 +257,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
 	RegisterSCP( "SCP973", "models/cultist/scp/scp_973/scp_973.mdl", "weapon_scp_973", {
 		jump_power = 0,
-		prep_freeze = true,
 	}, {
 		base_health = 2500,
 		max_health = 2500,

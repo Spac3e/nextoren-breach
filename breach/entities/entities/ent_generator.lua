@@ -164,7 +164,7 @@ function ENT:Use( caller )
     return
   end
 
-  if ( !caller:HasWeapon( "item_toolkit" ) && caller:GetNClass() != role.MTF_Engi ) then
+  if ( !caller:HasWeapon( "item_toolkit" ) && caller:GetNClass() != ROLES.ROLE_Engi ) then
 
     if ( SERVER ) then
 
@@ -187,14 +187,14 @@ function ENT:Use( caller )
 
           caller:GetWeapon( "item_toolkit" ):Remove()
 
-        elseif ( !caller:HasWeapon( "item_toolkit" ) && caller:GetNClass() != role.MTF_Engi ) then
+        elseif ( !caller:HasWeapon( "item_toolkit" ) && caller:GetNClass() != ROLES.ROLE_Engi ) then
 
           BREACH.Players:ChatPrint( caller, true, true, "Вам не хватило инструментов, чтобы отремонтировать генератор до конца." )
 
           return
         end
 
-        caller:AddToStatistics( "Support", 110 )
+        --caller:AddToStatistics( "Support", 110 )
         SetGlobalInt( "ActivatedGenerators", GetGlobalInt( "ActivatedGenerators" ) + 1 )
         self:SetActivated( true )
 

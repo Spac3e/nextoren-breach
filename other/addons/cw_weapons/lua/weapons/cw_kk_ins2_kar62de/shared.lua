@@ -1,15 +1,3 @@
---[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   addons/[weapons]_new_weapons/lua/weapons/cw_kk_ins2_kar62de/shared.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 if not CustomizableWeaponry then return end
 
 AddCSLuaFile()
@@ -100,12 +88,6 @@ SWEP.MuzzleEffect = "weapon_muzzle_flash_shotgun"
 SWEP.MuzzleEffectWorld = "muzzleflash_k98_3p"
 
 SWEP.Attachments = {
-	{header = "Sight", offset = {600, -500}, atts = {"kk_ins2_scope_zf41", "kk_ins2_scope_zf4", "kk_ins2_scope_k98"}},
-	{header = "Barrel", offset = {-200, -500}, atts = {"kk_ins2_ww2_knife", "kk_ins2_gl_ggg"}},
-	{header = "Stock", offset = {1000, 0}, atts = {"kk_ins2_ww2_sling"}},
-	{header = "Clip", offset = {300, 0}, atts = {"kk_ins2_ww2_stripper"}, exclusions = {["kk_ins2_scope_k98"] = true, ["kk_ins2_scope_zf4"] = true}},
-	{header = "Inside", offset = {-400, 0}, atts = {"kk_ins2_ww2_bolt"}},
-	{header = "Flavor", offset = {0, 500}, atts = {"kk_ins2_bs"}},
 	--["+reload"] = {header = "Ammo", offset = {900, 500}, atts = {"am_magnum", "am_matchgrade"}}
 }
 
@@ -240,7 +222,7 @@ SWEP.Spawnable			= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 
 SWEP.Primary.ClipSize		= 999
-SWEP.Primary.DefaultClip = 0 --	= 999
+SWEP.Primary.DefaultClip = 999 --	= 999
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "SCP062Ammo"
 
