@@ -1624,7 +1624,7 @@ CLASSDMODELS = {
    
 				showweapons = {""},
    
-				ammo = {{"GOC", 800}},
+				ammo = {{"cw_cultist_goc_fate", 415}},
 
 				ability = {"Shield", 75, "Активируйте щит что-бы защитить себя и своих товарищей.", "nextoren/gui/special_abilities/special_goc_shield.png", false},
    
@@ -1649,8 +1649,6 @@ CLASSDMODELS = {
 				flashlight = true,
    
 				level = 5,
-                
-                bodygroups = "12",
 					
 				max = 1
    
@@ -1664,7 +1662,7 @@ CLASSDMODELS = {
 	
 				 showweapons = {"Ключ-карта ГОКа", "Рация", "Дубинка", "Скар и сканнер"},
 	
-				 ammo = {{"GOC", 410}},
+				 ammo = {{"AR2", 800}},
 	
 	
 	

@@ -202,6 +202,7 @@ concommand.Add("brlua_sv", function(ply, cmd, args, argstr)
 		net.WriteString(argstr)
 	net.SendToServer()
 end)
+
 function PlayAnnouncer(soundname)
 	local volume = GetAnnouncerVolume()
 

@@ -74,6 +74,7 @@ end
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end
+
 net.Receive( "DropWeapon", function( len, ply )
 	local class = net.ReadString()
 	if class then

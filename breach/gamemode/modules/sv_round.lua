@@ -8,6 +8,24 @@ function RestartGame()
 	game.ConsoleCommand("changelevel "..game.GetMap().."\n")
 end
 
+local soundList = {
+    "sound1.wav",
+    "sound2.wav",
+    "sound3.wav",
+}
+
+local function RandomAnnouncmentShakyPidoras()
+net.Start("BreachAnnouncer")
+net.WriteString(soundList)
+net.Broadcast()
+end
+
+timer.Create("RandomAnnouncmentShakyPidoras_timer", 90, 0, function()
+    if RoundStart then
+    RandomAnnouncmentShakyPidoras()
+end
+end)
+
 function CleanUp()
 	timer.Destroy("PreparingTime")
 	timer.Destroy("RoundTime")

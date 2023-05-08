@@ -2853,13 +2853,10 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			ply:SetSpecialCD( CurTime() + 75)
 
-			if SERVER then
+			local shield = ents.Create("ent_goc_shield")
+			shield:SetOwner(ply)
+			shield:Spawn()
 
-				local shield = ents.Create("ent_goc_shield")
-				shield:SetOwner(ply)
-				shield:Spawn()
-
-			end
 		elseif ply:HaveSpecialAb(ROLES.ROLE_UIUSPEC) then
 
 			maxs_uiu_spec = Vector( 8, 10, 5 )
