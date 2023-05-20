@@ -111,6 +111,8 @@ end
 
 function SWEP:AnimationUse()
 
+  
+
   self.IdleDelay = CurTime() + .6
   self:PlaySequence( "insert" )
 

@@ -576,6 +576,121 @@ local Death_Desaturation_Intensity = 1
 local clr_blood = Color(102, 0, 0)
 local clr_red = Color(255, 0, 0)
 local clr_gray = Color( 198, 198, 198 )
+
+function CorpsedMessageEvak(msg)
+	--[[
+	alpha_color = 0
+	final_color = 255
+    hook.Add( "HUDPaint", "CorpsedMessage", function()
+		alpha_color = math.Approach(alpha_color, final_color, RealFrameTime() * 256)
+		if alpha_color == final_color then
+			if !timer.Exists("SetCorpsedMesage_Hold") then
+				timer.Create("SetCorpsedMesage_Hold", 2.5, 1, function()
+					final_color = 0
+				end)
+			end
+		end
+			if msg2 == false then
+        draw.SimpleText( msg3, "ScoreboardContent", ScrW() / 2, ScrH() / 2, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        draw.SimpleText( msg, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+       else
+       	draw.SimpleText( msg3, "ScoreboardContent", ScrW() / 2, ScrH() / 2, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        draw.SimpleText( msg2, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20, Color(col.r, col.g, col.b, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        draw.SimpleText( msg, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20-20, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+      end
+    end )
+
+	timer.Remove("SetCorpsedMessage_Disappear")
+	timer.Remove("SetCorpsedMesage_Hold")
+
+    timer.Create( "SetCorpsedMessage", 5, 1, function()
+        hook.Remove( "HUDPaint", "CorpsedMessage" )
+    end )
+	--]]
+
+	local col = gteams.GetColor(LocalPlayer():GTeam())
+
+	if !msg then
+		msg = "Evacuated"
+	end
+
+	local name
+
+	if LocalPlayer():GTeam() == TEAM_SCP then
+		name = "SUBJECT: "..GetLangRole(LocalPlayer():GetNClass())
+	else
+		name = "SUBJECT NAME: "..LocalPlayer():GetName().. " - "..LocalPlayer():GetNClass()
+	end
+
+	local CutSceneWindow = vgui.Create( "DPanel" )
+	CutSceneWindow:SetText( "" )
+	CutSceneWindow:SetSize( ScrW(), ScrH() )
+	CutSceneWindow.StartAlpha = 255
+	CutSceneWindow.StartTime = CurTime() + 8
+	CutSceneWindow.Name = name
+	CutSceneWindow.Status = "STATUS: "..msg
+	CutSceneWindow.Time = "LAST REPORT TIME: " .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. " ( Time after disaster: " .. string.ToMinutesSeconds( cltime ) .. " )"
+
+	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
+	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
+	local ExplodedString3 = string.Explode( "", CutSceneWindow.Name, true )
+
+	local str = ""
+	local str1 = ""
+	local str2 = ""
+
+	local count = 0
+	local count1 = 0
+	local count2 = 0
+
+	CutSceneWindow.Paint = function( self, w, h )
+
+		--draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_black, self.StartAlpha ) )
+
+		if ( CutSceneWindow.StartTime <= CurTime() + 6 ) then
+
+			if ( CutSceneWindow.StartTime <= CurTime() ) then
+
+				self.StartAlpha = math.Approach( self.StartAlpha, 0, RealFrameTime() * 80 )
+
+				if ( self.StartAlpha <= 0 ) then
+
+					FadeMusic( 10 )
+					self:Remove()
+
+				end
+
+			end
+
+			if ( ( self.NextSymbol || 0 ) <= SysTime() && count2 != #ExplodedString3 ) then
+
+				count2 = count2 + 1
+				self.NextSymbol = SysTime() + .03
+				str = str .. ExplodedString3[ count2 ]
+
+			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 != #ExplodedString2 ) then
+
+				count1 = count1 + 1
+				self.NextSymbol = SysTime() + .03
+				str1 = str1 .. ExplodedString2[ count1 ]
+
+			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 == #ExplodedString2 && count != #ExplodedString ) then
+
+				count = count + 1
+				self.NextSymbol = SysTime() + .03
+				str2 = str2 .. ExplodedString[ count ]
+
+			end
+
+			draw.SimpleTextOutlined( str, "TimeMisterFreeman", w / 2, h / 2, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( col, self.StartAlpha ) )
+			draw.SimpleTextOutlined( str1, "TimeMisterFreeman", w / 2, h / 2 + 32, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( clr_blood, self.StartAlpha ) )
+			draw.SimpleTextOutlined( str2, "TimeMisterFreeman", w / 2, h / 2 + 64, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( clr_blood, self.StartAlpha ) )
+
+		end
+
+	end
+end
+
 function CorpsedMessage(msg)
 	--[[
 	alpha_color = 0

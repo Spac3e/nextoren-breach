@@ -1,3 +1,4 @@
+--[[
 // Script by Sofi
 // sofi.pink
 
@@ -153,5 +154,5 @@ hook.Add("PlayerCanPickupItem", "ManualWeaponPickup_CanPickupItem", function(pl,
 		end
 	end
 end)
-
+]]--
 // sofi.pink

@@ -435,6 +435,50 @@ function SpawnAllItems()
 
 end
 
+util.AddNetworkString( "cassie_pizdelka_start" )
+util.AddNetworkString( "cassie_pizdelka_stop" )
+
+function Round_Work()
+		net.Start( "cassie_pizdelka_start" )
+		net.Broadcast()
+	timer.Create( "lc_15_sv_scp_open_door", 180, 1, function()
+		OpenSCPDoors()
+	end )
+
+	timer.Create( "lc_2_10_s_sv", 955, 1, function()
+
+		local heli = ents.Create( "heli" )
+		heli:Spawn()
+
+		local btr = ents.Create( "btr" )
+		btr:Spawn()
+
+		local portal = ents.Create( "portal" )
+		portal:Spawn()
+
+	end)
+
+end
+
+concommand.Add( "tp_home", function( ply, cmd, args )
+    ply:SetPos(Vector(11292, -6848, 2813))
+end )
+
+function Round_Work_stop()
+	--local ply = LocalPlayer()
+	-- пизделка на 15 мин
+	timer.Remove( "lc_15_sv_scp_open_door" )
+	timer.Remove( "lc_2_10_s_sv" )
+	net.Start( "cassie_pizdelka_stop" )
+    net.Broadcast()
+	--[[
+    timer.Simple(120, function()
+		surface.PlaySound( "nextoren/round_sounds/main_decont/decont_15_b.mp3" )
+		self:BrTip(0, "[Vault Breach]", Color(255, 0, 0), "До взрыва Альфа Боеголовки осталось 15 мин!", Color(255, 255, 255))
+	end)
+	]]--
+end
+
 function SpawnSupport()
 	local usechaos = math.random( 35, 100 )
 	local usegoc = math.random( 15, 100 )
@@ -451,23 +495,24 @@ function SpawnSupport()
 				table.insert( roles, v )
 			end
 		else
-			if v.team == TEAM_GUARD then
-				table.insert( roles, v )
-    		else
-		   if usegoc then
+      		if usegoc then
 			if v.team == TEAM_GOC then
 				table.insert( roles, v )
 			end
-    		else
-		   if useuiu then
+		else
+        		if useuiu then
 			if v.team == TEAM_USA then
 				table.insert( roles, v )
 			end
-            end
+		else
+			if v.team == TEAM_GUARD then
+				table.insert( roles, v )
+			end
 		end
+	end
       end
     end
-    end
+
 	for k, v in pairs( roles ) do
 		plys[v.name] = {}
 		inuse[v.name] = 0
@@ -510,13 +555,16 @@ function SpawnSupport()
 	if usegoc then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.ogg" )' )
 	end
+	if useuiu then
+          print("")
+	end
 	if usechaos then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
 	end
 	if !usechaos and !usegoc and !useuiu then
 		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
 	end
-  end
+end
 
 SCP914InUse = false
 function Use914( ent )
@@ -578,29 +626,289 @@ function Use914( ent )
 	return true
 end
 
+function LockSCPDoors()
+
+	local scp_b_1 = Vector(8253, 826, 50) 
+	local scp_b_2 = Vector(5787, 1538, 51) 
+	local scp_b_3 = Vector(5235, 1540, 51) 
+	local scp_b_4 = Vector(4996, 3598, 49) 
+	local scp_b_5 = Vector(4249, 2257, 28) 
+	local scp_b_6 = Vector(3694, 389, 49) 
+	local scp_b_7 = Vector(6282, -3953, 279) 
+	local scp_b_8 = Vector(7584, -272, 64) 
+
+	local scp_item_1 = Vector(7700, -4140, 53) 
+	local scp_item_2 = Vector(7788, -3988, 53) 
+	local scp_item_3 = Vector(8113, -3921, 56) 
+	local scp_item_4 = Vector(8561, -3769, 55) 
+	local scp_item_5 = Vector(8405, -3682, 55) 
+	local scp_item_6 = Vector(8547, -1905, 53) 
+	local scp_item_7 = Vector(7132, -2114, 56) 
+	local scp_item_8 = Vector(6629, -2299, 56) 
+	local scp_item_9 = Vector(6715, -2114, 53) 
+	local scp_item_10 = Vector(6246, -1957, 55) 
+	local scp_item_11 = Vector(6314, -2459, 57) 
+
+		for k,ball in pairs(ents.FindInSphere((scp_item_1), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_2), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_3), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_4), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_5), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_6), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_7), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_8), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_9), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_10), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+			for k,ball in pairs(ents.FindInSphere((scp_item_11), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+
+	for k,ball in pairs(ents.FindInSphere((scp_b_1), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_2), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_3), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_4), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+	for k,ball in pairs(ents.FindInSphere((scp_b_5), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_6), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_7), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
+          end
+    end
+
+end
+
+function D_class_open_door()
+
+	for k,box in pairs(ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) )) do
+          if IsValid(box) then
+		      if box:GetClass() == "func_door" then 
+			  	box:Fire("open") 
+			  end
+          end
+    end
+
+	for k,box in pairs(ents.FindInBox( Vector( 6256, -6260, 117 ), Vector( 6057, -4922, 310 ) )) do
+          if IsValid(box) then
+		      if box:GetClass() == "func_door" then 
+			  	box:Fire("open") 
+			  end
+          end
+    end
+
+end
+--[[
+util.AddNetworkString("start_mog_intro")
+
+function startmogintro()
+
+	net.Start( "start_mog_intro" )
+	net.Broadcast()
+
+end
+]]--
 function OpenSCPDoors()
-	for k, v in pairs( ents.FindByClass( "func_door" ) ) do
-		for k0, v0 in pairs( POS_DOOR ) do
-			if ( v:GetPos() == v0 ) then
-				v:Fire( "unlock" )
-				v:Fire( "open" )
-			end
-		end
-	end
-	for k, v in pairs( ents.FindByClass( "func_button" ) ) do
-		for k0, v0 in pairs( POS_BUTTON ) do
-			if ( v:GetPos() == v0 ) then
-				v:Fire( "use" )
-			end
-		end
-	end
-	for k, v in pairs( ents.FindByClass( "func_rot_button" ) ) do
-		for k0, v0 in pairs( POS_ROT_BUTTON ) do
-			if ( v:GetPos() == v0 ) then
-				v:Fire( "use" )
-			end
-		end
-	end
+--[[
+    local entsinbox = ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) ) 
+    for k, v in ipairs( entsinbox ) do
+      if v:GetClass() == "func_button" then
+	  	v:Fire("Open")
+      end
+    end
+]]--
+
+	local scp_b_1 = Vector(8253, 826, 50) 
+	local scp_b_2 = Vector(5787, 1538, 51) 
+	local scp_b_3 = Vector(5235, 1540, 51) 
+	local scp_b_4 = Vector(4996, 3598, 49) 
+	local scp_b_5 = Vector(4249, 2257, 28) 
+	local scp_b_6 = Vector(3694, 389, 49) 
+	local scp_b_7 = Vector(6282, -3953, 279) 
+	local scp_b_8 = Vector(7584, -272, 64) 
+
+	local scp_item_1 = Vector(7700, -4140, 53) 
+	local scp_item_2 = Vector(7788, -3988, 53) 
+	local scp_item_3 = Vector(8113, -3921, 56) 
+	local scp_item_4 = Vector(8561, -3769, 55) 
+	local scp_item_5 = Vector(8405, -3682, 55) 
+	local scp_item_6 = Vector(8547, -1905, 53) 
+	local scp_item_7 = Vector(7132, -2114, 56) 
+	local scp_item_8 = Vector(6629, -2299, 56) 
+	local scp_item_9 = Vector(6715, -2114, 53) 
+	local scp_item_10 = Vector(6246, -1957, 55) 
+	local scp_item_11 = Vector(6314, -2459, 57) 
+
+	for k,ball in pairs(ents.FindInSphere((scp_item_1), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_2), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_3), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_4), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_5), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_6), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_7), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_8), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_9), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_10), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_item_11), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+          end
+    end
+
+	print("Ну все")
+		for k,ball in pairs(ents.FindInSphere((scp_b_1), 5)) do
+          if IsValid(ball) then
+		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_2), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_3), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_4), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_5), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_6), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_7), 5)) do
+          if IsValid(ball) then
+		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
+              if ball:GetClass() == "func_button" then ball:Fire("use") end
+          end
+    end
+		for k,ball in pairs(ents.FindInSphere((scp_b_8), 5)) do
+          if IsValid(ball) then
+              if ball:GetModel() == "models/next_breach/door_frame_sealed.mdl" then ball:Remove() end
+			  if ball:GetModel() == "models/next_breach/entrance_door.mdl" then ball:Remove() end
+			  if ball:GetModel() == "models/next_breach/light_cz_door.mdl" then ball:Remove() end
+          end
+    end
 end
 
 function GetAlivePlayers()

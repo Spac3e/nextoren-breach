@@ -20,7 +20,7 @@
 			"name"		"br_time_round"
 			"text"		"Time - Round"
 			"type"		"Numeric"
-			"default"	"780"
+			"default"	"1020"
 		}
 		
 		3

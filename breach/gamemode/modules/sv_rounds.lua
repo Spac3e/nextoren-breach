@@ -13,7 +13,9 @@ ROUNDS = {
 			end )
 end,
 		roundstart = function()
-			OpenSCPDoors()
+
+			D_class_open_door()
+			--OpenSCPDoors()
 		end,
 		postround = function()
 			local plys = GetActivePlayers()
@@ -152,7 +154,7 @@ end,
 			end )
 		end,
 		roundstart = function()
-			OpenSCPDoors()
+			--OpenSCPDoors()
 		end,
 		postround = function()
 			local plys = GetActivePlayers()

@@ -511,6 +511,8 @@ SPAWN_420 = {
 	}
 }
 
+
+
 OUTSIDE_966 = Vector(4165.00, 2375.00, 50.00)
 
 OUTSIDESOUNDS = Vector(-94.663620, 5188.103027, 860.134155)
@@ -2743,7 +2745,7 @@ BUTTONS = {
 		tolerance = 8,
 		access = {},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() == "breach_keycard_7"
+			return (ply:GetActiveWeapon():GetClass() == "breach_keycard_7")
 		end
 	},
 	{
@@ -3882,7 +3884,7 @@ POS_GATE_A_DOORS = {
 }
 
 POS_DOOR = {
-	
+	Vector(8289, 863, 64),
 }
 
 POS_BUTTON = {
@@ -3890,6 +3892,7 @@ POS_BUTTON = {
 	Vector(362.000000, 1592.000000, 294.000000), --173
 	Vector(4993.000000, 3592.000000, 53.000000), --096
 	Vector(4216.00, 2256.00, 38.00), --966
+	Vector(8253, 826, 50), --test
 }
 
 POS_ROT_BUTTON = {

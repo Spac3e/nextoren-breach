@@ -372,7 +372,7 @@ ACCESS_EC = bit.lshift( 1, 10 )
 
 if !ConVarExists("br_roundrestart") then CreateConVar( "br_roundrestart", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Restart the round" ) end
 if !ConVarExists("br_time_preparing") then CreateConVar( "br_time_preparing", "60", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Set preparing time" ) end
-if !ConVarExists("br_time_round") then CreateConVar( "br_time_round", "780", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Set round time" ) end
+if !ConVarExists("br_time_round") then CreateConVar( "br_time_round", "1020", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Set round time" ) end
 if !ConVarExists("br_time_postround") then CreateConVar( "br_time_postround", "30", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Set postround time" ) end
 if !ConVarExists("br_time_ntfenter") then CreateConVar( "br_time_ntfenter", "360", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Time that NTF units will enter the facility" ) end
 if !ConVarExists("br_time_blink") then CreateConVar( "br_time_blink", "0.25", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Blink timer" ) end
@@ -544,7 +544,7 @@ function GetRoundTime()
 	if GetGlobalBool("BigRound", false) then
 		return 1020
 	end
-	return 720--GetConVar("br_time_round"):GetInt()
+	return 1020--GetConVar("br_time_round"):GetInt()
 end
 
 function GetPostTime()
@@ -793,18 +793,6 @@ if CLIENT then
     end)
 end
 
-function InGas(ply)
-	if GAS_AREAS == nil then return false end
-	for k,v in pairs(GAS_AREAS) do
-		local pos1 = v.pos1
-		local pos2 = v.pos2
-		OrderVectors(pos1, pos2)
-		if ply:GetPos():WithinAABox( pos1, pos2 ) then
-			return true
-		end
-	end
-	return false
-end
 function GM:GrabEarAnimation(ply)
 	return false
 end
@@ -1019,8 +1007,6 @@ function meta:Outside()
   
   
 end
-  
-  
   
 function meta:IsEntrance()
   

@@ -8,24 +8,6 @@ function RestartGame()
 	game.ConsoleCommand("changelevel "..game.GetMap().."\n")
 end
 
-local soundList = {
-    "sound1.wav",
-    "sound2.wav",
-    "sound3.wav",
-}
-
-local function RandomAnnouncmentShakyPidoras()
-net.Start("BreachAnnouncer")
-net.WriteString(soundList)
-net.Broadcast()
-end
-
-timer.Create("RandomAnnouncmentShakyPidoras_timer", 90, 0, function()
-    if RoundStart then
-    RandomAnnouncmentShakyPidoras()
-end
-end)
-
 function CleanUp()
 	timer.Destroy("PreparingTime")
 	timer.Destroy("RoundTime")
@@ -123,6 +105,7 @@ function RoundRestart()
 		RoundRestart()
 		return
 	end
+	Round_Work_stop()
 	if GetConVar("br_rounds"):GetInt() > 0 then
 		if rounds == GetConVar("br_rounds"):GetInt() then
 			RestartGame()
@@ -141,10 +124,12 @@ function RoundRestart()
 	SetupCollide()
 	SetupAdmins( player.GetAll() )
 	activeRound.setup()
+	Round_Work()
 	print( "round: setup end" )	
 	net.Start("UpdateRoundType")
 		net.WriteString(activeRound.name)
 	net.Broadcast()	
+	LockSCPDoors()
 	activeRound.init()	
 	print( "round: int end / preparation start" )	
 	gamestarted = true
@@ -212,6 +197,7 @@ end
 canescortds = true
 canescortrs = true
 function CheckEscape()
+--[[
 	for k,v in pairs(ents.FindInSphere(POS_ESCAPEALL, 250)) do
 		if v:IsPlayer() == true then
 			if v:Alive() == false then return end
@@ -298,7 +284,9 @@ function CheckEscape()
 			end
 		end
 	end
+	]]--
 end
+
 timer.Create("CheckEscape", 1, 0, CheckEscape)
 
 function CheckEscortMTF(pl)
@@ -431,6 +419,15 @@ function WinCheck()
 		print("Ending round because " .. why)
 		PrintMessage(HUD_PRINTCONSOLE, "Ending round because " .. why)
 		StopRound()
+		net.Start( "SendSound" )
+		net.WriteInt( 1, 2 )
+		net.WriteString( "nextoren/ending/nuke.mp3" )
+		net.Broadcast()
+		timer.Create( "pizda_vsem", 3, 1, function()
+			for k, v in pairs( player.GetAll() ) do
+				v:Kill()
+			end
+		end )
 		net.Start("Boom_Effectus")
 		net.Broadcast()
 		timer.Destroy("RoundTime")

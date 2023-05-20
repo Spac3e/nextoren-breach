@@ -615,11 +615,66 @@ function GM:PlayerUse( ply, ent )
 					return true
 				end
 
-				local wep = ply:GetActiveWeapon()
-				if IsValid( wep ) and wep:GetClass() == "br_keycard" then
+				local hui = ply:GetActiveWeapon():GetClass()
+                local wep = string.sub( hui, 1, 14 )
+				if wep == "breach_keycard" then
+					ply:SetBottomMessage(v.access.CLevelSCI)
 					local keycard = wep
-					if IsValid( keycard ) then
-						if bit.band( keycard.Access, v.access ) > 0 then
+						--ply:SetBottomMessage(v.access.CLevel)
+						if ((ply:GetActiveWeapon().CLevels.CLevel) > (v.access.CLevel)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+							
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelSUP) > (v.access.CLevelSUP)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelSCI) > (v.access.CLevelSCI)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelMTF) > (v.access.CLevelMTF)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelGuard) > (v.access.CLevelGuard)) then
 							if !v.nosound then
 								ply:EmitSound( "KeycardUse1.ogg" )
 							end
@@ -640,13 +695,12 @@ function GM:PlayerUse( ply, ent )
 
 							return false
 						end
-					end
 				else
 					ply:SetBottomMessage("You need Keycard to operate this door")
 					return false
 				end
 			end
-
+--[[
 			if v.canactivate == nil or v.canactivate( ply, ent ) then
 				if !v.nosound then
 					ply:EmitSound( "KeycardUse1.ogg" )
@@ -655,7 +709,7 @@ function GM:PlayerUse( ply, ent )
 				if v.customaccessmsg then
 					ply:PrintMessage( HUD_PRINTCENTER, v.customaccessmsg )
 				else
-					ply:SetBottomMessage("Access Granted")
+					--ply:SetBottomMessage("Access Granted")
 
 				end
 
@@ -673,6 +727,7 @@ function GM:PlayerUse( ply, ent )
 
 				return false
 			end
+			]]--
 		end
 	end
 end

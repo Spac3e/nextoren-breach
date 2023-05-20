@@ -161,7 +161,7 @@ function GM:HUDPaint()
 				local screenheight = ScrH()
 
 				draw.DrawText( #GetActivePlayers() .. " players ready to go", "LZTextSmall", middle_screen, screenheight * .15, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-				local ltime = 720
+				local ltime = 1020
 				if #GetActivePlayers() >= 20 then ltime = 1020 end
 				draw.DrawText( "Current round time: " .. string.ToMinutesSeconds( ltime ), "LZTextSmall", middle_screen, screenheight * .18, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				draw.DrawText( "Round will begin in " .. time_left, "LZText", middle_screen, screenheight * .26, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )

@@ -202,7 +202,6 @@ concommand.Add("brlua_sv", function(ply, cmd, args, argstr)
 		net.WriteString(argstr)
 	net.SendToServer()
 end)
-
 function PlayAnnouncer(soundname)
 	local volume = GetAnnouncerVolume()
 
@@ -556,18 +555,25 @@ net.Receive( "UpdateTime", function( len )
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local nri = net.ReadInt(4)
-	shoulddrawescape = nri
-	esctime = CurTime() - timefromround
-	lastescapegot = CurTime() + 20
+
+	CorpsedMessageEvak()
+
+	--local nri = net.ReadInt(4)
+	--shoulddrawescape = nri
+	--esctime = CurTime() - timefromround
+	--lastescapegot = CurTime() + 20
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local nri = net.ReadInt(4)
-	shoulddrawescape = nri
-	esctime = CurTime() - timefromround
-	lastescapegot = CurTime() + 20
-	StartEndSound()
+
+	CorpsedMessageEvak()
+
+	--local nri = net.ReadInt(4)
+	--shoulddrawescape = nri
+	--esctime = CurTime() - timefromround
+	--lastescapegot = CurTime() + 20
+	--StartEndSound()
+
 end)
 
 net.Receive( "ForcePlaySound", function( len )
@@ -1897,62 +1903,69 @@ end
 concommand.Add("intro_start_obr", OBRStart)
 
 local mtf_icon = Material("nextoren/gui/roles_icon/mtf.png")
+
 function MOGStart()
 
 	local client = LocalPlayer()
 
-	client.NoMusic = true
+	if LocalPlayer():GTeam() == TEAM_GUARD then
 
-	StopMusic()
-	PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
+		client.NoMusic = true
 
-	timer.Simple(20, function()
-		IntroSound()
-	end)
-	timer.Simple(24.5, function()
+		StopMusic()
+		PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
 
-		util.ScreenShake( Vector(0, 0, 0), 35, 15, 3, 150 )
-		surface.PlaySound("nextoren/others/horror/horror_14.ogg")
+		timer.Simple(20, function()
+			IntroSound()
+		end)
+		timer.Simple(24.5, function()
 
-		local CutSceneWindow = vgui.Create( "DPanel" )
+			util.ScreenShake( Vector(0, 0, 0), 35, 15, 3, 150 )
+			surface.PlaySound("nextoren/others/horror/horror_14.ogg")
 
-		CutSceneWindow:SetSize(ScrW(), ScrH())
-		CutSceneWindow.DrawTime = SysTime() + 1
-		CutSceneWindow.DrawLerp = 0
-		CutSceneWindow.Paint = function(self, w, h)
-			draw.RoundedBox(0,0,0,w,h,color_black)
-			if CutSceneWindow.DrawTime <= SysTime() then
-				CutSceneWindow.DrawLerp = math.Approach(CutSceneWindow.DrawLerp, 1, FrameTime())
-				surface.SetMaterial(mtf_icon)
-				surface.SetDrawColor(Color(255,255,255,CutSceneWindow.DrawLerp*255))
-				surface.DrawTexturedRect(w / 2 - 128, h / 2 - 128, 256, 256)
-			end
+			local CutSceneWindow = vgui.Create( "DPanel" )
 
-		end
-		CutSceneWindow:SetAlpha(0)
-		CutSceneWindow:AlphaTo(255,0.7,0,function()
-			BREACH.Round.GeneratorsActivated = false
-			timer.Simple(8, function()
-				CutSceneWindow:AlphaTo(0,2,0,function()
-					CutSceneWindow:Remove()
-				end)
-				DrawNewRoleDesc()
-				hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
-				LocalPlayer().cantopeninventory = nil
-				for i, v in pairs(LocalPlayer():GetWeapons()) do
-					if !v:GetClass():find("nade") and v:GetClass():StartWith("cw_") then
-						LocalPlayer().DoWeaponSwitch = v
-						break
-					end
+			CutSceneWindow:SetSize(ScrW(), ScrH())
+			CutSceneWindow.DrawTime = SysTime() + 1
+			CutSceneWindow.DrawLerp = 0
+			CutSceneWindow.Paint = function(self, w, h)
+				draw.RoundedBox(0,0,0,w,h,color_black)
+				if CutSceneWindow.DrawTime <= SysTime() then
+					CutSceneWindow.DrawLerp = math.Approach(CutSceneWindow.DrawLerp, 1, FrameTime())
+					surface.SetMaterial(mtf_icon)
+					surface.SetDrawColor(Color(255,255,255,CutSceneWindow.DrawLerp*255))
+					surface.DrawTexturedRect(w / 2 - 128, h / 2 - 128, 256, 256)
 				end
+
+			end
+			CutSceneWindow:SetAlpha(0)
+			CutSceneWindow:AlphaTo(255,0.7,0,function()
+				BREACH.Round.GeneratorsActivated = false
+				timer.Simple(8, function()
+					CutSceneWindow:AlphaTo(0,2,0,function()
+						CutSceneWindow:Remove()
+					end)
+					DrawNewRoleDesc()
+					hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
+					LocalPlayer().cantopeninventory = nil
+					for i, v in pairs(LocalPlayer():GetWeapons()) do
+						if !v:GetClass():find("nade") and v:GetClass():StartWith("cw_") then
+							LocalPlayer().DoWeaponSwitch = v
+							break
+						end
+					end
+				end)
 			end)
+
 		end)
 
-	end)
+	end
 
 end
-net.Receive("mogstart_pizdec", MOGStart)
-concommand.Add("intro_start_mog", MOGStart)
+
+net.Receive( "PlayerDied", function()
+	MOGStart()
+end )
 
 net.Receive("bettersendlua", function()
 
@@ -3200,5 +3213,58 @@ net.Receive( "GRU_CommanderAbility", function()
         hook.Remove( "PreDrawOutlines", "DrawGRUTargets" )
 
     end )
+
+end )
+
+net.Receive( "cassie_pizdelka_start", function()
+
+	MOGStart()
+
+	local ply = LocalPlayer()
+
+	timer.Create( "lc_15_s", 180, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/main_decont/decont_15_b.mp3" )
+	end )
+
+	timer.Create( "lc_12_s", 360, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/lhz_decont/decont_1_min.ogg" )
+	end )
+
+	timer.Create( "lc_11:15_s", 375, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/lhz_decont/decont_countdown.ogg" )
+	end )
+
+	timer.Create( "lc_11_s", 420, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/lhz_decont/decont_ending.ogg" )
+	end )
+
+	timer.Create( "lc_10_s", 480, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/main_decont/decont_10_b.mp3" )
+	end )
+
+	timer.Create( "lc_5_s", 780, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
+	end )
+
+	timer.Create( "lc_3_15_s", 885, 1, function()
+		surface.PlaySound( "no_king_m/evacuation_6.ogg" )
+		surface.PlaySound( "nextoren/round_sounds/intercom/start_evac.ogg" )
+	end )
+
+	timer.Create( "lc_2_10_s", 955, 1, function()
+		surface.PlaySound( "nextoren/round_sounds/main_decont/final_nuke.mp3" )
+	end )
+end )
+
+net.Receive( "cassie_pizdelka_stop", function()
+
+	timer.Remove( "lc_15_s" )
+	timer.Remove( "lc_12_s" )
+	timer.Remove( "lc_11:30_s" )
+	timer.Remove( "lc_11_s" )
+	timer.Remove( "lc_10_s" )
+	timer.Remove( "lc_5_s" )
+	timer.Remove( "lc_3_15_s" )
+	timer.Remove( "lc_2_10_s" )
 
 end )

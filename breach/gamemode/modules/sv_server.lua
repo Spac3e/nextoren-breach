@@ -52,7 +52,6 @@ util.AddNetworkString("CreateParticleAtPos")
 util.AddNetworkString("CreateClientParticleSystem")
 util.AddNetworkString("NTF_Special_1")
 util.AddNetworkString("Death_Scene")
-util.AddNetworkString("NTF_Intro")
 util.AddNetworkString("Breach:RunStringOnServer")
 util.AddNetworkString("TargetsToNTFs")
 util.AddNetworkString("GestureClientNetworking")
@@ -74,7 +73,6 @@ end
 function GM:PlayerSwitchFlashlight(ply)
 	return ply:GetNClass() == TEAM_ADMIN
 end
-
 net.Receive( "DropWeapon", function( len, ply )
 	local class = net.ReadString()
 	if class then
