@@ -1,9 +1,0 @@
-"UnlitGeneric"
-{
-	"$basetexture"	 "color/white"
-	"$model"		"1"
-	"$translucent"	"0"
-	"$alpha" 		"0"
-	"$nocull"		"0"
-	"$ignorez" 	"0"
-}

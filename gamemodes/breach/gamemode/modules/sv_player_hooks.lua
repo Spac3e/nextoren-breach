@@ -1,0 +1,760 @@
+local Player = FindMetaTable( "Player" )
+util.AddNetworkString("BreachAnnouncer")
+util.AddNetworkString("camera_enter")
+util.AddNetworkString("camera_swap")
+util.AddNetworkString("camera_exit")
+
+function Player:SetBottomMessage( msg )
+    net.Start( "SetBottomMessage" )
+        net.WriteString( msg )
+    net.Send( self )
+end
+
+function Player:BrEventMessage( msg )
+    net.Start( "Eventmessage" )
+        net.WriteString( msg )
+    net.Send( self )
+end
+
+function Player:PlayAnnouncer( msg )
+    net.Start( "BreachAnnouncer" )
+        net.WriteString( soundname )
+	net.Broadcast()
+end
+
+
+function IsPremium( ply, silent )
+	ply:SetNPremium( false )
+	ply.Premium = false
+	if CheckULXPremium( ply, silent ) == true then return end
+	if GetConVar("br_premium_url"):GetString() == "" or GetConVar("br_premium_url"):GetString() == "none" then return end
+	http.Fetch( GetConVar("br_premium_url"):GetString(), function( body, size, headers, code )
+		if ( body == nil ) then return end
+		local ID = string.find( tostring(body), "<ID64>"..ply:SteamID64().."</ID64>" )
+			if ID != nil then
+				ply.Premium = true
+				ply:SetNPremium( true )
+				if GetConVar("br_premium_display"):GetString() != "" and GetConVar("br_premium_display"):GetString() != "none" and !silent then
+					print("Premium member "..ply:GetName().." has joined")
+					PrintMessage(HUD_PRINTCENTER, string.format(GetConVar("br_premium_display"):GetString(), ply:GetName()))
+				end
+			end
+	end,
+	function( error )
+		print("HTTP ERROR")
+		print(error)
+	end )
+end
+
+function CheckULXPremium( ply, silent )
+	if GetConVar("br_ulx_premiumgroup_name"):GetString() == "" or GetConVar("br_ulx_premiumgroup_name"):GetString() == "none" then return end
+	if !ply.CheckGroup then
+		print( "To use br_ulx_premiumgroup_name you have to install ULX!" )
+		return
+	end
+	local pgroups = string.Split( GetConVar("br_ulx_premiumgroup_name"):GetString(), "," )
+	local ispremium
+	for k,v in pairs( pgroups ) do
+		if ply:CheckGroup( v ) then
+			ispremium = true
+			break
+		end
+	end
+	if ispremium then
+		ply.Premium = true
+		ply:SetNPremium( true )
+		if GetConVar("br_premium_display"):GetString() != "" and GetConVar("br_premium_display"):GetString() != "none" and !silent then
+			print("Premium member "..ply:GetName().." has joined")
+			PrintMessage(HUD_PRINTCENTER, string.format(GetConVar("br_premium_display"):GetString(), ply:GetName()))
+		end
+		return true
+	end
+end
+
+function CheckStart()
+	MINPLAYERS = GetConVar("br_min_players"):GetInt()
+	if gamestarted == false and #GetActivePlayers() >= MINPLAYERS then
+		RoundRestart()
+	end
+	if #GetActivePlayers() == MINPLAYERS and #GetActivePlayers() == #player.GetAll() then
+		RoundRestart()
+	end
+	if gamestarted then
+		BroadcastLua( 'gamestarted = true' )
+	end
+end
+
+function GM:PlayerInitialSpawn( ply )
+	ply:SetCanZoom( false )
+	ply:SetNoDraw(true)
+	ply.Active = false
+	ply.freshspawn = true
+	ply.isblinking = false
+	ply.Premium = false
+	if timer.Exists( "RoundTime" ) == true then
+		net.Start("UpdateTime")
+			net.WriteString(tostring(timer.TimeLeft( "RoundTime" )))
+		net.Send(ply)
+	end
+	player_manager.SetPlayerClass( ply, "class_breach" )
+	player_manager.RunClass( ply, "SetupDataTables" )
+	IsPremium(ply)
+	ply:SetActive( false )
+	if ply:IsBot() then
+		ply:SetActive( true )
+	end
+	--print( ply.ActivePlayer, ply:GetNActive() )
+	CheckStart()
+	if gamestarted then
+		ply:SendLua( 'gamestarted = true' )
+	end
+end
+/*
+function GM:PlayerAuthed( ply, steamid, uniqueid )
+	ply.Active = false
+	ply.Leaver = "none"
+	if prepring then
+		ply:SetClassD()
+	else
+		ply:SetSpectator()
+	end
+end
+*/
+function GM:PlayerSpawn( ply )
+	//ply:SetupHands()
+	ply:SetTeam(1)
+	//ply:SetCustomCollisionCheck( true )
+	if ply.freshspawn then
+		ply:SetSpectator()
+		ply.freshspawn = false
+	end
+	//ply:SetupHands()
+end
+
+function GM:PlayerSetHandsModel( ply, ent )
+	local simplemodel = player_manager.TranslateToPlayerModelName( ply:GetModel() )
+	local info = player_manager.TranslatePlayerHands( simplemodel )
+	if ( info ) then
+		if ply.handsmodel != nil then
+			info.model = ply.handsmodel
+		end
+		ent:SetModel( info.model )
+		ent:SetSkin( info.skin )
+		ent:SetBodyGroups( info.body )
+	end
+end
+
+function GM:DoPlayerDeath( ply, attacker, dmginfo )
+	ply:SetupHands()
+	if ply:GTeam() == TEAM_SCP then
+		CreateSCPRAG(ply)
+	end
+	ply:AddDeaths(1)
+end
+
+function GM:PlayerDeathThink( ply )
+	if !ply:IsBot() and ply:GTeam() != TEAM_SPEC then
+		ply:SetGTeam(TEAM_SPEC)
+	end
+	if ( ply:IsBot() || ply:KeyPressed( IN_ATTACK ) || ply:KeyPressed( IN_ATTACK2 ) || ply:KeyPressed( IN_JUMP ) || postround ) then
+		ply:Spawn()
+		ply:SetSpectator()
+	end
+end
+
+function GM:PlayerNoClip( ply, desiredState )
+	if ply:GTeam() == TEAM_SPEC and desiredState == true then return true end
+end
+
+function GM:PlayerDeath( victim, inflictor, attacker, ply )
+	victim:StripAmmo()
+	victim:SetUsingBag("")
+	victim:SetUsingCloth("")
+	victim:SetUsingArmor("")
+	victim:SetUsingHelmet("")
+	victim:SetSpecialMax(0)
+	victim:SetupHands()
+	victim:SetNWString("AbilityName", "")
+	victim.AbilityTAB = nil
+	victim:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
+	net.Start( "Effect" )
+		net.WriteBool( false )
+	net.Send( victim )
+	net.Start( "957Effect" )
+		net.WriteBool( false )
+	net.Send( victim )
+	--net.Start( "Death_Scene" )
+	--net.WriteString("Death_Scene", true)
+	--net.Send( victim )
+
+	victim:SetModelScale( 1 )
+	if attacker:IsPlayer() then
+		print("[KILL] " .. attacker:Nick() .. " [" .. attacker:GetNClass() .. "] killed " .. victim:Nick() .. " [" .. victim:GetNClass() .. "]")
+	victim:SetNClass(ROLES.ROLE_SPEC)
+	if attacker != victim and postround == false and attacker:IsPlayer() then
+		if attacker:IsPlayer() then
+			if attacker:GTeam() == TEAM_GUARD then
+				victim:PrintMessage(HUD_PRINTTALK, "You were killed by an MTF Guard: " .. attacker:Nick())
+				if victim:GTeam() == TEAM_SCP then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 10 points for killing an SCP!")
+					attacker:AddFrags(10)
+				elseif victim:GTeam() == TEAM_CHAOS then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 5 points for killing a Chaos Insurgency member!")
+					attacker:AddFrags(5)
+				elseif victim:GTeam() == TEAM_CLASSD then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing a Class D Personell!")
+					attacker:AddFrags(2)
+				end
+			elseif attacker:GTeam() == TEAM_CHAOS then
+				victim:PrintMessage(HUD_PRINTTALK, "You were killed by a Chaos Insurgency Soldier: " .. attacker:Nick())
+				if victim:GTeam() == TEAM_GUARD then 
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing an MTF Guard!")
+					attacker:AddFrags(2)
+				elseif victim:GTeam() == TEAM_SCI then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing a Researcher!")
+					attacker:AddFrags(2)
+				elseif victim:GTeam() == TEAM_SCP then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 10 points for killing an SCP!")
+					attacker:AddFrags(10)
+				elseif victim:GTeam() == TEAM_CLASSD then
+					attacker:PrintMessage(HUD_PRINTTALK, "Don't kill Class D Personell, you can capture them to get bonus points!")
+					attacker:AddFrags(1)
+				end
+			elseif attacker:GTeam() == TEAM_SCP then
+				victim:PrintMessage(HUD_PRINTTALK, "You were killed by an SCP: " .. attacker:Nick())
+				attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing " .. victim:Nick())
+				attacker:AddFrags(2)
+			elseif attacker:GTeam() == TEAM_CLASSD then
+				victim:PrintMessage(HUD_PRINTTALK, "You were killed by a Class D: " .. attacker:Nick())
+				if victim:GTeam() == TEAM_GUARD then 
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 4 points for killing an MTF Guard!")
+					attacker:AddFrags(4)
+				elseif victim:GTeam() == TEAM_SCI then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing a Researcher!")
+					attacker:AddFrags(2)
+				elseif victim:GTeam() == TEAM_SCP then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 10 points for killing an SCP!")
+					attacker:AddFrags(10)
+				elseif victim:GTeam() == TEAM_CHAOS then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing a Chaos Insurgency member!")
+					attacker:AddFrags(2)
+				end
+			elseif attacker:GTeam() == TEAM_SCI then
+				victim:PrintMessage(HUD_PRINTTALK, "You were killed by a Researcher: " .. attacker:Nick())
+				if victim:GTeam() == TEAM_SCP then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 10 points for killing an SCP!")
+					attacker:AddFrags(10)
+				elseif victim:GTeam() == TEAM_CHAOS then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 5 points for killing a Chaos Insurgency member!")
+					attacker:AddFrags(5)
+				elseif victim:GTeam() == TEAM_CLASSD then
+					attacker:PrintMessage(HUD_PRINTTALK, "You've been awarded with 2 points for killing a Class D Personell!")
+					attacker:AddFrags(2)
+				end
+			end
+		end
+	end
+end
+	roundstats.deaths = roundstats.deaths + 1
+	local wasteam = victim:GTeam()
+	victim:SetTeam(TEAM_SPEC)
+	victim:SetGTeam(TEAM_SPEC)
+	
+	victim:DropAllWeapons()
+
+	WinCheck()
+	if !postround then
+		if !IsValid( attacker ) or !attacker.GTeam then return end
+		if attacker:GTeam() == wasteam then
+			PunishVote( attacker, victim )
+		elseif attacker:GTeam() == TEAM_GUARD then
+			if wasteam == TEAM_SCI then
+				PunishVote( attacker, victim )
+			end
+		elseif attacker:GTeam() == TEAM_SCI then
+			if wasteam == TEAM_GUARD then
+				PunishVote( attacker, victim )
+			end
+		elseif attacker:GTeam() == TEAM_CLASSD then
+			if wasteam == TEAM_CHAOS then
+				PunishVote( attacker, victim )
+			end
+		elseif attacker:GTeam() == TEAM_CHAOS then
+			if wasteam == TEAM_CLASSD then
+				PunishVote( attacker, victim )
+			end
+		end
+	end
+end
+
+function GM:PlayerDisconnected( ply )
+	 ply:SetTeam(TEAM_SPEC)
+	 if #player.GetAll() < MINPLAYERS then
+		BroadcastLua('gamestarted = false')
+		gamestarted = false
+	 end
+	 WinCheck()
+end
+
+function HaveRadio(pl1, pl2)
+	if pl1:HasWeapon("item_radio") then
+		if pl2:HasWeapon("item_radio") then
+			local r1 = pl1:GetWeapon("item_radio")
+			local r2 = pl2:GetWeapon("item_radio")
+			if !IsValid(r1) or !IsValid(r2) then return false end
+			/*
+			print(pl1:Nick() .. " - " .. pl2:Nick())
+			print(r1.Enabled)
+			print(r1.Channel)
+			print(r2.Enabled)
+			print(r2.Channel)
+			*/
+			if r1.Enabled == true then
+				if r2.Enabled == true then
+					if r1.Channel == r2.Channel then
+						if r1.Channel > 4 then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end
+
+function GM:PlayerCanHearPlayersVoice( listener, talker )
+	if talker:Alive() == false then return false end
+	if listener:Alive() == false then return false end
+
+	if !talker.GetNClass then
+		player_manager.SetPlayerClass( talker, "class_breach" )
+		player_manager.RunClass( talker, "SetupDataTables" )
+	end
+
+	if !listener.GetNClass then
+		player_manager.SetPlayerClass( listener, "class_breach" )
+		player_manager.RunClass( listener, "SetupDataTables" )
+	end
+
+	if talker:GetNClass() == ROLES.ROLE_SCP957 or listener:GetNClass() == ROLES.ROLE_SCP957 then
+		if talker:GetNClass() == ROLES.ROLE_SCP9571 or listener:GetNClass() == ROLES.ROLE_SCP9571 then
+			return true
+		end
+	end
+
+	if talker:GTeam() == TEAM_SCP and talker:GetNClass() != ROLES.ROLE_SCP9571 then
+		local omit = false
+
+		if talker:GetNClass() == ROLES.ROLE_SCP939 then
+			local wep = talker:GetWeapon("weapon_scp_939")
+			if IsValid( wep ) then
+				if wep.Channel == "ALL" then
+					omit = true
+				end
+			end
+		end
+
+		if !omit and GetConVar( "br_allow_scptovoicechat" ):GetInt() == 0 then
+			if listener:GTeam() != TEAM_SCP then
+				return false
+			end
+		end
+	end
+	if talker:GTeam() == TEAM_SPEC then
+		if listener:GTeam() == TEAM_SPEC then
+			return true
+		else
+			return false
+		end
+	end
+	if HaveRadio(listener, talker) == true then
+		return true
+	end
+	if talker:GetPos():Distance(listener:GetPos()) < 750 then
+		return true, true
+	else
+		return false
+	end
+end
+
+function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
+	if activevote and ( text == "!forgive" or text == "!punish" ) then
+		local votemsg = false
+		if talker.voted == true or talker:SteamID64() == activesuspect then
+			if !talker.timeout then talker.timeout = 0 end
+			if talker.timeout < CurTime() then
+				talker.timeout = CurTime() + 0.5
+				net.Start( "ShowText" )
+					net.WriteString( "vote_fail" )
+				net.Send( talker )
+			end
+			return
+		end
+		if text == "!forgive" then
+			if talker:SteamID64() == activevictim then
+				voteforgive = voteforgive + 5
+			elseif talker:GTeam() == TEAM_SPEC then
+				specforgive = specforgive + 1
+			else
+				voteforgive = voteforgive + 1
+			end
+			talker.voted = true
+			votemsg = true
+			talker.timeout = CurTime() + 0.5
+		elseif text == "!punish" then
+			if talker:SteamID64() == activevictim then
+				votepunish = votepunish + 5
+			elseif talker:GTeam() == TEAM_SPEC then
+				specpunish = specpunish + 1
+			else
+				votepunish = votepunish + 1
+			end
+			talker.voted = true
+			votemsg = true
+			talker.timeout = CurTime() + 0.5
+		end
+		if votemsg then
+			if listener:IsSuperAdmin() then
+				return true
+			else
+				return false
+			end
+		end
+	end
+
+	if !talker.GetNClass or !listener.GetNClass then
+		player_manager.SetPlayerClass( ply, "class_breach" )
+		player_manager.RunClass( ply, "SetupDataTables" )
+	end
+
+	if talker:GetNClass() == ROLES.ROLE_SCP957 or listener:GetNClass() == ROLES.ROLE_SCP957 then
+		if talker:GetNClass() == ROLES.ROLE_SCP9571 or listener:GetNClass() == ROLES.ROLE_SCP9571 then
+			return true
+		end
+	end
+
+	if talker:GetNClass() == ROLES.ADMIN or listener:GetNClass() == ROLES.ADMIN then return true end
+	if talker:Alive() == false then return false end
+	if listener:Alive() == false then return false end
+	if teamOnly then
+		if talker:GetPos():Distance(listener:GetPos()) < 750 then
+			return (listener:GTeam() == talker:GTeam())
+		else
+			return false
+		end
+	end
+	if talker:GTeam() == TEAM_SPEC then
+		if listener:GTeam() == TEAM_SPEC then
+			return true
+		else
+			return false
+		end
+	end
+	if HaveRadio(listener, talker) == true then
+		return true
+	end
+	return (talker:GetPos():Distance(listener:GetPos()) < 750)
+end
+
+function GM:PlayerDeathSound(ply)
+	if ply:GTeam() == TEAM_SCP then return end
+	if !ply:IsFemale() then
+	ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/death_" .. math.random( 1, 58 ) .. ".mp3" )
+	elseif ply:IsFemale() then ply:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/death_" .. math.random( 1, 75 ) .. ".mp3" )
+		return false
+end
+end
+
+function GM:PlayerHurt(ply)
+	if ply:GTeam() == TEAM_SCP then return end
+	if !ply:IsFemale() then
+	ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_" .. math.random( 1, 39 ) .. ".wav" )
+	elseif ply:IsFemale() then ply:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_" .. math.random( 1, 66 ) .. ".mp3" )
+		return false
+end
+end
+
+hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
+	if string.lower( msg ) == "!scp" then
+		if !ply.nscpcmdcheck or ply.nscpcmdcheck < CurTime() then
+			ply.nscpcmdcheck = CurTime() + 10
+
+			local r = tonumber( ply:GetPData( "scp_penalty", 0 ) ) - 1
+			r = math.max( r, 0 )
+
+			if r == 0 then
+				ply:PrintTranslatedMessage( "scpready#50,200,50" )
+			else
+				ply:PrintTranslatedMessage( "scpwait".."$"..r.."#200,50,50" )
+			end
+		end
+
+		return ""
+	end
+end )
+
+hook.Add( "SetupPlayerVisibility", "CCTVPVS", function( ply, viewentity )
+	local wep = ply:GetActiveWeapon()
+	if IsValid( wep ) and wep:GetClass() == "item_cameraview" then
+		if wep:GetEnabled() and IsValid( CCTV[wep:GetCAM()].ent ) then
+			AddOriginToPVS( CCTV[wep:GetCAM()].pos )// + Vector( 0, 0, -10 ) )
+		end
+	end
+end )
+
+function GM:PlayerCanPickupWeapon( ply, wep )
+	if ply:GTeam() == TEAM_SCP and ply:GetNClass() != ROLES.ROLE_SCP9571 then
+		if wep.ISSCP then
+			return true
+		end
+		return false
+	end
+
+	if ply:GTeam() != TEAM_SPEC then
+		if wep.teams then
+			local canuse = false
+			for k,v in pairs(wep.teams) do
+				if v == ply:GTeam() then
+					canuse = true
+				end
+			end
+
+			if canuse == false and ply:GetNClass() != ROLES.ROLE_SCP9571 then
+				return false
+			end
+		end
+
+		for k,v in pairs(ply:GetWeapons()) do
+			if v:GetClass() == wep:GetClass() then
+				return false
+			end
+		end
+
+		if string.Left( wep:GetClass(), 3 ) == "cw_" then
+			for k, v in pairs( ply:GetWeapons() ) do
+				//if ( string.starts( v:GetClass(), "cw_" ) and string.starts( wep:GetClass(), "cw_" )) then return false end
+				if string.Left( v:GetClass(), 3 ) == "cw_" then return false end
+			end
+		end
+
+		if table.Count( ply:GetWeapons() ) >= 8 then
+			return false
+		end
+
+		ply.gettingammo = wep.SavedAmmo
+
+		return true
+	else
+		if ply:GetNClass() == ROLES.ADMIN then
+			if wep:GetClass() == "br_holster" then return true end
+			if wep:GetClass() == "weapon_physgun" then return true end
+			if wep:GetClass() == "gmod_tool" then return true end
+			if wep:GetClass() == "br_entity_remover" then return true end
+			if wep:GetClass() == "br_tool_teleporter" then return true end
+		end
+
+		return false
+	end
+end
+
+
+function GM:PlayerCanPickupItem( ply, item )
+	return ply:GTeam() != TEAM_SPEC or ply:GetNClass() == ROLES.ADMIN
+end
+
+function GM:AllowPlayerPickup( ply, ent )
+return
+end
+
+
+// usesounds = true,
+function IsInTolerance( spos, dpos, tolerance )
+	if spos == dpos then return true end
+
+	if isnumber( tolerance ) then
+		tolerance = { x = tolerance, y = tolerance, z = tolerance }
+	end
+
+	local allaxes = { "x", "y", "z" }
+	for k, v in pairs( allaxes ) do
+		if spos[v] != dpos[v] then
+			if tolerance[v] then
+				if math.abs( dpos[v] - spos[v] ) > tolerance[v] then
+					return false
+				end
+			else
+				return false
+			end
+		end
+	end
+
+	return true
+end
+util.PrecacheSound( "nextoren/doors/door_break.wav" )
+
+function GM:PlayerUse( ply, ent, key )
+	if ply:GTeam() == TEAM_SPEC and ply:GetNClass() != ROLES.ADMIN then return false end
+	if ply:GetNClass() == ROLES.ADMIN then return true end
+	if ply.lastuse == nil then ply.lastuse = 0 end
+	if ply.lastuse > CurTime() then return false end
+	local trent = ply:GetEyeTrace().Entity
+	if ply:GTeam() == TEAM_SCP and ply:KeyDown(KEY_E) and IsValid(ent) and trent:GetClass() == "func_button" then
+			ply:BrProgressBar("Выламываю...", 10, "nextoren/gui/icons/notifications/breachiconfortips.png", ent, false, function()
+				timer.Create("starikdaizvuk", 4, 5, function()
+					ply:EmitSound( "nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO ) -- Same as below
+				end)
+				timer.Start("starikdaizvuk")
+				timer.Remove("starikdaizvuk")
+				ent:Fire("use")
+			 end)
+    end
+
+	for k, v in pairs( BUTTONS ) do
+		if v.pos == ent:GetPos() or v.tolerance then
+			if v.tolerance and !IsInTolerance( v.pos, ent:GetPos(), v.tolerance ) then
+				continue
+			end
+
+			ply.lastuse = CurTime() + 1
+
+			if v.access then
+				if OMEGADoors then
+					return true
+				end
+
+				if v.levelOverride and v.levelOverride( ply ) then
+					return true
+				end
+
+				local hui = ply:GetActiveWeapon():GetClass()
+                local wep = string.sub( hui, 1, 14 )
+				if hui == "breach_keycard_7" then
+					if v.access.CLevelO5 != nil then
+					if ((ply:GetActiveWeapon().CLevels.CLevelO5) >= (v.access.CLevelO5)) then
+
+						ply:SetBottomMessage("Access Granted")	
+
+						return true	
+
+					end	
+					end			
+
+				end
+				if wep == "breach_keycard" then
+					--ply:SetBottomMessage(v.access.CLevelSCI)
+					local keycard = wep
+						--ply:SetBottomMessage(v.access.CLevel)
+						if ((ply:GetActiveWeapon().CLevels.CLevel) >= (v.access.CLevel)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+							
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelSUP) >= (v.access.CLevelSUP)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelSCI) >= (v.access.CLevelSCI)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							return true
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelMTF) >= (v.access.CLevelMTF)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+
+						elseif ((ply:GetActiveWeapon().CLevels.CLevelGuard) >= (v.access.CLevelGuard)) then
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse1.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Granted")
+
+							if v.custom_access_granted then
+								return v.custom_access_granted( ply, ent ) or false
+							else
+								return true
+							end
+						else
+							if !v.nosound then
+								ply:EmitSound( "KeycardUse2.ogg" )
+							end
+
+							ply:SetBottomMessage("Access Denied")
+
+							return false
+						end
+				else
+					ply:SetBottomMessage("You need Keycard to operate this door")
+					return false
+				end
+			end
+
+			if v.canactivate == nil or v.canactivate( ply, ent ) then
+				if !v.nosound then
+					ply:EmitSound( "KeycardUse1.ogg" )
+				end
+
+				if v.customaccessmsg then
+					ply:PrintMessage( HUD_PRINTCENTER, v.customaccessmsg )
+				else
+					--ply:SetBottomMessage("Access Granted")
+
+				end
+
+				return true
+			else
+				if !v.nosound then
+					ply:EmitSound( "KeycardUse2.ogg" )
+				end
+
+				if v.customdenymsg then
+					ply:SetBottomMessage( v.customdenymsg )
+				else
+					ply:SetBottomMessage( "Access denied" )
+				end
+
+				return false
+			end
+		end
+	end
+end
+
+function GM:CanPlayerSuicide( ply )
+	return false
+end
+
+function string.starts( String, Start )
+   return string.sub( String, 1, string.len( Start ) ) == Start
+end
