@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_1015ru.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -208,13 +208,13 @@ function SWEP:ChooseAbility( table )
   BREACH.Abilities:SetPos( ScrW() / 2 - ( 32 * #BREACH.Abilities.AbilityIcons ), ScrH() / 1.2 )
   BREACH.Abilities:SetSize( 64 * #BREACH.Abilities.AbilityIcons, 64 )
   BREACH.Abilities:SetText( "" )
-  BREACH.Abilities.SCP_Name = LocalPlayer():GetNClass()
+  BREACH.Abilities.SCP_Name = LocalPlayer():GetRoleName()
   BREACH.Abilities.Alpha = 1
   BREACH.Abilities.Paint = function( self, w, h )
 
     local client = LocalPlayer()
 
-    if ( client:Health() <= 0 || client:GetNClass() != self.SCP_Name ) then
+    if ( client:Health() <= 0 || client:GetRoleName() != self.SCP_Name ) then
 
       self:Remove()
 
@@ -485,7 +485,7 @@ function SWEP:Rage()
   self.attack_damage_old = self.attack_damage
   self.attack_damage = math.random( 60, 100 )
 
-  self.OldRoleName = self.Owner:GetNClass()
+  self.OldRoleName = self.Owner:GetRoleName()
 
   self:SetInRage(true)
 
@@ -494,7 +494,7 @@ function SWEP:Rage()
   self:SetHoldType("scp1015ru_rage")
 
   timer.Create("1015RU_Rage"..self.Owner:EntIndex(), 20, 1, function()
-    if self.Owner:GetNClass() != self.OldRoleName or !self.Owner:Alive() or self.Owner:GTeam() != TEAM_SCP then return end
+    if self.Owner:GetRoleName() != self.OldRoleName or !self.Owner:Alive() or self.Owner:GTeam() != TEAM_SCP then return end
     self.attack_damage = self.attack_damage_old
     self.Owner:SetWalkSpeed(self.OldWalkSpeed)
     self.Owner:SetRunSpeed(self.OldRunSpeed)

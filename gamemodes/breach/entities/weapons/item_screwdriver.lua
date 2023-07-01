@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_screwdriver.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -64,12 +64,16 @@ function SWEP:PrimaryAttack()
 
 		if ( ent && ent:IsValid() && ent:GetClass() == "func_breakable" ) then
 
-			self.Owner:BrProgressBar( "Открытие решётки..", 115, "nextoren/gui/icons/screw_driver.png", ent, false, function()
+			local time = 115
+
+			if self.Owner:GetRoleName() == role.ClassD_Pron then time = time/2 end
+
+			self.Owner:BrProgressBar( "l:hacking_cell", time, "nextoren/gui/icons/screw_driver.png", ent, false, function()
 
 			self:Remove()
 
 		    ent:Fire( "Break" );
-		    self.Owner:setBottomMessage( "You used a screwdriver to open the cell." )
+		    self.Owner:setBottomMessage( "l:screwdriver_used" )
 		    self.Owner:StripWeapon("item_screwdriver")
 
 	    end)

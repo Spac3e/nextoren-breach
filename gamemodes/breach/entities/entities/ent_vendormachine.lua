@@ -1,5 +1,15 @@
--- oink.industries
--- lua source: gamemodes/breach/entities/entities/ent_vendormachine.lua
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/entities/ent_vendormachine.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 ENT.Base        = "base_entity"
@@ -97,14 +107,14 @@ function ENT:Use( caller )
 
     self.NextUse = CurTime() + 1
     self:EmitSound( "nextoren/others/vending_machine_sounds/need_coin.wav" )
-    caller:SetBottomMessage( "You need a coin to buy something" )
+    caller:setBottomMessage( "l:vendor_no_money" )
 
   else
 
     self.NextUse = CurTime() + 1
 
     wep:Remove()
-    caller:SetBottomMessage( "You've spent a coin on a soda." )
+    caller:setBottomMessage( "l:vendor_bought" )
 
     self:CreateSoda( self.DeclareSoda[ wep:GetClass() ] )
     self:EmitSound( "nextoren/others/vending_machine_sounds/coin_insert.wav" )
@@ -119,4 +129,3 @@ function ENT:Draw()
   self:DrawModel()
 
 end
-

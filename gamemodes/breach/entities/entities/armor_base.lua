@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_base.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -30,10 +30,10 @@ ENT.Bodygroups = {
 function ENT:Initialize()
 
 	if self:GetClass() == "armor_sci" then
-		local clothesgroups_from_roles = ALLCLASSES.researchers.roles[table.Random({1,4,5})]
+		local pickrole = BREACH_ROLES.SCI.sci.roles[table.Random({1,4,6})]
 		for i = 0, 12 do
-			if clothesgroups_from_roles["bodygroup"..i] then
-				self.Bodygroups[i] = tostring(clothesgroups_from_roles["bodygroup"..i])
+			if pickrole["bodygroup"..i] then
+				self.Bodygroups[i] = tostring(pickrole["bodygroup"..i])
 			end
 		end
 	end
@@ -88,32 +88,36 @@ local nextuse = 0
 local delay = 1
 
 function ENT:Use(ply)
+	if !self:GetClass():find('hazmat') and ply:GetRoleName() == role.ClassD_Banned then
+		ply:RXSENDNotify("Вы можете надеть только химзащиту")
+		return
+	end
 if nextuse > CurTime() then return end
 if timer.Exists("WearingClothThink"..ply:SteamID()) then return end
 if ply:GetModel():find("goc") then return end
 if ply:GetModel():find("chaos") then return end
-if ply:GetNClass() == ROLES.ROLE_CLASSDPIDORAS and !ply:GetModel():find("class_d.mdl") then return end
+if ply:GetRoleName() == role.ClassD_Hitman and !ply:GetModel():find("class_d.mdl") then return end
 if self.IsUsedAlready then return end
-if self.Team and ply:GTeam() != self.Team and ply:GetNClass() != ROLES.ROLE_GOCSPY then ply:RXSENDNotify("Вы не можете надеть данное снаряжение!") return end
+if self.Team and ply:GTeam() != self.Team and ply:GetRoleName() != role.ClassD_GOCSpy then ply:RXSENDNotify("l:you_cant_wear_this_uniform") return end
 
-	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == ROLES.ROLE_GOCSPY or ply:GetNClass() == ROLES.ROLE_USASPY or ply:GetNClass() == ROLES.ROLE_DZDZ ) and ply:GetNClass() != ROLES.ROLE_FAT and ply:GetNClass() != ROLES.ClassD_Bor then
+	if ( ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetRoleName() == role.ClassD_GOCSpy or ply:GetRoleName() == role.SCI_SpyUSA or ply:GetRoleName() == role.SCI_SpyDZ ) and ply:GetRoleName() != role.ClassD_Fat and ply:GetRoleName() != role.ClassD_Bor then
 		nextuse = CurTime() + delay
 		if SERVER then
 			if string.len(ply:GetUsingCloth()) > 0 then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "На вас уже надета форма. Снимите её текущую форму.", Color(255, 255, 255) )
+				ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:has_uniform_already", Color(255, 255, 255) )
 				return
 			end
 			if self:GetClass() != "armor_sci" and self:GetClass() != "armor_medic" then
 				if ply:GetUsingArmor() != "" and ( self:GetClass() != "armor_sci" or self:GetClass() != "armor_medic" ) then
-					ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "Снимите броню, что-бы надеть униформу!", Color(255, 255, 255) )
+					ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
 					return
 				end
 				if ply:GetUsingHelmet() != "" and ( self:GetClass() != "armor_sci" or self:GetClass() != "armor_medic" ) then
-					ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "Снимите броню, что-бы надеть униформу!", Color(255, 255, 255) )
+					ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
 					return
 				end
 			end
-			ply:BrProgressBar("Подождите...", 7, "nextoren/gui/icons/hand.png", self, false, function()
+			ply:BrProgressBar("l:progress_wait", 7, "nextoren/gui/icons/hand.png", self, false, function()
 				self:EmitSound( Sound("nextoren/others/cloth_pickup.wav") )
 
 				if ply.BoneMergedHackerHat then
@@ -189,11 +193,14 @@ if self.Team and ply:GTeam() != self.Team and ply:GetNClass() != ROLES.ROLE_GOCS
 				end
 	
 				ply:SetUsingCloth(self:GetClass())
+				if self.MultipliersType then
+					ply.ClothMultipliersType = self.MultipliersType
+				end
 				hook.Run("BreachLog_PickUpArmor", ply, self:GetClass())
 				if isfunction(self.FuncOnPickup) then self.FuncOnPickup(ply) end
 				self:Remove() 
 			
-				ply:BrTip( 0, "[VAULT]", Color( 0, 210, 0, 180 ), "Вы переоделись в "..self.PrintName, Color( 0, 255, 0, 180 ) )
+				ply:BrTip( 0, "[RX Breach]", Color( 0, 210, 0, 180 ), "l:your_uniform_is "..self.PrintName, Color( 0, 255, 0, 180 ) )
 				ply:SetupHands()
 				if self.ArmorSkin then
 					ply:GetHands():SetSkin(self.ArmorSkin)

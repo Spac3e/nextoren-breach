@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/battery_1.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -17,14 +17,14 @@ AddCSLuaFile()
 if ( CLIENT ) then
 
 	SWEP.BounceWeaponIcon = false
-	SWEP.InvIcon = Material( "nextoren/gui/icons/battery_1.png" )
+	SWEP.InvIcon = Material( "nextoren/gui/icons/battery_2.png" )
 
 end
 
-SWEP.ViewModelFOV	= 70
+SWEP.ViewModelFOV	= 60
 SWEP.ViewModelFlip	= false
-SWEP.ViewModel		= ""
 SWEP.WorldModel		= "models/cultist/items/battery/battery.mdl"
+SWEP.ViewModel = "models/weapons/shaky/breach_items/battery/v_battery.mdl"
 SWEP.PrintName		= "Батарейка"
 SWEP.Slot			= 1
 SWEP.SlotPos		= 1
@@ -35,7 +35,8 @@ SWEP.HoldType		= "items"
 SWEP.Spawnable		= false
 SWEP.AdminSpawnable	= false
 
-SWEP.Charge = 20
+SWEP.Charge = 8
+SWEP.Equipableitem 		= true
 
 SWEP.droppable				= true
 
@@ -55,7 +56,7 @@ SWEP.Ang = Angle( 240, -90, 240 )
 
 function SWEP:Deploy()
 
-  self.Owner:DrawViewModel( false )
+	self:PlaySequence( "draw" )
 
 end
 

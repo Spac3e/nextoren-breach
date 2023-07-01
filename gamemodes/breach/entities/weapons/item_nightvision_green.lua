@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_nightvision_green.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -125,7 +125,7 @@ function SWEP:Reload()
 
 		if ( CLIENT ) then
 
-			BREACH.Player:ChatPrint( true, true, "Для начала снимите текущие очки ночного видения." )
+			BREACH.Player:ChatPrint( true, true, "l:take_off_nvg_first" )
 
 		end
 
@@ -164,6 +164,21 @@ function SWEP:Reload()
 					self.Nightvision_Owner = self.Owner
 					self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
 					if ( !banned_models[ self.Owner:GetModel() ] ) then
+
+						Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
+						for _, v in ipairs( self.Owner.BoneMergedEnts ) do
+
+							if ( v && v:IsValid() && v:GetModel():find( "_nvg_" ) ) then
+					
+								v:SetSkin( 1 )
+								local nvg_bonemerge = v
+
+								self.Owner.NVG_Bonemerged = nvg_bonemerge
+								--self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
+					
+							end
+					
+						end
 
 					end
 

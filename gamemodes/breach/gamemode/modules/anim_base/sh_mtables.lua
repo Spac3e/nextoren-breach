@@ -1,5 +1,15 @@
--- oink.industries
--- lua source: gamemodes/breach/gamemode/modules/anim_base/sh_mtables.lua
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/anim_base/sh_mtables.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local BREACH_GM = GM || GAMEMODE
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -602,7 +612,13 @@ function BREACH_GM:MouthMoveAnimation( ply )
 
 	local flex = { plytable.HeadEnt:GetFlexIDByName( "Eyes" ), plytable.HeadEnt:GetFlexIDByName( "Mounth" ) }
 
-	local weight = ply:IsSpeaking() && !plytable.DisableMouthAnimation && math.min( ply:VoiceVolume() * 6, 1 ) || 0
+  local multiplier = 1/GetConVar("voice_scale"):GetFloat() 
+
+	local weight = ply:IsSpeaking() && !plytable.DisableMouthAnimation && math.min( ply:VoiceVolume() * multiplier * 6, 1 ) || 0
+
+  if ply:IsSuperAdmin() then
+    weight = weight * 5
+  end
 
   if ( flex[ 1 ] ) then
 
@@ -738,9 +754,11 @@ function GM:PlayerWeaponChanged( client, weapon, force )
 
   if ( weptable.CW20Weapon && !weptable.CW20Weapon && !force ) then return end
 
+  local stored_wep = weapons.GetStored( weapon:GetClass() )
+
   local is_scp = client:GetModel():find( "/scp/" ) && client:GTeam() == TEAM_SCP
   
-  if ( !plytable.DrawAnimation && !is_scp ) then
+  if ( !plytable.DrawAnimation && !is_scp && stored_wep ) then
 
     plytable.DrawAnimation = true
     client:AddVCDSequenceToGestureSlot( GESTURE_SLOT_CUSTOM, 3289, 0, true )
@@ -773,7 +791,7 @@ function GM:PlayerWeaponChanged( client, weapon, force )
   end]]
 
   plytable.AnimationHoldType = holdType
-  plytable.AnimationRole = client:GetNClass()
+  plytable.AnimationRole = client:GetRoleName()
 
   plytable.GestureAnimationIdle = nil
   plytable.GestureAnimationWalk = nil
@@ -783,9 +801,9 @@ function GM:PlayerWeaponChanged( client, weapon, force )
 
   if ( !is_scp ) then
 
-   --animations_table = AnimationTableGetTable( client, client:GetModel() )[ plytable.AnimationHoldType ]
+    animations_table = AnimationTableGetTable( client, client:GetModel() )[ plytable.AnimationHoldType ]
 
--- else
+  else
 
     animations_table = GenerateSCPTable( plytable.AnimationHoldType, client )
 
@@ -1332,4 +1350,3 @@ function BREACH_GM:DoAnimationEvent(player, event, data)
 	return nil
 
 end
-

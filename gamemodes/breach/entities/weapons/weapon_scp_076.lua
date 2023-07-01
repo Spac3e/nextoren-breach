@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/weapon_scp_076.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 SWEP.Category = "BREACH SCP"
 SWEP.PrintName = "SCP-076-2"
 SWEP.Base = "breach_scp_base"
@@ -21,20 +33,6 @@ SWEP.IdleAng = Angle( -105,-160,-115 )
 SWEP.HoldType         = "katana"
 
 SWEP.AbilityIcons = {
-
-  {
-
-    [ "Name" ] = "Special",
-    [ "Description" ] = "Вы делаете специальную атаку которая убивает всех.",
-    [ "Cooldown" ] = 100,
-    [ "CooldownTime" ] = 0,
-    [ "KEY" ] = _G["KEY_Q"],
-    [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/special_attack.png",
-    [ "Abillity" ] = nil
-
-  },
-
   {
 
     [ "Name" ] = "Shuriken",
@@ -43,7 +41,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "RMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/shuriken.png",
+    [ "Icon" ] = "shaky/scp062/shuriken.png",
     [ "Abillity" ] = nil
 
   },
@@ -56,7 +54,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_R"],
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/speed.png",
+    [ "Icon" ] = "shaky/scp062/speed.png",
     [ "Abillity" ] = nil
 
   },
@@ -166,22 +164,23 @@ function SWEP:Deploy()
     self.Owner.forward_076 = false
 
     hook.Add( "SetupMove", "SCP_076_move_forward", function(ply, mv, cu)
-      if ply.forward_076 and ply:GetNClass() == SCP076 then
+      if ply.forward_076 and ply:GetRoleName() == SCP076 then
         mv:SetForwardSpeed(115)
         mv:SetSideSpeed(0)
         mv:SetUpSpeed(0)
       end
     end)
 
+    --[[
     hook.Add( "PlayerButtonDown", "SCP_076_abil", function( ply, butt )
 
       if ( butt == KEY_Q ) then
 
-        if ( ply:GetNClass() == "SCP076" ) then
+        if ( ply:GetRoleName() == "SCP076" ) then
 
           if self.AbilityIcons[1].CooldownTime <= CurTime() then
 
---self:Cooldown(1, self.AbilityIcons[1].Cooldown)
+            self:Cooldown(1, self.AbilityIcons[1].Cooldown)
 
             if self.AbilityIcons[2].CooldownTime < CurTime() + 3 then
 
@@ -235,7 +234,7 @@ function SWEP:Deploy()
 
       end
 
-    end )
+    end )]]
 
   end
 
@@ -375,8 +374,8 @@ function SWEP:SecondaryAttack()
 
   if self.Owner.ForceAnimSequence then return end
 
-  self:SetNextSecondaryFire(CurTime() + self.AbilityIcons[2].Cooldown)
-  self.AbilityIcons[2].CooldownTime = CurTime() + self.AbilityIcons[2].Cooldown
+  self:SetNextSecondaryFire(CurTime() + self.AbilityIcons[1].Cooldown)
+  self.AbilityIcons[1].CooldownTime = CurTime() + self.AbilityIcons[1].Cooldown
 
   if SERVER then
     self:SetNoDraw(true)
@@ -406,14 +405,11 @@ end
 
 function SWEP:Reload()
   if self.Owner.ForceAnimSequence then return end
-  if self.AbilityIcons[3].CooldownTime > CurTime() then return end
-    self.AbilityIcons[3].CooldownTime = CurTime() + self.AbilityIcons[3].Cooldown
-    if self.AbilityIcons[2].CooldownTime < CurTime() + 15 then
-      self.AbilityIcons[2].CooldownTime = CurTime() + 15
-      self:SetNextSecondaryFire(CurTime() + 15)
-    end
+  if self.AbilityIcons[2].CooldownTime > CurTime() then return end
+    self.AbilityIcons[2].CooldownTime = CurTime() + self.AbilityIcons[2].Cooldown
     if self.AbilityIcons[1].CooldownTime < CurTime() + 15 then
       self.AbilityIcons[1].CooldownTime = CurTime() + 15
+      self:SetNextSecondaryFire(CurTime() + 15)
     end
     self:AnimationsChange(true)
     self.Owner.rememberspeed = self.Owner:GetWalkSpeed()
@@ -488,7 +484,7 @@ function SWEP:OnRemove()
 
     local player = players[ i ]
 
-    if ( player && player:IsValid() && player:GetNClass() == "SCP0762" ) then return end
+    if ( player && player:IsValid() && player:GetRoleName() == "SCP0762" ) then return end
 
   end
 

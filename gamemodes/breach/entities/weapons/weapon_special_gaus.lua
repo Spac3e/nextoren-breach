@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_special_gaus.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -85,6 +85,12 @@ function SWEP:Holster()
 
 end
 
+function SWEP:Equip(owner)
+
+  owner:CompleteAchievement("gauss")
+
+end
+
 function SWEP:ImpactEffect( tr )
 
   if ( tr.HitSky ) then return end
@@ -137,7 +143,7 @@ function SWEP:Think()
 
     local ent = tr.Entity
 
-    if ( ent && ent:IsValid() && ent:IsPlayer() || ent && ent:IsValid() && ( ent:GetOwner() && ent:GetOwner():IsValid() && ent:GetOwner():IsPlayer() && ent:GetOwner():GetNClass() == "SCP173" ) ) then
+    if ( ent && ent:IsValid() && ent:IsPlayer() || ent && ent:IsValid() && ( ent:GetOwner() && ent:GetOwner():IsValid() && ent:GetOwner():IsPlayer() && ent:GetOwner():GetRoleName() == "SCP173" ) ) then
 
       --self.ShockDamageInfo:SetDamageForce( ent:GetAimVector() * 120 )
       self.ShockDamageInfo:SetAttacker( self.Owner ) -- Update attacker ( In case new weapon owner )

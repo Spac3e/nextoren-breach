@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_special_trap.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -79,7 +79,7 @@ function ENT:Explode( attacker )
 
     for _, v in ipairs( ents.FindInSphere( self:GetPos(), 200 ) ) do
 
-      if ( v:IsPlayer() && !v:HasHazmat() && v:GetNClass() != "MTF_Chem" ) then
+      if ( v:IsPlayer() && !v:HasHazmat() && v:GetRoleName() != "MTF_Chem" ) then
 
         v:TakeDamageInfo( self.dmginfo )
 

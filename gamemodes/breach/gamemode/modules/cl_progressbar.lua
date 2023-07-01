@@ -1,10 +1,24 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_progressbar.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
+
 ProgressName = ProgressName || "N/A"
 ProgressTime = ProgressTime || 0
 ProgressRunning = ProgressRunning || false
 
 function MakeProgressBar()
 
-  ProgressName = net.ReadString()
+  ProgressName = BREACH.TranslateString(net.ReadString())
   ProgressTime = net.ReadFloat()
   ProgressIcon = net.ReadString()
 
@@ -88,7 +102,7 @@ local function CreateProgressBar( client, screenwidth, screenheight, time )
 
     if ( ProgressRunning && self.progress_time == 100 ) then
 
-      self.name = "Завершено!"
+      self.name = L"l:progress_done"
       self.Color = successclr
       ProgressRunning = nil
 
@@ -110,7 +124,7 @@ local function CreateProgressBar( client, screenwidth, screenheight, time )
 
     elseif ( ProgressRunning && self.failed ) then
 
-      self.name = "Прекращено!"
+      self.name = BREACH.TranslateString("l:progress_stopped")
       self.Color = stopclr
       ProgressRunning = nil
 
@@ -223,7 +237,7 @@ function PaintProgress()
 
     if ( self.progress_time == 100 ) then
 
-      self.name = "Завершено!"
+      self.name = L"l:progress_done"
       self.Color = successclr
       ProgressRunning = nil
 
@@ -245,7 +259,7 @@ function PaintProgress()
 
     elseif ( self.failed ) then
 
-      self.name = "Прекращено!"
+      self.name = BREACH.TranslateString("l:progress_stopped")
       self.Color = stopclr
       ProgressRunning = nil
 
@@ -318,12 +332,12 @@ function StopProgressBar()
 
   if ( client.progressbar && client.progressbar:IsValid() ) then
 
-    client.progressbar.name = "Прекращено!"
+    client.progressbar.name = BREACH.TranslateString("l:progress_stopped")
     client.progressbar.Color = stopclr
 
     timer.Create( "RemoveProgressBar", .8, 1, function()
 
-      if ( client.progressbar && client.progressbar:IsValid() && !ProgressRunning && client.progressbar.name == "Прекращено!" ) then
+      if ( client.progressbar && client.progressbar:IsValid() && !ProgressRunning && client.progressbar.name == BREACH.TranslateString("l:progress_stopped") ) then
 
         client.progressbar:Remove()
         client.progressbaricon:Remove()

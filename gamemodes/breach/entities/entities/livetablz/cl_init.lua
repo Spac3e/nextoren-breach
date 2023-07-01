@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/entities/livetablz/cl_init.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 include('shared.lua')
 
 local screen_mat = Material( "nextoren_hud/overlay/lzscreen.png" )
@@ -97,15 +109,15 @@ function ENT:Draw()
 			draw.SimpleText( "Welcome to the SCP Foundation!", "LZTextSmall", -68, 120, ColorAlpha( preparing_clr, 180 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTEk )
 			draw.SimpleText( "Have a very safe and productive day!", "LZTextSmall", -68, 185, ColorAlpha( preparing_clr, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		elseif (  ( cltime - 570 > 90 ) ) then
+		elseif (  cltime - self:GetDecontTimer() > 0 ) then
 
 			self.Decontamination_Time = timer.TimeLeft("LZDecont") || 0
 
 			draw.SimpleText( ">> The Decontamination Process will begin in ", "LZTextSmall", -80, 120, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.SimpleText( ">>" .. string.ToMinutesSeconds( cltime - "660" ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( ">>" .. string.ToMinutesSeconds( self.Decontamination_Time ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 			draw.OutlinedBox( -195, 140, 250, 100, 4, clr )
 
-		elseif ( cltime - 570 < 90 ) then
+		else
 
 			draw.SimpleText( ">> Immediately leave the current zone!", "LZTextSmall", -80, 185, ColorAlpha( danger_clr, 180 * Pulsate( 2 ) ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 

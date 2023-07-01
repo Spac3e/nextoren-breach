@@ -1,48 +1,49 @@
-	
+
+local mply = FindMetaTable( "Player" )
+
+function mply:CompleteAchievement(achivname, ply)
+	net.Start("Completeachievement_serverside")
+	net.WriteString(achivname)
+	net.Send(self)
+end
+
+function AlphaWarheadBoomEffect()
+	net.Start("Boom_Effectus")
+	net.Broadcast()
+end
+
+net.Receive("GiveWeaponFromClient", function()
+	net.ReadString()
+end)
+
+net.Receive("Load_player_data", function()
+	net.ReadTable(tab)
+end)
+
+function mply:PlayGestureSequence( sequence )
+	local sequencestring = self:LookupSequence( sequence )
+	self:AddGestureSequence( sequencestring, true )
+end
+
+function GM:PlayerSwitchFlashlight(ply)
+	return ply:GetRoleName() == role.ADMIN
+end
+
 // Variables
 gamestarted = gamestarted or false
 preparing = false
 postround = false
 roundcount = 0
-BUTTONS = table.Copy(BUTTONS)
-
-
-hook.Add("PlayerSay", "RRadioTextChat", function( speaker, text, teamChat )
-	local findA = string.find(text, "!z")
-	local findB = string.find(text, "/z")
-	if findA or findB then 
-		net.Start("dradio_sendMessage")
-		net.WriteString(text)
-		net.WriteDouble(speaker.frequency)
-		net.WriteEntity(speaker)
-		net.Broadcast() 
-		return ""
-	end 
-
-
-end)
-
-
-local nets = {
-	"dradio_edit",
-	"dradio_adjustfrequency",
-	"dradio_updatefrequency",
-	"dradio_networkfrequency",
-	"dradio_clearfrequency",
-	"dradio_sendMessage",
-}
-
-for k,v in pairs(nets) do
-	util.AddNetworkString(v)
-end 
+MAPBUTTONS = table.Copy(BUTTONS)
 
 function GM:PlayerSpray( ply )
-return ply:IsSuperAdmin()
-end
-
-function GhostBoneMerge()
-end
-function Bonemerge()
+	if ply:GTeam() == TEAM_SPEC then
+		return true
+	end
+	if ply:GetPos():WithinAABox( POCKETD_MINS, POCKETD_MAXS ) then
+		ply:PrintMessage( HUD_PRINTCENTER, "You can't use spray in Pocket Dimension" )
+		return true
+	end
 end
 
 function GetActivePlayers()
@@ -74,7 +75,6 @@ function GetNotActivePlayers()
 end
 
 function GM:ShutDown()
-	--
 end
 
 function WakeEntity(ent)
@@ -113,12 +113,6 @@ function OnUseEyedrops(ply)
 		ply:PrintMessage(HUD_PRINTTALK, "You will be blinking now")
 	end)
 end
-
-/*timer.Create( "CheckStart", 10, 0, function() 
-	if !gamestarted then
-		CheckStart()
-	end
-end )*/
 
 timer.Create("BlinkTimer", GetConVar("br_time_blinkdelay"):GetInt(), 0, function()
 	local time = GetConVar("br_time_blink"):GetFloat()
@@ -188,217 +182,7 @@ function DestroyAll()
 	end
 end
 
-util.AddNetworkString( "NTF_Intro" )
-
-function SpawnSupport()
-	local useuiu = math.random( 1, 100 ) <= 25
-	local usegop = math.random( 1, 100 ) <= 35
-	local usedz = math.random( 1, 100 ) <= 45
-	local usentf = math.random( 1, 100 ) <= 65
-	local usechaos = math.random( 1, 100 ) <= 100
-	local roles = {}
-	local plys = {}
-	local inuse = {}
-	local podhod_p = 0
-	local spawnpos = SPAWN_OUTSIDE
-	for k, v in pairs( ALLCLASSES.support.roles ) do
-	
-			print( usechaos )
-	
-			if useuiu then 
-				if v.team == TEAM_USA then
-					table.insert( roles, v )
-				end
-			elseif usegop then
-				if v.team == TEAM_GOC then
-					table.insert( roles, v )
-				end
-			elseif usentf then
-				if v.team == TEAM_GUARD then
-					table.insert( roles, v )
-				end
-			elseif usechaos then
-				if v.team == TEAM_CHAOS then
-					table.insert( roles, v )
-				end
-			elseif usedz then
-				if v.team == TEAM_DZ then
-					table.insert( roles, v )
-				end
-			end
-	end
-	for k, v in pairs( roles ) do
-			plys[v.name] = {}
-			inuse[v.name] = 0
-			for _, ply in pairs( player.GetAll() ) do
-				if ply:GTeam() == TEAM_SPEC and ply.ActivePlayer then
-					if ply:GetLevel() >= v.level and ( v.customcheck and c.customcheck( ply ) or true ) then
-						table.insert( plys[v.name], ply )
-						podhod_p = (table.Count( plys[v.name] ))
-					end
-				end
-			end
-	
-			if #plys[v.name] < 1 then
-				roles[k] = nil
-			end
-	end
-	
-		if #roles < 1 then
-			return
-		end
-		if podhod_p > 4 then 
-			for i = 1, 5 do
-				local role = table.Random( roles )
-				local ply = table.remove( plys[role.name], math.random( 1, #plys[role.name] ) )
-		
-				ply:SetupNormal()
-				ply:ApplyRoleStats( role )
-				ply:SetPos( spawnpos[i] )
-		
-				inuse[role.name] = inuse[role.name] + 1
-		
-				if ply:GTeam() == TEAM_CHAOS then
-					ply:SendLua("RunConsoleCommand( 'intro_ci' )")
-				elseif ply:GTeam() == TEAM_GOC then
-					ply:SendLua("RunConsoleCommand( 'intro_goc' )")
-				elseif ply:GTeam() == TEAM_GUARD then
-					ply:SendLua("RunConsoleCommand( 'intro_ntf' )")	
-				elseif ply:GTeam() == TEAM_USA then
-					ply:SendLua("RunConsoleCommand( 'intro_onp' )")
-				elseif ply:GTeam() == TEAM_DZ then
-					ply:SendLua("RunConsoleCommand( 'intro_dz' )")
-				end
-
-				if #plys[role.name] < 1 or inuse[role.name] >= role.max then
-					table.RemoveByValue( roles, role )
-				end
-		
-				if #roles < 1 then
-					break
-				end
-			end	
-			if useuiu then
-			BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-			return
-			end
-			if usegop then
-			BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.mp3" )' )
-			return
-			end	
-			if usentf then
-			BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
-			return
-			end
-			if usechaos then
-			BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-			return
-			end
-			if usedz then
-				BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-				return
-			end
-		end
-end
-
 function SpawnAllItems()
-        local wep = ents.Create( "esc_vse" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( Vector(Vector(-8019.227051,-1090.048584,1728.031250)) )
-			WakeEntity( wep )
-    end
-
-    local wep = ents.Create( "object_intercom" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( Vector( -2610.555664, 2270.446777, 320.494934 ) )
-            WakeEntity( wep )
-    end
-    
-
-	local wep = ents.Create( "bg" )
-	if IsValid( wep ) then
-		wep:Spawn()
-		wep:SetPos( Vector(-710.249207,-6288.395508,-2372.594971) )
-		WakeEntity( wep )
-    end
-	local wep = ents.Create( "scp_tree" )
-	if IsValid( wep ) then
-		wep:Spawn()
-		wep:SetPos( Vector(9085.486328, -1932.134644, 5.520229) )
-		WakeEntity( wep )
-    end
-	for k,v in pairs( SPAWN_BREACH_CAMERA ) do
-        local wep = ents.Create( "br_camera" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v.pos )
-			wep:SetAngles(v.ang)
-			WakeEntity( wep )
-        end
-    end
-	for k,v in pairs( SCP_914_BUTTON ) do
-        local wep = ents.Create( "entity_scp_914" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v )
-            WakeEntity( wep )
-        end
-    end
-
-
-	for k,v in pairs( SPAWN_TESLA_0 ) do
-        local wep = ents.Create( "test_entity_tesla" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v )
-            WakeEntity( wep )
-        end
-    end
-
-	for k,v in pairs( SPAWN_LIVETAB_LZ ) do
-        local wep = ents.Create( "livetablz" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v.pos )
-			wep:SetAngles(v.ang)
-			WakeEntity( wep )
-        end
-    end
-
-	for k,v in pairs( SPAWN_LIVETAB_EZ ) do
-        local wep = ents.Create( "livetab" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v.pos )
-			wep:SetAngles(v.ang)
-			WakeEntity( wep )
-        end
-    end
-
-    for k,v in pairs( SPAWN_TESLA_90 ) do
-        local wep = ents.Create( "test_entity_tesla" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v )
-            wep:SetAngles( Angle( 0,90,0 ) )
-            WakeEntity( wep )
-        end
-    end
-
-	for k,v in pairs( SPAWN_GENERATORS ) do
-        local wep = ents.Create( "ent_generator" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v.Pos )
-            wep:SetAngles( v.Ang )
-            WakeEntity( wep )
-        end
-    end
-
-
-
 	for k, v in pairs( SPAWN_ITEMS ) do
         local spawns = table.Copy( v.spawns )
         local dices = {}
@@ -436,47 +220,6 @@ function SpawnAllItems()
             end
         end
     end
-
-	for k, v in pairs( SPAWN_AMMONEW ) do
-        local spawns = table.Copy( v.spawns )
-        //local cards = table.Copy( v.ents )
-        local dices = {}
-
-        local n = 0
-        for _, dice in pairs( v.ents ) do
-            local d = {
-                min = n,
-                max = n + dice[2],
-                ent = dice[1]
-            }
-            
-            table.insert( dices, d )
-            n = n + dice[2]
-        end
-
-        for i = 1, math.min( v.amount, #spawns ) do
-            local spawn = table.remove( spawns, math.random( 1, #spawns ) )
-            local dice = math.random( 0, n - 1 )
-            local ent
-
-            for _, d in pairs( dices ) do
-                if d.min <= dice and d.max > dice then
-                    ent = d.ent
-                    break
-                end
-            end
-
-            if ent then
-                local keycard = ents.Create( ent )
-                if IsValid( keycard ) then
-                    keycard:Spawn()
-                    keycard:SetPos( spawn )
-                    --keycard:SetKeycardType( ent )
-                end
-            end
-        end
-    end
-    
 	if GetConVar("br_allow_vehicle"):GetInt() != 0 then
 	
 		for k, v in ipairs(SPAWN_VEHICLE) do
@@ -488,384 +231,400 @@ function SpawnAllItems()
 			car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
 			car:SetPos( v[1] )
 			car:SetAngles( v[2] )
-				car:Spawn()
+			car:Spawn()
 			WakeEntity( car )
 		end
 	end
-
-	for k, v in pairs( SPAWN_FBI_MONITORS ) do
-        local wep = ents.Create( "onp_monitor" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v.pos )
-			wep:SetAngles(v.ang)
-            WakeEntity( wep )
-        end
-    end
-	
-	for k, v in pairs( SPAWN_VENDOR ) do
-        local wep = ents.Create( "ent_vendormachine" )
-        if IsValid( wep ) then
-            wep:Spawn()
-            wep:SetPos( v )
-			wep:SetAngles(Angle(0,-90,0))
-            WakeEntity( wep )
-        end
-    end
-	local wep = ents.Create( "ent_scp_409" )
-    --local sp = v.Spawns
-    if IsValid( wep ) then
-        wep:Spawn()
-        wep:SetPos( Vector(1148.37109375, -6633.662109375, -2360.96875) )
-        wep:SetAngles( Angle(0,0,0) )
-        WakeEntity( wep )
-    end
-
-    local wep = ents.Create( "ent_ammocrate" )
-    --local sp = v.Spawns
-    if IsValid( wep ) then
-        wep:Spawn()
-        wep:SetPos( Vector(7562.3012695313, -4243.8090820313, 17.431785583496) )
-        wep:SetAngles( Angle(0, -90, 0) )
-        WakeEntity( wep )
-    end
-
-    local wep = ents.Create( "ent_ammocrate" )
-    --local sp = v.Spawns
-    if IsValid( wep ) then
-        wep:Spawn()
-        wep:SetPos( Vector(9344.3896484375, -3276.6135253906, 16.921831130981) )
-        wep:SetAngles( Angle(0, 0, 0) )
-        WakeEntity( wep )
-    end
-
-    local wep = ents.Create( "ent_ammocrate" )
-    --local sp = v.Spawns
-    if IsValid( wep ) then
-        wep:Spawn()
-        wep:SetPos( Vector(246.13401794434, -3920.3305664063, -1233.5209960938) )
-        wep:SetAngles( Angle(0, -90, 0) )
-        WakeEntity( wep )
-    end
-
-    local wep = ents.Create( "ent_ammocrate" )
-    --local sp = v.Spawns
-    if IsValid( wep ) then
-        wep:Spawn()
-        wep:SetPos( Vector(156.32833862305, 5842.767578125, 15.887740135193) )
-        wep:SetAngles( Angle(0, 0, 0) )
-        WakeEntity( wep )
-    end
-
-	for k,v in pairs(SPAWN_WEAPONRY) do
-		local ent = ents.Create("ent_weaponry")
-		if IsValid( ent ) then
-			ent:Spawn()
-			ent:SetPos( v )
-			ent:SetAngles(Angle(0, -90, 0))
-			WakeEntity(ent)
-		end
-	end
-		local ent = ents.Create("weapon_special_gaus")
-		if IsValid( ent ) then
-			ent:Spawn()
-			ent:SetPos( Vector(2032.1343994141, 6344.05859375, 61.311496734619) )
-			ent:SetAngles(Angle(0, -90, 0))
-			WakeEntity(ent)
-	end
-
-	for k, v in pairs( SPAWN_UNIFORMS) do
-        local spawns = table.Copy( v.spawns )
-        local dices = {}
-
-        local n = 0
-        for _, dice in pairs( v.entities ) do
-            local d = {
-                min = n,
-                max = n + dice[2],
-                ent = dice[1]
-            }
-            
-            table.insert( dices, d )
-            n = n + dice[2]
-        end
-
-        for i = 1, math.min( v.amount, #spawns ) do
-            local spawn = table.remove( spawns, math.random( 1, #spawns ) )
-            local dice = math.random( 0, n - 1 )
-            local ent
-
-            for _, d in pairs( dices ) do
-                if d.min <= dice and d.max > dice then
-                    ent = d.ent
-                    break
-                end
-            end
-
-            if ent then
-                local keycard = ents.Create( ent )
-                if IsValid( keycard ) then
-                    keycard:Spawn()
-                    keycard:SetPos( spawn )
-                    --keycard:SetKeycardType( ent )
-                end
-            end
-        end
-    end
 end
 
-util.AddNetworkString( "cassie_pizdelka_start" )
-util.AddNetworkString( "cassie_pizdelka_stop" )
-
-function Round_Work()
-
-	for k,ball in pairs(ents.FindInSphere((Vector(4668, -2227, 70)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(6890, -1496, 57)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(7433, -1045, 63)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(8161, -1507, 64)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9631, -526, 73)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(-1065, 5475, 50)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(-1851, 5388, 76)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(-2147, 5706, 58)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9871, -1514, 68)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-	  end
-	end
-
-	net.Start( "cassie_pizdelka_start" )
-	net.Broadcast()
-
-timer.Create( "mog_door_open", 40, 1, function()
-
-		for k,ball in pairs(ents.FindInSphere((Vector(-1065, 5475, 50)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-		for k,ball in pairs(ents.FindInSphere((Vector(-1851, 5388, 76)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-		for k,ball in pairs(ents.FindInSphere((Vector(-2147, 5706, 58)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-end)
-
-timer.Create( "sb_door_open", 80, 1, function()
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9871, -1514, 68)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-end)
-
-timer.Create( "lc_15_sv_scp_open_door", 180, 1, function()
-	OpenSCPDoors()
-	
-	for k,ball in pairs(ents.FindInSphere((Vector(4668, -2227, 70)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(6890, -1496, 57)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(7433, -1045, 63)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(8161, -1507, 64)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9631, -526, 73)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-	  end
-	end
-
-end )
-
-timer.Create( "lc_11_open_kpp_15_s", 375, 1, function()
-	for k,ball in pairs(ents.FindInSphere((Vector(4668, -2227, 70)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(6890, -1496, 57)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(7433, -1045, 63)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(8161, -1507, 64)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9631, -526, 73)), 50)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  end
+net.Receive( "GRUCommander_peac", function()
+	for k,v in pairs(player.GetAll()) do
+		v:BrTip( 0, "[VAULT]", Color(0, 255, 0), "В комплекс прибыла дружественая групировка ГРУ для помощи военному персоналу!", Color(200, 255, 255) )
 	end
 end )
 
-timer.Create( "spawnsupport_12_11", 360, 1, function()
+sup_lim = {}
 
-	SpawnSupport()
-
-end )
-
-timer.Create( "spawnsupport_9_8", 540, 1, function()
-
-	SpawnSupport()
-
-end )
-
-timer.Create( "lc_11_s_close", 420, 1, function()
-
-	local heli = ents.Create( "lz_gaz" )
-	heli:Spawn()
-
-	for k,ball in pairs(ents.FindInSphere((Vector(4668, -2227, 70)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(6890, -1496, 57)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(7433, -1045, 63)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(8161, -1507, 64)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  end
-	end
-
-	for k,ball in pairs(ents.FindInSphere((Vector(9631, -526, 73)), 100)) do
-	  if IsValid(ball) then
-		  if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  end
-	end
-end )
-
-
-timer.Create( "lc_2_10_s_sv", 955, 1, function()
-
-	local heli = ents.Create( "heli" )
-	heli:Spawn()
-
-	local btr = ents.Create( "btr" )
-	btr:Spawn()
-
-	local portal = ents.Create( "portal" )
-	portal:Spawn()
-
-end)
-
+function reset_sup_lim()
+    sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
 end
 
-function Round_Work_stop()
-	--local ply = LocalPlayer()
-	-- пизделка на 15 мин
-	timer.Remove( "lc_15_sv_scp_open_door" )
-	timer.Remove( "lc_2_10_s_sv" )
-	timer.Remove( "lc_11_open_kpp_15_s" )
-	timer.Remove( "lc_11_s_close" )
-	timer.Remove( "spawnsupport_12_11" )
-	timer.Remove( "spawnsupport_9_8" )
-	timer.Remove( "mog_door_open" )
-	timer.Remove( "sb_door_open" )
-	net.Start( "cassie_pizdelka_stop" )
-    net.Broadcast()
+function SpawnSupport()
 
-	--[[
-    timer.Simple(120, function()
-		surface.PlaySound( "nextoren/round_sounds/main_decont/decont_15_b.mp3" )
-		self:BrTip(0, "[Vault Breach]", Color(255, 0, 0), "До взрыва Альфа Боеголовки осталось 15 мин!", Color(255, 255, 255))
-	end)
-	]]--
-end
+	local players = {}
 
-function Auto_door_close()
+	for k,v in pairs(player.GetAll()) do
+		if v:GTeam() == TEAM_SPEC then
+			table.insert( players, v )
+		end
+	end
 
-	for k,v in pairs(door.GetAll()) do
+	PrintTable(players)
 
+	change_sup = sup_lim[math.random(1, #sup_lim)]
+	table.RemoveByValue( sup_lim, change_sup )
+	print(change_sup)
+	print(sup_lim)
+
+	if table.Count( players ) > 4 then
+
+// NTF
+
+	if change_sup == "ntf" then
+	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
+	local ntfsinuse = {}
+	local ntfspawns = table.Copy( SPAWN_OUTSIDE )
+	local ntfs = {}
+
+	for i = 1, 5 do
+		table.insert( ntfs, table.remove( players, math.random( #players ) ) )
+	end
+
+	--table.sort( mtfs, PlayerLevelSorter )
+
+	for i, v in ipairs( ntfs ) do
+		local ntfroles = table.Copy( BREACH_ROLES.NTF.ntf.roles )
+		local selected
+
+		repeat
+			local role = table.remove( ntfroles, math.random( #ntfroles ) )
+			ntfsinuse[role.name] = ntfsinuse[role.name] or 0
+
+			if role.max == 0 or ntfsinuse[role.name] < role.max then
+				if role.level <= v:GetLevel() then
+					if !role.customcheck or role.customcheck( v ) then
+						selected = role
+						break
+					end
+				end
+			end
+		until #ntfroles == 0
+
+		if !selected then
+			ErrorNoHalt( "Something went wrong! Error code: 001" )
+			selected = BREACH_ROLES.NTF.ntf.roles[1]
+		end
+
+		ntfsinuse[selected.name] = ntfsinuse[selected.name] + 1
+
+		if #ntfspawns == 0 then ntfspawns = table.Copy( SPAWN_GUARD ) end
+		local spawn = table.remove( ntfspawns, math.random( #ntfspawns ) )
+		v:SendLua("RunConsoleCommand( 'intro_ntf' )")
+		v:SetupNormal()
+		v:ApplyRoleStats( selected )
+		v:SetPos( spawn )
+		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
+
+		print( "Assigning "..v:Nick().." to role: "..selected.name.." [NTF]" )
+	end
+	elseif change_sup == "cl" then
+
+	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
+
+// CHAOS
+		local chaossinuse = {}
+		local chaosspawns = table.Copy( SPAWN_OUTSIDE )
+		local chaoss = {}
+
+		for i = 1, 5 do
+			table.insert( chaoss, table.remove( players, math.random( #players ) ) )
+		end
+
+		--table.sort( mtfs, PlayerLevelSorter )
+
+		for i, v in ipairs( chaoss ) do
+			local chaosroles = table.Copy( BREACH_ROLES.CHAOS.chaos.roles )
+			local selected
+
+			repeat
+				local role = table.remove( chaosroles, math.random( #chaosroles ) )
+				chaossinuse[role.name] = chaossinuse[role.name] or 0
+
+				if role.max == 0 or chaossinuse[role.name] < role.max then
+					if role.level <= v:GetLevel() then
+						if !role.customcheck or role.customcheck( v ) then
+							selected = role
+							break
+						end
+					end
+				end
+			until #chaosroles == 0
+
+			if !selected then
+				ErrorNoHalt( "Something went wrong! Error code: 001" )
+				selected = BREACH_ROLES.CHAOS.chaos.roles[1]
+			end
+
+			chaossinuse[selected.name] = chaossinuse[selected.name] + 1
+
+			if #chaosspawns == 0 then chaosspawns = table.Copy( SPAWN_GUARD ) end
+			local spawn = table.remove( chaosspawns, math.random( #chaosspawns ) )
+			v:SendLua("RunConsoleCommand( 'intro_ci' )")
+			v:SetupNormal()
+			v:ApplyRoleStats( selected )
+			v:SetPos( spawn )
+
+			print( "Assigning "..v:Nick().." to role: "..selected.name.." [CHAOS]" )
+		end
+
+	elseif change_sup == "gru" then
+
+		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
 	
+		// GRU
+			local grusinuse = {}
+			local gruspawns = table.Copy( SPAWN_OUTSIDE )
+			local grus = {}
+	
+			for i = 1, 5 do
+				table.insert( grus, table.remove( players, math.random( #players ) ) )
+			end
+	
+			--table.sort( mtfs, PlayerLevelSorter )
+	
+			for i, v in ipairs( grus ) do
+				local gruroles = table.Copy( BREACH_ROLES.GRU.gru.roles )
+				local selected
+	
+				repeat
+					local role = table.remove( gruroles, math.random( #gruroles ) )
+					grusinuse[role.name] = grusinuse[role.name] or 0
+	
+					if role.max == 0 or grusinuse[role.name] < role.max then
+						if role.level <= v:GetLevel() then
+							if !role.customcheck or role.customcheck( v ) then
+								selected = role
+								break
+							end
+						end
+					end
+				until #gruroles == 0
+	
+				if !selected then
+					ErrorNoHalt( "Something went wrong! Error code: 001" )
+					selected = BREACH_ROLES.GRU.gru.roles[1]
+				end
+	
+				grusinuse[selected.name] = grusinuse[selected.name] + 1
+	
+				if #gruspawns == 0 then gruspawns = table.Copy( SPAWN_GUARD ) end
+				local spawn = table.remove( gruspawns, math.random( #gruspawns ) )
+				v:SendLua("RunConsoleCommand( 'intro_gru' )")
+				if v:GetRoleName() == role.GRU_Commander then
+					net.Start( "GRUCommander" )
+					net.WriteEntity( ply )
+					net.Broadcast()
+				end
+				v:SetupNormal()
+				v:ApplyRoleStats( selected )
+				v:SetPos( spawn )
+	
+				print( "Assigning "..v:Nick().." to role: "..selected.name.." [GRU]" )
+			end
+	
+	elseif change_sup == "goc" then
+
+	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.mp3" )' )
+
+	// GOC
+		local gocsinuse = {}
+		local gocspawns = table.Copy( SPAWN_OUTSIDE )
+		local gocs = {}
+
+		for i = 1, 5 do
+			table.insert( gocs, table.remove( players, math.random( #players ) ) )
+		end
+
+		for i, v in ipairs( gocs ) do
+			local gocroles = table.Copy( BREACH_ROLES.GOC.goc.roles )
+			local selected
+
+			repeat
+				local role = table.remove( gocroles, math.random( #gocroles ) )
+				gocsinuse[role.name] = gocsinuse[role.name] or 0
+
+				if role.max == 0 or gocsinuse[role.name] < role.max then
+					if role.level <= v:GetLevel() then
+						if !role.customcheck or role.customcheck( v ) then
+							selected = role
+							break
+						end
+					end
+				end
+			until #gocroles == 0
+
+			if !selected then
+				ErrorNoHalt( "Something went wrong! Error code: 001" )
+				selected = BREACH_ROLES.GOC.goc.roles[1]
+			end
+
+			gocsinuse[selected.name] = gocsinuse[selected.name] + 1
+
+			if #gocspawns == 0 then gocspawns = table.Copy( SPAWN_OUTSIDE ) end
+			local spawn = table.remove( gocspawns, math.random( #gocspawns ) )
+			v:SendLua("RunConsoleCommand( 'intro_goc' )")
+			v:SetupNormal()
+			v:ApplyRoleStats( selected )
+			v:SetPos( spawn )
+
+			print( "Assigning "..v:Nick().." to role: "..selected.name.." [GOC]" )
+		end
+
+	elseif change_sup == "dz" then
+
+	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
+
+	// SH
+		local dzsinuse = {}
+		local dzspawns = table.Copy( SPAWN_OUTSIDE )
+		local dzs = {}
+
+		for i = 1, 5 do
+			table.insert( dzs, table.remove( players, math.random( #players ) ) )
+		end
+
+		--table.sort( mtfs, PlayerLevelSorter )
+
+		for i, v in ipairs( dzs ) do
+			local dzroles = table.Copy( BREACH_ROLES.DZ.dz.roles )
+			local selected
+
+			repeat
+				local role = table.remove( dzroles, math.random( #dzroles ) )
+				dzsinuse[role.name] = dzsinuse[role.name] or 0
+
+				if role.max == 0 or dzsinuse[role.name] < role.max then
+					if role.level <= v:GetLevel() then
+						if !role.customcheck or role.customcheck( v ) then
+							selected = role
+							break
+						end
+					end
+				end
+			until #dzroles == 0
+
+			if !selected then
+				ErrorNoHalt( "Something went wrong! Error code: 001" )
+				selected = BREACH_ROLES.DZ.dz.roles[1]
+			end
+
+			dzsinuse[selected.name] = dzsinuse[selected.name] + 1
+
+			if #dzspawns == 0 then dzspawns = table.Copy( SPAWN_GUARD ) end
+			local spawn = table.remove( dzspawns, math.random( #dzspawns ) )
+			v:SendLua("RunConsoleCommand( 'intro_dz' )")
+			v:SetupNormal()
+			v:ApplyRoleStats( selected )
+			v:SetPos( spawn )
+
+			print( "Assigning "..v:Nick().." to role: "..selected.name.." [SH]" )
+		end
+
+	elseif change_sup == "fbi" then
+
+	// UIU
+		local fbisinuse = {}
+		local fbispawns = table.Copy( SPAWN_OUTSIDE )
+		local fbis = {}
+
+		for i = 1, 5 do
+			table.insert( fbis, table.remove( players, math.random( #players ) ) )
+		end
+
+		--table.sort( mtfs, PlayerLevelSorter )
+
+		for i, v in ipairs( fbis ) do
+			local fbiroles = table.Copy( BREACH_ROLES.FBI.fbi.roles )
+			local selected
+
+			repeat
+				local role = table.remove( fbiroles, math.random( #fbiroles ) )
+				fbisinuse[role.name] = fbisinuse[role.name] or 0
+
+				if role.max == 0 or fbisinuse[role.name] < role.max then
+					if role.level <= v:GetLevel() then
+						if !role.customcheck or role.customcheck( v ) then
+							selected = role
+							break
+						end
+					end
+				end
+			until #fbiroles == 0
+
+			if !selected then
+				ErrorNoHalt( "Something went wrong! Error code: 001" )
+				selected = BREACH_ROLES.FBI.fbi.roles[1]
+			end
+
+			fbisinuse[selected.name] = fbisinuse[selected.name] + 1
+
+			if #fbispawns == 0 then fbispawns = table.Copy( SPAWN_GUARD ) end
+			local spawn = table.remove( fbispawns, math.random( #fbispawns ) )
+			for k, v in pairs( SPAWN_FBI_MONITORS ) do
+				local wep = ents.Create( "onp_monitor" )
+				if IsValid( wep ) then
+					wep:Spawn()
+					wep:SetPos( v.pos )
+					wep:SetAngles(v.ang)
+					WakeEntity( wep )
+				end
+			end
+			v:SendLua("RunConsoleCommand( 'intro_uiu' )")
+			v:SetupNormal()
+			v:ApplyRoleStats( selected )
+			v:SetPos( spawn )
+
+			print( "Assigning "..v:Nick().." to role: "..selected.name.." [UIU]" )
+		end
+
+	elseif change_sup == "cotsk" then
+	// COTSK
+		local cotsksinuse = {}
+		local cotskspawns = table.Copy( SPAWN_OUTSIDE )
+		local cotsks = {}
+
+		for i = 1, 5 do
+			table.insert( cotsks, table.remove( players, math.random( #players ) ) )
+		end
+
+		--table.sort( mtfs, PlayerLevelSorter )
+
+		for i, v in ipairs( cotsks ) do
+			local cotskroles = table.Copy( BREACH_ROLES.COTSK.cotsk.roles )
+			local selected
+
+			repeat
+				local role = table.remove( cotskroles, math.random( #cotskroles ) )
+				cotsksinuse[role.name] = cotsksinuse[role.name] or 0
+
+				if role.max == 0 or cotsksinuse[role.name] < role.max then
+					if role.level <= v:GetLevel() then
+						if !role.customcheck or role.customcheck( v ) then
+							selected = role
+							break
+						end
+					end
+				end
+			until #cotskroles == 0
+
+			if !selected then
+				ErrorNoHalt( "Something went wrong! Error code: 001" )
+				selected = BREACH_ROLES.COTSK.cotsk.roles[1]
+			end
+
+			cotsksinuse[selected.name] = cotsksinuse[selected.name] + 1
+
+			if #cotskspawns == 0 then cotskspawns = table.Copy( SPAWN_OUTSIDE ) end
+			local spawn = table.remove( cotskspawns, math.random( #cotskspawns ) )
+			v:SendLua("RunConsoleCommand( 'intro_cult' )")
+			v:SetupNormal()
+			v:ApplyRoleStats( selected )
+			v:SetPos( spawn )
+
+			print( "Assigning "..v:Nick().." to role: "..selected.name.." [COTSK]" )
+		end
+
+	end
 
 	end
 
@@ -931,296 +690,36 @@ function Use914( ent )
 	return true
 end
 
-function LockSCPDoors()
-
-	local scp_b_1 = Vector(8253, 826, 50) 
-	local scp_b_2 = Vector(5787, 1538, 51) 
-	local scp_b_3 = Vector(5235, 1540, 51) 
-	local scp_b_4 = Vector(4996, 3598, 49) 
-	local scp_b_5 = Vector(4249, 2257, 28) 
-	local scp_b_6 = Vector(3694, 389, 49) 
-	local scp_b_7 = Vector(6282, -3953, 279) 
-	local scp_b_8 = Vector(7584, -272, 64) 
-
-	local scp_item_1 = Vector(7700, -4140, 53) 
-	local scp_item_2 = Vector(7788, -3988, 53) 
-	local scp_item_3 = Vector(8113, -3921, 56) 
-	local scp_item_4 = Vector(8561, -3769, 55) 
-	local scp_item_5 = Vector(8405, -3682, 55) 
-	local scp_item_6 = Vector(8547, -1905, 53) 
-	local scp_item_7 = Vector(7132, -2114, 56) 
-	local scp_item_8 = Vector(6629, -2299, 56) 
-	local scp_item_9 = Vector(6715, -2114, 53) 
-	local scp_item_10 = Vector(6246, -1957, 55) 
-	local scp_item_11 = Vector(6314, -2459, 57) 
-
-		for k,ball in pairs(ents.FindInSphere((scp_item_1), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_2), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_3), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_4), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_5), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_6), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_7), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_8), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_9), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_10), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-			for k,ball in pairs(ents.FindInSphere((scp_item_11), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-
-	for k,ball in pairs(ents.FindInSphere((scp_b_1), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_2), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_3), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_4), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-	for k,ball in pairs(ents.FindInSphere((scp_b_5), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_6), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_7), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("lock") end
-          end
-    end
-
-end
-
-function D_class_open_door()
-
-	for k,box in pairs(ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) )) do
-          if IsValid(box) then
-		      if box:GetClass() == "func_door" then 
-			  	box:Fire("open") 
-			  end
-          end
-    end
-
-	for k,box in pairs(ents.FindInBox( Vector( 6256, -6260, 117 ), Vector( 6057, -4922, 310 ) )) do
-          if IsValid(box) then
-		      if box:GetClass() == "func_door" then 
-			  	box:Fire("open") 
-			  end
-          end
-    end
-
-end
---[[
-util.AddNetworkString("start_mog_intro")
-
-function startmogintro()
-
-	net.Start( "start_mog_intro" )
-	net.Broadcast()
-
-end
-]]--
 function OpenSCPDoors()
---[[
-    local entsinbox = ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) ) 
-    for k, v in ipairs( entsinbox ) do
-      if v:GetClass() == "func_button" then
-	  	v:Fire("Open")
-      end
-    end
-]]--
-
-	local scp_b_1 = Vector(8253, 826, 50) 
-	local scp_b_2 = Vector(5787, 1538, 51) 
-	local scp_b_3 = Vector(5235, 1540, 51) 
-	local scp_b_4 = Vector(4996, 3598, 49) 
-	local scp_b_5 = Vector(4249, 2257, 28) 
-	local scp_b_6 = Vector(3694, 389, 49) 
-	local scp_b_7 = Vector(6282, -3953, 279) 
-	local scp_b_8 = Vector(7584, -272, 64) 
-
-	local scp_item_1 = Vector(7700, -4140, 53) 
-	local scp_item_2 = Vector(7788, -3988, 53) 
-	local scp_item_3 = Vector(8113, -3921, 56) 
-	local scp_item_4 = Vector(8561, -3769, 55) 
-	local scp_item_5 = Vector(8405, -3682, 55) 
-	local scp_item_6 = Vector(8547, -1905, 53) 
-	local scp_item_7 = Vector(7132, -2114, 56) 
-	local scp_item_8 = Vector(6629, -2299, 56) 
-	local scp_item_9 = Vector(6715, -2114, 53) 
-	local scp_item_10 = Vector(6246, -1957, 55) 
-	local scp_item_11 = Vector(6314, -2459, 57) 
-
-	for k,ball in pairs(ents.FindInSphere((scp_item_1), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_2), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_3), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_4), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_5), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_6), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_7), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_8), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_9), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_10), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_item_11), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-          end
-    end
-
-	print("Ну все")
-		for k,ball in pairs(ents.FindInSphere((scp_b_1), 5)) do
-          if IsValid(ball) then
-		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_2), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_3), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_4), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_5), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_6), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_7), 5)) do
-          if IsValid(ball) then
-		  		      if ball:GetClass() == "func_button" then ball:Fire("unlock") end
-              if ball:GetClass() == "func_button" then ball:Fire("use") end
-          end
-    end
-		for k,ball in pairs(ents.FindInSphere((scp_b_8), 5)) do
-          if IsValid(ball) then
-              if ball:GetModel() == "models/next_breach/door_frame_sealed.mdl" then ball:Remove() end
-			  if ball:GetModel() == "models/next_breach/entrance_door.mdl" then ball:Remove() end
-			  if ball:GetModel() == "models/next_breach/light_cz_door.mdl" then ball:Remove() end
-          end
-    end
+	for k, v in pairs( ents.FindByClass( "func_door" ) ) do
+		for k0, v0 in pairs( POS_DOOR ) do
+			if ( v:GetPos() == v0 ) then
+				v:Fire( "unlock" )
+				v:Fire( "open" )
+			end
+		end
+	end
+	for k, v in pairs( ents.FindByClass( "func_button" ) ) do
+		for k0, v0 in pairs( POS_BUTTON ) do
+			if ( v:GetPos() == v0 ) then
+				v:Fire( "use" )
+			end
+		end
+	end
+	for k, v in pairs( ents.FindByClass( "func_rot_button" ) ) do
+		for k0, v0 in pairs( POS_ROT_BUTTON ) do
+			if ( v:GetPos() == v0 ) then
+				v:Fire( "use" )
+			end
+		end
+	end
 end
 
 function GetAlivePlayers()
 	local plys = {}
 	for k,v in pairs(player.GetAll()) do
 		if v:GTeam() != TEAM_SPEC then
-			if v:Alive() or v:GetNClass() == ROLES.ROLE_SCP076 then
+			if v:Alive() or v:GetRoleName() == role.SCP076 then
 				table.ForceInsert(plys, v)
 			end
 		end
@@ -1250,7 +749,7 @@ function BroadcastDetection( ply, tab )
 
 	for k, v in pairs( tab ) do
 		table.insert( info, {
-			name = v:GetNClass(),
+			name = v:GetRoleName(),
 			pos = v:GetPos() + v:OBBCenter()
 		} )
 	end
@@ -1261,7 +760,7 @@ function BroadcastDetection( ply, tab )
 end
 
 function GM:GetFallDamage( ply, speed )
-	return ( speed / 4 )
+	return ( speed / 6 )
 end
 
 function PlayerCount()
@@ -1281,58 +780,48 @@ function GetPlayer(nick)
 	return nil
 end
 
-function CreateSCPRAG(ply, inflictor, attacker, knockedout)
-	local team = ply:Team()
-	if ( team == TEAM_SCP && ply.DeathAnimation ) then
-		local SCPRagdoll = ents.Create( "base_gmodentity" )
-		SCPRagdoll:SetPos( ply:GetPos() )
-		SCPRagdoll:SetModel( ply:GetModel() )
-		SCPRagdoll:SetMaterial( ply:GetMaterial() )
-		SCPRagdoll:SetAngles( ply:GetAngles() )
-		SCPRagdoll:Spawn()
-		SCPRagdoll:SetPlaybackRate( 1 )
-		SCPRagdoll:SetSequence( ply.DeathAnimation )
-		SCPRagdoll.AutomaticFrameAdvance = true
-		SCPRagdoll.Think = function( self )
-			self:NextThink( CurTime() )
-			return true
+function CreateRagdollPL(victim, attacker, dmgtype)
+	if victim:GetGTeam() == TEAM_SPEC then return end
+	if not IsValid(victim) then return end
+
+	local rag = ents.Create("prop_ragdoll")
+	if not IsValid(rag) then return nil end
+
+	rag:SetPos(victim:GetPos())
+	rag:SetModel(victim:GetModel())
+	rag:SetAngles(victim:GetAngles())
+	rag:SetColor(victim:GetColor())
+
+	rag:Spawn()
+	rag:Activate()
+	
+	rag.Info = {}
+	rag.Info.CorpseID = rag:GetCreationID()
+	rag:SetNWInt( "CorpseID", rag.Info.CorpseID )
+	rag.Info.Victim = victim:Nick()
+	rag.Info.DamageType = dmgtype
+	rag.Info.Time = CurTime()
+	
+	local group = COLLISION_GROUP_DEBRIS_TRIGGER
+	rag:SetCollisionGroup(group)
+	timer.Simple( 1, function() if IsValid( rag ) then rag:CollisionRulesChanged() end end )
+	timer.Simple( 60, function() if IsValid( rag ) then rag:Remove() end end )
+	
+	local num = rag:GetPhysicsObjectCount()-1
+	local v = victim:GetVelocity() * 0.35
+	
+	for i=0, num do
+		local bone = rag:GetPhysicsObjectNum(i)
+		if IsValid(bone) then
+		local bp, ba = victim:GetBonePosition(rag:TranslatePhysBoneToBone(i))
+		if bp and ba then
+			bone:SetPos(bp)
+			bone:SetAngles(ba)
 		end
-
-		if ( !ply.DeathLoop ) then
-
-			timer.Simple( SCPRagdoll:SequenceDuration() - .1, function()
-				local SCPRagdoll2 = ents.Create( "prop_ragdoll" )
-				SCPRagdoll2:SetModel( SCPRagdoll:GetModel() )
-				SCPRagdoll2:SetPos( SCPRagdoll:GetPos() )
-				SCPRagdoll2:SetAngles( SCPRagdoll:GetAngles() )
-				SCPRagdoll2:SetMaterial( SCPRagdoll:GetMaterial() )
-				SCPRagdoll2:SetSequence( SCPRagdoll:GetSequence() )
-				SCPRagdoll2:SetCycle( SCPRagdoll:GetCycle() )
-				SCPRagdoll2:Spawn()
-
-				if ( SCPRagdoll2 && SCPRagdoll2:IsValid() ) then
-					SCPRagdoll2:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-					for i = 1, SCPRagdoll2:GetPhysicsObjectCount() do
-
-						local physicsObject = SCPRagdoll2:GetPhysicsObjectNum( i )
-						local boneIndex = SCPRagdoll2:TranslatePhysBoneToBone( i )
-						local position, angle = SCPRagdoll:GetBonePosition( boneIndex )
-
-						if ( physicsObject && physicsObject:IsValid() ) then
-							physicsObject:SetPos( position )
-							physicsObject:SetMass( 65 )
-							physicsObject:SetAngles( angle )
-
-						end
-					end
-				end
-				SCPRagdoll:Remove()
-			end)
+		bone:SetVelocity(v * 1.2)
 		end
-		return
 	end
 end
-
 
 function ServerSound( file, ent, filter )
 	ent = ent or game.GetWorld()
@@ -1468,7 +957,7 @@ function Recontain106( ply )
 
 	local scps = {}
 	for k, v in pairs( player.GetAll() ) do
-		if IsValid( v ) and v:GTeam() == TEAM_SCP and v:GetNClass() == ROLES.ROLE_SCP106 then
+		if IsValid( v ) and v:GTeam() == TEAM_SCP and v:GetRoleName() == role.SCP106 then
 			table.insert( scps, v )
 		end
 	end
@@ -1601,6 +1090,10 @@ end
 function WarheadDisabled( siren )
 	OMEGAEnabled = false
 	OMEGADoors = false
+
+	--if siren then
+		--siren:Stop()
+	--end
 	net.Start( "SendSound" )
 		net.WriteInt( 0, 2 )
 		net.WriteString( "warhead/siren.ogg" )
@@ -1639,3 +1132,136 @@ function DARK()
     BroadcastLua('render.RedownloadAllLightmaps(true)')
     BroadcastLua('RunConsoleCommand("mat_specular", 0)')
 end
+
+CreateConVar("sv_manualweaponpickup", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Is manual weapon pickup enabled?")
+CreateConVar("sv_manualweaponpickup_aim", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Must the player be aiming at the weapon?")
+CreateConVar("sv_manualweaponpickup_auto", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Holding use key picks up weapons automatically.")
+CreateConVar("sv_manualweaponpickup_autodraw", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Player will automatically draw a given weapon.")
+CreateConVar("sv_manualweaponpickup_weaponlimit", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "How many weapons a player can hold at once.  (0 = No Limit)")
+CreateConVar("sv_manualweaponpickup_weaponlimitswap", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Drop current weapon to pick up another if player is holding too many.")
+
+local clr_red = Color( 255, 0, 0 )
+local mply = FindMetaTable'Player'
+
+function mply:Give(classname)
+	local ent = ents.Create(classname)
+	if (!IsValid(ent)) then return end
+	ent:SetPos(self:GetPos())
+	ent.GiveTo = self
+	ent:Spawn()
+	timer.Simple(0.1, function() self:SelectWeapon(classname) end)
+end
+
+function mply:BreachGive(classname)
+	local ent = ents.Create(classname)
+	if (!IsValid(ent)) then return end
+	ent:SetPos(self:GetPos())
+	ent.GiveTo = self
+	ent:Spawn()
+	timer.Simple(0.1, function() self:SelectWeapon(classname) end)
+end
+mply._DropWeapon = mply.DropWeapon
+
+function mply:DropWeapon(weapon)
+	if (IsValid(weapon)) then
+		self:_DropWeapon(weapon)
+		weapon.GiveTo = nil
+	end
+end
+
+local function canCarryWeapon(pl, weapon)
+	local limit = GetConVar("sv_manualweaponpickup_weaponlimit"):GetInt()
+	if (limit != 0 && #pl:GetWeapons() >= limit) then
+		if (GetConVar("sv_manualweaponpickup_weaponlimitswap"):GetBool()) then
+			if (pl.PressedUse) then
+				pl.PressedUse = false
+				pl:DropWeapon(pl:GetActiveWeapon())
+				pl.DrawWeapon = weapon:GetClass()
+				timer.Simple(0.1, function() pl:SelectWeapon(pl.DrawWeapon) end)
+				return true
+			end
+		end
+		return false
+	end
+	return true
+end
+
+hook.Add("PlayerCanPickupWeapon", "ManualWeaponPickup_CanPickup", function(pl, ent, key)
+	if (pl.ManualWeaponPickupSpawn) then
+		if (CurTime() > pl.ManualWeaponPickupSpawn) then
+			if (IsValid(ent.GiveTo)) then
+				if (ent.GiveTo == pl) then
+					return true
+				end
+			end
+			if (GetConVar("sv_manualweaponpickup"):GetBool()) then
+				local tr = pl:GetEyeTrace()
+				local wepent = tr.Entity
+				if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( pl:GetPos() ) <= 6400 ) then
+					local ent_class = wepent:GetClass()
+				if (key == IN_USE) then
+					local trent = pl:GetEyeTrace().Entity
+                    if !pl:HasWeapon(trent:GetClass()) then
+					pl:BrProgressBar("l:progress_wait", 1, "nextoren/gui/icons/hand.png", wepent, false)
+					timer.Simple( 1, function()
+					pl:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
+					pl.PressedUse = true
+					end)
+				  end
+				end
+					if (GetConVar("sv_manualweaponpickup_aim"):GetBool()) then
+						if (pl:GetEyeTrace().Entity == ent) then
+							if (!GetConVar("sv_manualweaponpickup_auto"):GetBool()) then
+								if (pl.PressedUse) then
+									local c = canCarryWeapon(pl, ent)
+									pl.PressedUse = false
+									return c
+								else
+									return false
+								end
+							else
+								return canCarryWeapon(pl, ent)
+							end
+						else
+							return false
+						end
+					else
+						if (!GetConVar("sv_manualweaponpickup_auto"):GetBool()) then
+							if (pl.PressedUse) then
+								pl.PressedUse = false
+								return canCarryWeapon(pl, ent)
+							else
+								return false
+							end
+						else
+							return canCarryWeapon(pl, ent)
+						end
+					end
+				else
+					return false
+				end
+			end
+		end
+	end
+end)
+
+hook.Add("KeyPress", "ManualWeaponPickup_KeyPress", function(pl, key)
+	local tr = pl:GetEyeTrace()
+	local wepent = tr.Entity
+	if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( pl:GetPos() ) <= 6400 ) then
+	if (key == IN_USE) then
+		local trent = pl:GetEyeTrace().Entity
+		if (pl:GetMaxSlots() - pl:GetPrimaryWeaponAmount()) == 0 then pl:RXSENDNotify( "l:inventory_full" ) return end
+		if pl:HasWeapon(trent:GetClass()) then pl:RXSENDNotify( "У Вас уже есть этот предмет." ) return end
+		pl:BrProgressBar("l:progress_wait", 1, "nextoren/gui/icons/hand.png")
+		timer.Simple( 1, function()
+	    pl:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
+		pl.PressedUse = true
+		end)
+	end
+end
+end)
+
+hook.Add("PlayerSpawn", "ManualWeaponPickup_PlayerSpawn", function(pl)
+	pl.ManualWeaponPickupSpawn = CurTime()
+end)

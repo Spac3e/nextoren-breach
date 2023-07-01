@@ -1,1 +1,0 @@
-derma.DefineControl("bVGUI.BlankPanel", nil, {})

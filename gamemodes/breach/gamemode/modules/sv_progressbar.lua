@@ -29,6 +29,7 @@ function mply:BrProgressBar( name, time, icon, target, canmove, finishcallback, 
 end
 
 function mply:BrStopProgressBar()
+    self.PressedUse = false
     self:ConCommand("stopprogress")
     if self.ProgressBarData and isfunction(self.ProgressBarData.stopcallback) then
         self.ProgressBarData.stopcallback()

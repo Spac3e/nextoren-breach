@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ntf_cutscene.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -85,7 +85,7 @@ function ENT:Initialize()
 			v:SetMoveType(MOVETYPE_OBSERVER)
 
 			if v:GTeam() != TEAM_SCP then
-				v:Give("br_holster")
+				v:BreachGive("br_holster")
 				v:SelectWeapon("br_holster")
 			end
 
@@ -127,7 +127,7 @@ function ENT:Initialize()
 
 						ply:StopForcedAnimation()
 
-						ply:AddToStatistics("Summon", 895)
+						ply:AddToStatistics("l:cotsk_summon_bonus", 895)
 						ply:LevelBar()
 						ply:SetSpectator()
 	
@@ -186,7 +186,7 @@ function ENT:Initialize()
 					surface.PlaySound("nextoren/ending/nuke.mp3")
 					LocalPlayer().no_signal = true
 				else
-					Breach_EndRound("Scarlet King interrupt")
+					Breach_EndRound("l:roundend_scarletking")
 				end
 			end)
 		end)

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_checker.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -69,6 +69,7 @@ local Phrases = {
   [ TEAM_SCI ] = "ученый",
   [ TEAM_SPECIAL ] = "учёный",
   [ TEAM_DZ ] = "из неизвестной организации",
+  [ TEAM_USA ] = "из неизвестной организации",
   [ TEAM_CHAOS ] = "из неизвестной организации",
   [ TEAM_SECURITY ] = "из Службы Безопасности",
   [ TEAM_QRT ] = "из Отряда Быстрого Реагирования",
@@ -88,7 +89,7 @@ function SWEP:PrimaryAttack()
 
 	for _, v in ipairs( self.AlreadyChecked ) do
 
-		if ( v.name == tr.Entity:GetName() ) then
+		if ( v.name == tr.Entity:GetNamesurvivor() ) then
 
 			self.Owner:ConCommand( "say Я уже проверял этого человека, он "..v.phrase .. "." )
 
@@ -97,20 +98,25 @@ function SWEP:PrimaryAttack()
 
 	end
 
-  self.Owner:BrProgressBar( "Проверка класса...", 4, "nextoren/gui/icons/player_check.png", tr.Entity, true, function()
+  self.Owner:BrProgressBar( "l:checking_class", 4, "nextoren/gui/icons/player_check.png", tr.Entity, true, function()
 
 		local tr = self.Owner:GetEyeTrace()
 
 		if ( !( tr.Entity && tr.Entity:IsValid() ) ) then return end
 		
-		if ( tr.Entity:GTeam() == TEAM_CLASSD || tr.Entity:GTeam() == TEAM_CHAOS || tr.Entity:GTeam() == TEAM_DZ ) then
+		if ( tr.Entity:GTeam() == TEAM_CLASSD || tr.Entity:GTeam() == TEAM_CHAOS || tr.Entity:GTeam() == TEAM_DZ || tr.Entity:GTeam() == TEAM_USA ) then
 
-			self.Owner:AddToStatistics( "Support", 2 )
+			self.Owner:AddToStatistics( "l:checker_bonus", 100 )
 
 		end
 
-		self.AlreadyChecked[ #self.AlreadyChecked + 1 ] = { name = tr.Entity:GetName(), phrase = Phrases[ tr.Entity:GTeam() ] }
+  	self.AlreadyChecked[ #self.AlreadyChecked + 1 ] = { name = tr.Entity:GetNamesurvivor(), phrase = Phrases[ tr.Entity:GTeam() ] }
     self.Owner:ConCommand( "say Этот человек "..Phrases[ tr.Entity:GTeam() ] .. "." )
+
+    local t = tr.Entity:GTeam()
+    if t == TEAM_GOC or t == TEAM_CHAOS or t == TEAM_DZ then
+      self.Owner:CompleteAchievement("mtfagent")
+    end
 
   end )
 

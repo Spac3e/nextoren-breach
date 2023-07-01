@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/scarlet_cutscene.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -80,7 +80,7 @@ function ENT:Initialize()
 				AlphaWarheadBoomEffect()
 				timer.Simple(4.5, function()
 					 net.Start("New_SHAKYROUNDSTAT") 
-					    net.WriteString("Scarlet King interrupt")
+					    net.WriteString("l:roundend_scarletking")
 					    net.WriteFloat(27)
 					  net.Broadcast()
 				end)
@@ -90,7 +90,7 @@ function ENT:Initialize()
 				for i, v in pairs(player.GetAll()) do
 					v:ScreenFade(SCREENFADE.IN, Color(255,0,0,50), 4, 1)
 					if v:GTeam() == TEAM_COTSK then
-						v:AddToStatistics("Escape", 600)
+						v:AddToStatistics("l:escaped", 600)
 						v:LevelBar()
 						v:SetupNormal()
 						v:SetSpectator()

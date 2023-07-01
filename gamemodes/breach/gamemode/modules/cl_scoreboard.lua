@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_scoreboard.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 local surface = surface
 local draw = draw
 local math = math
@@ -92,11 +105,12 @@ function PANEL:Init()
   end
 
   self.cols = {}
-  self:AddColumn( "Ping" )
-  self:AddColumn( "Level" )
-  self:AddColumn( "Score" )
+  self:AddColumn( BREACH.TranslateString("l:scoreboard_ping") )
+  self:AddColumn( BREACH.TranslateString("l:scoreboard_level") )
+  self:AddColumn( BREACH.TranslateString("l:scoreboard_achievements") )
+  self:AddColumn( BREACH.TranslateString("l:scoreboard_score") )
 
-  local country = self:AddColumn( "Country" )
+  local country = self:AddColumn( BREACH.TranslateString("l:scoreboard_country") )
 
 
 
@@ -250,7 +264,7 @@ function PANEL:PerformLayout()
 
   surface.SetFont( "ScoreboardHeader" )
 
-  local hname = "VAULT Breach 2.6.0"
+  local hname = "RxSend Breach 2.6.0"
   local tw, _ = surface.GetTextSize( hname )
 
   while ( tw > hw ) do
@@ -260,7 +274,7 @@ function PANEL:PerformLayout()
 
   end
 
-  self.hostname:SetText( hname .. " < "..GetGlobalInt("RoundUntilRestart", 1).." Rounds left >" )
+  self.hostname:SetText( hname .. " < "..BREACH.TranslateString("l:scoreboard_rounds_left")..": "..GetGlobalInt("RoundUntilRestart", 1).." > " )
   self.hostdesc:SetText( "Stable Server" )
 
   local cy = 72 + 90
@@ -312,12 +326,12 @@ function PANEL:UpdateScoreboard( force )
     if ( !self.ply_groups[ GroupPos ] ) then
 
       local t = vgui.Create( "BrScoreGroup", self.ply_frame:GetCanvas() )
-      t:SetGroupInfo( v.name, GroupColor, GroupPos )
+      t:SetGroupInfo( BREACH.TranslateNonPrefixedString(v.name), GroupColor, GroupPos )
       self.ply_groups[ GroupPos ] = t
 
     else
 
-      self.ply_groups[ GroupPos ]:SetGroupInfo( v.name, GroupColor, GroupPos )
+      self.ply_groups[ GroupPos ]:SetGroupInfo( BREACH.TranslateNonPrefixedString(v.name), GroupColor, GroupPos )
 
     end
 
@@ -512,6 +526,7 @@ function PANEL:Init()
   self.cols = {}
   self:AddColumn( "Ping", function( ply ) return "" end )
   self:AddColumn( "Level", function( ply ) return ply.GetNLevel && ply:GetNLevel() || 0 end )
+  self:AddColumn( "Ach", function( ply ) return ply:GetAchievementsNum() || 0 end )
   self:AddColumn( "Rep", function( ply ) return math.Round(ply:GetElo(), 1) || 0 end )
 
   hook.Call( "BrScoreboardColumns", nil, self )
@@ -649,7 +664,7 @@ function PANEL:Paint()
 
     surface.SetDrawColor(color_white)
     surface.SetMaterial(BREACH.FLAGS[ply:GetNWString("country", "RU")])
-    surface.DrawTexturedRect(pingx-155, 3, 20, 15)
+    surface.DrawTexturedRect(pingx-199, 3, 20, 15)
 
     local ping = ply:Ping()
 
@@ -737,7 +752,7 @@ function PANEL:UpdatePlayerData()
 
   else
 
-    local surv_name = ply:GetName()
+    local surv_name = ply:GetNamesurvivor()
     if ( surv_name != "none" ) then
 
       self.nick:SetText( ply:Nick() .. " (" .. surv_name .. ")" )
@@ -754,6 +769,10 @@ function PANEL:UpdatePlayerData()
 
     self.rank:SetImage( "nextoren_hud/scoreboard/shield.png" )
 
+  elseif RXSEND_YOUTUBERS[ply:SteamID64()] then
+
+    self.rank:SetImage( "icon16/user_red.png" )
+
   elseif ply:IsSuperAdmin() then
     self.rank:SetImage( "nextoren_hud/scoreboard/user.png" )
 
@@ -766,7 +785,7 @@ function PANEL:UpdatePlayerData()
   self.nick:SizeToContents()
   self.nick:SetTextColor( ColorForPlayer( ply ) )
 
-  self.tag:SetText( GetLangRole( ply:GetNClass() ) )
+  self.tag:SetText( GetLangRole( ply:GetRoleName() ) )
 
   self:LayoutColumns()
 
@@ -936,6 +955,13 @@ function PANEL:DoRightClick()
     draw.DrawText(name, "HUDFont", 30, 2)
   end
 
+  if RXSEND_YOUTUBERS[menu.Player:SteamID64()] then
+    menu:AddOption( "YouTube Channel", function()
+      gui.OpenURL(RXSEND_YOUTUBERS[menu.Player:SteamID64()])
+      surface.PlaySound("buttons/button9.wav")
+    end):SetIcon("icon16/user_red.png")
+  end
+
   menu:AddSpacer()
 
   local CopyMenu = menu:AddSubMenu( "Copy" )
@@ -960,6 +986,15 @@ function PANEL:DoRightClick()
     surface.PlaySound( "buttons/button9.wav" )
 
   end ):SetIcon( "icon16/page_copy.png" )
+
+  if !menu.Player:IsBot() then
+    menu:AddOption( "Open Achievements", function()
+
+      OpenAchievementTab(menu.Player)
+      surface.PlaySound( "buttons/button9.wav" )
+
+    end ):SetIcon( "icon16/chart_bar.png" )
+  end
 
   menu:AddOption( "Open Steam Community URL", function()
 
@@ -1043,13 +1078,13 @@ function PANEL:Paint()
 
   local txt
 
-  if ( self.name == "Spectators" ) then
+  if ( self.name == BREACH.TranslateString("l:spectators") ) then
 
-    txt = self.name.. " ( "..GetLangRole( "Players" )..": " .. self.rowcount .. " )"
+    txt = self.name.. " ( "..BREACH.TranslateString("l:players")..": " .. self.rowcount .. " )"
 
   else
 
-    txt = self.name.. " ( "..GetLangRole( "Alive" )..": " .. self.rowcount .. " )"
+    txt = self.name.. " ( "..BREACH.TranslateString("l:alive")..": " .. self.rowcount .. " )"
 
   end
 

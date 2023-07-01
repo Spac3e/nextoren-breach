@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_638.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -61,7 +61,7 @@ SWEP.AbilityIcons = {
     ["Icon"] = "nextoren/gui/special_abilities/638/638_slow_scream.png",
     ["Abillity"] = nil
 
-  },]]
+  },
   {
 
     ["Name"] = "∞ Decibels",
@@ -73,7 +73,7 @@ SWEP.AbilityIcons = {
     ["Icon"] = "nextoren/gui/special_abilities/638/638_aoe_scream.png",
     ["Abillity"] = nil
 
-  },
+  },]]
 
 }
 
@@ -173,22 +173,57 @@ function SWEP:SecondaryAttack()
     trace.maxs = Vector( 12, 4, 32 )
     trace = util.TraceHull( trace )
 
-    local tr = trace.Entity
+    local users = ents.FindInSphere(self.Owner:GetPos(), 450)
 
-    if IsValid(tr) and tr:IsPlayer() then
-      if tr:GTeam() != TEAM_SCP and tr:GTeam() != TEAM_SPEC then
-        timer.Create("638_damage_"..tr:UniqueID(), 0.5, 4, function()
-          tr:TakeDamage(27, self.Owner, self.Owner:GetActiveWeapon())
-          local savename = tr:GetName()
-          tr:SetRunSpeed(tr:GetRunSpeed() - 30)
-          tr:SetWalkSpeed(tr:GetWalkSpeed() - 30)
-          timer.Simple(4.5, function()
-            if tr:GetName() == savename then
-              tr:SetRunSpeed(tr:GetRunSpeed() + 30)
-              tr:SetWalkSpeed(tr:GetWalkSpeed() + 30)
-            end
+    for _, tr in pairs(users) do
+      if IsValid(tr) and tr:IsPlayer() then
+        if tr:GTeam() != TEAM_SCP and tr:GTeam() != TEAM_SPEC then
+          tr:SetNWInt( "Custom_Sensitivity", .2 )
+
+              tr:ScreenFade( SCREENFADE.OUT, clr_gray, .2, 8 )
+              tr:ScreenFade( SCREENFADE.IN, ColorAlpha( color_white, 40 ), 1.9, .2 )
+              tr:ScreenFade( SCREENFADE.OUT, ColorAlpha( color_white, 30 ), 2.1, 2 )
+
+              net.Start( "ForcePlaySound" )
+
+                net.WriteString( "nextoren/others/player_breathing_knockout01.wav" )
+
+              net.Send( tr )
+
+              tr:SetDSP( 15, true )
+
+              timer.Simple( 4, function()
+
+                if ( tr && tr:IsValid() ) then
+
+                  tr:SetDSP( 0, true )
+
+                end
+
+              end )
+
+              timer.Simple( 5, function()
+
+                if ( tr && tr:IsValid() ) then
+
+                  tr:SetNWInt( "Custom_Sensitivity", -1 )
+
+                end
+
+              end )
+          timer.Create("638_damage_"..tr:UniqueID(), 0.5, 4, function()
+            tr:TakeDamage(15, self.Owner, self.Owner:GetActiveWeapon())
+            local savename = tr:GetNamesurvivor()
+            tr:SetRunSpeed(tr:GetRunSpeed() - 30)
+            tr:SetWalkSpeed(tr:GetWalkSpeed() - 30)
+            timer.Simple(4.5, function()
+              if tr:GetNamesurvivor() == savename then
+                tr:SetRunSpeed(tr:GetRunSpeed() + 30)
+                tr:SetWalkSpeed(tr:GetWalkSpeed() + 30)
+              end
+            end)
           end)
-        end)
+        end
       end
     end
   end
@@ -206,7 +241,7 @@ function SWEP:Deploy()
   --if SERVER then
     hook.Add( "PlayerButtonDown", "SCP638_Buttons", function( caller, button )
 
-      if ( caller:GetNClass() != "SCP638" ) then return end
+      if ( caller:GetRoleName() != "SCP638" ) then return end
 
       local wep = caller:GetActiveWeapon()
 
@@ -235,7 +270,7 @@ function SWEP:Deploy()
           caller:SetWalkSpeed(caller:GetRunSpeed())
           caller:EmitSound("nextoren/scp/638/high_decibel_scream.ogg", 125, 150, 1.25, CHAN_VOICE)
           timer.Create("SCP_638_RUN_ATTACK", 0.5, 11, function()
-            if caller:GetNClass() != "SCP638" then timer.Remove("SCP_638_RUN_ATTACK") return end
+            if caller:GetRoleName() != "SCP638" then timer.Remove("SCP_638_RUN_ATTACK") return end
 
             local plys = ents.FindInSphere(caller:GetPos(), 320)
 
@@ -256,66 +291,11 @@ function SWEP:Deploy()
             end
           end)
           timer.Simple(12, function()
-            if IsValid(caller) and caller:GetNClass() == "SCP638" then
+            if IsValid(caller) and caller:GetRoleName() == "SCP638" then
               caller:SetRunSpeed(saverun)
               caller:SetWalkSpeed(savewalk)
             end
           end)
-        end
-
-      elseif ( button == KEY_C && !( ( wep.AbilityIcons[ 4 ].CooldownTime || 0 ) > CurTime() ) ) then
-
-        wep.AbilityIcons[ 4 ].CooldownTime = CurTime() + wep.AbilityIcons[ 4 ].Cooldown
-
-        for i = 1, #wep.AbilityIcons do
-          if wep.AbilityIcons[i].CooldownTime < CurTime() or i < 3 then
-            wep.AbilityIcons[i].CooldownTime = CurTime() + 17
-          end
-        end
-
-        if SERVER then
-
-          self:SetNextPrimaryFire(CurTime() + 17)
-          self:SetNextSecondaryFire(CurTime() + 17)
-          net.Start("ThirdPersonCutscene")
-          net.WriteUInt(8, 4)
-          net.WriteBool(false)
-          net.Send(caller)
-          caller:SetMoveType(MOVETYPE_OBSERVER)
-          caller:SetNWAngle("ViewAngles", caller:GetAngles())
-          caller:EmitSound("nextoren/scp/638/high_decibel_scream.ogg", 1255, math.random(90,110), 1.25, CHAN_VOICE)
-
-          timer.Create("SCREAMER_DODAMAGE_"..caller:SteamID64(), 1, 8, function()
-
-            if caller:GetNClass() != "SCP638" then timer.Remove("SCREAMER_DODAMAGE_"..caller:SteamID64()) return end
-
-            local plys = ents.FindInSphere(caller:GetPos(), 320)
-
-            for i = 1, #plys do
-
-              local ply = plys[i]
-
-              if IsValid(ply) and ply:IsPlayer() then
-
-                if ply:GTeam() != TEAM_SCP and ply:GTeam() != TEAM_SPEC then
-
-                  ply:TakeDamage(25, caller, caller:GetActiveWeapon())
-
-                end
-
-              end
-
-            end
-
-          end)
-
-          caller:SetForcedAnimation("BoomerVar_squat", caller:SequenceDuration(caller:LookupSequence("BoomerVar_squat")), nil, function()
-            caller:SetForcedAnimation("Crouch_idle_upper_knife", 6.5, nil, function()
-              caller:SetNWAngle("ViewAngles", Angle(0,0,0))
-              caller:SetMoveType(MOVETYPE_WALK)
-            end)
-          end)
-
         end
 
       end
@@ -356,7 +336,7 @@ if ( SERVER ) then
 
       local player = players[ i ]
 
-      if ( player:GetNClass() == "SCP638" ) then
+      if ( player:GetRoleName() == "SCP638" ) then
 
         SCP638_exists = true
 

@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/breach_scp_base/cl_init.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 include( "shared.lua" )
 
@@ -97,13 +109,13 @@ function SWEP:ChooseAbility( table )
   BREACH.Abilities:SetPos( ScrW() / 2 - ( 32 * #BREACH.Abilities.AbilityIcons ), ScrH() / 1.2 )
   BREACH.Abilities:SetSize( 64 * #BREACH.Abilities.AbilityIcons, 64 )
   BREACH.Abilities:SetText( "" )
-  BREACH.Abilities.SCP_Name = LocalPlayer():GetNClass()
+  BREACH.Abilities.SCP_Name = LocalPlayer():GetRoleName()
   BREACH.Abilities.Alpha = 1
   BREACH.Abilities.Paint = function( self, w, h )
 
     local client = LocalPlayer()
 
-    if ( client:Health() <= 0 || client:GetNClass() != self.SCP_Name ) then
+    if ( client:Health() <= 0 || client:GetRoleName() != self.SCP_Name ) then
 
       self:Remove()
 
@@ -246,7 +258,7 @@ function SWEP:ChooseAbility( table )
 
       elseif ( BREACH.Abilities.AbilityIcons[ i ].Forbidden ) then
 
-        if ( client:GetNClass() != "SCP973" ) then return end
+        if ( client:GetRoleName() != "SCP973" ) then return end
 
         local primary_wep = client:GetWeapon( "weapon_scp_973" )
 

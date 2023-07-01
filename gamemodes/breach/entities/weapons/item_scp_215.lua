@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/item_scp_215.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 if ( CLIENT ) then
 
   SWEP.InvIcon = Material( "nextoren/gui/icons/scp/215.png" )
@@ -103,7 +116,8 @@ SWEP.Friendly_Teams =  {
     [ TEAM_SCI ] = true,
     [ TEAM_SPECIAL ] = true,
     [ TEAM_NTF ] = true,
-    [ TEAM_OBR ] = true
+    [ TEAM_OBR ] = true,
+    [ TEAM_CB ] = true,
 
   },
   [ TEAM_GUARD ] = {
@@ -112,7 +126,8 @@ SWEP.Friendly_Teams =  {
     [ TEAM_SPECIAL ] = true,
     [ TEAM_CB ] = true,
     [ TEAM_NTF ] = true,
-    [ TEAM_OBR ] = true
+    [ TEAM_OBR ] = true,
+    [ TEAM_GUARD ] = true
 
   },
   [ TEAM_CLASSD ] = {
@@ -133,11 +148,13 @@ SWEP.Friendly_Teams =  {
 
   [ TEAM_SPECIAL ] = {
 
-    [ TEAM_SCI ] = true,
+    [ TEAM_GUARD ] = true,
     [ TEAM_CB ] = true,
+    [ TEAM_SCI ] = true,
     [ TEAM_NTF ] = true,
     [ TEAM_OBR ] = true,
     [ TEAM_SPECIAL ] = true
+
 
   },
   [ TEAM_CHAOS ] = {

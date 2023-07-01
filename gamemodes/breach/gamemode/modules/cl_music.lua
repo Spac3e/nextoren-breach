@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/gamemode/modules/cl_music.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -285,7 +285,7 @@ function Chuj()
   for _, v in ipairs( ents.FindInSphere( client:GetPos(), 550 ) ) do
     if ( !v:IsPlayer() ) then continue end
     if ( v == client || v:GetNoDraw() || !v:GetModel():find( "/scp/" ) ) then continue end
-    if v:GetNClass() == SCP999 then continue end
+    if v:GetRoleName() == SCP999 then continue end
     if v:GTeam() != TEAM_SCP then continue end
     local tr = util.TraceLine({
       start = client:EyePos(),
@@ -533,7 +533,7 @@ local BreachNextThink = 0
 local thinkRate = 1 * .150
 
 
-function GM:Think()
+hook.Add("Think", "music_think", function()
 
   if ( CurTime() >= BreachNextThink ) then 
 
@@ -543,6 +543,6 @@ function GM:Think()
 
   end
 
-end
+end)
 
 

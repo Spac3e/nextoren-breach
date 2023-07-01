@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_scp_1033.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -55,7 +55,7 @@ local NextRandom = 0
 function SWEP:Equip()
 
   self.Owner:SetArmor( 200 )
-  self.Owner:setBottomMessage( "Now the ring protects you." )
+  self.Owner:setBottomMessage( "l:scp1033_protect" )
 
 end
 
@@ -67,7 +67,7 @@ function SWEP:Think()
 
   if ( SERVER && self.Owner && self.Owner:IsValid() && self.Owner:Armor() <= 0 ) then
 
-    self.Owner:setBottomMessage( "The ring has lost its power." )
+    self.Owner:setBottomMessage( "l:scp1033_depleted" )
     self:Remove()
 
   end

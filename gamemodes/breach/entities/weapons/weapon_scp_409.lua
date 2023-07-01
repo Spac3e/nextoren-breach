@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_409.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -40,7 +40,7 @@ end
 
 function SWEP:Equip()
 
-  if ( self.Owner && !self.Owner.Infected409 && !( self.Owner:HasHazmat() || self.Owner:GetNClass() == ROLES.ROLE_BIO ) ) then
+  if ( self.Owner && !self.Owner.Infected409 && !( self.Owner:HasHazmat() || self.Owner:GetRoleName() == role.ClassD_FartInhaler || self.Owner:GetRoleName() == role.MTF_Chem || self.Owner:GetRoleName() == role.DZ_Gas ) ) then
 
     self.Owner:Start409Infected()
 
@@ -52,7 +52,7 @@ function SWEP:Deploy()
 
   self:SendWeaponAnim( ACT_VM_DRAW )
 
-  if ( self.Owner && !self.Owner.Infected409 && !( self.Owner:HasHazmat() || self.Owner:GetNClass() == role.MTF_Chem || self.Owner:GetNClass() == role.DZ_Gas ) ) then
+  if ( self.Owner && !self.Owner.Infected409 && !( self.Owner:HasHazmat() || self.Owner:GetRoleName() == role.ClassD_FartInhaler || self.Owner:GetRoleName() == role.MTF_Chem || self.Owner:GetRoleName() == role.DZ_Gas ) ) then
 
     self.Owner:Start409Infected()
 
@@ -102,7 +102,7 @@ function SWEP:PrimaryAttack()
 
     if ( !ent:IsPlayer() ) then return end
 
-    if ent:GetNClass() == "SCP173" then return end
+    if ent:GetRoleName() == "SCP173" then return end
 
     if ( CLIENT ) then
 

@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_hud.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -95,7 +107,7 @@ end)
 
 local clr_green = Color( 0, 255, 0 )
 
-function NewProgressLevelBar( stats )
+function NewProgressLevelBar( stats, my_xp )
 
 	local client = LocalPlayer()
 	local total_exp = 0
@@ -111,7 +123,7 @@ function NewProgressLevelBar( stats )
 	--[[
 	if ( client:GetUserGroup() == "premium" ) then
 
-		stats[ #stats + 1 ] = { reason = "Premium bonus", value = maht.abs( total_exp ) }
+		stats[ #stats + 1 ] = { reason = "Premium bonus", value = math.abs( total_exp ) }
 
 	end]]
 
@@ -128,9 +140,9 @@ function NewProgressLevelBar( stats )
 	BREACH.Level.main_panel = vgui.Create( "DPanel" )
 	BREACH.Level.main_panel:SetSize( screenwidth * .6, 32 )
 	BREACH.Level.main_panel:SetPos( screenwidth * .2, screenheight * .85 )
-	BREACH.Level.main_panel.StartValue =  client:GetNEXP() || 0
-	BREACH.Level.main_panel.Value = client:GetNEXP() || 0
-    BREACH.Level.main_panel.DebugTime = CurTime() + 15
+	BREACH.Level.main_panel.StartValue =  my_xp || 0
+	BREACH.Level.main_panel.Value = my_xp || 0
+  BREACH.Level.main_panel.DebugTime = CurTime() + 15
 	BREACH.Level.main_panel.Maximum = client:RequiredEXP()
 	BREACH.Level.main_panel.Removing = false
 
@@ -203,7 +215,7 @@ function NewProgressLevelBar( stats )
 		local reason_width, reason_height = surface.GetTextSize( text_to_print )
 
 		BREACH.Level.EXP_Panel_Child[ i ]:SetPos( exp_panel_width / 2, exp_panel_height / 2 - reason_height / 2 )
-		BREACH.Level.EXP_Panel_Child[ i ]:SetSize( reason_width, reason_height )
+		BREACH.Level.EXP_Panel_Child[ i ]:SetSize( reason_width+1000, reason_height )
 		BREACH.Level.EXP_Panel_Child[ i ].CreationTime = RealTime() + 3
 
 		if ( i == 1 ) then
@@ -328,11 +340,11 @@ function NewProgressLevelBar( stats )
 
 				if ( self.ToReach ) then
 
-					surface.DrawText( self.Reason .. " " .. self.ToReach - BREACH.Level.main_panel.Value )
+					surface.DrawText( BREACH.TranslateString(self.Reason) .. " " .. self.ToReach - BREACH.Level.main_panel.Value )
 
 				else
 
-					surface.DrawText( self.Reason .. " " .. self.Value )
+					surface.DrawText( BREACH.TranslateString(self.Reason) .. " " .. self.Value )
 
 				end
 
@@ -340,11 +352,11 @@ function NewProgressLevelBar( stats )
 
 				if ( !self.ToReach ) then
 
-					surface.DrawText( self.Reason .. " " .. self.Value )
+					surface.DrawText( BREACH.TranslateString(self.Reason) .. " " .. self.Value )
 
 				else
 
-					surface.DrawText( self.Reason .. " " .. self.ToReach - BREACH.Level.main_panel.Value )
+					surface.DrawText( BREACH.TranslateString(self.Reason) .. " " .. self.ToReach - BREACH.Level.main_panel.Value )
 
 				end
 
@@ -355,7 +367,6 @@ function NewProgressLevelBar( stats )
 	end
 
 end
-concommand.Add("NewProgressLevelBar", NewProgressLevelBar)
 
 local banned_Teams = {
 
@@ -385,7 +396,7 @@ hook.Add("PreDrawOutlines", "CHAOS_SPY", function()
 	  	local ply = plys[i]
 
 	  	if ply == client then continue end
-	  	if ply:GetNClass() != ROLES.ROLE_SECURITYSPY then continue end
+	  	if ply:GetRoleName() != role.SECURITY_Spy then continue end
 	  	if ply:Health() < 0 then continue end
 
 	  	--if ply:GetPos():DistToSqr(cl_pos) > 25000 then continue end
@@ -408,7 +419,7 @@ hook.Add("HUDPaint", "DrawBoxInfoOnRagdoll", function()
   local client = LocalPlayer()
   local client_team = client:GTeam()
 
-  if ( banned_Teams[ client_team ] && client:GetNClass() != "SCP049" || client:Health() <= 0 ) then return end
+  if ( banned_Teams[ client_team ] && client:GetRoleName() != "SCP049" || client:Health() <= 0 ) then return end
 
 	local tr = client:GetEyeTrace()
 
@@ -457,28 +468,7 @@ hook.Add("HUDPaint", "DrawBoxInfoOnRagdoll", function()
 		outline.Add( tab, wepclr, OUTLINE_MODE_VISIBLE )
 
     local screenwidth, screenheight = ScrW(), ScrH()
-	local blur = Material("pp/blurscreen")
-	function draw.Blur(x, y, w, h)
-		local X, Y = 0,0
-	
-		surface.SetDrawColor(255,255,255)
-		surface.SetMaterial(blur)
-	
-		for i = 1, 5 do
-			blur:SetFloat("$blur", (i / 3) * (2))
-			blur:Recompute()
-	
-			render.UpdateScreenEffectTexture()
-	
-			render.SetScissorRect(x, y, x+w, y+h, true)
-				surface.DrawTexturedRect(X * -1, Y * -1, ScrW(), ScrH())
-			render.SetScissorRect(0, 0, 0, 0, false)
-		end
-	   
-	   --draw.RoundedBox(0,x,y,w,h, color)
-	   surface.SetDrawColor(0,0,0, 50) 
-	   surface.DrawOutlinedRect(x,y,w,h)
-	end
+
     local middle_w = screenwidth / 2
     local middle_h = screenheight / 2
 
@@ -489,39 +479,40 @@ hook.Add("HUDPaint", "DrawBoxInfoOnRagdoll", function()
 		surface.DrawTexturedRect( middle_w-175, middle_h-28, 350, 75)
 
 		local body_time = ent:GetNWInt("DiedWhen", false)
-		local minutes = "Невозможно определить время с момента смерти"
+		local minutes = BREACH.TranslateString("l:body_cant_determine_death_time")
 		if body_time then
 			local timesincedeath = os.time() - body_time
 			minutes = timesincedeath / 60
 
 			if minutes < 1 then
-				minutes = "Смерть наступила недавно"
+				minutes = BREACH.TranslateString("l:body_died_right_now")
 			else
 				minutes = math.Round(minutes)
 				local lastdigit = math.floor(minutes%10)
 				local realstring
 				if minutes >= 10 and minutes <= 20 or lastdigit > 4 then
-					realstring = " минут назад"
+					realstring = "  l:body_minutes_ago"
 				elseif lastdigit == 1 then
-					realstring = " минуту назад"
+					realstring = "  l:body_1minute_ago"
 				elseif lastdigit > 1 and lastdigit < 5 then
-					realstring = " минуты назад"
+					realstring = "  l:body_2to4minutes_ago"
 				end
 
-				minutes = "Смерть наступила "..math.Round(minutes)..realstring
+				minutes = BREACH.TranslateString("l:body_death_happened  "..math.Round(minutes)..realstring)
 			end
 		end
 
 		draw.SimpleTextOutlined( ent:GetNWString("SurvivorName", ""), "HUDFont", middle_w, screenheight / 2.5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
-    	draw.SimpleTextOutlined( ent:GetNWString("DeathReason1", "Причина смерти неизвестна"), "HUDFont", middle_w, screenheight / 1.95 + 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
-		draw.SimpleTextOutlined( ent:GetNWString("DeathReason2", ""), "HUDFont", middle_w, screenheight / 1.95 + 18, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
-		draw.SimpleText( string.upper(input.LookupBinding("+use")) or "+use", "HUDFont", middle_w + LCSpacing-5, middle_h - 15, green, 0, 1)
-		draw.SimpleTextOutlined( " - Обыскать", "HUDFont", middle_w + LCSpacing, middle_h - 15, color_white, 0, 1, 0.5, black)
+    	draw.SimpleTextOutlined(BREACH.TranslateString(ent:GetNWString("DeathReason1", "l:body_death_unknown")), "HUDFont", middle_w, screenheight / 1.95 + 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
+		draw.SimpleTextOutlined( BREACH.TranslateString(ent:GetNWString("DeathReason2", "")), "HUDFont", middle_w, screenheight / 1.95 + 18, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
+		draw.SimpleText( input.LookupBinding("+use") and string.upper(input.LookupBinding("+use")) or "+use", "HUDFont", middle_w + LCSpacing-5, middle_h - 15, green, 0, 1)
+		draw.SimpleTextOutlined( BREACH.TranslateString(" - l:body_search"), "HUDFont", middle_w + LCSpacing, middle_h - 15, color_white, 0, 1, 0.5, black)
 		draw.SimpleTextOutlined( minutes, "HUDFont", middle_w, middle_h, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 0.5, black)
 
 	end
 
 end)
+
 net.Receive("NTF_Intro", function()
 	--surface.PlaySound( "no_music/factions_spawn/ntfspawntheme2.wav" )
 
@@ -576,121 +567,6 @@ local Death_Desaturation_Intensity = 1
 local clr_blood = Color(102, 0, 0)
 local clr_red = Color(255, 0, 0)
 local clr_gray = Color( 198, 198, 198 )
-
-function CorpsedMessageEvak(msg)
-	--[[
-	alpha_color = 0
-	final_color = 255
-    hook.Add( "HUDPaint", "CorpsedMessage", function()
-		alpha_color = math.Approach(alpha_color, final_color, RealFrameTime() * 256)
-		if alpha_color == final_color then
-			if !timer.Exists("SetCorpsedMesage_Hold") then
-				timer.Create("SetCorpsedMesage_Hold", 2.5, 1, function()
-					final_color = 0
-				end)
-			end
-		end
-			if msg2 == false then
-        draw.SimpleText( msg3, "ScoreboardContent", ScrW() / 2, ScrH() / 2, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        draw.SimpleText( msg, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-       else
-       	draw.SimpleText( msg3, "ScoreboardContent", ScrW() / 2, ScrH() / 2, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        draw.SimpleText( msg2, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20, Color(col.r, col.g, col.b, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-        draw.SimpleText( msg, "ScoreboardContent", ScrW() / 2, ScrH() / 2-20-20, Color(102, 0, 0, alpha_color), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      end
-    end )
-
-	timer.Remove("SetCorpsedMessage_Disappear")
-	timer.Remove("SetCorpsedMesage_Hold")
-
-    timer.Create( "SetCorpsedMessage", 5, 1, function()
-        hook.Remove( "HUDPaint", "CorpsedMessage" )
-    end )
-	--]]
-
-	local col = gteams.GetColor(LocalPlayer():GTeam())
-
-	if !msg then
-		msg = "Evacuated"
-	end
-
-	local name
-
-	if LocalPlayer():GTeam() == TEAM_SCP then
-		name = "SUBJECT: "..GetLangRole(LocalPlayer():GetNClass())
-	else
-		name = "SUBJECT NAME: "..LocalPlayer():GetName().. " - "..LocalPlayer():GetNClass()
-	end
-
-	local CutSceneWindow = vgui.Create( "DPanel" )
-	CutSceneWindow:SetText( "" )
-	CutSceneWindow:SetSize( ScrW(), ScrH() )
-	CutSceneWindow.StartAlpha = 255
-	CutSceneWindow.StartTime = CurTime() + 8
-	CutSceneWindow.Name = name
-	CutSceneWindow.Status = "STATUS: "..msg
-	CutSceneWindow.Time = "LAST REPORT TIME: " .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. " ( Time after disaster: " .. string.ToMinutesSeconds( cltime ) .. " )"
-
-	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
-	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
-	local ExplodedString3 = string.Explode( "", CutSceneWindow.Name, true )
-
-	local str = ""
-	local str1 = ""
-	local str2 = ""
-
-	local count = 0
-	local count1 = 0
-	local count2 = 0
-
-	CutSceneWindow.Paint = function( self, w, h )
-
-		--draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_black, self.StartAlpha ) )
-
-		if ( CutSceneWindow.StartTime <= CurTime() + 6 ) then
-
-			if ( CutSceneWindow.StartTime <= CurTime() ) then
-
-				self.StartAlpha = math.Approach( self.StartAlpha, 0, RealFrameTime() * 80 )
-
-				if ( self.StartAlpha <= 0 ) then
-
-					FadeMusic( 10 )
-					self:Remove()
-
-				end
-
-			end
-
-			if ( ( self.NextSymbol || 0 ) <= SysTime() && count2 != #ExplodedString3 ) then
-
-				count2 = count2 + 1
-				self.NextSymbol = SysTime() + .03
-				str = str .. ExplodedString3[ count2 ]
-
-			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 != #ExplodedString2 ) then
-
-				count1 = count1 + 1
-				self.NextSymbol = SysTime() + .03
-				str1 = str1 .. ExplodedString2[ count1 ]
-
-			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 == #ExplodedString2 && count != #ExplodedString ) then
-
-				count = count + 1
-				self.NextSymbol = SysTime() + .03
-				str2 = str2 .. ExplodedString[ count ]
-
-			end
-
-			draw.SimpleTextOutlined( str, "TimeMisterFreeman", w / 2, h / 2, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( col, self.StartAlpha ) )
-			draw.SimpleTextOutlined( str1, "TimeMisterFreeman", w / 2, h / 2 + 32, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( clr_blood, self.StartAlpha ) )
-			draw.SimpleTextOutlined( str2, "TimeMisterFreeman", w / 2, h / 2 + 64, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, ColorAlpha( clr_blood, self.StartAlpha ) )
-
-		end
-
-	end
-end
-
 function CorpsedMessage(msg)
 	--[[
 	alpha_color = 0
@@ -725,15 +601,15 @@ function CorpsedMessage(msg)
 	local col = gteams.GetColor(LocalPlayer():GTeam())
 
 	if !msg then
-		msg = "KIA"
+		msg = BREACH.TranslateString("l:cutscene_kia")
 	end
 
 	local name
 
 	if LocalPlayer():GTeam() == TEAM_SCP then
-		name = "SUBJECT: "..GetLangRole(LocalPlayer():GetNClass())
+		name = BREACH.TranslateString("l:cutscene_subject ")..GetLangRole(LocalPlayer():GetRoleName())
 	else
-		name = "SUBJECT NAME: "..LocalPlayer():GetName().. " - "..LocalPlayer():GetNClass()
+		name = BREACH.TranslateString("l:cutscene_subject_name ")..LocalPlayer():GetNamesurvivor().. " - "..GetLangRole(LocalPlayer():GetRoleName())
 	end
 
 	local CutSceneWindow = vgui.Create( "DPanel" )
@@ -742,8 +618,8 @@ function CorpsedMessage(msg)
 	CutSceneWindow.StartAlpha = 255
 	CutSceneWindow.StartTime = CurTime() + 8
 	CutSceneWindow.Name = name
-	CutSceneWindow.Status = "STATUS: "..msg
-	CutSceneWindow.Time = "LAST REPORT TIME: " .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. " ( Time after disaster: " .. string.ToMinutesSeconds( cltime ) .. " )"
+	CutSceneWindow.Status = BREACH.TranslateString("l:cutscene_status ")..msg
+	CutSceneWindow.Time = BREACH.TranslateString("l:cutscene_last_report_time ") .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. BREACH.TranslateString" ( l:cutscene_time_after_disaster_for_last_report_time " .. string.ToMinutesSeconds( cltime ) .. " )"
 
 	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
 	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
@@ -804,6 +680,7 @@ function CorpsedMessage(msg)
 
 	end
 end
+
 local function FirstPerson_CutScene(ply, pos, angles, fov)
 	if Dead_Body then
 		local target = Dead_Body
@@ -1024,16 +901,15 @@ function Death_Scene( ply )
 	Dead_Body:SetCycle( 0 )
 	Dead_Body:SetPlaybackRate( 0.5 )
 	Dead_Body.AutomaticFrameAdvance = true
-	local cycle = 0
-
+	
 	Dead_Body.Think = function( self )
 	
 		self:NextThink( CurTime() )
-	
-		self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.4 ) )
-	
+
 		cycle = self:GetCycle()
 	
+		self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.4 ) )
+		
 		return true
 	
 	end
@@ -1143,8 +1019,8 @@ function Death_Scene( ply )
 		PlayMusic("sound/no_new_music/death_"..tostring(math.random(1,2))..".ogg", 0)
 	end)
 end
+net.Receive("Death_Scene", Death_Scene)
 
-net.Receive('Death_Scene', Death_Scene )
 function ANGLE:CalculateVectorDot( vec )
 
 
@@ -1426,7 +1302,19 @@ local notoutsidetab = {
 	["$pp_colour_addr"] = 0,
 	["$pp_colour_addg"] = 0,
 	["$pp_colour_addb"] = 0,
-	["$pp_colour_brightness"] = -0.04,
+	["$pp_colour_brightness"] = -0.01,
+	["$pp_colour_contrast"] = 0.75,
+	["$pp_colour_colour"] = 1,
+	["$pp_colour_mulr"] = 0,
+	["$pp_colour_mulg"] = 0,
+	["$pp_colour_mulb"] = 0
+}
+
+local evactab = {
+	["$pp_colour_addr"] = 0,
+	["$pp_colour_addg"] = 0,
+	["$pp_colour_addb"] = 0,
+	["$pp_colour_brightness"] = -0.01,
 	["$pp_colour_contrast"] = 0.7,
 	["$pp_colour_colour"] = 1.2,
 	["$pp_colour_mulr"] = 0,
@@ -1435,10 +1323,10 @@ local notoutsidetab = {
 }
 
 local forscptab = {
-	["$pp_colour_addr"] = 0.15,
+	["$pp_colour_addr"] = 0.05,
 	["$pp_colour_addg"] = 0,
 	["$pp_colour_addb"] = 0,
-	["$pp_colour_brightness"] = -0.005,
+	["$pp_colour_brightness"] = 0.01,
 	["$pp_colour_contrast"] = 1,
 	["$pp_colour_colour"] = 1,
 	["$pp_colour_mulr"] = 0,
@@ -1450,7 +1338,7 @@ local generatorsactivated = {
 	["$pp_colour_addr"] = 0,
 	["$pp_colour_addg"] = 0,
 	["$pp_colour_addb"] = 0,
-	["$pp_colour_brightness"] = 0,
+	["$pp_colour_brightness"] = 0.01,
 	["$pp_colour_contrast"] = 1.2,
 	["$pp_colour_colour"] = 1.2,
 	["$pp_colour_mulr"] = 0,
@@ -1469,7 +1357,6 @@ hook.Add( "RenderScreenspaceEffects", "ToytownEffect", function()
 
 	local client = LocalPlayer()
 	local tab2
-	if client:GTeam() != TEAM_SCP or !scpvision:GetBool() then
 		if OUTSIDE_BUFF and OUTSIDE_BUFF( client:GetPos() ) then
 
 			if GetGlobalBool("Scarlet_King_Scarlet_Skybox", false) then
@@ -1480,18 +1367,26 @@ hook.Add( "RenderScreenspaceEffects", "ToytownEffect", function()
 		else
 			tab2 = notoutsidetab
 		end
-	else
-		tab2 = forscptab
-	end
 
 	if BREACH["Round"] and BREACH["Round"]["GeneratorsActivated"] and !client:Outside() then
 		tab2 = generatorsactivated
 	end
 
+	if GetGlobalBool("Evacuation_HUD", false) and !client:Outside() then
+		tab2 = evactab
+		tab2["$pp_colour_addr"] = Pulsate(1.4) * 0.04
+		tab2["$pp_colour_colour"] = 1 + Pulsate(1.4) * 0.4
+	end
+
 	local oldcolor = tab2["$pp_colour_colour"]
 	if Dead_Body then
+		local tab2 = table.Copy(tab2)
     DrawToyTown(Death_Blur_Intensity, ScrH())
     tab2["$pp_colour_colour"] = Death_Desaturation_Intensity
+  end
+
+  if client:GTeam() == TEAM_SCP then
+  	tab2 = forscptab
   end
 
 	_DrawColorModify( tab2 )
@@ -1520,7 +1415,7 @@ local function BreachVersionIndicator()
 	local widthz = ScrW()
 	local heightz = ScrH()
 
-	--draw.SimpleText( clang.bugs, "ScoreboardContent", widthz * 0.5, heightz * 0.95, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	draw.SimpleText( clang.bugs, "ScoreboardContent", widthz * 0.5, heightz * 0.95, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	draw.SimpleText( clang.version_title, "ScoreboardContent", widthz * 0.5, heightz * 0.99, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	draw.SimpleText( clang.version, "ScoreboardContent", widthz * 0.5, heightz * 0.972, clr1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
@@ -1580,7 +1475,7 @@ local function ShowAbillityDesc( name, text, cooldown, x, y )
     surface.DrawLine( 0, nameheight * 1.15, w, nameheight * 1.15 )
     surface.DrawLine( 0, nameheight * 1.15 + 1, w, nameheight * 1.15 + 1 )
 
-    draw.SimpleText( "Cooldown: "..cooldown, "ChatFont_new", w - 8, 3, clrred2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+    draw.SimpleText( L"l:abilities_cd "..cooldown, "ChatFont_new", w - 8, 3, clrred2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 
   end
 
@@ -1591,10 +1486,10 @@ function DrawSpecialAbility( tbl )
 
 	local client = LocalPlayer()
 
-  client.AbilityKey = string.upper(input.GetKeyName(GetConVar("breach_config_useability"):GetInt()))
+	client.AbilityKey = string.upper(input.GetKeyName(GetConVar("breach_config_useability"):GetInt()))
   client.AbilityKeyCode = GetConVar("breach_config_useability"):GetInt()
 
-	local name, current_team = client:GetName(), client:GTeam()
+	local name, current_team = client:GetNamesurvivor(), client:GTeam()
 
 	if ( IsValid( BREACH.Abilities ) ) then
 
@@ -1629,7 +1524,7 @@ function DrawSpecialAbility( tbl )
 
 	BREACH.Abilities.HumanSpecial.Paint = function( self, w, h )
 
-		if ( client:Health() <= 0 || client:GTeam() == TEAM_SPEC || ( name != client:GetName() and client:GetNClass() != ROLES.ROLE_Killer ) || current_team != client:GTeam() ) then
+		if ( client:Health() <= 0 || client:GTeam() == TEAM_SPEC || ( name != client:GetNamesurvivor() and client:GetRoleName() != role.ClassD_Hitman ) || current_team != client:GTeam() ) then
 
 			client.SpecialTable = nil
 			BREACH.Abilities = nil
@@ -1726,7 +1621,7 @@ function DrawSpecialAbility( tbl )
 	BREACH.Abilities.HumanSpecialButt.Paint = function() end
 	BREACH.Abilities.HumanSpecialButt.OnCursorEntered = function()
 
-		ShowAbillityDesc( tbl.Name, tbl.Description, tostring( tbl.Cooldown ), gui.MouseX(), gui.MouseY() )
+		ShowAbillityDesc( L(tbl.Name), L(tbl.Description), tostring( tbl.Cooldown ), gui.MouseX(), gui.MouseY() )
 
 	end
 	BREACH.Abilities.HumanSpecialButt.OnCursorExited = function()
@@ -1783,7 +1678,7 @@ hook.Add( "HUDPaint", "Breach_DrawHUD", function()
 	if disablehud then return end
 	//cam.Start3D()
 	//	for id, ply in pairs( player.GetAll() ) do
-	//		if ply:GetNClass() == SCP966 then
+	//		if ply:GetRoleName() == SCP966 then
 	//			ply:DrawModel()
 	//		end
 	//	end
@@ -1891,7 +1786,7 @@ hook.Add( "HUDPaint", "Breach_DrawHUD", function()
 			end)
 		else
 			local client = LocalPlayer()
-			if (client:GTeam() != TEAM_QRT and client:GTeam() != TEAM_GUARD and ( client:GTeam() != TEAM_DZ or client:GetNClass() == ROLES.ROLE_DZDD ) and client:GTeam() != TEAM_NTF and ( client:GTeam() != TEAM_USA or client:GetNClass() == ROLES.ROLE_USASPY ) and client:GTeam() != TEAM_GRU and ( client:GTeam() != TEAM_GOC or client:GetNClass() == ROLES.ROLE_GOCSPY ) and client:GTeam() != TEAM_COTSK and ( client:GTeam() != TEAM_CHAOS or client:GetNClass() == ROLES.ROLE_SECURITYSPY )) or client:GetNClass() == ROLES.ROLE_NTFPILOT then
+			if (client:GTeam() != TEAM_QRT and client:GTeam() != TEAM_GUARD and ( client:GTeam() != TEAM_DZ or client:GetRoleName() == role.SCI_SpyDZ ) and client:GTeam() != TEAM_NTF and ( client:GTeam() != TEAM_USA or client:GetRoleName() == role.SCI_SpyUSA ) and client:GTeam() != TEAM_GRU and ( client:GTeam() != TEAM_GOC or client:GetRoleName() == role.ClassD_GOCSpy ) and client:GTeam() != TEAM_COTSK and ( client:GTeam() != TEAM_CHAOS or client:GetRoleName() == role.SECURITY_Spy )) or client:GetRoleName() == role.NTF_Pilot then
 				DrawNewRoleDesc()
 			end
 
@@ -2010,27 +1905,27 @@ hook.Add( "HUDPaint", "Breach_DrawHUD", function()
 	if hl < 0.06 then hl = 0.06 end
 	
 	local name = "None"
-	if not ply.GetNClass then
+	if not ply.GetRoleName then
 		player_manager.RunClass( ply, "SetupDataTables" )
 	elseif LocalPlayer():GTeam() != TEAM_SPEC then
-		name = GetLangRole(ply:GetNClass())
+		name = GetLangRole(ply:GetRoleName())
 		if ply:GTeam() == TEAM_CHAOS then
 			name = GetLangRole(CHAOS)
-			//if ply:GetNClass() == MTFNTF then
+			//if ply:GetRoleName() == MTFNTF then
 			//	name = "MTF NTF (SPY)"
 			//end
 		end
 	else
 		local obs = ply:GetObserverTarget()
 		if IsValid(obs) then
-			if obs.GetNClass != nil then
-				name = GetLangRole(obs:GetNClass())
+			if obs.GetRoleName != nil then
+				name = GetLangRole(obs:GetRoleName())
 				ply = obs
 			else
-				name = GetLangRole(ply:GetNClass())
+				name = GetLangRole(ply:GetRoleName())
 			end
 		else
-			name = GetLangRole(ply:GetNClass())
+			name = GetLangRole(ply:GetRoleName())
 		end
 	end
 	local color = gteams.GetColor( ply:GTeam() )
@@ -2209,7 +2104,7 @@ function SCP062de_Menu()
 
 		draw.DrawText( "ВЫБЕРИТЕ ОРУЖИЕ", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		if ( client:GetNClass() != "SCP062DE" || client:Health() <= 0 ) then
+		if ( client:GetRoleName() != "SCP062DE" || client:Health() <= 0 ) then
 
 			if ( IsValid( BREACH.Demote.MainPanel ) ) then
 
@@ -2283,6 +2178,352 @@ function SCP062de_Menu()
 
 			BREACH.Demote.MainPanel.Disclaimer:Remove()
 			BREACH.Demote.MainPanel:Remove()
+			gui.EnableScreenClicker( false )
+
+		end
+
+	end
+
+end
+
+BREACH.Demote = BREACH.Demote || {}
+
+local lockedcolor = Color(155,0,0)
+
+net.Receive("SelectRole_Sync", function(len)
+
+	local data = net.ReadTable()
+
+	if BREACH.Demote and BREACH.Demote.MainPanel then
+		BREACH.SelectedRoles = data
+	end	
+
+end)
+
+function Select_Supp_Menu(team)
+
+	local clrgray = Color( 198, 198, 198, 200 )
+	local gradient = Material( "vgui/gradient-r" )
+
+	if LocalPlayer():GetRoleName() == role.Chaos_Demo then
+		BREACH.Player:ChatPrint( true, true, "Так-как вы являетесь важной для фракции ролью, вы не можете сменить ее" )
+		return
+	end
+
+	BREACH.Player:ChatPrint( true, true, "Из-за того что ваш Премиум Статус активирован, вы можете сменить роль" )
+	BREACH.Player:ChatPrint( true, true, "Чтобы отменить выбор, нажмите \"BACKSPACE\"" )
+
+	local tab
+	if team == TEAM_GOC then
+		tab = BREACH_ROLES.GOC.goc.roles
+	elseif team == TEAM_CHAOS then
+		tab = BREACH_ROLES.CHAOS.chaos.roles
+	elseif team == TEAM_USA then
+		tab = BREACH_ROLES.FBI.fbi.roles
+	elseif team == TEAM_NTF then
+		tab = BREACH_ROLES.NTF.ntf.roles
+	elseif team == TEAM_DZ then
+		tab = BREACH_ROLES.DZ.dz.roles
+	end
+
+	Select_Menu_enabled = true
+
+	local weapons_table = {
+	}
+
+	for id, role in pairs(tab) do
+		weapons_table[#weapons_table + 1] = {name = GetLangRole(role.name), class = role.name, id = id, max = role.max, level = role.level}
+	end
+
+	BREACH.Demote.MainPanel = vgui.Create( "DPanel" )
+	BREACH.Demote.MainPanel:SetSize( 256, 262 )
+	BREACH.Demote.MainPanel:SetPos( ScrW() / 2 - 128, ScrH() / 2 - 128 )
+	BREACH.Demote.MainPanel:SetText( "" )
+	BREACH.Demote.MainPanel.DieTime = CurTime() + 65
+	BREACH.Demote.MainPanel.Paint = function( self, w, h )
+
+		if ( !vgui.CursorVisible() ) then
+
+			gui.EnableScreenClicker( true )
+
+		end
+
+		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
+		draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
+
+		if ( self.DieTime <= CurTime() ) then
+
+			self.Disclaimer:Remove()
+			self:Remove()
+
+			Select_Menu_enabled = false
+
+			gui.EnableScreenClicker( false )
+
+		end
+
+	end
+
+	BREACH.Demote.MainPanel.Disclaimer = vgui.Create( "DPanel" )
+	BREACH.Demote.MainPanel.Disclaimer:SetSize( 256, 64 )
+	BREACH.Demote.MainPanel.Disclaimer:SetPos( ScrW() / 2 - 128, ScrH() / 2 - ( 128 * 1.5 ) )
+	BREACH.Demote.MainPanel.Disclaimer:SetText( "" )
+
+	BREACH.Demote.MainPanel:SetAlpha(0)
+	BREACH.Demote.MainPanel:AlphaTo(255,0.5)
+
+	BREACH.Demote.MainPanel.Disclaimer:SetAlpha(0)
+	BREACH.Demote.MainPanel.Disclaimer:AlphaTo(255,1)
+
+	local client = LocalPlayer()
+
+	BREACH.Demote.MainPanel.Disclaimer.Paint = function( self, w, h )
+
+		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
+		draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
+
+		local plys = player.GetAll()
+
+		draw.DrawText( "СМЕНА РОЛИ", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+		if ( client:GTeam() != team || client:Health() <= 0 || input.IsKeyDown(KEY_BACKSPACE) ) then
+
+			if ( IsValid( BREACH.Demote.MainPanel ) ) then
+
+				BREACH.Demote.MainPanel:Remove()
+
+			end
+
+			self:Remove()
+
+			gui.EnableScreenClicker( false )
+
+		end
+
+	end
+
+	BREACH.Demote.ScrollPanel = vgui.Create( "DScrollPanel", BREACH.Demote.MainPanel )
+	BREACH.Demote.ScrollPanel:Dock( FILL )
+
+	for i = 1, #weapons_table do
+
+		if weapons_table[i].class == role.UIU_Clocker and LocalPlayer():GetRoleName() != role.UIU_Clocker then continue end
+
+		BREACH.Demote.Users = BREACH.Demote.ScrollPanel:Add( "DButton" )
+		BREACH.Demote.Users:SetText( "" )
+		BREACH.Demote.Users:Dock( TOP )
+		BREACH.Demote.Users:SetSize( 256, 64 )
+		BREACH.Demote.Users:DockMargin( 0, 0, 0, 2 )
+		BREACH.Demote.Users.CursorOnPanel = false
+		BREACH.Demote.Users.gradientalpha = 0
+
+		BREACH.Demote.Users.CharPanel = vgui.Create("DModelPanel", BREACH.Demote.Users)
+
+		local char = BREACH.Demote.Users.CharPanel
+
+		local ang = Angle(0,25,0)
+
+		function char:LayoutEntity(ent)
+			ent:SetAngles(ang)
+			return
+		end
+
+		function char:RunAnimation(ent)
+		end
+
+		BREACH.Demote.Users.CharPanel:SetSize(60,60)
+		BREACH.Demote.Users.CharPanel:SetPos(1,1)
+
+
+		-- load model
+		char:SetModel(tab[weapons_table[i].id].models[1])
+
+		char:SetDirectionalLight(BOX_TOP, Color(0, 0, 0))
+		char:SetDirectionalLight(BOX_FRONT, Color(15, 15, 15))
+		char:SetDirectionalLight(BOX_RIGHT, Color(255, 255, 255))
+		char:SetDirectionalLight(BOX_LEFT, Color(0, 0, 0))
+
+		local head
+
+		if tab[weapons_table[i].id].head then
+			head = char:BoneMerged(tab[weapons_table[i].id].head)
+		end
+
+		if tab[weapons_table[i].id].usehead then
+			head = char:BoneMerged("models/cultist/heads/male/male_head_1.mdl")
+		end
+
+		if tab[weapons_table[i].id].headgear then
+			head = char:BoneMerged(tab[weapons_table[i].id].headgear)
+		end
+
+		for bid = 0, 9 do
+			if tab[weapons_table[i].id]["bodygroup"..bid] then
+				char.Entity:SetBodygroup(bid, tab[weapons_table[i].id]["bodygroup"..bid])
+			end
+		end
+
+		if tab[weapons_table[i].id].models[1] then
+		end
+
+		char.Entity:SetSequence(char.Entity:LookupSequence("ragdoll"))
+
+		local eyepos = char.Entity:GetBonePosition(char.Entity:LookupBone("ValveBiped.Bip01_Head1"))
+
+		eyepos:Add(Vector(0, 0, 2))	-- Move up slightly
+
+		char:SetLookAt(eyepos)
+
+		char:SetFOV(35)
+
+		char:SetCamPos(eyepos-Vector(-25, 0, 0))	-- Move cam in front of eyes
+
+		char.Entity:SetEyeTarget(eyepos-Vector(-12, 0, 0))
+
+
+		local locked = false
+		local lockreason = 0
+
+		if LocalPlayer():GetNLevel() < weapons_table[i].level then
+			locked = true
+			lockreason = 1
+		end
+
+		local players = player.GetAll()
+
+		local amount = 0
+
+		BREACH.Demote.Users.Think = function( self )
+
+			if lockreason == 1 then return end
+
+			amount = 0
+
+			for id = 1, #players do
+
+				if players[id]:GetRoleName() == weapons_table[i].class then
+
+					amount = amount + 1
+
+				end
+
+			end
+
+			if BREACH.SelectedRoles then
+
+				for id, selected in pairs(BREACH.SelectedRoles) do
+
+					if id == weapons_table[i].id then
+
+						amount = amount + selected
+
+					end
+
+				end
+
+			end
+
+			if amount >= weapons_table[i].max then
+				locked = true
+				lockreason = 2
+			else
+				locked = false
+				lockreason = 0
+			end
+
+		end
+
+		BREACH.Demote.Users.Paint = function( self, w, h )
+
+			if locked then
+				self:SetCursor("arrow")
+			else
+				self:SetCursor("hand")
+			end
+
+			if ( self.CursorOnPanel and !locked ) then
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 255, FrameTime() * 64 )
+
+			else
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 0, FrameTime() * 128 )
+
+			end
+
+			draw.RoundedBox( 0, 0, 0, w, h, color_black )
+			draw.OutlinedBox( 0, 0, w, h, 1.5, clrgray )
+
+			surface.SetDrawColor( ColorAlpha( color_white, self.gradientalpha ) )
+			surface.SetMaterial( gradient )
+			surface.DrawTexturedRect( 0, 0, w, h )
+
+			if weapons_table[ i ].class == LocalPlayer():GetRoleName() then
+				draw.SimpleText( "CURRENT:", "BudgetLabel", w / 2, 15, ColorAlpha(color_white, 55), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( weapons_table[ i ].name, "HUDFont", w / 2, h / 2, ColorAlpha(color_white, 100), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			elseif !locked then
+				draw.SimpleText( weapons_table[ i ].name, "HUDFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			else
+				if lockreason == 1 then
+					draw.SimpleText( "REQUIRED LEVEL: "..weapons_table[ i ].level, "BudgetLabel", w / 2, 15, Color(50+Pulsate(1)*105,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				else
+					draw.SimpleText( "ALREADY TAKEN", "BudgetLabel", w / 2, 15, Color(50+Pulsate(1)*105,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				end
+				draw.SimpleText( weapons_table[ i ].name, "HUDFont", w / 2, h / 2, lockedcolor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			end
+
+		end
+
+		BREACH.Demote.Users.OnCursorEntered = function( self )
+
+			self.CursorOnPanel = true
+
+		end
+
+		BREACH.Demote.Users.OnCursorExited = function( self )
+
+			self.CursorOnPanel = false
+
+		end
+
+		BREACH.Demote.Users.DoClick = function( self )
+
+			if locked then return end
+
+			if weapons_table[ i ].class == LocalPlayer():GetRoleName() then
+				BREACH.Demote.MainPanel.Disclaimer:Remove()
+				BREACH.Demote.MainPanel:Remove()
+				gui.EnableScreenClicker( false )
+				return
+			end
+
+			amount = 0
+
+			for id = 1, #players do
+
+				if players[id]:GetRoleName() == weapons_table[i].class then
+
+					amount = amount + 1
+
+				end
+
+			end
+
+			if amount >= weapons_table[i].max then
+				return
+			end
+
+			net.Start( "changesupport" )
+
+				net.WriteUInt( weapons_table[ i ].id, 4 )
+
+			net.SendToServer()
+
+			timer.Simple(0.5, function() DrawNewRoleDesc() end)
+
+			BREACH.Demote.MainPanel.Disclaimer:Remove()
+			BREACH.Demote.MainPanel:Remove()
+
 			gui.EnableScreenClicker( false )
 
 		end
@@ -2368,7 +2609,7 @@ function Select_SCP_Menu(tab)
 
 			gui.EnableScreenClicker( false )
 
-			if client:GetNClass() == "SCP062DE" then
+			if client:GetRoleName() == "SCP062DE" then
 				SCP062de_Menu()
 			end
 
@@ -2433,7 +2674,7 @@ function Select_SCP_Menu(tab)
 			net.SendToServer()
 
 			timer.Simple(1, function()
-				if client:GetNClass() == "SCP062DE" then
+				if client:GetRoleName() == "SCP062DE" then
 					SCP062de_Menu()
 				end
 			end)
@@ -2480,3 +2721,233 @@ net.Receive( "ShowText", function( len )
 		LocalPlayer():PrintMessage( HUD_PRINTTALK, clang.votecancel )
 	end
 end)
+
+--[[ADMIN SYSTEM]]--[[
+
+surface.CreateFont( "cmd_showup_font_1", {
+	font = "Univers LT Std 47 Cn Lt",
+	size = 20,
+	weight = 0,
+	antialias = true,
+	extended = true,
+	shadow = false,
+	outline = false,
+  
+})
+
+surface.CreateFont( "cmd_showup_font_2", {
+	font = "Univers LT Std 47 Cn Lt",
+	size = 19,
+	weight = 0,
+	antialias = true,
+	extended = true,
+	italic = true,
+	shadow = false,
+	outline = false,
+  
+})
+
+local curtext = ""
+
+BREACH.COMMANDS = BREACH.COMMANDS
+
+function GetCmdList()
+
+	if debug_frequentupdate then
+		BREACH.COMMANDS = nil
+	end
+
+	if BREACH.COMMANDS == nil then
+
+		BREACH.COMMANDS = {}
+
+		for i, v in pairs(ulx.cmdsByCategory) do
+
+			for _, cmd in ipairs(v) do
+				if cmd.say_cmd then
+					for _, say_cmd in ipairs(cmd.say_cmd) do
+						BREACH.COMMANDS[#BREACH.COMMANDS + 1] = {
+							say_cmd = say_cmd,
+							category = cmd.category,
+							args = {}
+						}
+
+						for _, arg in ipairs(cmd.args) do
+							local type = "NONE"
+
+							if arg.type == ULib.cmds.PlayerArg then
+								type = "PlayerArg"
+							elseif arg.type == ULib.cmds.PlayersArg then
+								type = "PlayersArg"
+							elseif arg.type == ULib.cmds.NumArg and table.HasValue(arg, ULib.cmds.allowTimeString) then
+								type = "TimeArg"
+							elseif arg.type == ULib.cmds.NumArg then
+								type = "NumArg"
+							elseif arg.type == ULib.cmds.BoolArg then
+								type = "BoolArg"
+							elseif arg.type == ULib.cmds.StringArg then
+								type = "StringArg"
+							elseif arg.type == ULib.cmds.BaseArg then
+								type = "BaseArg"
+							elseif arg.type == ULib.cmds.CallingPlayerArg then
+								continue
+							end
+
+							local argtab = {
+								type = type,
+								istime = table.HasValue(arg, ULib.cmds.allowTimeString),
+								min = arg.min,
+								max = arg.max,
+								optional = table.HasValue(arg, ULib.cmds.optional),
+								hint = arg.hint,
+							}
+
+							BREACH.COMMANDS[#BREACH.COMMANDS].args[#BREACH.COMMANDS[#BREACH.COMMANDS].args + 1] = argtab
+
+						end
+					end
+				end
+			end
+
+		end
+
+	end
+
+	return BREACH.COMMANDS
+
+end
+
+local updatetext = ""
+
+hook.Add("ChatTextChanged", "cmds_handletext", function(text)
+	curtext = text
+	if updatetext != "" then
+		if updatetext == curtext then return end
+		return updatetext
+	end
+end)
+
+local cmd_clr_neutral = color_white
+local cmd_clr_right = Color(0, 204, 45, 255)
+local cmd_clr_wrong = Color(255, 102, 102,200)
+local cmd_clr_shadow = Color(0,0,0, 125)
+
+hook.Remove("HUDPaint", "cmds_showup")
+
+hook.Add("DrawOverlay", "cmds_showup", function()
+
+	if !curtext:StartWith("!") or curtext == "!" then return end
+
+	if !BREACH.COMMANDS then
+		GetCmdList()
+		return
+	end
+
+	if input.IsKeyDown(KEY_TAB) then
+		updatetext = "TEST"
+		return
+	end
+
+	local x, y = chat.GetChatBoxPos()
+	local w, h = chat.GetChatBoxSize()
+
+	local errorin = 0
+
+	local splittext = string.Explode(" ", curtext, false)
+
+	x = x + 10
+
+	y = y + h + 5
+
+	--draw.DrawText(string text, string font = DermaDefault, number x = 0, number y = 0, table color = Color( 255, 255, 255, 255 ), number xAlign = TEXT_ALIGN_LEFT)
+
+	local w_offset = 0
+	local w_offset_prev = 0
+
+	local cmd_clr = cmd_clr_neutral
+	local completes_clr = cmd_clr_neutral
+	local helptext_clr = cmd_clr_neutral
+
+	local helptext = ""
+
+	local completes = {}
+
+	local lastid = 0
+
+	for i = 1, #splittext do
+
+			lastid = i
+
+			surface.SetFont("cmd_showup_font_1")
+			local the_w = surface.GetTextSize(splittext[i].." ")
+
+			local color = cmd_clr
+			local haveerror = false
+
+			if i == 1 then
+				local cmdsfound = {}
+				for cd = 1, #BREACH.COMMANDS do
+					local cmd = BREACH.COMMANDS[cd]
+					if cmd.say_cmd:StartWith(splittext[1]) then
+						cmdsfound[#cmdsfound + 1] = cmd.say_cmd
+						completes[i] = cmdsfound
+						if #cmdsfound >= 12 then break end
+					end
+				end
+
+				helptext = ""
+			end
+
+			local foundcmd = false
+
+			if i == 1 then
+				local foundcmd = false
+				for cmdiu = 1, #BREACH.COMMANDS do
+					local cmd = BREACH.COMMANDS[cmdiu]
+					if cmd.say_cmd == splittext[1] then
+						foundcmd = true
+						break
+					end
+				end
+			end
+
+			if completes[i] and #completes[i] > 0 then
+				if #completes[i] == 1 then
+					completes_clr = cmd_clr_right
+				else
+					completes_clr = color_white
+				end
+			else
+				if i == 1 or !foundcmd then
+					haveerror = true
+					helptext_clr = cmd_clr_wrong
+					helptext = "No command found!"
+				end
+			end
+
+			if haveerror then
+				color = cmd_clr_wrong
+			end
+
+			draw.DrawText(splittext[i], "cmd_showup_font_1", x+2+w_offset, y+2, cmd_clr_shadow, TEXT_ALIGN_TOP)
+			draw.DrawText(splittext[i], "cmd_showup_font_1", x+w_offset, y, color, TEXT_ALIGN_TOP)
+
+			print(w_offset)
+
+			w_offset_prev = w_offset
+			w_offset = w_offset + the_w
+
+		end
+
+		if completes[lastid] then
+			for id = 1, #completes[lastid] do
+				draw.DrawText(completes[lastid][id], "cmd_showup_font_2", x+w_offset_prev, y+30+(id-1)*20, completes_clr, TEXT_ALIGN_TOP)
+			end
+		end
+
+		if helptext != "" then
+				--draw.DrawText(helptext, "cmd_showup_font_1", x+2+w_offset, y+32, cmd_clr_shadow, TEXT_ALIGN_TOP)
+			draw.DrawText(helptext, "cmd_showup_font_2", x, y+30, helptext_clr, TEXT_ALIGN_TOP)
+		end
+
+end)]]

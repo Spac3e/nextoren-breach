@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/sh_particles.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local RunConsoleCommand = RunConsoleCommand;
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -17,6 +29,13 @@ local DeriveGamemode = DeriveGamemode;
 local util = util
 local net = net
 local player = player
+BREACH.ParticlesPrecached = BREACH.ParticlesPrecached or false
+
+if BREACH.ParticlesPrecached then
+  return
+end
+
+BREACH.ParticlesPrecached = true
 
 --[[Particles]]--
 game.AddParticles( "particles/paect_fx.pcf" );
@@ -30,6 +49,7 @@ game.AddParticles( "particles/weapon_fx.pcf" );
 game.AddParticles( "particles/rev_portals.pcf" )
 game.AddParticles( "particles/environment_fx.pcf")
 game.AddParticles( "particles/blood_impact.pcf" )
+game.AddParticles( "particles/blood_impact_1.pcf" )
 game.AddParticles( "particles/neuro_gore.pcf")
 game.AddParticles( "particles/fire_fx.pcf" )
 game.AddParticles( "particles/gen_dest_fx.pcf" )
@@ -44,6 +64,7 @@ game.AddParticles( "particles/mephistopheles.pcf" )
 game.AddParticles( "particles/raygun.pcf" )
 game.AddParticles( "particles/boomer_fx.pcf" )
 
+PrecacheParticleSystem( "blood_advisor_puncture_withdraw" )
 PrecacheParticleSystem( "dustwave_tracer" );
 PrecacheParticleSystem( "vman_nuke" );
 PrecacheParticleSystem( "engSmokeB_rev" );
@@ -81,6 +102,7 @@ PrecacheParticleSystem( "gas_explosion_main" )
 
   PrecacheParticleSystem( "mr_portal_1a_ff" )
   PrecacheParticleSystem( "mr_portal_1a" )
+  PrecacheParticleSystem( "mr_portal_1a_fg" )
 
 ----
 -- [[ Scarlet King Effects ]] --
@@ -101,11 +123,13 @@ PrecacheParticleSystem( "gas_explosion_main" )
   PrecacheParticleSystem( "death_evil6" ) -- bottom
 
 ----
-
+ 
 -- [[ DZ ]] --
 
   PrecacheParticleSystem( "portal1_green" )
   PrecacheParticleSystem( "portal4_green" )
+  PrecacheParticleSystem( "mr_portal_2a" )
+  PrecacheParticleSystem( "mr_portal_2a_fg" )
 
 ----
 
@@ -192,6 +216,7 @@ PrecacheParticleSystem( "fire_small_03" )
 
   PrecacheParticleSystem( "muzzleflash_shotgun" )
   PrecacheParticleSystem( "muzzleflash_shotgun_npc" )
+  PrecacheParticleSystem( "muzzleflash_smg_npc" )
   PrecacheParticleSystem( "muzzleflash_suppressed" )
   PrecacheParticleSystem( "muzzleflash_sniper_npc" )
   PrecacheParticleSystem( "muzzleflash_pistol_npc" )

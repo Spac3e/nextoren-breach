@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_973.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -124,7 +124,7 @@ function SWEP:Deploy_Rage()
 
   if ( SERVER ) then
 
-    self.Owner:Give( "weapon_scp_973_rage" )
+    self.Owner:BreachGive( "weapon_scp_973_rage" )
 
   end
 
@@ -227,7 +227,7 @@ function SWEP:Deploy_Shotgun()
 
   if ( SERVER ) then
 
-    self.Owner:Give( "cw_kk_scp_973" )
+    self.Owner:BreachGive( "cw_kk_scp_973" )
 
   end
 
@@ -319,7 +319,7 @@ function SWEP:Deploy_Revolver()
 
   if ( SERVER ) then
 
-    self.Owner:Give( "cw_kk_scp_973_pistol" )
+    self.Owner:BreachGive( "cw_kk_scp_973_pistol" )
 
     self.Owner:SetAmmo(0, "Pistol")
 
@@ -536,7 +536,7 @@ function SWEP:Deploy()
 
   hook.Add( "PlayerButtonDown", "RageButton", function( player, butt )
 
-    if ( player:GetNClass() == "SCP973" ) then
+    if ( player:GetRoleName() == "SCP973" ) then
 
       local wep = player:GetActiveWeapon()
 
@@ -771,7 +771,7 @@ function SWEP:Think()
 
     self.Tip_Sended = true
 
-    BREACH.Player:ChatPrint( true, true, "Теперь Вы можете впасть в исступление с помощью клавиши \"T\"" )
+    BREACH.Player:ChatPrint( true, true, "l:scp973_frenzy" )
 
   end
 

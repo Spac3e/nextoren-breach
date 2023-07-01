@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_hud_new.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -37,6 +49,17 @@ function draw.OutlinedBox( x, y, w, h, thickness, clr )
 	surface.DrawRect( x + w - thickness, y + thickness, thickness, h - thickness * 2 )
 end
 
+
+hook.Add("HUDPaint", "breachfunnycrosshair", function()
+
+	if LocalPlayer():IsSuperAdmin() then
+		draw.RoundedBox(15, ScrW()/2-2, ScrH()/2-2, 4, 4, color_white)
+	else
+		hook.Remove("HUDPaint", "breachfunnycrosshair")
+	end
+
+end)
+
 local TeamIcons = {
 
 	[ TEAM_CLASSD ] = { mat = Material( "nextoren/gui/roles_icon/class_d.png" ) },
@@ -62,16 +85,17 @@ function GetActivePlayers()
 		if IsValid( v ) then
 			if v.ActivePlayer == nil then
 				v.ActivePlayer = true
-				v:SetNActive( true )
+				if v.SetNActive then v:SetNActive( true ) end
 			end
 
-			if v.ActivePlayer == true then
+			if v.ActivePlayer == true and v:GetNWBool("Player_IsPlaying", false) then
 				table.ForceInsert(tab, v)
 			end
 		end
 	end
 	return tab
 end
+
 surface.CreateFont( "SpectatorTimer", {
 	font = "Conduit ITC",
 	size = 28,
@@ -92,13 +116,7 @@ surface.CreateFont( "SpectatorTimer", {
 function GM:HUDPaint()
 
   local client = LocalPlayer()
-  --[[
-  if ( client:Health() <= 0 ) then
 
-    BREACH.EF.DrawDead();
-
-  end
-  --]]
   local current_team = LocalPlayer():GTeam()
   local screenwidth = ScrW()
   local screenheight = ScrH()
@@ -161,8 +179,8 @@ function GM:HUDPaint()
 				local screenheight = ScrH()
 
 				draw.DrawText( #GetActivePlayers() .. " players ready to go", "LZTextSmall", middle_screen, screenheight * .15, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-				local ltime = 1020
-				if #GetActivePlayers() >= 20 then ltime = 1020 end
+				local ltime = 720
+				if #GetActivePlayers() >= 20 then ltime = 840 end
 				draw.DrawText( "Current round time: " .. string.ToMinutesSeconds( ltime ), "LZTextSmall", middle_screen, screenheight * .18, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				draw.DrawText( "Round will begin in " .. time_left, "LZText", middle_screen, screenheight * .26, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
@@ -503,6 +521,8 @@ surface.CreateFont( "Buba2", {
 
 function CreateKillFeed(data)
 
+	if !GetConVar("breach_config_killfeed"):GetBool() then return end
+
 	if !IsValid(KILLFEED_UI) then
 
 		KILLFEED_UI = vgui.Create("DPanel")
@@ -572,6 +592,7 @@ function CreateKillFeed(data)
 	for i = 1, #data do
 		local v = data[i]
 		if isstring(v) then
+			v = L(GetLangRole(v))
 			local my_w = surface.GetTextSize(v)
 			local text = vgui.Create("DPanel", text_gui)
 			text:SetSize(my_w, t_h)
@@ -617,12 +638,12 @@ local function UIU_Ending( complete )
 
 	if ( complete ) then
 
-		status = "Mission accomplished"
+		status = L"l:ending_mission_complete"
 		PlayMusic( "sound/no_music/misc/uiu_mission_complete.ogg", 1 )
 
 	else
 
-		status = "Mission failed"
+		status = L"l:ending_mission_failed"
 		PlayMusic( "sound/no_music/misc/uiu_mission_failed.ogg", 1 )
 
 	end
@@ -633,12 +654,12 @@ local function UIU_Ending( complete )
 
 	client.Ending_window = vgui.Create( "DPanel" )
 	client.Ending_window:SetSize( screenwidth, screenheight )
-	client.Ending_window.Name = "SUBJECT: " .. client:GetName()
-	if client:GetNClass() == "UIU Spy" then
-		client.Ending_window.Name = client.Ending_window.Name..", The Undercover agent"
+	client.Ending_window.Name = L"l:cutscene_subject " .. client:GetNamesurvivor()
+	if client:GetRoleName() == "UIU Spy" then
+		client.Ending_window.Name = client.Ending_window.Name..L", l:cutscene_undercover_agent"
 	end
 	client.Ending_window.StartTime = CurTime()
-	client.Ending_window.Status = "STATUS: " .. status
+	client.Ending_window.Status = L"l:cutscene_status " .. status
 	client.Ending_window.Icon_Alpha = 0
 
 	local screenmiddle_w, screenmiddle_h = screenwidth / 2, screenheight / 2
@@ -704,6 +725,7 @@ local function UIU_Ending( complete )
 	end
 
 end
+net.Receive("UIU_Ending", UIU_Ending)
 
 local goc_icon = Material( "nextoren/gui/roles_icon/goc.png" )
 local goc_clr = Color( 0, 198, 198 )
@@ -725,9 +747,9 @@ function GOCStart()
 	CutSceneWindow:SetSize( ScrW(), ScrH() )
 	CutSceneWindow.StartAlpha = 255
 	CutSceneWindow.StartTime = CurTime() + 24.2
-	CutSceneWindow.Name = "SUBJECT NAME: " .. client:GetName()
-	CutSceneWindow.Status = "OBJECTIVE: Disaster relief"
-	CutSceneWindow.Time = "TIME AFTER DISASTER: "..string.ToMinutesSeconds( GetRoundTime() - cltime )
+	CutSceneWindow.Name = BREACH.TranslateString("l:cutscene_subject_name ") .. client:GetNamesurvivor()
+	CutSceneWindow.Status = BREACH.TranslateString("l:cutscene_objective l:cutscene_disaster_relief")
+	CutSceneWindow.Time = BREACH.TranslateString("l:cutscene_time_after_disaster ")..string.ToMinutesSeconds( GetRoundTime() - cltime )
 
 	local ExplodedString3 = string.Explode( "", CutSceneWindow.Time, true )
 	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
@@ -799,6 +821,7 @@ function GOCStart()
 	end
 
 end
+
 concommand.Add("intro_goc", GOCStart)
 local clr_text = Color( 180, 0, 0, 210 )
 local onp_icon = TeamIcons[ TEAM_USA ].mat
@@ -825,8 +848,8 @@ function ONPStart()
 	client.Faction_intro = vgui.Create( "DPanel" )
 	client.Faction_intro:SetSize( ScrW(), ScrH() )
 	client.Faction_intro.StartTime = CurTime() + 2
-	client.Faction_intro.Name = "SUBJECT NAME: " .. client:GetName()
-	client.Faction_intro.Time = "TIME AFTER DISASTER: " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
+	client.Faction_intro.Name = BREACH.TranslateString"l:cutscene_subject_name " .. client:GetNamesurvivor()
+	client.Faction_intro.Time = BREACH.TranslateString"l:cutscene_time_after_disaster " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
 
 	local name_string_table = string.Explode( "", client.Faction_intro.Name, true )
 	local time_string_table = string.Explode( "", client.Faction_intro.Time )
@@ -904,7 +927,7 @@ function ONPStart()
 	end
 
 end
-concommand.Add("intro_onp", ONPStart)
+concommand.Add("intro_uiu", ONPStart)
 
 local dz_icon = TeamIcons[ TEAM_DZ ].mat
 
@@ -932,9 +955,9 @@ function SHStart()
 	client.Faction_intro = vgui.Create( "DPanel" )
 	client.Faction_intro:SetSize( ScrW(), ScrH() )
 	client.Faction_intro.StartTime = CurTime() + 25
-	client.Faction_intro.Name = "SUBJECT NAME: " .. client:GetName()
-	client.Faction_intro.Status = "OBJECTIVE: SCP Rescue"
-	client.Faction_intro.Time = "TIME AFTER DISASTER: " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
+	client.Faction_intro.Name = BREACH.TranslateString"l:cutscene_subject_name " .. client:GetNamesurvivor()
+	client.Faction_intro.Status = BREACH.TranslateString"l:cutscene_objective l:cutscene_scp_rescue"
+	client.Faction_intro.Time = BREACH.TranslateString"l:cutscene_time_after_disaster " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
 
 	local name_string_table = string.Explode( "", client.Faction_intro.Name, true )
 	local status_string_table = string.Explode( "", client.Faction_intro.Status, true )
@@ -1048,9 +1071,9 @@ function CultStart()
 	client.Faction_intro = vgui.Create( "DPanel" )
 	client.Faction_intro:SetSize( ScrW(), ScrH() )
 	client.Faction_intro.StartTime = CurTime() + 25
-	client.Faction_intro.Name = "NAME: " .. client:GetName()
-	client.Faction_intro.Status = "OBJECTIVE: Complete the ritual"
-	client.Faction_intro.Time = "TIME AFTER DISASTER: " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
+	client.Faction_intro.Name = BREACH.TranslateString"l:cutscene_name " .. client:GetNamesurvivor()
+	client.Faction_intro.Status = BREACH.TranslateString"l:cutscene_objective l:cutscene_namaz"
+	client.Faction_intro.Time = BREACH.TranslateString"l:cutscene_time_after_disaster " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
 
 	local name_string_table = string.Explode( "", client.Faction_intro.Name, true )
 	local status_string_table = string.Explode( "", client.Faction_intro.Status, true )
@@ -1139,8 +1162,6 @@ concommand.Add("intro_cult", CultStart)
 
 local ntf_icon = TeamIcons[ TEAM_NTF ].mat
 
-local ntf_icon = TeamIcons[ TEAM_NTF ].mat
-
 function NTFStart()
 
 	local clr_text = gteams.GetColor( TEAM_NTF )
@@ -1162,7 +1183,7 @@ function NTFStart()
 	client.Faction_intro = vgui.Create( "DPanel" )
 	client.Faction_intro:SetSize( ScrW(), ScrH() )
 	client.Faction_intro.StartTime = CurTime() + 0.2
-	client.Faction_intro.Name = "YOUR NAME IS " .. string.upper(client:GetName())
+	client.Faction_intro.Name = "YOUR NAME IS " .. string.upper(client:GetNamesurvivor())
 	client.Faction_intro.Status = "YOUR OBJECTIVE IS TO HELP THE FOUNDATION"
 	client.Faction_intro.Time = "TIME AFTER DISASTER: " .. string.ToMinutesSeconds( GetRoundTime() - ( cltime - 23 ) )
 
@@ -1211,8 +1232,9 @@ function NTFStart()
 		end
 
 	end
+
 end
-concommand.Add("intro_ntf", NTFStart)
+concommand.Add("intro_ntf_old", NTFStart)
 
 local ci_icon = Material( "nextoren/gui/roles_icon/chaos.png" )
 local ranktable = {
@@ -1234,7 +1256,7 @@ function CutScene()
 	StopMusic()
 	PlayMusic( "sound/no_new_music/chaos_theme.ogg" )
 
-	local rank = ranktable[ client:GetNClass() ]
+	local rank = ranktable[ client:GetRoleName() ]
 	if rank == nil then
 		rank = "ERROR"
 	end
@@ -1246,7 +1268,7 @@ function CutScene()
 	CutSceneWindow:SetSize( screenwidth, screenheight )
 	CutSceneWindow.StartAlpha = 255
 	CutSceneWindow.StartTime = CurTime() + 16
-	CutSceneWindow.Name = rank .." " .. client:GetName()
+	CutSceneWindow.Name = rank .." " .. client:GetNamesurvivor()
 
 	CutSceneWindow.Target = "Rescue Class-D Personnel"
 	CutSceneWindow.Time = string.ToMinutesSeconds( GetRoundTime() - cltime ) .. " minutes after the Breach Event"
@@ -1327,8 +1349,6 @@ function CutScene()
 	end
 
 end
-concommand.Add("intro_ci", CutScene)
-
 
 local ci_icon = Material( "nextoren/gui/roles_icon/gru.png" )
 local ranktable = {
@@ -1394,7 +1414,7 @@ function GRUSpawn()
 	StopMusic()
 	PlayMusic( "sound/no_music/factions_spawn/gru_theme.ogg", 1 )
 
-	local rank = ranktable[ client:GetNClass() ]
+	local rank = ranktable[ client:GetRoleName() ]
 
 	if rank == nil then
 		rank = "ERROR"
@@ -1407,7 +1427,7 @@ function GRUSpawn()
 	CutSceneWindow:SetSize( screenwidth, screenheight )
 	CutSceneWindow.StartAlpha = 255
 	CutSceneWindow.StartTime = CurTime() + 20
-	CutSceneWindow.Name = rank .." " .. client:GetName()
+	CutSceneWindow.Name = rank .." " .. client:GetNamesurvivor()
 	CutSceneWindow.Target = GRU_Objective || "ERROR!"
 	CutSceneWindow.Time = string.ToMinutesSeconds( GetRoundTime() - cltime ) .. " времени после Н.У.С"
 
@@ -1481,6 +1501,8 @@ function GRUSpawn()
 
 			end )
 
+			--RXSENDNotify("Ваша задача: "..tostring(GRU_Objective))
+
 			self:Remove()
 
 		end
@@ -1488,16 +1510,15 @@ function GRUSpawn()
 	end
 
 end
-concommand.Add("intro_gru", GRUSpawn)
 
 local function Ending( status )
 
 	if ( status == "Evacuated by CI" ) then
-
+		status = "l:cutscene_evac_by_ci"
 		surface.PlaySound( "nextoren/vo/acp/survivor_escaped_" .. math.random( 1, 3 ) .. ".wav" )
 
 	elseif ( status == "Evacuated by Helicopter" ) then
-
+		status = "l:cutscene_evac_by_heli"
 		surface.PlaySound( "nextoren/vo/chopper/chopper_evacuate_evacuated.wav" )
 
 	end
@@ -1512,16 +1533,16 @@ local function Ending( status )
 
 
 
-	name = LocalPlayer():GetName() 
+	name = LocalPlayer():GetNamesurvivor() 
 
 	local CutSceneWindow = vgui.Create( "DPanel" )
 	CutSceneWindow:SetText( "" )
 	CutSceneWindow:SetSize( ScrW(), ScrH() )
 	CutSceneWindow.StartAlpha = 255
 	CutSceneWindow.StartTime = CurTime() + 15
-	CutSceneWindow.Name = "SUBJECT NAME: " .. name
-	CutSceneWindow.Status = "STATUS: " .. status
-	CutSceneWindow.Time = "LAST REPORT TIME: " .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. " ( Time after disaster: " .. string.ToMinutesSeconds( cltime ) .. " )"
+	CutSceneWindow.Name = BREACH.TranslateString"l:cutscene_subject_name " .. name
+	CutSceneWindow.Status = BREACH.TranslateString"l:cutscene_status " .. BREACH.TranslateString(status)
+	CutSceneWindow.Time = BREACH.TranslateString"l:cutscene_last_report_time " .. tostring( os.date( "%X" ) ) .. " " .. tostring( os.date( "%d/%m/%Y" ) ) .. BREACH.TranslateString" ( l:cutscene_time_after_disaster_for_last_report_time " .. string.ToMinutesSeconds( cltime ) .. " )"
 
 	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
 	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
@@ -1604,7 +1625,7 @@ net.Receive( "Ending_HUD", function()
 
 	else
 
-		if ( status == "Mission complete" ) then
+		if ( status == "l:ending_mission_complete" ) then
 
 			UIU_Ending( true )
 
@@ -1629,7 +1650,7 @@ local function Show_Spy_Extra( current_team, team_to_draw )
 
 		local player = all_players[ i ]
 
-		if ( player:GTeam() == team_to_draw && player:GetNClass():lower():find( "spy" ) ) then
+		if ( player:GTeam() == team_to_draw && player:GetRoleName():lower():find( "spy" ) ) then
 
 			spy_table[ #spy_table + 1 ] = player
 
@@ -1658,14 +1679,6 @@ local function Show_Spy_Extra( current_team, team_to_draw )
 
 				draw_ent[ #draw_ent + 1 ] = v
 
-				bonemerged_tbl = ents.FindByClassAndParent("ent_bonemerged", v)
-				if istable(bonemerged_tbl) then
-					for i = 1, #bonemerged_tbl do
-						draw_ent[ #draw_ent + 1 ] = bonemerged_tbl[i]
-
-					end
-				end
-
 			else
 
 				table.RemoveByValue( spy_table, v )
@@ -1687,7 +1700,7 @@ end
 local target_outline = Color(255,0,0)
 hook.Add( "PreDrawOutlines", "UIU_SPY_TARGETS", function()
 	local client = LocalPlayer()
-	if client:GetNClass() != ROLES.ROLE_USASPY then return end
+	if client:GetRoleName() != role.SCI_SpyUSA then return end
 	local plys = player.GetAll()
 	local draw_ent = {}
 	local mypos = client:GetPos()
@@ -1713,14 +1726,6 @@ hook.Add( "PreDrawOutlines", "UIU_SPY_TARGETS", function()
 		if rgdol:GetNWBool("HasDocument") and rgdol:GetPos():DistToSqr(mypos) <= 120000 then
 			draw_ent[#draw_ent + 1] = rgdol
 
-			local bnmrgs = rgdol:LookupBonemerges()
-
-			for i = 1, #bnmrgs do
-				local bn = bnmrgs[i]
-				if bn and bn:IsValid() then
-					draw_ent[ #draw_ent + 1 ] = bn
-				end
-			end
 		end
 	end
 	if ( #draw_ent > 0 ) then
@@ -1749,7 +1754,7 @@ function Show_Spy( current_team )
 
 		local player = all_players[ i ]
 
-		if ( player:GTeam() == current_team && player:GetNClass():lower():find( "spy" ) && player != client ) then
+		if ( player:GTeam() == current_team && player:GetRoleName():lower():find( "spy" ) && player != client ) then
 
 			spy_table[ #spy_table + 1 ] = player
 
@@ -1757,7 +1762,7 @@ function Show_Spy( current_team )
 
 		if client_Team == TEAM_CLASSD then
 
-			if ( player:GetNClass():find( "Stealthy" ) ) then
+			if ( player:GetRoleName():find( "Stealthy" ) ) then
 
 				spy_table[ #spy_table + 1 ] = player
 
@@ -1767,7 +1772,7 @@ function Show_Spy( current_team )
 
 	end
 
-	local old_name_surv = LocalPlayer():GetName()
+	local old_name_surv = LocalPlayer():GetNamesurvivor()
 	local team_clr = gteams.GetColor( current_team )
 
 	if team_clr == color_black then team_clr = color_white end
@@ -1784,18 +1789,9 @@ function Show_Spy( current_team )
 
 		for _, v in ipairs( spy_table ) do
 
-			if ( ( v && v:IsValid() ) && v:Health() > 0 && ( ( v:GTeam() == current_team ) or (v:GetNClass() == ROLES.ROLE_Killer and !v:GetModel():find("class_d.mdl") ) ) ) then
+			if ( ( v && v:IsValid() ) && v:Health() > 0 && ( ( v:GTeam() == current_team ) or (v:GetRoleName() == role.ClassD_Hitman and !v:GetModel():find("class_d.mdl") ) ) ) then
 
 				draw_ent[ #draw_ent + 1 ] = v
-
-				local bnmrgs = v:LookupBonemerges()
-
-				for i = 1, #bnmrgs do
-					local bn = bnmrgs[i]
-					if bn and bn:IsValid() then
-						draw_ent[ #draw_ent + 1 ] = bn
-					end
-				end
 
 			else
 
@@ -2079,7 +2075,7 @@ function DrawName( ply )
 	if ( Distance < 300 ) and ply:GTeam() != TEAM_SPEC then
 	cam.Start3D2D( pos, Angle( 0, ang.y, 90 ), 0.1 )
 	  draw.SimpleTextOutlined("Health " ..ply:Health().. " / " ..ply:GetMaxHealth(), "HUDFontHead", 1, -10, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 0, 255 ) )
-		draw.SimpleTextOutlined( ply:GetName().."( "..ply:Nick().." )", "HUDFontHead", 1, 20, Color( color.r, color.g, color.b, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 0, 255 ) )
+		draw.SimpleTextOutlined( ply:GetNamesurvivor().."( "..ply:Nick().." )", "HUDFontHead", 1, 20, Color( color.r, color.g, color.b, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 0, 255 ) )
 		if ply:GetNLevel() <= 24 then
 		  draw.SimpleTextOutlined("LVL  " ..ply:GetNLevel(), "HUDFontHead", 1, 45, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 0, 255 ) )
 		end
@@ -2135,9 +2131,9 @@ local BrHeadIcons = {
 }
 
 --timer.Simple( .25, function()
-  local Health    = "Health"
-  local Level     = "Level"
-  local HighLevel = "Maximum Level"
+  local Health    = "l:hud_health"
+  local Level     = "l:scoreboard_level"
+  local HighLevel = "l:hud_max_level"
   local offset    = Vector( 0, 0, 85 )
   local microphone_icon = Material( "nextoren_hud/microphone.png" )
 
@@ -2206,12 +2202,12 @@ local BrHeadIcons = {
         local plcolor = color
         local lvl = ply:GetNLevel()
 
-        local surv_name = ply:GetName()
+        local surv_name = ply:GetNamesurvivor()
         local name = ply:Name()
 
         cam.Start3D2D( pos, ang, .1 )
 
-          draw.SimpleText( Health .. ": " .. ply:Health() .. " / " .. ply:GetMaxHealth(), "HUDFontHead", 1, -30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+          draw.SimpleText( L(Health) .. ": " .. ply:Health() .. " / " .. ply:GetMaxHealth(), "HUDFontHead", 1, -30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
           if ( surv_name != "none" ) then
 
@@ -2227,12 +2223,12 @@ local BrHeadIcons = {
 
           if ( lvl < 45 ) then
 
-            draw.SimpleText( Level .. " " .. lvl, "HUDFontHead", 1, 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+            draw.SimpleText( L(Level) .. " " .. lvl, "HUDFontHead", 1, 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
           else
 
-            draw.SimpleText( Level .. ": " .. lvl, "HUDFontHead", 1, 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
-            draw.SimpleText( "★ " .. HighLevel, "HUDFontHead", 1, -60, LVLColorMax, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+            draw.SimpleText( L(Level) .. ": " .. lvl, "HUDFontHead", 1, 30, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
+            draw.SimpleText( "★ " .. L(HighLevel), "HUDFontHead", 1, -60, LVLColorMax, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
           end
 
@@ -2334,7 +2330,7 @@ function DrawNewRoleDesc( str )
 	if IsValid(BREACH_DESC_PANEL) then BREACH_DESC_PANEL:Remove() end
 
 	local mat = GetRoleIconByTeam(client:GTeam())
-	local desc = BREACH.GetDescription(client:GetNClass())
+	local desc = BREACH.GetDescription(client:GetRoleName())
 
 	BREACH_DESC_PANEL = vgui.Create("DPanel")
 	local label = vgui.Create("DLabel",BREACH_DESC_PANEL)
@@ -2350,7 +2346,7 @@ function DrawNewRoleDesc( str )
 	local teamcol = gteams.GetColor(client:GTeam())
 	if client:GTeam() == TEAM_USA then teamcol = color_white end
 	charname:SetTextColor(ColorAlpha(teamcol), 135)
-	charname:SetText(GetLangRole(client:GetNClass()))
+	charname:SetText(GetLangRole(client:GetRoleName()))
 	charname:SizeToContents()
 	charname:SetPos(BREACH_DESC_PANEL:GetWide()/2-charname:GetWide()/2, 20)
 	local clr_bg = Color(0,0,0,100)
@@ -2394,13 +2390,13 @@ function DrawNewRoleDesc( str )
 	local logo_x, logo_y = panel_x + panel_w/2-80, panel_y + -170
 
 	BREACH_DESC_LOGO = vgui.Create("DImage")
-	--[[BREACH_DESC_LOGO:SetMaterial(mat)
+	BREACH_DESC_LOGO:SetMaterial(mat)
 	BREACH_DESC_LOGO:SetSize(mat:Width(),mat:Height())
 	BREACH_DESC_LOGO:SetAlpha(0)
 	BREACH_DESC_LOGO:AlphaTo(215, 0.8)
 	BREACH_DESC_LOGO:Center()
 	BREACH_DESC_LOGO:SizeTo(160, 160, 1.3, 0, 0.4)
-	BREACH_DESC_LOGO:MoveTo(logo_x, logo_y, 1,0, -0.7)--]]
+	BREACH_DESC_LOGO:MoveTo(logo_x, logo_y, 1,0, -0.7)
 
 end
 concommand.Add("br_description", DrawNewRoleDesc )
@@ -2787,7 +2783,7 @@ end
 
 hook.Add( "HUDPaint", "SCP_106_creepy_visuals", function()
 
-	if LocalPlayer():GetInDimension() then
+	if LocalPlayer():GetInDimension() and LocalPlayer():GTeam() != TEAM_SCP then
 
 		local scrw, scrh = ScrW(), ScrH()
 
@@ -2796,12 +2792,6 @@ hook.Add( "HUDPaint", "SCP_106_creepy_visuals", function()
 		local bg_color = Color(0,0,0,bg_106_lerp)
 
 		draw.RoundedBox(0, 0, 0, scrw, scrh, bg_color)
-
-		appeartextlerp = math.min(4, appeartextlerp + 0.02)
-		if appeartextlerp == 4 then
-			appeartextlerp = 0
-			CreateSCP106Text()
-		end
 
 	end
 
@@ -2908,7 +2898,7 @@ function Intercom_Menu( ply )
 
 		draw.DrawText( "Intercom Menu", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		if ( client:GetNClass() != Dispatcher|| client:Health() <= 0 ) then
+		if ( client:GetRoleName() != Dispatcher|| client:Health() <= 0 ) then
 
 			if ( IsValid( BREACH.MainPanel_Inter ) ) then
 
@@ -3058,7 +3048,7 @@ function Choose_Faction()
 
 		draw.DrawText( "Список Фракций", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		if ( client:GetNClass() != ROLES.ROLE_NTFCMD || client:Health() <= 0 ) then
+		if ( client:GetRoleName() != role.NTF_Commander || client:Health() <= 0 ) then
 
 			if ( IsValid( BREACH.Demote.MainPanel ) ) then
 
@@ -3149,27 +3139,6 @@ hook.Add("Initialize", "Remove_Xyi", function()
 end)
 
 current_observer = current_observer || nil
-local function toLines(text, font, mWidth)
-	surface.SetFont(font)
-	
-	local buffer = { }
-	local nLines = { }
-
-	for word in string.gmatch(text, "%S+") do
-		local w,h = surface.GetTextSize(table.concat(buffer, " ").." "..word)
-		if w > mWidth then
-			table.insert(nLines, table.concat(buffer, " "))
-			buffer = { }
-		end
-		table.insert(buffer, word)
-	end
-		
-	if #buffer > 0 then -- If still words to add.
-		table.insert(nLines, table.concat(buffer, " "))
-	end
-	
-	return nLines
-end
 function CreateInspectPanel(ply)
 	current_observer = ply
 
@@ -3194,32 +3163,18 @@ function CreateInspectPanel(ply)
 	local clr_black = Color(0,0,0,125)
 	local clr_black2 = Color(0,0,0,200)
 
-	local name = "NAME: "..ply:Nick()
-	local charname = "CHARACTER NAME: "..ply:GetName()
+	local name = L"l:hud_nick "..ply:Nick()
+	local charname = L"l:hud_charname "..ply:GetNamesurvivor()
 	local gteam = ply:GTeam()
-	local function drawMultiLine(text, font, mWidth, spacing, x, y, color, alignX, alignY, oWidth, oColor)
-		local mLines = toLines(text, font, mWidth)
-		
-		for i,line in pairs(mLines) do
-			if oWidth and oColor then
-				draw.SimpleTextOutlined(line, font, x, y + (i - 1) * spacing, color, alignX, alignY, oWidth, oColor)
-			else
-				draw.SimpleText(line, font, x, y + (i - 1) * spacing, color, alignX, alignY)
-			end
-		end
-				
-		return (#mLines - 1) * spacing
-			-- return #mLines * spacing
-	end
-	
+
 
 	local role_icon = GetRoleIconByTeam(ply:GTeam())
 
 	INSPECT_PANEL.Paint = function(self, w, h)
 
 		surface.SetDrawColor(Color(255,255,255,55))
-		--surface.SetMaterial(role_icon)
-		--surface.DrawTexturedRect(195,0,200,200)
+		surface.SetMaterial(role_icon)
+		surface.DrawTexturedRect(195,0,200,200)
 	
 		draw.RoundedBox(0,0,0,w,h, clr_black)
 
@@ -3308,7 +3263,7 @@ function CreateInspectPanel(ply)
 	end
 
 	local h_lerp = 0
-	CreateBar("HEALTH", h_y, Color(255,0,0), function()
+	CreateBar(L"l:hud_health_capital", h_y, Color(255,0,0), function()
 		if IsValid(ply) then
 			local h = ply:Health() / ply:GetMaxHealth()
 			h_lerp = math.Approach(h_lerp, math.min(1, h), FrameTime()*.4)
@@ -3365,11 +3320,13 @@ function CreateInspectPanel(ply)
 			    local bonemerge = tbl_bonemerged[ i ]
 		
 			    if !IsValid(bonemerge) then continue end
+			    local bnm
 			    if CORRUPTED_HEADS[bonemerge:GetModel()] then
-			    	mdl:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible())
+			    	bnm = mdl:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible())
 			    else
-			    	mdl:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible())
+			    	bnm = mdl:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible())
 			    end
+			    bnm:SetSkin(bonemerge:GetSkin())
 		
 			end
 		
@@ -3390,7 +3347,7 @@ local clr_bg = Color(0,0,0,200)
 hook.Add("HUDPaint", "UIU_SPY_HUD", function()
 	local client = LocalPlayer()
 	local w, h = ScrW(), ScrH()
-	if client:GetNClass() == ROLES.ROLE_USASPY then
+	if client:GetRoleName() == role.SCI_SpyUSA then
 
 			draw.RoundedBox(0,w/2-26-3,11,49,49,clr_bg)
 
@@ -3602,6 +3559,118 @@ function Choose_Weapon()
 
 local ntf_icon = Material( "nextoren/gui/roles_icon/ntf.png" )
 
+local scp173_lerp = 0
+local tazer_lerp = 0
+
+local ntf_icon = TeamIcons[ TEAM_NTF ].mat
+
+function HelicopterStart()
+
+	local client = LocalPlayer()
+
+	client.NoMusic = true
+
+	StopMusic()
+
+	timer.Simple( 1.5, function()
+
+		if ( client && client:IsValid() && client:GTeam() == TEAM_NTF ) then
+
+			PlayMusic( "sound/no_music/factions_spawn/ntf_intro.ogg", 1 )
+
+		end
+
+	end )
+
+	local CutSceneWindow = vgui.Create( "DPanel" )
+	CutSceneWindow:SetText( "" )
+	CutSceneWindow:SetSize( ScrW(), ScrH() )
+	CutSceneWindow.StartAlpha = 255
+	CutSceneWindow.StartTime = CurTime() + 15
+	CutSceneWindow.Name = "SUBJECT NAME: " .. client:GetNamesurvivor()
+	CutSceneWindow.Status = "LOCATION: ??? ( Near to Site-19 )"
+	CutSceneWindow.Time = " ( Time after disaster: " .. string.ToMinutesSeconds( GetRoundTime() - cltime ) .. " )"
+
+	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
+	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
+	local ExplodedString3 = string.Explode( "", CutSceneWindow.Name, true )
+
+
+	local str = ""
+	local str1 = ""
+	local str2 = ""
+
+	local count = 0
+	local count1 = 0
+	local count2 = 0
+
+	CutSceneWindow.Paint = function( self, w, h )
+
+		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_black, self.StartAlpha ) )
+
+		surface.SetDrawColor( ColorAlpha( color_white, math.max( self.StartAlpha - 180, 0 ) ) )
+		surface.SetMaterial( ntf_icon )
+		surface.DrawTexturedRect( ScrW() / 2 - 128, ScrH() / 2 - 128, 256, 256 )
+
+		if ( CutSceneWindow.StartTime <= CurTime() + 10 ) then
+
+			if ( CutSceneWindow.StartTime <= CurTime() ) then
+
+				self.StartAlpha = math.Approach( self.StartAlpha, 0, RealFrameTime() * 128 )
+
+			end
+
+			if ( ( self.NextSymbol || 0 ) <= SysTime() && count2 != #ExplodedString3 ) then
+
+				count2 = count2 + 1
+				self.NextSymbol = SysTime() + .08
+				str = str..ExplodedString3[ count2 ]
+
+			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 != #ExplodedString2 ) then
+
+				count1 = count1 + 1
+				self.NextSymbol = SysTime() + .08
+				str1 = str1..ExplodedString2[ count1 ]
+
+			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 == #ExplodedString2 && count != #ExplodedString ) then
+
+				count = count + 1
+				self.NextSymbol = SysTime() + .08
+				str2 = str2..ExplodedString[ count ]
+
+			end
+
+			draw.SimpleTextOutlined( str, "TimeMisterFreeman", w / 2, h / 2, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
+			draw.SimpleTextOutlined( str1, "TimeMisterFreeman", w / 2, h / 2 + 32, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
+			draw.SimpleTextOutlined( str2, "TimeMisterFreeman", w / 2, h / 2 + 64, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
+
+		end
+
+		if ( self.StartAlpha <= 0 ) then
+
+			timer.Simple( 25, function()
+
+				if ( client:GTeam() == TEAM_NTF ) then
+
+					FadeMusic( 10 )
+					timer.Simple( 12, function()
+
+						client.NoMusic = nil
+
+					end )
+
+				end
+
+			end )
+
+			self:Remove()
+
+		end
+
+	end
+
+end
+
 local clr_gray = Color( 198, 198, 198 )
 local clr_green = Color( 0, 180, 0 )
 
@@ -3635,7 +3704,7 @@ local osnmat = Material("nextoren/gui/roles_icon/osn.png")
 local obrmat = Material("nextoren/gui/roles_icon/obr.png")
 
 function GetRoleIconByTeam(team)
-	--[[local roles_icons = scpmat
+	local roles_icons = scpmat
 	if team == TEAM_GUARD then
 		roles_icons = mtfmat
 	elseif team == TEAM_SECURITY then
@@ -3668,7 +3737,7 @@ function GetRoleIconByTeam(team)
 		roles_icons = scpmat
 	end
 
-	return roles_icons--]]
+	return roles_icons
 end
 
 lvlicon = Material("nextoren/gui/icons/level/lvl1.png")
@@ -3686,6 +3755,7 @@ local from40clr, from40mat = Color(0, 255, 255), Material("nextoren/gui/icons/le
 local blinkblack = Color(0, 0, 0)
 local blinkalmostblack = Color(0, 0, 0, 200)
 local blinkmat = Material("nextoren_hud/ico_blink.png")
+local tazermat = Material("rxsend/ui/tazer_ammo.png")
 local icoindex = Material("nextoren_hud/ico_index.png")
 local icoindex2 = Material("nextoren_hud/ico_index2.png")
 local eyedropeffectclr = Color(10, 45, 255, 0)
@@ -3707,203 +3777,29 @@ local ScrW = ScrW
 local ScrH = ScrH
 local IsValid = IsValid
 
-local function DRAWHUDSTYLE(style, ply)
+local gru_task_translations = {
+	["Evacuation"] = "l:gru_hud_task_evacuation",
+	["Срыв эвакуации"] = "l:gru_hud_task_evacuation",
+	["MilitaryHelp"] = "l:gru_hud_task_militaryhelp",
+	["Помощь военному персоналу"] = "l:gru_hud_task_militaryhelp",
+	["[none]"] = "l:gru_hud_task_none"
+}
 
-	local client = LocalPlayer()
-	local plytable = ply:GetTable()
+local vec_forward = Vector( 70 )
 
-	local hp = ply:Health()
-	local maxhp = ply:GetMaxHealth()
-	if !client.Stamina then client.Stamina = 100 end
-	local stamina = math.Round(client.Stamina)
-	local exhausted = plytable.exhausted
-	local color = gteams.GetColor(ply:GTeam())
+function CanSeePlayer(ply)
 
-	local screenheight = ScrH()
-	local screenwidth = ScrW()
-	--local clientlevel = client:GetNLevel()
+	local value = LocalPlayer():GetAimVector():Dot( ( ply:GetPos() - LocalPlayer():GetPos() + vec_forward ):GetNormalized() )
 
-	if style == 1 then
-		local width = 355
-	local height = 120
-	local x = 10
-    local y = ScrH() - height - 10
-	
-	local lvlH = 70
-	local lvlW = 95
-	local vledOffsetH = ScrH() - 25 - 25
+	if !LocalPlayer():IsLineOfSightClear(ply:GetPos()) then return false end
 
-	local additionalwidth = ScrW()/4*.6
-
-	local defaultx = 45
-
- 	   if ply:GTeam() != TEAM_SPEC and ply:GTeam() != TEAM_SCP then
-
-		    ----------------------------[BLINKhud]----------------------------
-			--
-			local bd = GetConVar("br_time_blinkdelay"):GetFloat()
-			local blink = blinkHUDTime
-		    if var == nil then 
-			    var = 100; 
-		    end
-						surface.SetDrawColor(255, 255, 255);
-						surface.SetMaterial(blinkmat);
-						surface.DrawTexturedRect(13+275+275+additionalwidth, ScrH()-47, 34, 34);
-
-						surface.SetDrawColor(255, 255, 255, 75);
-						surface.DrawOutlinedRect(10+275+275+additionalwidth, ScrH()-50, 40, 40);
-
-						surface.DrawOutlinedRect(60+275+275+additionalwidth, ScrH()-44, 211, 28);
-
-						surface.SetDrawColor(255, 255, 255, 200);
-						surface.SetMaterial(icoindex2);
-		    local bbars = 0
-		    local bbars = blink / bd * 16
-		    if bbars > 16 then 
-			    bbars = 16 
-		    end
-		    local col = color_white
-		    if eyedropeffect > CurTime() then
-		    	eyedropeffectclr["a"] = Pulsate( 2 ) * 120
-		    	col = eyedropeffectclr
-		    end
-		    surface.SetDrawColor(col)
-		    surface.SetMaterial(icoindex2)
-		    for i=1, bbars do
-			    surface.DrawTexturedRect(62+275+275+additionalwidth + (i-1)*13, ScrH()-42, 12, 24);
-		    end
-		    blink = string.format("%.1f", blink)
-		    bd = string.format("%.1f", bd)
-			--
-
-	end
-		----------------------------[ROLEhud]----------------------------
-
-		local add = 288
-
-		if client:GTeam() == TEAM_SPEC then add = 0 end
-
-	  if cl == nil then cl = rolealmostwhite; end
-	  draw.RoundedBox(0, 10+add+additionalwidth, ScrH()-50, 40, 40, roleblack);
-	  draw.RoundedBox(0, 60+add+additionalwidth, ScrH()-44, 175, 28, rolealmostblack);
-	  surface.SetDrawColor(255, 255, 255);
-
-	  surface.SetMaterial(rolemat);
-	  surface.DrawTexturedRect(13+add+additionalwidth, ScrH()-47, 34, 34);
-
-	  surface.SetDrawColor(255, 255, 255, 75);
-	  surface.DrawOutlinedRect(10+add+additionalwidth, ScrH()-50, 40, 40);
-
-	  surface.DrawOutlinedRect(60+add+additionalwidth, ScrH()-44, 175, 28);
-
-	  local hud_obs = client:GetObserverTarget()
-	  local hud_target = IsValid(hud_obs) and hud_obs or client
-	  local hud_role = hud_target:GetNClass()
-	  local hud_role_color = gteams.GetColor(hud_target:GTeam())
-	  draw.RoundedBox(0, 62+add+additionalwidth, ScrH()-42, 171, 24, hud_role_color);
-
-	  draw.SimpleText( GetLangRole(hud_role), "BudgetLabel", 147+add+additionalwidth, ScrH()-29, rolealmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
-
-	--end
-	if ( ply:GetNWBool( "HudjhouldDraw" ) && ply:Health() > 0 ) then --Curse
-		surface.SetDrawColor(255, 255, 255);
-		surface.SetMaterial(venenomat);
-		surface.DrawTexturedRect(390, ScrH()-47-57, 64, 64);
-	end
-		if client:GTeam() != TEAM_SPEC then
-			----------------------------[HPhud]----------------------------
-			boostcolor["a"] = Pulsate( 2 ) * 75
-
-			local boosted = ply:GetBoosted()
-
-			draw.RoundedBox(0, 10+additionalwidth, ScrH()-50, 40, 40, Color(0, 0, 0));
-			draw.RoundedBox(0, 60+additionalwidth, ScrH()-44, 211, 28, Color(0, 0, 0, 200));
-			surface.SetDrawColor(255, 255, 255);
-			surface.SetMaterial(healthmat);
-			surface.DrawTexturedRect(13+additionalwidth, ScrH()-47, 34, 34);
-
-			surface.SetDrawColor(255, 255, 255, 75);
-			surface.DrawOutlinedRect(10+additionalwidth, ScrH()-50, 40, 40);
-
-			surface.DrawOutlinedRect(60+additionalwidth, ScrH()-44, 211, 28);
-
-			surface.SetDrawColor(255, 255, 255, 200);
-			surface.SetMaterial(icoindex2);
-			local kok = math.Clamp( math.ceil(hp * 16 / maxhp), 0, 16 )
-			for i = 1, kok do
-				if ( boosted ) then
-
-					surface.SetDrawColor(0, 255, 0,	Pulsate(2) * 200)
-					surface.DrawOutlinedRect( 62+additionalwidth + ( i - 1 ) * 13, screenheight-42, 12, 24 )
-
-				end
-				if i > 16 then 
-					i = 16 
-				end --Looping i when ply:Health() == ply:GetMaxHealth()
-				surface.DrawTexturedRect(62+additionalwidth + (i-1)*13, ScrH()-42, 12, 24);
-			end
-			if ( boosted ) then
-				boostcolor["a"] = Pulsate( 2 ) * 120
-				draw.OutlinedBox( 10+additionalwidth, screenheight - 50, 40, 40, 2, boostcolor )
-
-			end
-			draw.SimpleText(hp .. " / " .. maxhp, "BudgetLabel", 165+additionalwidth, ScrH()-29, hpcoloralmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
-	----------------------------[STAMINAhud]----------------------------
-		if ply:GTeam() != TEAM_SCP then
-			local energized = ply:GetEnergized()
-			local adrenaline = ply:GetAdrenaline()
-
-            draw.RoundedBox(0, 10+275+275+275+additionalwidth, ScrH()-50, 40, 40, roleblack);
-            draw.RoundedBox(0, 60+275+275+275+additionalwidth, ScrH()-44, 211, 28, rolealmostblack);
-            surface.SetDrawColor(255, 255, 255);
-
-            surface.SetMaterial(staminamat);
-            surface.DrawTexturedRect(13+275+275+275+additionalwidth, ScrH()-47, 34, 34);
-            local staminab = math.Round(stamina / (ply:GetStaminaScale() * 100) * 16)
-            if staminab > 16 then 
-			    staminab = 16 
-		    end
-		    surface.SetDrawColor(245, 255, 250)
-            surface.SetDrawColor(255, 255, 255, 75);
-            surface.DrawOutlinedRect(10+275+275+275+additionalwidth, ScrH()-50, 40, 40);
-		    surface.DrawOutlinedRect(60+275+275+275+additionalwidth, ScrH()-44, 211, 28);
-
-		    surface.SetDrawColor(255, 255, 255, 200);
-
-            surface.SetMaterial(icoindex2);
-            if exhausted then
-			    surface.SetMaterial(icoindex)
-		    end
-            for i = 1, staminab do
-				if ( energized ) then
-
-					surface.SetDrawColor(255, 255, 0,	Pulsate( 2 ) * 25)
-					surface.DrawTexturedRect(62+275+275+275+additionalwidth + (i-1)*13, ScrH()-42, 12, 24)
-
-				elseif ( adrenaline ) then
-
-					surface.SetDrawColor(0, 198, 198,	Pulsate( 2 ) * 25)
-					surface.DrawTexturedRect(62+275+275+275+additionalwidth + (i-1)*13, ScrH()-42, 12, 24)
-
-				else
-                    surface.DrawTexturedRect(62+275+275+275+additionalwidth + (i-1)*13, ScrH()-42, 12, 24);
-				end
-            end
-	    end
-	   end
-	-- Обновленный health бар
-    --[[if ply:IsSpeaking() then
-		surface.SetDrawColor(Color(255,255,255,255))
-		surface.SetMaterial(Material("microphone.png"))
-		surface.DrawTexturedRect(widthz * 0.145, heightz * 0.945 + offset, heightz * 0.034, heightz * 0.035)
-    end]]
-	end
+	return ( value > .39 )
 
 end
 
 hook.Add( "HUDPaint", "Breach_HUD", function()
 	local myteam = LocalPlayer():GTeam()
-	local myrole = LocalPlayer():GetNClass()
+	local myrole = LocalPlayer():GetRoleName()
 	if myteam == TEAM_CLASSD then
 		Show_Spy(TEAM_CHAOS)
 	elseif myteam == TEAM_GOC then
@@ -3911,13 +3807,14 @@ hook.Add( "HUDPaint", "Breach_HUD", function()
 	end
 	if disablehud then return end
 	if playing then return end
-	if GetGlobalBool("Evacuation_HUD", false) and !ply:Outside() then
-		evaccolor["a"] = Pulsate(2) * 7
-		draw.RoundedBox(0,0,0, ScrW(), ScrH(), evaccolor)
-	end
+	--if GetGlobalBool("Evacuation_HUD", false) and !ply:Outside() then
+		--evaccolor["a"] = Pulsate(2) * 7
+		--draw.RoundedBox(0,0,0, ScrW(), ScrH(), evaccolor)
+	--end
+	if !ply then ply = LocalPlayer() end
 	local client = ply
 	local my_par = client:GetParent()
-	if IsValid(my_par) and my_par:GetClass() == "prop_ragdoll" then return end
+	if IsValid(client) and IsValid(my_par) and my_par:GetClass() == "prop_ragdoll" then return end
 	if client:Health() <= 0 then return end --alive is slow
 	local clienttable = client:GetTable()
 	if clienttable.CameraEnabled == true then return end
@@ -3930,7 +3827,7 @@ hook.Add( "HUDPaint", "Breach_HUD", function()
 
 	if client:GTeam() == TEAM_GRU then
 
-		draw.DrawText("OBJECTIVE: "..GetGlobalString("gru_objective", "[none]"), "ChatFont_new", 285, ScrH() - 30)
+		draw.DrawText(BREACH.TranslateString("l:gru_hud_task").." "..BREACH.TranslateString(gru_task_translations[GetGlobalString("gru_objective", "[none]")]), "ChatFont_new", 285, ScrH() - 30)
 
 	end
 
@@ -3959,7 +3856,7 @@ hook.Add( "HUDPaint", "Breach_HUD", function()
 	
 				if ( player:GTeam() == team_scp_index ) then
 
-					if player:GetNClass() != "SCP173" then
+					if player:GetRoleName() != "SCP173" then
 	
 					  scpstab[ #scpstab + 1 ] = player
 
@@ -4058,16 +3955,16 @@ hook.Add( "HUDPaint", "Breach_HUD", function()
 		end
 	    local role = "none"
 	  if !clang then return end
-		if not clienttable.GetNClass then
+		if not clienttable.GetRoleName then
 			player_manager.RunClass( client, "SetupDataTables" )
 		elseif client:GTeam() != TEAM_SPEC then
-			--role = clang[ply:GetNClass()]
+			--role = clang[ply:GetRoleName()]
 		else
 			--local obs = ply:GetObserverTarget()
-			--role = clang[ply:GetNClass()]
+			--role = clang[ply:GetRoleName()]
 			--if IsValid(obs) then
-				--if obs.GetNClass != nil then
-					--role = clang[obs:GetNClass()]
+				--if obs.GetRoleName != nil then
+					--role = clang[obs:GetRoleName()]
 					--ply = obs
 					--print(obs.stamina)
 				--end
@@ -4092,16 +3989,16 @@ hook.Add( "HUDPaint", "Breach_HUD", function()
 
 		local color = gteams.GetColor( ply:GTeam() )
 
-if hud_style:GetInt() == 0 then
+		local scrw, scrh = ScrW(), ScrH()
 
 	local width = 355
 	local height = 120
 	local x = 10
-	local y = ScrH() - height - 10
+	local y = scrh - height - 10
 
 	local lvlH = 70
 	local lvlW = 95
-	local vledOffsetH = ScrH() - 25 - 25
+	local vledOffsetH = scrh - 25 - 25
 
 	local clientlevel = client:GetNLevel()
 
@@ -4206,41 +4103,54 @@ if hud_style:GetInt() == 0 then
 		    ----------------------------[BLINKhud]----------------------------
 			--
 
-			local bd = GetConVar("br_time_blinkdelay"):GetFloat()
+			local bd = 3
 			local blink = blinkHUDTime
 		    if var == nil then 
 			    var = 100; 
 		    end
-            draw.RoundedBox(0, 10, ScrH()-50-100, 40, 40, blinkblack);
-            draw.RoundedBox(0, 60, ScrH()-44-100, 211, 28, blinkalmostblack);
-            surface.SetDrawColor(255, 255, 255);
 
-            surface.SetMaterial(blinkmat);
-            surface.DrawTexturedRect(13, ScrH()-47-100, 34, 34);
-
-            surface.SetDrawColor(255, 255, 255, 75);
-            surface.DrawOutlinedRect(10, ScrH()-50-100, 40, 40);
-
-            surface.DrawOutlinedRect(60, ScrH()-44-100, 211, 28);
-
-            surface.SetDrawColor(255, 255, 255, 200);
-            surface.SetMaterial(icoindex2);
-		    local bbars = 0
-		    local bbars = blink / bd * 16
-		    if bbars > 16 then 
-			    bbars = 16 
+		    local scp173 = nil
+		    local scps = gteams.GetPlayers(TEAM_SCP)
+		    for i = 1, #scps do
+		    	if IsValid(scps[i]) and scps[i]:GetRoleName() == SCP173 then scp173 = scps[i]:GetNWEntity("SCP173Statue") end
 		    end
-		    local col = color_white
+		    if #scps > 0 and IsValid(scp173) and CanSeePlayer(scp173) then
+		    	scp173_lerp = Lerp(FrameTime()*10, scp173_lerp, 1)
+		    else
+		    	scp173_lerp = Lerp(FrameTime()*8, scp173_lerp, 0)
+		    end
+		    if scp173_lerp > 0.05 then
+	            draw.RoundedBox(0, 10, scrh-50-150, 40, 40, ColorAlpha(blinkblack, scp173_lerp*255));
+	            draw.RoundedBox(0, 60, scrh-44-150, 211, 28, ColorAlpha(blinkalmostblack, scp173_lerp*200));
+	            surface.SetDrawColor(255, 255, 255, scp173_lerp*255);
 
-		    if eyedropeffect > CurTime() then
-		    	eyedropeffectclr["a"] = Pulsate( 2 ) * 120
-		    	col = eyedropeffectclr
-		    end
-		    surface.SetDrawColor(col)
-		    surface.SetMaterial(icoindex2)
-		    for i=1, bbars do
-			    surface.DrawTexturedRect(62 + (i-1)*13, ScrH()-42-100, 12, 24);
-		    end
+	            surface.SetMaterial(blinkmat);
+	            surface.DrawTexturedRect(13, scrh-47-150, 34, 34);
+
+	            surface.SetDrawColor(255, 255, 255, scp173_lerp*75);
+	            surface.DrawOutlinedRect(10, scrh-50-150, 40, 40);
+
+	            surface.DrawOutlinedRect(60, scrh-44-150, 211, 28);
+
+	            surface.SetDrawColor(255, 255, 255, scp173_lerp*200);
+	            surface.SetMaterial(icoindex2);
+			    local bbars = 0
+			    local bbars = blink / bd * 16
+			    if bbars > 16 then 
+				    bbars = 16 
+			    end
+			    local col = ColorAlpha(color_white, scp173_lerp*255)
+
+			    if eyedropeffect > CurTime() then
+			    	eyedropeffectclr["a"] = Pulsate( 2 ) * 120
+			    	col = eyedropeffectclr
+			    end
+			    surface.SetDrawColor(col)
+			    surface.SetMaterial(icoindex2)
+			    for i=1, bbars do
+				    surface.DrawTexturedRect(62 + (i-1)*13, scrh-42-150, 12, 24);
+			    end
+			  end
 		    blink = string.format("%.1f", blink)
 		    bd = string.format("%.1f", bd)
 			--
@@ -4249,49 +4159,44 @@ if hud_style:GetInt() == 0 then
 		----------------------------[ROLEhud]----------------------------
 
 	  if cl == nil then cl = rolealmostwhite; end
-	  draw.RoundedBox(0, 10, ScrH()-50-50, 40, 40, roleblack);
-	  draw.RoundedBox(0, 60, ScrH()-44-50, 175, 28, rolealmostblack);
+	  draw.RoundedBox(0, 10, scrh-50-50, 40, 40, roleblack);
+	  draw.RoundedBox(0, 60, scrh-44-50, 175, 28, rolealmostblack);
 	  surface.SetDrawColor(255, 255, 255);
 
 	  surface.SetMaterial(rolemat);
-	  surface.DrawTexturedRect(13, ScrH()-47-50, 34, 34);
+	  surface.DrawTexturedRect(13, scrh-47-50, 34, 34);
 
 	  surface.SetDrawColor(255, 255, 255, 75);
-	  surface.DrawOutlinedRect(10, ScrH()-50-50, 40, 40);
+	  surface.DrawOutlinedRect(10, scrh-50-50, 40, 40);
 
-	  surface.DrawOutlinedRect(60, ScrH()-44-50, 175, 28);
+	  surface.DrawOutlinedRect(60, scrh-44-50, 175, 28);
 
 	  local hud_obs = client:GetObserverTarget()
 	  local hud_target = IsValid(hud_obs) and hud_obs or client
-	  local hud_role = hud_target:GetNClass()
+	  local hud_role = hud_target:GetRoleName()
 	  local hud_role_color = gteams.GetColor(hud_target:GTeam())
-	  draw.RoundedBox(0, 62, ScrH()-42-50, 171, 24, hud_role_color);
+	  draw.RoundedBox(0, 62, scrh-42-50, 171, 24, hud_role_color);
 
-	  draw.SimpleText( GetLangRole(hud_role), "BudgetLabel", 147, ScrH()-79, rolealmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
+	  draw.SimpleText( GetLangRole(hud_role), "BudgetLabel", 147, scrh-79, rolealmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
 
 	--end
-	if ( ply:GetNWBool( "HudjhouldDraw" ) && ply:Health() > 0 ) then --Curse
-		surface.SetDrawColor(255, 255, 255);
-		surface.SetMaterial(venenomat);
-		surface.DrawTexturedRect(390, ScrH()-47-57, 64, 64);
-	end
 		if client:GTeam() != TEAM_SPEC then
-			local screenwidth, screenheight = ScrW(), ScrH()
+			local screenwidth, screenheight = ScrW(), scrh
 			----------------------------[HPhud]----------------------------
 			boostcolor["a"] = Pulsate( 2 ) * 75
 
 			local boosted = ply:GetBoosted()
 
-			draw.RoundedBox(0, 10, ScrH()-50, 40, 40, roleblack);
-			draw.RoundedBox(0, 60, ScrH()-44, 211, 28, rolealmostblack);
+			draw.RoundedBox(0, 10, scrh-50, 40, 40, roleblack);
+			draw.RoundedBox(0, 60, scrh-44, 211, 28, rolealmostblack);
 			surface.SetDrawColor(255, 255, 255);
 			surface.SetMaterial(healthmat);
-			surface.DrawTexturedRect(13, ScrH()-47, 34, 34);
+			surface.DrawTexturedRect(13, scrh-47, 34, 34);
 
 			surface.SetDrawColor(255, 255, 255, 75);
-			surface.DrawOutlinedRect(10, ScrH()-50, 40, 40);
+			surface.DrawOutlinedRect(10, scrh-50, 40, 40);
 
-			surface.DrawOutlinedRect(60, ScrH()-44, 211, 28);
+			surface.DrawOutlinedRect(60, scrh-44, 211, 28);
 
 			surface.SetDrawColor(255, 255, 255, 200);
 			surface.SetMaterial(icoindex2);
@@ -4306,7 +4211,7 @@ if hud_style:GetInt() == 0 then
 				if i > 16 then 
 					i = 16 
 				end --Looping i when ply:Health() == ply:GetMaxHealth()
-				surface.DrawTexturedRect(62 + (i-1)*13, ScrH()-42, 12, 24);
+				surface.DrawTexturedRect(62 + (i-1)*13, scrh-42, 12, 24);
 			end
 			if ( boosted ) then
 
@@ -4314,59 +4219,91 @@ if hud_style:GetInt() == 0 then
 				draw.OutlinedBox( 10, screenheight - 50, 40, 40, 2, boostcolor )
 
 			end
-			draw.SimpleText(hp .. " / " .. maxhp, "BudgetLabel", 165, ScrH()-29, hpcoloralmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
+			draw.SimpleText(hp .. " / " .. maxhp, "BudgetLabel", 165, scrh-29, hpcoloralmostwhite, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
 	----------------------------[STAMINAhud]----------------------------
 		if ply:GTeam() != TEAM_SCP then
 			local energized = ply:GetEnergized()
 			local adrenaline = ply:GetAdrenaline()
 
-            draw.RoundedBox(0, 10, ScrH()-50-150, 40, 40, blinkblack);
-            draw.RoundedBox(0, 60, ScrH()-44-150, 211, 28, blinkalmostblack);
+            draw.RoundedBox(0, 10, scrh-50-100, 40, 40, blinkblack);
+            draw.RoundedBox(0, 60, scrh-44-100, 211, 28, blinkalmostblack);
             surface.SetDrawColor(255, 255, 255);
 
             surface.SetMaterial(staminamat);
-            surface.DrawTexturedRect(13, ScrH()-47-150, 34, 34);
+            surface.DrawTexturedRect(13, scrh-47-100, 34, 34);
             local staminab = math.Round(stamina / (ply:GetStaminaScale() * 100) * 16)
             if staminab > 16 then 
 			    staminab = 16 
 		    end
 		    surface.SetDrawColor(245, 255, 250)
             surface.SetDrawColor(255, 255, 255, 75);
-            surface.DrawOutlinedRect(10, ScrH()-50-150, 40, 40);
-		    surface.DrawOutlinedRect(60, ScrH()-44-150, 211, 28);
+            surface.DrawOutlinedRect(10, scrh-50-100, 40, 40);
+		    surface.DrawOutlinedRect(60, scrh-44-100, 211, 28);
 
 		    surface.SetDrawColor(255, 255, 255, 200);
 
-            surface.SetMaterial(icoindex2);
-            if exhausted then 
+         surface.SetMaterial(icoindex2);
+        if exhausted then 
 			    surface.SetMaterial(icoindex) 
 		    end
             for i = 1, staminab do
 				if ( energized ) then
 
 					surface.SetDrawColor(255, 255, 0,	Pulsate( 2 ) * 25)
-					surface.DrawTexturedRect(62 + (i-1)*13, ScrH()-42-150, 12, 24)
+					surface.DrawTexturedRect(62 + (i-1)*13, scrh-42-100, 12, 24)
 
 				elseif ( adrenaline ) then
 
 					surface.SetDrawColor(0, 198, 198,	Pulsate( 2 ) * 25)
-					surface.DrawTexturedRect(62 + (i-1)*13, ScrH()-42-150, 12, 24)
+					surface.DrawTexturedRect(62 + (i-1)*13, scrh-42-100, 12, 24)
 
 				else
-                    surface.DrawTexturedRect(62 + (i-1)*13, ScrH()-42-150, 12, 24);
+          surface.DrawTexturedRect(62 + (i-1)*13, scrh-42-100, 12, 24);
 				end
-            end
+       end
 	    end
 	   end
+
+	   local activeweapon = LocalPlayer():GetActiveWeapon()
+
+	   if IsValid(activeweapon) and activeweapon:GetClass() == "item_tazer" and activeweapon:Clip1() < 100 and ply:KeyDown(IN_RELOAD) then
+	   	tazer_lerp = Lerp(FrameTime()*2, tazer_lerp, 1)
+	   else
+	   	tazer_lerp = math.Approach(tazer_lerp, 0, FrameTime()*2)
+	   end
+
+	   if tazer_lerp != 0 then
+		   draw.RoundedBox(0, scrw/2-40/2, scrh/1.3-50, 40, 60, ColorAlpha(blinkblack, tazer_lerp*235));
+
+		   surface.SetDrawColor(255, 255, 255, tazer_lerp*235);
+		   surface.SetMaterial(tazermat);
+	     surface.DrawTexturedRect(scrw/2-34/2, scrh/1.3-47, 34, 34);
+
+	     surface.SetDrawColor(245, 255, 250, tazer_lerp*255)
+	     surface.DrawOutlinedRect(scrw/2-40/2, scrh/1.3-50, 40, 60);
+
+	     if IsValid(activeweapon) and activeweapon:GetClass() == "item_tazer" then
+	     	local clip = activeweapon:Clip1()
+	     	local col = color_white
+	     	local alpha = 255
+	     	if clip <= 2 then
+	     		col = Color(200,0,0)
+	     		alpha = Pulsate(4)*255
+	     	end
+	     --	draw.SimpleTextOutlined(string Text, string font = DermaDefault, number x = 0, number y = 0, table color = Color( 255, 255, 255, 255 ), number xAlign = TEXT_ALIGN_LEFT, number yAlign = TEXT_ALIGN_TOP, number outlinewidth, table outlinecolor = Color( 255, 255, 255, 255 ))
+		     draw.DrawText(clip, "tazer_font", scrw/2, scrh/1.3-13, ColorAlpha(col, tazer_lerp*alpha), TEXT_ALIGN_CENTER)
+		   end
+		end
+
 	-- Обновленный health бар
     --[[if ply:IsSpeaking() then
 		surface.SetDrawColor(Color(255,255,255,255))
 		surface.SetMaterial(Material("microphone.png"))
 		surface.DrawTexturedRect(widthz * 0.145, heightz * 0.945 + offset, heightz * 0.034, heightz * 0.035)
     end]]
-   else
-   	DRAWHUDSTYLE(hud_style:GetInt(), ply)
-   end
+   --else
+   	--DRAWHUDSTYLE(hud_style:GetInt(), ply)
+   --end
 
 
  end
@@ -4509,7 +4446,7 @@ function DrawTextInformation()
 
         if ( typing or speaking ) then
 
-          draw.SimpleText( "Разговаривает...", "char_title", 1, 45, whiteblack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+          draw.SimpleText( BREACH.TranslateString("l:speaks"), "char_title", 1, 45, whiteblack, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
         end
 
@@ -4620,7 +4557,6 @@ hook.Add( "CalcViewModelView", "CalcViewModel", function( wep, v, oldPos, oldAng
 	end
 
 end )
-  
 
 ----------------------------
 
@@ -5045,235 +4981,3 @@ net.Receive("Special_outline", function(len)
 	Show_Spy(team)
 
 end)
-
-
-function HelicopterStart()
-
-	net.Start("CreateHelicopterScene")
-	net.SendToServer()
-
-
-	local client = LocalPlayer()
-	client.NoMusic = true
-	client:ConCommand( "stopsound" )
-	local mtfntf = CreateSound(client, "no_music/factions_spawn/ntf_intro.ogg" )
-	timer.Simple( 1.5, function()
-		if ( client && client:IsValid() && client:GTeam() == TEAM_GUARD ) then
-			mtfntf:Play()
-		end
-	end )
-
-	local CutSceneWindow = vgui.Create( "DPanel" )
-	CutSceneWindow:SetText( "" )
-	CutSceneWindow:SetSize( ScrW(), ScrH() )
-	CutSceneWindow.StartAlpha = 255
-	CutSceneWindow.StartTime = CurTime() + 15
-	CutSceneWindow.Name = "SUBJECT NAME: " .. client:GetName()
-	CutSceneWindow.Status = "LOCATION: ??? ( Near to Site-19 )"
-	CutSceneWindow.Time = " ( Time after disaster: " .. string.ToMinutesSeconds( GetRoundTime() - cltime ) .. " )"
-
-	local ExplodedString = string.Explode( "", CutSceneWindow.Time, true )
-	local ExplodedString2 = string.Explode( "", CutSceneWindow.Status, true )
-	local ExplodedString3 = string.Explode( "", CutSceneWindow.Name, true )
-
-
-	local str = ""
-	local str1 = ""
-	local str2 = ""
-
-	local count = 0
-	local count1 = 0
-	local count2 = 0
-
-	CutSceneWindow.Paint = function( self, w, h )
-
-		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_black, self.StartAlpha ) )
-
-		surface.SetDrawColor( ColorAlpha( color_white, math.max( self.StartAlpha - 180, 0 ) ) )
-		surface.SetMaterial( ntf_icon )
-		surface.DrawTexturedRect( ScrW() / 2 - 128, ScrH() / 2 - 128, 256, 256 )
-
-		if ( CutSceneWindow.StartTime <= CurTime() + 10 ) then
-
-			if ( CutSceneWindow.StartTime <= CurTime() ) then
-
-				self.StartAlpha = math.Approach( self.StartAlpha, 0, RealFrameTime() * 128 )
-
-			end
-
-			if ( ( self.NextSymbol || 0 ) <= SysTime() && count2 != #ExplodedString3 ) then
-
-				count2 = count2 + 1
-				self.NextSymbol = SysTime() + .08
-				str = str..ExplodedString3[ count2 ]
-
-			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 != #ExplodedString2 ) then
-
-				count1 = count1 + 1
-				self.NextSymbol = SysTime() + .08
-				str1 = str1..ExplodedString2[ count1 ]
-
-			elseif ( ( self.NextSymbol || 0 ) <= SysTime() && count2 == #ExplodedString3 && count1 == #ExplodedString2 && count != #ExplodedString ) then
-
-				count = count + 1
-				self.NextSymbol = SysTime() + .08
-				str2 = str2..ExplodedString[ count ]
-
-			end
-
-			draw.SimpleTextOutlined( str, "TimeMisterFreeman", w / 2, h / 2, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
-			draw.SimpleTextOutlined( str1, "TimeMisterFreeman", w / 2, h / 2 + 32, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
-			draw.SimpleTextOutlined( str2, "TimeMisterFreeman", w / 2, h / 2 + 64, ColorAlpha( clr_gray, self.StartAlpha ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, Color( 0, 0, 180, self.StartAlpha ) )
-
-		end
-
-		if ( self.StartAlpha <= 0 ) then
-
-			timer.Simple( 25, function()
-
-				if ( client:Team() == TEAM_NTF ) then
-
-					BREACH.EF.FadeMusic( 10 )
-					timer.Simple( 12, function()
-
-						client.NoMusic = nil
-
-					end )
-
-				end
-
-			end )
-
-			self:Remove()
-
-		end
-
-	end
-
-end
-
-concommand.Add("HelicopterStart", HelicopterStart)
-
-local heliModel = Model( "models/comradealex/mgs5/hp-48/hp-48test.mdl" )
-
-local light_origin = Vector( 14883.383789, 13000.545898, -15814.162109 )
-
-local helicopter_angle = Angle( 0, -90, 0 )
-
-
-
-function ClientSpawnHelicopter()
-
-
-
-	local entcall = LocalPlayer()
-
-
-
-	entcall.StopInventory = true
-
-	local dlight = DynamicLight( entcall:EntIndex() )
-
-	if ( dlight ) then
-
-
-
-		dlight.pos = light_origin
-
-		dlight.r = 190
-
-		dlight.g = 0
-
-		dlight.b = 0
-
-		dlight.brightness = 3
-
-		dlight.Size = 900
-
-		dlight.DieTime = CurTime() + 60
-
-
-
-	end
-
-
-
-  local helicopter = ents.CreateClientside( "base_gmodentity" )
-
-  helicopter:SetModel( heliModel )
-
-  helicopter:SetPos( light_origin )
-
-  helicopter:SetAngles( helicopter_angle )
-
-
-
-	timer.Simple( 10, function()
-
-
-
-		local snd = CreateSound( helicopter, "nextoren/others/helicopter/apache_hover.wav" )
-
-		snd:SetDSP( 17 )
-
-		snd:Play()
-
-
-
-		timer.Simple( 29, function()
-
-
-
-			if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
-
-
-
-				entcall.StopInventory = false
-
-				helicopter:StopSound( "nextoren/others/helicopter/apache_hover.wav" )
-
-
-
-				timer.Simple( 20, function()
-
-
-
-					if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
-
-
-
-						BREACH.EF.PickGenericSong()
-
-
-
-					end
-
-
-
-				end )
-
-
-
-			end
-
-
-
-		end )
-
-
-
-	end )
-
-
-
-	util.ScreenShake( light_origin, 5, 1, 40, 1024 )
-
-
-
-	HelicopterStart()
-
-
-
-end
-
-net.Receive( "CreateHelicopterScene", ClientSpawnHelicopter )

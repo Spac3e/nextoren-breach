@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/scp_tree.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -25,7 +25,7 @@ ENT.Attacks = 0
 ENT.SnapSound = Sound( "snap.wav" )
 
 function ENT:Initialize()
-	self.Entity:SetModel( "models/props_foliage/small-tree01.mdl" )
+	self.Entity:SetModel( "models/trees/new_elm.mdl" )
 	self.Entity:SetMoveType(MOVETYPE_NOCLIP )
 	self:SetCollisionGroup( COLLISION_GROUP_NONE    )
 	self.Entity:SetPos(Vector(9085.486328, -1932.134644, 5.520229))
@@ -46,6 +46,7 @@ function ENT:Think()
                     if v == self.Copied then return end
                     if v == self.CopiedOut then return end
 			        if v:GetClass() == "item_scp_005" then continue end
+			        if v:GetClass() == "weapon_special_gaus" then continue end
                     local Copy = ents.Create( v:GetClass() )
                     Copy:Spawn()
                     Copy:SetPos( Vector(9085.438477, -1904.265137, 81.331055) )

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_radio.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -12,8 +12,22 @@ File Path:   gamemodes/breach/entities/weapons/item_radio.lua
 
 AddCSLuaFile()
 
-if ( SERVER ) then
+if CLIENT then
+	net.Receive( "SetFrequency", function( len )
 
+		local wep = net.ReadEntity()
+		local freq = net.ReadFloat()
+
+		wep.Channel = math.Round(freq, 1)
+
+		if ( wep.SetKeyRedact ) then
+
+			wep:SetKeyRedact( false )
+
+		end
+
+	end )
+elseif ( SERVER ) then
 	util.AddNetworkString( "SetFrequency" )
 	util.AddNetworkString( "RadioHooks" )
 	util.AddNetworkString( "GetRadioChannel" )
@@ -470,7 +484,7 @@ function SWEP:Reload()
 
 		if ( CLIENT ) then
 
-			BREACH.Player:ChatPrint( true, true, "Чтобы войти в режим ручного редактирования канала рации, нажмите \"ПКМ\"." )
+			BREACH.Player:ChatPrint( true, true, "l:radio_edit_info" )
 
 		end
 
@@ -515,8 +529,8 @@ if ( CLIENT ) then
 
 			self.Hook_Added = true
 
-			BREACH.Player:ChatPrint( true, true, "Вы вошли в режим ручного редактирования канала рации. Пожалуйста, соблюдайте форму записи. ( NNN.N, N = натуральное число, N < 10 )" )
-			BREACH.Player:ChatPrint( true, true, "Чтобы выйти из этого режима без изменений, нажмите кнопку \"ПКМ\". Чтобы внести изменения, нажмите кнопку \"ENTER\"." )
+			BREACH.Player:ChatPrint( true, true, "l:radio_entered_edit" )
+			BREACH.Player:ChatPrint( true, true, "l:radio_exit_info" )
 
 			hook.Add( "PlayerButtonDown", "Radio_KeyTrapper", function( caller, key )
 
@@ -583,7 +597,7 @@ if ( CLIENT ) then
 
 					else
 
-						BREACH.Player:ChatPrint( true, true, "К сожалению, мы не смогли изменить канал рации. Соблюдайте форму заполнения." )
+						BREACH.Player:ChatPrint( true, true, "l:radio_bad_channel" )
 
 						net.Start( "SetFrequency" )
 

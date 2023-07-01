@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0 (Alpha)
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_049_redux.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -117,10 +117,10 @@ if SERVER then
 	function ment:MakeZombie()
 		self:MakeZombieTexture()
 		for _, bnmrg in pairs(self:LookupBonemerges()) do
-			if bnmrg:GetModel():find("head_main_1") or bnmrg:GetModel():find("balaclava") then
+			if bnmrg:GetModel():find("male_head") or bnmrg:GetModel():find("balaclava") then
 				self.FaceTexture = "models/all_scp_models/zombies/shared/heads/head_1_1"
-				if bnmrg:GetModel():find("head_main_1_3") or bnmrg:GetModel():find("head_main_1_4") then
-					bnmrg:SetSubMaterial(2, self.FaceTexture)
+				if CORRUPTED_HEADS[bnmrg:GetModel()] then
+					bnmrg:SetSubMaterial(1, self.FaceTexture)
 				else
 					bnmrg:SetSubMaterial(0, self.FaceTexture)
 				end
@@ -197,7 +197,7 @@ if SERVER then
 		victim:SetHealth(victim:GetMaxHealth())
 		victim:MakeZombie()
 		victim:StripWeapons()
-		victim:Give("weapon_scp_049_2")
+		victim:BreachGive("weapon_scp_049_2")
 		timer.Create("Safe_WEAPON_SELECT_"..victim:SteamID64(), FrameTime(), 99999, function()
 			if !IsValid(victim:GetActiveWeapon()) or victim:GetActiveWeapon():GetClass() != "weapon_scp_049_2" then
 				victim:SelectWeapon("weapon_scp_049_2")
@@ -220,9 +220,6 @@ function SWEP:Deploy()
 
 	if ( SERVER ) then
 
-		self.Owner:SetMaxHealth(3600)
-		self.Owner:SetHealth(3600)
-
 		self.Owner:DrawWorldModel( false )
 
 		timer.Simple( .25, function()
@@ -240,7 +237,7 @@ function SWEP:Deploy()
 	if SERVER then
 
 		hook.Add("PlayerButtonDown", "SCP_049_CONTROLS", function(ply, butt)
-			if ply:GetNClass() != "SCP049" then return end
+			if ply:GetRoleName() != "SCP049" then return end
 
 			local rag = ply:GetEyeTrace().Entity
 
@@ -248,11 +245,12 @@ function SWEP:Deploy()
 
 			if butt == KEY_E then
 				local victim = rag.SCP049User
-				ply:BrProgressBar("Превращаем в зомби...", 10, "nextoren/gui/icons/notifications/breachiconfortips.png", rag, false, function()
+				ply:BrProgressBar("l:creating_zombie", 5, "nextoren/gui/icons/notifications/breachiconfortips.png", rag, false, function()
+					if IsValid(rag.SCP049User) and rag.SCP049User:GTeam() == TEAM_SPEC then return end
 					if IsValid(rag.SCP049User) and rag.SCP049User:IsPlayer() then
 						local victim = rag.SCP049User
 						if !timer.Exists("Death_SCP049_"..victim:SteamID64()) then
-							ply:RXSENDNotify("Труп уже пролежал достаточно долго и его нельзя превратить в зомби")
+							ply:RXSENDNotify("l:scp049_too_late")
 							return
 						end
 						ply:AddToAchievementPoint("scp049", 1)
@@ -277,7 +275,7 @@ function SWEP:Deploy()
 						victim:SetMaxHealth(victim:GetMaxHealth() * 2)
 						victim:SetHealth(victim:GetMaxHealth())
 						victim:MakeZombie()
-						victim:Give("weapon_scp_049_2")
+						victim:BreachGive("weapon_scp_049_2")
 						victim:CompleteAchievement("scp0492")
 						timer.Create("Safe_WEAPON_SELECT_"..victim:SteamID64(), FrameTime(), 99999, function()
 							if !IsValid(victim:GetActiveWeapon()) or victim:GetActiveWeapon():GetClass() != "weapon_scp_049_2" then
@@ -297,10 +295,10 @@ function SWEP:Deploy()
 			elseif butt == KEY_R then
 				local victim = rag.SCP049User
 				if !IsValid(victim) or !timer.Exists("Death_SCP049_"..victim:SteamID64()) then return end
-				ply:BrProgressBar("Поглощаем кровь...", 4.5, "nextoren/gui/icons/notifications/breachiconfortips.png", rag, false, function()
+				ply:BrProgressBar("l:drinking_blood", 4.5, "nextoren/gui/icons/notifications/breachiconfortips.png", rag, false, function()
 					if IsValid(rag.SCP049User) and rag.SCP049User:IsPlayer() then
 						local victim = rag.SCP049User
-						ply:SetHealth(math.random(150,200))
+						ply:AnimatedHeal(math.random(150,200))
 						timer.Remove("Death_SCP049_"..victim:SteamID64())
 						victim:LevelBar()
 						victim:SetupNormal()
@@ -318,7 +316,7 @@ function SWEP:Deploy()
 
 			local client = LocalPlayer()
 
-			if ( client:GTeam() != TEAM_SCP || client:Health() <= 0 || client:GetNClass() != "SCP049" ) then
+			if ( client:GTeam() != TEAM_SCP || client:Health() <= 0 || client:GetRoleName() != "SCP049" ) then
 
 				hook.Remove( "PreDrawOutlines", "SCP049_BodyOutline" )
 				return
@@ -487,9 +485,13 @@ function SWEP:GrabVictim( victim )
 
 	self.Owner:SetForcedAnimation( "0_049_struggle_start", 1.3, nil, function()
 
+		self.Owner:GodEnable()
+
 		self.Owner:SetForcedAnimation( "0_049_struggle_loop", 4, nil, function()
 
 			self.Owner:SetForcedAnimation( "0_049_struggle_end", 1.5, nil, function()
+
+				self.Owner:GodDisable()
 
 				self.Owner:SetNWAngle( "ViewAngles", angle_zero )
 				victim:SetNWAngle( "ViewAngles", angle_zero )
@@ -506,6 +508,8 @@ function SWEP:GrabVictim( victim )
 	end )
 
 	victim:SetForcedAnimation( "0_049_victum_struggle_start", 1.3, nil, function()
+
+		victim:GodEnable()
 
 		victim:SetDSP( 16 )
 		net.Start( "SCP049_PlayerScreenManipulations" )
@@ -524,7 +528,15 @@ function SWEP:GrabVictim( victim )
 				victim:SetNotSolid( true )
 				victim:DrawWorldModel( false )
 
-				local body = CreateLootBox( victim )
+				local FIX = DamageInfo()
+				FIX:SetInflictor(self)
+				FIX:SetAttacker(self.Owner)
+				FIX:SetDamage(100)
+				FIX:SetDamageType(DMG_SLASH)
+
+				local body = CreateLootBox( victim, self, self.Owner, false, FIX )
+
+				victim:GodDisable()
 
 				victim:SetSpecialMax(0)
 				victim:SetNWString("AbilityName", "")
@@ -539,21 +551,21 @@ function SWEP:GrabVictim( victim )
 						--[[
 					end
 				end)]]
-				local body = CreateLootBox( victim )
+
 				body.SCP049Victim = true
 				body.SCP049User = victim
 
-				local savename = victim:GetName()
+				local savename = victim:GetNamesurvivor()
 
 				timer.Create("Death_SCP049_"..victim:SteamID64(), 50, 1, function()
-					if victim:GetName() == savename then
+					if victim:GetNamesurvivor() == savename then
 						victim:LevelBar()
 						victim:SetupNormal()
 						victim:SetDSP( 1 )
 						victim:SetSpectator()
 						victim.AffectedBy049 = nil
 						self.Owner:SetNWEntity("NTF1Entity", NULL)
-						victim:RXSENDNotify("Увы, слишком долго вы пролежали на полу и ", gteams.GetColor(TEAM_SCP),"SCP-049",color_white," больше не может превратить вас в зомби.")
+						victim:RXSENDNotify("l:scp049_time_out_pt1 ", gteams.GetColor(TEAM_SCP),"SCP-049",color_white," l:scp049_time_out_pt2")
 						if IsValid(body) then body.SCP049Victim = false end
 					end
 				end)
@@ -785,7 +797,7 @@ function SWEP:SecondaryAttack()
 
 		if ( player.IsZombie && player:Health() > 0 ) then
 
-			player:SetHealth(player:GetMaxHealth() - player:Health())
+			player:AnimatedHeal(player:GetMaxHealth() - player:Health())
 			player:SetArmor(50)
 
 			timer.Simple( 20, function()

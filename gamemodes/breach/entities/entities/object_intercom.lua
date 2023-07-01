@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/entities/object_intercom.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile();
 
 ENT.Type = "anim"
@@ -98,29 +110,30 @@ end
 
 function ENT:PlaySoundStart()
 
-	net.Start( "ForcePlaySound" )
+	--net.Start( "ForcePlaySound" )
 
-		net.WriteString( "nextoren/entities/intercom/start.mp3" )
+		--net.WriteString( "nextoren/entities/intercom/start.mp3" )
 
-	net.Broadcast()
+	--net.Broadcast()
+	PlayAnnouncer("nextoren/entities/intercom/start.mp3")
 
 end
 
 function ENT:PlaySoundEnd()
 
-	net.Start( "ForcePlaySound" )
+	--net.Start( "ForcePlaySound" )
 
-	net.WriteString( "nextoren/entities/intercom/stop.mp3" )
+		--net.WriteString( "nextoren/entities/intercom/stop.mp3" )
 
-	net.Broadcast()
-	
+	--net.Broadcast()
+	PlayAnnouncer("nextoren/entities/intercom/stop.mp3")
+	/*
 	net.Start( "IntercomStatus" )
 
 		net.WriteEntity( self:GetTalker() )
 		net.WriteBool( false )
 
-	net.Broadcast()
-
+	net.Broadcast()*/
 	timer.Remove( "CheckDistationFromIntercom" ..self:GetTalker():SteamID() );
 
 end
@@ -509,7 +522,7 @@ if SERVER then util.AddNetworkString("OpenIntercomMenu") util.AddNetworkString("
 
 if SERVER then
 	net.Receive("IntercomAction", function(len, ply)
-		if ply:GetNClass() != ROLES.ROLE_HOF then return end
+		if ply:GetRoleName() != role.Dispatcher then return end
 		local intercom = net.ReadEntity()
 		local actionname = net.ReadString()
 		intercom = ply:GetEyeTrace().Entity
@@ -559,6 +572,7 @@ end
 
 if CLIENT then
 	net.Receive("OpenIntercomMenu", function()
+		--if activator:GetRoleName() == role.MTF_HOF or activator:GetRoleName() == role.Dispatcher then
 				if istable(BREACH.DispatchSpecial) then
 					if BREACH.DispatchSpecial.MainPanel and IsValid(BREACH.DispatchSpecial.MainPanel.Disclaimer) then BREACH.DispatchSpecial.MainPanel.Disclaimer:Remove() end
 					for i, v in pairs(BREACH.DispatchSpecial) do
@@ -627,7 +641,7 @@ if CLIENT then
 			
 					draw.DrawText( "Панель интеркома", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 			
-					if ( client:GetNClass() != ROLES.ROLE_HOF || client:Health() <= 0 ) then
+					if ( client:GetRoleName() != role.Dispatcher || client:Health() <= 0 ) then
 			
 						if ( IsValid( BREACH.DispatchSpecial.MainPanel ) ) then
 			
@@ -710,7 +724,7 @@ end
 ENT.DispatchCD = 0
 
 function ENT:Use(activator, caller)
-	if activator:GetNClass() == ROLES.ROLE_HOF and self.DispatchCD <= CurTime() then
+	if activator:GetRoleName() == role.Dispatcher and self.DispatchCD <= CurTime() then
 		self.DispatchCD = CurTime() + 10
 		net.Start("OpenIntercomMenu")
 		net.Send(activator)
@@ -779,7 +793,7 @@ function ENT:Draw()
 		--draw.RoundedBox(0, -120, -102, 80, 115, Color(0, 0, 0, 250))
 		if ( self:GetStatus() == "Transmitting"  ) then
 
-			draw.DrawText(string.Replace("TRANSMITTING...", "#T", tostring(self:GetWTFTimer())), "LZTextVerySmall", 24, -50, text_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
+			draw.DrawText(string.Replace("TRANSMITTING...\nCHAT ONLY", "#T", tostring(self:GetWTFTimer())), "LZTextVerySmall", 24, -50, text_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
 
 		elseif ( self:GetStatus() == "Cooldown" ) then
 
@@ -797,7 +811,7 @@ function ENT:Draw()
 		elseif ( self:GetStatus() == "Scientist" ) then
 			local amount = 0
 			for i, v in pairs(player.GetAll()) do
-				if IsValid(v) and ( v:GTeam() == TEAM_SCI or v:GTeam() == TEAM_SPECIAL or v:GetModel():find("/sci/") ) and !v:GetModel():find("hazmat") and v:GetNClass() != ROLES.ROLE_HOF and v:IsEntrance() then
+				if IsValid(v) and ( v:GTeam() == TEAM_SCI or v:GTeam() == TEAM_SPECIAL or v:GetModel():find("/sci/") ) and !v:GetModel():find("hazmat") and v:GetRoleName() != role.Dispatcher and v:IsEntrance() then
 					amount = amount + 1
 				end
 			end

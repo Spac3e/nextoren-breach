@@ -69,19 +69,17 @@ function RegisterSCP( name, model, weapon, static_stats, dynamic_stats, custom_c
 		error( "SCP " .. name .. "is already registered!" )
 	end
 
-	local rolename = "ROLE_"..name
-	if !ALLLANGUAGES["english"]["ROLES"][rolename] or !ALLLANGUAGES["english"]["starttexts"][rolename] then
+	local rolename = name
+	if !ALLLANGUAGES["english"]["role"][rolename] then
 		error( "No language entry for: "..rolename )
 	end
 
-	local spawn = _G["SPAWN_"..name]
+	local spawn = _G["SPAWN_"..name] || SPAWN_SCP_RANDOM
 	if !static_stats.no_spawn and !dynamic_stats.no_spawn then
 		if !spawn or ( !isvector( spawn ) and !istable( spawn ) ) then
 			error( "No spawn position entry for: ".."SPAWN_"..name )
 		end
 	end
-
-	ROLES[rolename] = name
 
 	local scp = ObjectSCP( name, model, weapon, spawn, static_stats, dynamic_stats )
 
@@ -214,7 +212,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	end
 
 	ply:SetGTeam( TEAM_SCP )
-	ply:SetNClass( ROLES["ROLE_"..self.name] )
+	ply:SetRoleName( role[self.name] )
 
 	if !self.basestats.no_model then
 		ply:SetModel( self.model )
@@ -229,10 +227,14 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetMaxSpeed( self.basestats.max_speed or 200 )
 	ply:SetCrouchedWalkSpeed( self.basestats.crouch_speed or 0.6 )
 	ply:SetJumpPower( self.basestats.jump_power or 200 )
-	local wep = ply:Give( self.swep )
-	ply:SelectWeapon( self.swep )
-	if IsValid( wep ) then
-	wep.ShouldFreezePlayer = self.basestats.prep_freeze == true
+
+	if !self.basestats.no_swep then
+		local wep = ply:Give( self.swep )
+		ply:SelectWeapon( self.swep )
+
+		if IsValid( wep ) then
+			wep.ShouldFreezePlayer = self.basestats.prep_freeze == true
+		end
 	end
 
 	ply:SetArmor( 0 )

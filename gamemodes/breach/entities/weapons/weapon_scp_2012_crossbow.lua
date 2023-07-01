@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_2012_crossbow.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -124,7 +124,7 @@ function SWEP:Deploy()
 
   self:SetArrows( 4 )
 
-  if ( CLIENT && LocalPlayer():GetNClass() == "SCP2012" ) then
+  if ( CLIENT && LocalPlayer():GetRoleName() == "SCP2012" ) then
 
     self.Owner.SafeModeWalk = 2
     self:ChooseAbility( self.AbilityIcons )
@@ -135,7 +135,7 @@ function SWEP:Deploy()
 
     hook.Add( "PlayerButtonDown", "SCP2012_Crossbow_ChangeWeapon", function( player, button )
 
-      if ( player:GetNClass() != "SCP2012" ) then return end
+      if ( player:GetRoleName() != "SCP2012" ) then return end
 
       if ( button == KEY_H ) then
 

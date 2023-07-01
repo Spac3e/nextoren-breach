@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_682.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -140,7 +140,7 @@ local function Special2( player )
 
 	timer.Simple( 7, function()
 
-		if ( player && player:IsValid() && player:GetNClass() == "SCP682" && player:GetActiveWeapon():GetClass() == "weapon_scp_682" ) then
+		if ( player && player:IsValid() && player:GetRoleName() == "SCP682" && player:GetActiveWeapon():GetClass() == "weapon_scp_682" ) then
 
 			player:SetCustomCollisionCheck( false )
 			player:SetWalkSpeed( 100 )
@@ -285,8 +285,6 @@ function SWEP:Deploy()
 	self.Deployed = true
 
 	if SERVER then
-		self.Owner:SetMaxHealth(9000)
-		self.Owner:SetHealth(9000)
 		self.Owner:SetWalkSpeed( 100 )
 		self.Owner:SetRunSpeed( 100 )
 		self.Owner:SetCrouchedWalkSpeed( 100 )
@@ -302,7 +300,7 @@ function SWEP:Deploy()
 
 	hook.Add( "PlayerButtonDown", "SCP_682_SpecialAbilities", function( ply, butt )
 
-		if ( ply:GetNClass() != "SCP682" ) then return end
+		if ( ply:GetRoleName() != "SCP682" ) then return end
 
 		if ( Button_table[ butt ] ) then
 
@@ -314,7 +312,7 @@ function SWEP:Deploy()
 
 				if ( ( wep.AbilityIcons[ i ].CooldownTime || 0 ) < CurTime() ) then
 
-					wep.AbilityIcons[ i ].CooldownTime = CurTime() + tonumber( wep.AbilityIcons[ butt - 1 ].Cooldown ) / 2
+					wep.AbilityIcons[ i ].CooldownTime = CurTime() + 15
 
 				end
 
@@ -436,8 +434,10 @@ if ( SERVER ) then
 					v:EmitSound( "nextoren/scp/096/metal_break3.wav" )
 					v:Fire( "Unlock" )
 					v:Fire( "Open" )
+					v:Fire( "Lock" )
 					timer.Simple( 6, function()
 
+						v:Fire( "Unlock" )
 						v.OpenedBySCP096 = false
 
 					end )
@@ -522,7 +522,7 @@ function SWEP:OnRemove()
 
     local player = players[ i ]
 
-    if ( player && player:IsValid() && player:GetNClass() == "SCP682" ) then return end
+    if ( player && player:IsValid() && player:GetRoleName() == "SCP682" ) then return end
 
   end
 

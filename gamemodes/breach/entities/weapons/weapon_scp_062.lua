@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/weapon_scp_062.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 SWEP.AbilityIcons = {
@@ -67,19 +79,6 @@ SWEP.AbilityIcons = {
 
 	},
 
-	{
-
-		["Name"] = "Special #4",
-		["Description"] = "Become invisible for a short time using special technique",
-		["Cooldown"] = 80,
-		["CooldownTime"] = 0,
-		["bodies"] = 25,
-		["KEY"] = _G["KEY_5"],
-		["Using"] = false,
-		["Icon"] = "nextoren/gui/special_abilities/scp_062_fr_level5.png"
-
-	},
-
 }
 
 SWEP.ViewModelFOV	= 120
@@ -129,7 +128,7 @@ function SWEP:OnRemove()
 	hook.Remove( "PlayerButtonDown", "SCP_062_ABILITY" )
 
 	if SERVER then
-	--	self.Owner:ConCommand( "-forward" )
+		self.Owner:ConCommand( "-forward" )
 	end
 
 end
@@ -138,7 +137,7 @@ function SWEP:Initialize()
 
 	hook.Add( "PlayerButtonDown", "SCP_062_ABILITY", function( activator, butt )
 
-		if activator:GetNClass() != "SCP062FR" then return end
+		if activator:GetRoleName() != "SCP062FR" then return end
 
 		local self = activator
 
@@ -178,21 +177,20 @@ function SWEP:Initialize()
 			        wep:Cooldown(1, 7)
 
 					activator:SetForcedAnimation(13, 7, nil, function()
-						self:SetHealth(math.Approach(self:Health(), self:GetMaxHealth(), 235))
 						--wep:Cooldown(1, 15)
 						wep:SetBodies(wep:GetBodies() + 1)
 						tar.BloodConsumed = true
+						local consumehp = 100
+						if tar.__Health then consumehp = tar.__Health end
+						activator:SetHealth(math.min(activator:GetMaxHealth(), activator:Health() + consumehp))
 						self:SetNWEntity("NTF1Entity", self)
 
 						local wep_bodies = wep:GetBodies()
 
-						if wep_bodies == 5 or wep_bodies == 10 or wep_bodies == 15 or wep_bodies == 20 or wep_bodies == 25 then
+						if wep_bodies == 5 or wep_bodies == 10 or wep_bodies == 15 or wep_bodies == 20 then
 
-							self:RXSENDNotify(Color(0,255,0,200), "Поздравляю!", color_white, " Вы открыли новую стадию, теперь у вас доступна новая способность.")
+							self:RXSENDNotify(Color(0,255,0,200), "l:scp062_new_stage_pt1", color_white, " l:scp062_new_stage_pt2")
 							self:EmitSound( "nextoren/scp/scp_hunter/evolve.mp3" , 89, 200, 1.2, CHAN_VOICE, 0, 0 )
-
-							self:SetMaxHealth(activator:GetMaxHealth() + 1000)
-							self:SetHealth(activator:Health() + 1000)
 
 							self:SetWalkSpeed(math.Approach(activator:GetWalkSpeed(), 350, 65))
 							self:SetRunSpeed(activator:GetWalkSpeed())
@@ -263,7 +261,7 @@ function SWEP:Initialize()
 
 					local client = LocalPlayer()
 
-					if client:GetNClass() != "SCP062FR" then
+					if client:GetRoleName() != "SCP062FR" then
 						hook.Remove("HUDPaint", "SCP_062_VISION")
 						return
 					end
@@ -313,22 +311,6 @@ function SWEP:Initialize()
 
 			end
 
-		elseif butt == KEY_5 and !wep:IsCooldown(6) then
-
-			if SERVER then
-
-				wep:Cooldown(6, wep.AbilityIcons[6].Cooldown)
-
-				self:SetNoDraw(true)
-
-				timer.Simple(20, function()
-					if IsValid(self) and self:GTeam() == TEAM_SPEC then
-						self:SetNoDraw(false)
-					end
-				end)
-
-			end
-
 		elseif butt == KEY_2 and !wep:IsCooldown(3) then
 
 			if SERVER then
@@ -342,12 +324,39 @@ function SWEP:Initialize()
 
 					if IsValid(ply) and ply:IsPlayer() and ply:GTeam() != TEAM_SPEC and ply:GTeam() != TEAM_SCP and ply:Health() > 0 then
 
-						ply:Freeze(true)
-						ply:ScreenFade(SCREENFADE.IN, color_white, 7, 0)
+						ply:SetNWInt( "Custom_Sensitivity", .2 )
 
-						timer.Simple(7, function()
-							ply:Freeze(false)
-						end)
+						ply:ScreenFade( SCREENFADE.OUT, clr_gray, .2, 8 )
+						ply:ScreenFade( SCREENFADE.IN, ColorAlpha( color_white, 40 ), 7.9, .2 )
+						ply:ScreenFade( SCREENFADE.OUT, ColorAlpha( color_white, 30 ), 8.1, 2 )
+
+						net.Start( "ForcePlaySound" )
+
+							net.WriteString( "nextoren/others/player_breathing_knockout01.wav" )
+
+						net.Send( ply )
+
+						ply:SetDSP( 15, true )
+
+						timer.Simple( 8, function()
+
+							if ( ply && ply:IsValid() ) then
+
+								ply:SetDSP( 0, true )
+
+							end
+
+						end )
+
+						timer.Simple( 11, function()
+
+							if ( ply && ply:IsValid() ) then
+
+								ply:SetNWInt( "Custom_Sensitivity", -1 )
+
+							end
+
+						end )
 
 					end
 
@@ -361,9 +370,67 @@ function SWEP:Initialize()
 
 end
 
+
+local w = 64
+local h = 64
+local padding = 133
+
+local invisicon = Material( "nextoren/gui/special_abilities/special_invisible.png", "smooth" )
+
+local function DrawHUD()
+
+  local client = LocalPlayer()
+
+  if ( !client:HasWeapon( "weapon_scp_062" ) ) then
+
+    hook.Remove( "HUDPaint", "SCP_062_HUD" )
+
+    return
+  end
+
+	local y = ScrH() * .75
+
+	local color = color_white
+
+	if LocalPlayer():GetNoDraw() then
+		color = Color( 10, 10, 40, 240 )
+	else
+		color = color_white
+	end
+
+	render.SetMaterial( invisicon )
+	render.DrawQuadEasy( Vector( ScrW() / 2, y ),
+
+		Vector( 0, 0, -1 ),
+		w, h,
+		color,
+		-90
+
+	)
+
+end
+
 function SWEP:Deploy()
 
 	self:SetHoldType( self.HoldType )
+
+	if ( CLIENT ) then
+
+	  hook.Add( "HUDPaint", "SCP_062_HUD", DrawHUD )
+
+	end
+
+	self.Deployed = true
+
+end
+
+function SWEP:DrawHUDBackground()
+
+  if ( !self.Deployed ) then
+
+    self:Deploy()
+
+  end
 
 end
 
@@ -382,6 +449,12 @@ function SWEP:Think()
 	local bodies = self:GetBodies()
 
 	if SERVER then
+
+		if self.Owner:GetVelocity():Length2DSqr() >= 15 then
+			self.Owner:SetNoDraw(false)
+		else
+			self.Owner:SetNoDraw(true)
+		end
 
 		if self.Owner.FallDamageImmunity then
 			if self.Owner:OnGround() then
@@ -495,7 +568,7 @@ function SWEP:PrimaryAttack()
 	    self.dmginfo:SetInflictor( self )
 	    self.dmginfo:SetAttacker( self.Owner )
 
-	    self.DamagedPlayers[#self.DamagedPlayers + 1] = {tar:GetName(), tar}
+	    self.DamagedPlayers[#self.DamagedPlayers + 1] = {tar:GetNamesurvivor(), tar}
 
 	    self.Owner:EmitSound( "npc/antlion/shell_impact4.wav" )
 	    self.Owner:MeleeViewPunch( self.dmginfo:GetDamage() )

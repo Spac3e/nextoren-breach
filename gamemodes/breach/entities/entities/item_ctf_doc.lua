@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/item_ctf_doc.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -69,8 +69,8 @@ local delay = 1
 function ENT:Use(activator, caller)
     if nextuse > CurTime() then return end
     nextuse = CurTime() + delay
-    activator:BrProgressBar("Подбираем документы...", 10, "nextoren/gui/icons/hand.png", self, false, function()
-        activator:RXSENDNotify("Донесите документы до вашей базы")
+    activator:BrProgressBar("l:picking_up_docs", 10, "nextoren/gui/icons/hand.png", self, false, function()
+        activator:RXSENDNotify("l:ctf_docs_to_base")
         self:SetCarrier(activator)
         self:SetParent(activator)
         self:SetLocalPos(vector_origin)

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp096.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -101,7 +101,7 @@ function SWEP:Deploy()
 
 			local client = LocalPlayer()
 
-			if ( client:GTeam() != TEAM_SCP && client:GetNClass() != "SCP096" && client:Health() <= 0 ) then
+			if ( client:GTeam() != TEAM_SCP && client:GetRoleName() != "SCP096" && client:Health() <= 0 ) then
 
 				hook.Remove( "PreDrawOutlines", "DrawVictims" )
 
@@ -116,9 +116,13 @@ function SWEP:Deploy()
 
 			for victimsid, victimsv in ipairs( wep.victims ) do
 
-				if ( victimsid == 1 && victimsv && victimsv:IsValid() && victimsv:Health() > 0 && victimsv:GTeam() != TEAM_SPEC ) then
+				if ( victimsv && victimsv:IsValid() && victimsv:Health() > 0 && victimsv:GTeam() != TEAM_SPEC ) then
 
 					victimstab[ #victimstab + 1 ] = victimsv
+					local bnm = victimsv:LookupBonemerges()
+					for i = 1, #bnm do
+						victimstab[ #victimstab + 1 ] = bnm[i]
+					end
 
 				else
 
@@ -256,7 +260,7 @@ function SWEP:PrimaryAttack()
 
 			if ( !ent:IsPlayer() ) then return end
 
-			if ( self.victims[ 1 ] != ent ) then return end
+			if !table.HasValue(self.victims, ent) then return end
 
 			ent:Kill()
 			self.ScreamSound:Stop()
@@ -317,8 +321,6 @@ function SWEP:PrimaryAttack()
 				self.Owner:SetWalkSpeed( 40 )
 				self.Owner:SetMaxSpeed( 40 )
 				self.Owner:SetRunSpeed( 40 )
-				self.Owner:SetMaxHealth( 1500 )
-				self.Owner:SetHealth( 1500 )
 				self.Owner:DoAnimationEvent( ACT_GESTURE_MELEE_ATTACK1 )
 				self.ScreamSound:Stop()
 				self.ScreamSound = nil
@@ -371,8 +373,7 @@ function SWEP:StartWatching()
 	self.IsCrying = true
 	self.Owner:Freeze( true )
 	self.Owner:EmitSound( "nextoren/scp/096/start_crying.wav" )
-	self.Owner:SetMaxHealth( 3000 )
-	self.Owner:SetHealth( 3000 )
+	self.Owner.DamageModifier = 0.01
 
 	self:AnimationsChange( true )
 
@@ -390,6 +391,8 @@ function SWEP:StartWatching()
 
 		if ( self && self:IsValid() ) then
 
+			self.KeepRageUntil = CurTime() + 60
+
 			self.IsCrying = false
 			self.IsInRage = true
 
@@ -402,9 +405,8 @@ function SWEP:StartWatching()
 			self.Owner:Freeze( false )
 			self.Owner:SetWalkSpeed( 350 )
 			self.Owner:SetRunSpeed( 350 )
-			self.Owner:SetHealth( 2000 )
-			self.Owner:SetMaxHealth( 2000 )
 			self.Owner:SetMaxSpeed( 350 )
+			self.Owner.DamageModifier = 0.1
 
 		end
 
@@ -438,6 +440,7 @@ function SWEP:Think()
 				v:Fire( "Open" )
 				timer.Simple( 6, function()
 
+					v:SetCustomCollisionCheck(false)
 					v.OpenedBySCP096 = false
 
 				end )
@@ -450,42 +453,45 @@ function SWEP:Think()
 
 	local watching = false
 
-	if ( self.IsInRage && #self.victims <= 0 ) then
+	if !self.KeepRageUntil or !self.IsInRage or self.KeepRageUntil <= CurTime() then
 
-		self.IsInRage = false
-		self.Owner:SetWalkSpeed( 40 )
-		self.Owner:SetMaxSpeed( 40 )
-		self.Owner:SetRunSpeed( 40 )
-		self.Owner:SetMaxHealth( 1000 )
-		self.Owner:SetHealth( 1000 )
-		self.Owner:DoAnimationEvent( ACT_GESTURE_MELEE_ATTACK1 )
-		self.ScreamSound:Stop()
-		self:AnimationsChange( false )
+		if ( self.IsInRage && #self.victims <= 0 ) then
 
-		--[[timer.Simple( 1.5, function()
+			--
+			self.IsInRage = false
+			self.Owner:SetWalkSpeed( 40 )
+			self.Owner:SetMaxSpeed( 40 )
+			self.Owner:SetRunSpeed( 40 )
+			self.Owner:DoAnimationEvent( ACT_GESTURE_MELEE_ATTACK1 )
+			self.ScreamSound:Stop()
+			self:AnimationsChange( false )
 
-			if ( self && self:IsValid() ) then
+			--[[timer.Simple( 1.5, function()
 
-				hook.Run( "PlayerSwitchWeapon", self.Owner, self, self )
+				if ( self && self:IsValid() ) then
 
-			end
+					hook.Run( "PlayerSwitchWeapon", self.Owner, self, self )
 
-		end )]]
+				end
 
-	else
+			end )]]
 
-		for i = 1, #self.victims do
+		else
 
-			local v = self.victims[i]
+			for i = 1, #self.victims do
 
-			if ( !( v && v:IsValid() ) || v:Health() <= 0 || v:GTeam() == TEAM_SPEC || v.AffectedBy049 ) then
+				local v = self.victims[i]
 
-				table.RemoveByValue( self.victims, v )
-				net.Start( "GetVictimsTable" )
+				if ( !( v && v:IsValid() ) || v:Health() <= 0 || v:GTeam() == TEAM_SPEC || v.AffectedBy049 || v.SCP096TimeElapse <= CurTime() ) then
 
-					net.WriteTable( self.victims )
+					table.RemoveByValue( self.victims, v )
+					net.Start( "GetVictimsTable" )
 
-				net.Send( self.Owner )
+						net.WriteTable( self.victims )
+
+					net.Send( self.Owner )
+
+				end
 
 			end
 
@@ -515,6 +521,8 @@ function SWEP:Think()
 			if ( self.Owner:CanSee( v ) && self:IsLookingAt( v ) && self:IsLookingAt( self.Owner, v ) && !v:IsFrozen() ) then
 
 				watching = true
+
+				v.SCP096TimeElapse = CurTime() + 60
 
 				table.insert( self.victims, v )
 

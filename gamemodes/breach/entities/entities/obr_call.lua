@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/obr_call.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -26,7 +26,7 @@ function ENT:SetupDataTables()
 
 end
 
-local vec_spawn = Vector( -2762.389404, 2268.9, 310.649048 )
+local vec_spawn = Vector( -2847.389404, 2269.2, 320.649048 )
 local angle_spawn = Angle( 90, -90, 0 )
 
 function ENT:Initialize()
@@ -59,7 +59,7 @@ end
 
 function ENT:Use( activator, caller )
 
-  if ( caller:IsPlayer() && caller:GetNClass() != role.MTF_HOF && caller:GetNClass() != role.Dispatcher ) then return end
+  if ( caller:IsPlayer() && caller:GetRoleName() != role.MTF_HOF ) then return end
 
   if ( self:GetCD() > CurTime() ) then return end
 
@@ -71,9 +71,15 @@ function ENT:Use( activator, caller )
 
   end
 
-  local count = 5
+  local count = 0
 
-  if caller:GetNClass() == role.Dispatcher then count = math.random(8,10) end
+  for i, v in pairs(player.GetAll()) do
+    if v.GTeam and v:GTeam() == TEAM_SPEC then
+      count = count + 1
+    end
+  end
+
+  count = math.floor(math.min(count*0.7,10))
 
   if ( caller && caller:IsValid() && caller:IsPlayer() && self:GetActivate() && !GetGlobalBool( "NukeTime", false ) ) then
 

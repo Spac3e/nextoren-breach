@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_cult_book.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -126,7 +126,7 @@ function ENT:Use( activator, caller )
     for i = 1, #player.GetHumans() do
       local ply = player.GetHumans()[i]
       if ply:GTeam() == TEAM_COTSK then
-        BREACH.Players:ChatPrint( ply, true, true, "Ритуал был прерван, вы должны начать его заново." )
+        BREACH.Players:ChatPrint( ply, true, true, "l:cultbook_ritual_distrupted" )
       end
     end
 
@@ -143,7 +143,7 @@ function ENT:Use( activator, caller )
       net.WriteString( "nextoren/entities/intercom/start.mp3" )
     net.Broadcast()
 
-    BREACH.Players:ChatPrint( player.GetAll(), true, true, "Внимание! Проникновение неизвестного объекта было прервано!" )
+    BREACH.Players:ChatPrint( player.GetAll(), true, true, "l:cultbook_ritual_stopped" )
 
   end
   if !self:GetEnabled() and activator:HasWeapon("ritual_paper") then
@@ -153,7 +153,7 @@ function ENT:Use( activator, caller )
     if !timer.Exists("EvacuationWarhead") then return end
     if !timer.Exists("Evacuation") then return end
     if activator:GetActiveWeapon() and activator:GetActiveWeapon():GetClass() != "ritual_paper" then
-      activator:RXSENDNotify("Возьмите лист для ритуала.")
+      activator:RXSENDNotify("l:quran_needed")
       return
     end
     local function finishcallback()
@@ -171,8 +171,8 @@ function ENT:Use( activator, caller )
         net.WriteString( "nextoren/entities/intercom/start.mp3" )
       net.Broadcast()
 
-      BREACH.Players:ChatPrint( player.GetAll(), true, true, "Внимание! Неизвестный объект пытается вторгнуться в комплекс" )
-      BREACH.Players:ChatPrint( player.GetAll(), true, true, "Военный персонал ваша новая задача: Предотвратить вторжение!" )
+      BREACH.Players:ChatPrint( player.GetAll(), true, true, "l:cultbook_ritual_start_pt1" )
+      BREACH.Players:ChatPrint( player.GetAll(), true, true, "l:cultbook_ritual_start_pt2" )
 
       timer.Pause("Evacuation")
       timer.Pause("EvacuationWarhead")
@@ -199,7 +199,7 @@ function ENT:Use( activator, caller )
       activator:SetNWEntity("NTF1Entity", NULL)
       activator.RitualTalkSound:Stop()
     end
-    activator:BrProgressBar("Прочитываю молитву...", 14, "nextoren/gui/icons/notifications/breachiconfortips.png", self, false, finishcallback, startcallback, stopcallback)
+    activator:BrProgressBar("l:bismillah", 14, "nextoren/gui/icons/notifications/breachiconfortips.png", self, false, finishcallback, startcallback, stopcallback)
     activator:SetForcedAnimation("0_cult_ritual", 14)
   end
 

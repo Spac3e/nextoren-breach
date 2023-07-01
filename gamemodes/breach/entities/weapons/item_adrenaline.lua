@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_adrenaline.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -205,9 +205,9 @@ function SWEP:PrimaryAttack()
 
 	  end
 
-    if ( SERVER ) then
+    if ( CLIENT ) then
 
-      self.Owner:SetStamina( math.Clamp( self.Owner:GetStamina() + 30, 0, 100 ) )
+      self.Owner.Stamina = self.Owner.Stamina + 30
 
     end
 

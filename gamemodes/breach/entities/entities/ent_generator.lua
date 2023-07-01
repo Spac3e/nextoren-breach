@@ -1,5 +1,15 @@
--- oink.industries
--- lua source: gamemodes/breach/entities/entities/ent_generator.lua
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/entities/ent_generator.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 ENT.Base        = "base_entity"
@@ -147,18 +157,18 @@ function ENT:Use( caller )
 
     if ( SERVER ) then
 
-      caller:RXSENDNotify( "Вы не можете чинить генератор." )
+      caller:RXSENDNotify( "l:you_cant_repair_generator" )
 
     end
 
     return
   end
 
-  if ( !caller:HasWeapon( "item_toolkit" ) && caller:GetNClass() != ROLES.ROLE_Engi ) then
+  if ( !caller:HasWeapon( "item_toolkit" ) && caller:GetRoleName() != role.MTF_Engi ) then
 
     if ( SERVER ) then
 
-      caller:RXSENDNotify( "Вам нужен набор инструментов." )
+      caller:RXSENDNotify( "l:you_need_toolkit" )
 
     end
 
@@ -169,7 +179,7 @@ function ENT:Use( caller )
 
     if ( SERVER ) then
 
-      caller:BrProgressBar( "Починка генератора...", 5, "nextoren/gui/icons/tool_kit.png", self, false, function()
+      caller:BrProgressBar( "l:repairing_generator", 5, "nextoren/gui/icons/tool_kit.png", self, false, function()
 
         if ( self:GetActivated() ) then return end
 
@@ -179,18 +189,18 @@ function ENT:Use( caller )
 
         elseif ( !caller:HasWeapon( "item_toolkit" ) && caller:GetRoleName() != role.MTF_Engi ) then
 
-          BREACH.Players:ChatPrint( caller, true, true, "Вам не хватило инструментов, чтобы отремонтировать генератор до конца." )
+          BREACH.Players:ChatPrint( caller, true, true, "l:generator_toolkit_abuse" )
 
           return
         end
 
-       -- caller:AddToStatistics( "Support", 110 )
+        caller:AddToStatistics( "l:repair_bonus", 110 )
         SetGlobalInt( "ActivatedGenerators", GetGlobalInt( "ActivatedGenerators" ) + 1 )
         self:SetActivated( true )
 
         for i, v in pairs(player.GetAll()) do
           if v:GTeam() != TEAM_SPEC then
-            v:BrTip(0, "[RX Breach]", Color(255,0,0), "Количество починенных генераторов: " .. GetGlobalInt( "ActivatedGenerators" ) .. " из 5!", color_white)
+            v:BrTip(0, "[RX Breach]", Color(255,0,0), "l:repaired_generators_count " .. GetGlobalInt( "ActivatedGenerators" ) .. "/5!", color_white)
           end
         end
 
@@ -240,4 +250,3 @@ function ENT:Draw()
   cam.End3D2D()
 
 end
-

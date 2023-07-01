@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_1903.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -201,7 +201,7 @@ function SWEP:SecondaryAttack()
 
 			local cl = LocalPlayer()
 
-			if cl:GetNClass() != "SCP1903" or cl:Health() <= 0 then
+			if cl:GetRoleName() != "SCP1903" or cl:Health() <= 0 then
 				hook.Remove("HUDPaint", "SCP_1903_VISION")
 				return
 			end

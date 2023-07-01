@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/big_nigga_hands/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -13,10 +13,6 @@ File Path:   gamemodes/breach/entities/weapons/big_nigga_hands/shared.lua
 if ( SERVER ) then
 
 	AddCSLuaFile( "shared.lua" )
-
-	for i = 1, 9 do
-		resource.AddFile(string.format("sound/elevator/effects/slap_hit0%s.wav", i))
-	end
 
 	CreateConVar("slappers_slap_weapons", 0, FCVAR_REPLICATED, "Slap weapons out of players' hands")
 	CreateConVar("slappers_force", 300, FCVAR_REPLICATED, "Force of the slappers")
@@ -48,7 +44,7 @@ SWEP.HoldType	= "normal"
 
 SWEP.Primary = {
     ClipSize     = -1,
-    Delay = 0.8,
+    Delay = 0,
     DefaultClip = -1,
     Automatic = false,
     Ammo = "none"
@@ -64,15 +60,15 @@ SWEP.Sounds = {
 		Sound("npc_citizen.ow02")
 	},
 	Slap = {
-		Sound("elevator/effects/slap_hit01.wav"),
-		Sound("elevator/effects/slap_hit02.wav"),
-		Sound("elevator/effects/slap_hit03.wav"),
-		Sound("elevator/effects/slap_hit04.wav"),
-		Sound("elevator/effects/slap_hit05.wav"),
-		Sound("elevator/effects/slap_hit06.wav"),
-		Sound("elevator/effects/slap_hit07.wav"),
-		Sound("elevator/effects/slap_hit08.wav"),
-		Sound("elevator/effects/slap_hit09.wav")
+		Sound("nextoren/weapons/class_d_slap/slap_hit01.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit02.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit03.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit04.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit05.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit06.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit07.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit08.wav"),
+		Sound("nextoren/weapons/class_d_slap/slap_hit09.wav")
 	}
 }
 

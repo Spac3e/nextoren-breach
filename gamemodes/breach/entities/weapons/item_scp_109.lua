@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_scp_109.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -11,160 +11,199 @@ File Path:   gamemodes/breach/entities/weapons/item_scp_109.lua
 --]]
 
 
+if ( CLIENT ) then
 
-SWEP.InvIcon = Material( "nextoren/gui/icons/scp/119.png" )
-SWEP.PrintName 		= "SCP-109"
+  SWEP.InvIcon = Material( "nextoren/gui/icons/scp/119.png" )
 
-SWEP.teams					= {2,3,5,6,7,8,9,10,11,12}
+end
 
-SWEP.Spawnable		= true
-SWEP.AdminSpawnable	= true
-SWEP.AdminOnly 		= false
+SWEP.ViewModelFOV = 60
+SWEP.ViewModelFlip = false
 
-SWEP.BounceWeaponIcon = false
-SWEP.DrawWeaponInfoBox = false
+SWEP.PrintName  = "SCP-109"
+SWEP.Slot = 1
+SWEP.SlotPos = 1
+SWEP.ViewModel    = "models/cultist/scp_items/109/v_scp_109.mdl"
+SWEP.WorldModel   = "models/cultist/scp_items/109/w_scp_109.mdl"
+SWEP.HoldType = "items"
+SWEP.UseHands = true
+SWEP.IsDrinking = nil
 
-SWEP.ViewModelFOV 	= 54
+SWEP.Skin = 1
 
-SWEP.ViewModel 		= "models/casual/scp109/c_scp109.mdl"
-SWEP.WorldModel 	= "models/casual/scp109/w_scp109.mdl"
+SWEP.Pos = Vector( 2, 4, 2 )
+SWEP.Ang = Angle( -90, 90, 90 )
 
-SWEP.ViewModelFlip 	= false
+function SWEP:CreateWorldModel()
 
-SWEP.AutoSwitchTo 	= false
-SWEP.AutoSwitchFrom = false
-SWEP.Napoje = nil
-SWEP.Slot 			= 75
-SWEP.SlotPos 		= 1
+	if ( !self.WModel ) then
 
-SWEP.Primary.Ammo     = ""
-SWEP.Secondary.Ammo 	= ""
-SWEP.Primary.ClipSize     = 3
-SWEP.Secondary.ClipSize 	= -1
-SWEP.Primary.DefaultClip     = 3
-SWEP.Secondary.DefaultClip     = -1
+		self.WModel = ClientsideModel( self.WorldModel, RENDERGROUP_OPAQUE )
+		self.WModel:SetNoDraw( true )
 
-SWEP.UseHands         = true
+	end
 
-SWEP.HoldType         = "items" 
+	return self.WModel
 
-SWEP.DrawCrosshair     = false
-SWEP.DrawAmmo          = true
-
-SWEP.Primary.Automatic 		= false 
-SWEP.Secondary.Automatic 	= false
+end
 
 function SWEP:Initialize()
-	self:SetHoldType(self.HoldType)
+
+  self:SetHoldType( self.HoldType )
+
 end
 
-if SERVER then
-	util.AddNetworkString("drink")
-	util.AddNetworkString("drink_start")
-end
+function SWEP:DrawWorldModel()
 
-function SWEP:PrimaryAttack()
-if self.Owner:GetSpecialCD5() > CurTime() then return end
-			
-  if ( self.Owner.Napoje ) then return end
-	
-	local ply = self.Owner
-	local HealAmount = 15
+	local pl = self.Owner
 
-  if SERVER then
-    self.Owner:BrProgressBar( "Использование..", 8, "nextoren/gui/icons/scp/119.png")
-  
-    timer.Simple( 0.5, function()
-      if IsValid(self) then
-        self.Owner:EmitSound( "casual/scp/scp109_drinkmale.wav", 97, math.random( 100, 120 ), 1, CHAN_WEAPON )
+	if ( pl && pl:IsValid() ) then
+
+		local bone = self.Owner:LookupBone( "ValveBiped.Bip01_R_Hand" )
+		if ( !bone ) then return end
+
+		local wm = self:CreateWorldModel()
+		local pos, ang = self.Owner:GetBonePosition( bone )
+
+		if ( wm && wm:IsValid() ) then
+
+			ang:RotateAroundAxis( ang:Right(), self.Ang.p )
+			ang:RotateAroundAxis( ang:Forward(), self.Ang.y )
+			ang:RotateAroundAxis( ang:Up(), self.Ang.r )
+
+			wm:SetRenderOrigin( pos + ang:Right() * self.Pos.x + ang:Forward() * self.Pos.y + ang:Up() * self.Pos.z )
+			wm:SetRenderAngles( ang )
+			wm:DrawModel()
+
+      if ( wm:GetSkin() != self.Skin ) then
+
+        wm:SetSkin( self.Skin )
+
       end
-    end)
 
+		end
+
+	else
+
+		self:SetRenderOrigin( nil )
+		self:SetRenderAngles( nil )
+		self:DrawModel()
+
+    if ( self:GetSkin() != self.Skin ) then
+
+      self:SetSkin( self.Skin )
+
+    end
+
+	end
+
+end
+
+function SWEP:Deploy()
+
+  if ( !IsFirstTimePredicted() ) then return end
+
+  PrintTable(self:GetSequenceList())
+
+  self.IdleDelay = CurTime() + .5
+  self.HolsterDelay = nil
+  self:PlaySequence( "deploy" )
+  timer.Simple( .25, function()
+
+    if ( self && self:IsValid() ) then
+
+      self:EmitSound( "weapons/m249/handling/m249_armmovement_02.wav", 75, math.random( 100, 120 ), 1, CHAN_WEAPON )
+
+    end
+
+  end )
+
+  if ( self.Skin ) then
+
+    local vm = self.Owner:GetViewModel()
+
+    if ( vm && vm:IsValid() ) then
+
+      self.Owner:GetViewModel():SetSkin( self.Skin )
+
+    end
 
   end
-
-  timer.Simple( 4, function()
-    if IsValid(self) then
-      self.Owner.Napoje = true
-    end
-  end)
-
-  self.droppable = false
-	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
-
-	self:SetNextPrimaryFire(CurTime() + self:SequenceDuration() + 0.5)
-	self.Owner:SetAnimation(PLAYER_ATTACK1)
-
-	timer.Create( "weapon_idle" .. self:EntIndex(), self:SequenceDuration(), 1, function() 
-		if (IsValid(self)) && self:Clip1() > -1 then
-			self:SendWeaponAnim(ACT_VM_IDLE)
-		elseif self:Clip1() < 0 then
-			if SERVER then
-				self.Owner:EmitSound("casual/soda/soda_holster.wav", 100)
-			end
-			self:SetSkin(1)
-			self:SendWeaponAnim(ACT_VM_HOLSTER)
-			timer.Create("weapon_holster" .. self:EntIndex(), self:SequenceDuration(), 1, function()
-        if (IsValid(self)) then 
-				  self:DropJunk()
-				end
-			end)
-		end 
-  end )
-	self.Owner:SetSpecialCD5( CurTime() + 15 )	
-  local owner = self:GetOwner()
-  timer.Create( "piciekawy"..owner:SteamID(), 4.8, 1, function()
-    if IsValid(owner) then
-      owner.Napoje = false
-	    self.droppable = true
-    end
-  end)
+  
 end
 
-function SWEP:OnRemove()
+function SWEP:Think()
 
-	timer.Stop("weapon_idle" .. self:EntIndex())
-	timer.Stop("weapon_holster" .. self:EntIndex())
-	timer.Stop("weapon_drink" .. self:EntIndex())
+	if ( ( self.IdleDelay || 0 ) < CurTime() && !self.IdlePlaying ) then
+
+		self.IdlePlaying = true
+		self:PlaySequence( "idle", true )
+
+	end
+
+end
+
+local view_punch_angle = Angle( -15, 0, 0 )
+
+function SWEP:PrimaryAttack()
+
+  if ( self.IsDrinking ) then return end
+  self.IsDrinking = true
+
+  self.IdleDelay = CurTime() + 4
+
+  self:PlaySequence( "use" )
+
+  timer.Simple( .5, function()
+
+    if ( !( self && self:IsValid() ) ) then return end
+    if ( !( self.Owner && self.Owner:IsValid() ) ) then return end
+
+    self.Owner:ViewPunch( view_punch_angle )
+
+  end )
+
+  if ( CLIENT ) then return end
+
+  timer.Simple( 1, function()
+
+    if ( !( self && self:IsValid() ) ) then return end
+    if ( !( self.Owner && self.Owner:IsValid() ) ) then return end
+
+    self.Owner:Boosted( 5, math.random( 10, 15 ) )
+    timer.Simple( .25, function()
+
+      if ( self && self:IsValid() ) then
+
+        self:Remove()
+
+      end
+
+    end )
+
+  end )
+
+end
+
+function SWEP:Holster()
+
+  if ( self.IsDrinking ) then return false end
+
+  if ( !self.HolsterDelay ) then
+
+		self.HolsterDelay = CurTime() + 1
+    self.IdleDelay = CurTime() + 1.5
+  	self:PlaySequence( "holster" )
+    self:EmitSound( "weapons/m249/handling/m249_armmovement_02.wav", 75, math.random( 100, 120 ), 1, CHAN_WEAPON )
+
+	end
+
+	if ( ( self.HolsterDelay || 0 ) < CurTime() ) then return true end
 
 end
 
 function SWEP:SecondaryAttack()
+
+  return false
+
 end
-
-function SWEP:Reload()
-end
-
-
-	
-local exit_icon = Material( "nextoren/gui/special_abilities/kanierka109.png" )
-local clrgray = Color( 198, 198, 198 )
-local darkgray = Color( 105, 105, 105 )
-
-function SWEP:DrawHUDBackground()
-
-
-
-
-	local icon_x, icon_y = ScrW() / 2 - 32, ScrH() / 1.1
-
-	surface.SetDrawColor( color_white )
-	surface.SetMaterial( exit_icon )
-	surface.DrawTexturedRect( icon_x, icon_y, 64, 64 )
-
-	if ( self.Owner:GetSpecialCD5() > CurTime() ) then
-
-		draw.RoundedBox( 0, icon_x, icon_y, 64, 64, ColorAlpha( darkgray, 190 ) )
-		draw.SimpleTextOutlined( math.Round( self.Owner:GetSpecialCD5() - CurTime() ), "ChatFont_new", icon_x / 0.97, icon_y * 1.03, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1.5, color_black )
-	end
-
-	if ( input.IsKeyDown( KEY_H ) ) then
-
-    draw.RoundedBox( 0, icon_x, icon_y, 64, 64, ColorAlpha( clrgray, 70 ) )
-
-  end
-
-	draw.SimpleTextOutlined( "LMB", "ChatFont_new", icon_x + 64 - ( 32 / 4 ), icon_y + 4, color_white, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT, 1.5, color_black )
-
-
-	end

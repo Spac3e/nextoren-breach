@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/weapon_scp_106.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 SWEP.AbilityIcons = {
 
 	{
@@ -22,7 +34,7 @@ SWEP.AbilityIcons = {
 
 		Name = "Shadow attack",
 		Description = "None provided",
-		Cooldown = 5,
+		Cooldown = 10,
 		KEY = _G[ "KEY_J" ],
 		Icon = "nextoren/gui/special_abilities/scp_106_dimensionteleport.png"
 
@@ -36,7 +48,6 @@ SWEP.Base = "breach_scp_base"
 
 SWEP.ViewModel = ""
 SWEP.WorldModel = "models/cultist/items/blue_screwdriver/w_screwdriver.mdl"
-SWEP.TeleportPosition = Vector(3683.603027, -14786.141602, -2837.428711)
 
 
 function SWEP:Initialize()
@@ -126,7 +137,7 @@ if ( SERVER ) then
     player.Dimension_TouchEntity:SetModel( player:GetModel() )
     player.Dimension_TouchEntity:SetOwner( player )
 		local position_to_return = initial_pos
-		player.Dimension_TouchEntity.OwnerName = player:GetName()
+		player.Dimension_TouchEntity.OwnerName = player:GetNamesurvivor()
     player.Dimension_TouchEntity:SetPos( body_origin )
     player.Dimension_TouchEntity:Spawn()
     --print( "touch entity has been created at vector ", body_origin )
@@ -135,7 +146,7 @@ if ( SERVER ) then
 
 			local owner = self:GetOwner()
 
-			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetName() != self.OwnerName || owner:GetNClass() == "Spectator" ) then
+			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GetRoleName() == "Spectator" ) then
 
 				self:Remove()
 
@@ -254,7 +265,6 @@ if ( SERVER ) then
 			victim:SetMoveType( MOVETYPE_OBSERVER )
 			victim:SetNWEntity( "NTF1Entity", victim )
 			victim:SetInDimension( true )
-			victim:SetPos(self.TeleportPosition)
 
 			timer.Simple( .25, function()
 
@@ -302,7 +312,6 @@ if ( SERVER ) then
 
 					self.DimensionEnterPosition = self.Owner:GetPos()
 					self:SetInDimension( true )
-					self:SetPos(Vector(3649.369873, -14696.441406, -2991.968750))
 					self.Owner:SetInDimension( true )
 
 				end
@@ -504,7 +513,7 @@ if ( SERVER ) then
 
 			timer.Create( unique_id, 1.3, 1, function()
 
-				if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetNClass() != "SCP106" ) then
+				if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetRoleName() != "SCP106" ) then
 
 					timer.Remove( unique_id )
 
@@ -513,7 +522,7 @@ if ( SERVER ) then
 
 				timer.Create( unique_id, .1, 24, function()
 
-					if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetNClass() != "SCP106" ) then
+					if ( !( self && self:IsValid() ) || self.Owner:Health() <= 0 || self.Owner:GTeam() != TEAM_SCP || self.Owner:GetRoleName() != "SCP106" ) then
 
 						timer.Remove( unique_id )
 
@@ -583,7 +592,7 @@ else -- ( CLIENT )
       end
 
     end
-    client.exit_ent:SetSequence( 5325 )
+    client.exit_ent:SetSequence( client.exit_ent:LookupSequence("2ump_holding_jump") )
     client.exit_ent:SetPlaybackRate( 1.0 )
 
     if ( client.exit_ent.BoneMergedEnts ) then
@@ -688,7 +697,7 @@ else -- ( CLIENT )
 
 			client.CustomRenderHook = true
 
-			local old_name = client:GetName()
+			local old_name = client:GetNamesurvivor()
 			local material_clr = Material( "pp/colour" )
 			local check_time = 0
 			local brightness = -.01
@@ -699,7 +708,7 @@ else -- ( CLIENT )
 
 				local client = LocalPlayer()
 
-				if ( client:Health() <= 0 || !client:GetInDimension() || client:GetName() != old_name || client:GTeam() == TEAM_SPEC || !( client.exit_ent && client.exit_ent:IsValid() ) ) then
+				if ( client:Health() <= 0 || !client:GetInDimension() || client:GetNamesurvivor() != old_name || client:GTeam() == TEAM_SPEC || !( client.exit_ent && client.exit_ent:IsValid() ) ) then
 
 					if ( client.exit_ent && client.exit_ent:IsValid() && !client.exit_ent.DeathTime ) then
 
@@ -901,28 +910,29 @@ function SWEP:PrimaryAttack()
 			self.Owner:SetHealth( math.min( self.Owner:Health() + hit_ent:Health(), self.Owner:GetMaxHealth() ) )
 			self.Owner:EmitSound( "nextoren/scp/106/laugh.ogg", 75, 100, 1, CHAN_VOICE )
 			hit_ent:Kill()
-			--self.Owner:AddToStatistics("SCP-106 Dimension kill", 150)
+			self.Owner:AddToStatistics("SCP-106 Dimension kill", 150)
 
 		else
 
 			hit_ent.BodyOrigin = hit_ent:GetPos()
 			hit_ent:SetInDimension( true )
-			self:DrawTeleportDecal( hit_ent )
-			self:TeleportSequence()
-			timer.Simple(1.15, function()
-				hit_ent:SetPos(Vector(3683.603027, -14786.141602, -2837.428711))	
 
-end)
-      end
-    end
-  end
+			self:DrawTeleportDecal( hit_ent )
+			self:TeleportSequence( hit_ent )
+
+		end
+
+	end
+
+end
+
 function SWEP:CanSecondaryAttack() return false end
 
 function SWEP:Deploy()
 
 	hook.Add( "PlayerButtonDown", "SCP106_DimensionTeleport", function( caller, button )
 
-		if ( caller:GetNClass() != "SCP106" ) then return end
+		if ( caller:GetRoleName() != "SCP106" ) then return end
 
 		local wep = caller:GetActiveWeapon()
 
@@ -951,7 +961,7 @@ function SWEP:Deploy()
 
 						local client = LocalPlayer()
 
-						if ( client:Health() <= 0 || client:GetNClass() != "SCP106" || !client:GetInDimension() ) then
+						if ( client:Health() <= 0 || client:GetRoleName() != "SCP106" || !client:GetInDimension() ) then
 
 							hook.Remove( "PreDrawOutlines", "SCP106_DimensionVision" )
 
@@ -1077,7 +1087,7 @@ function SWEP:Deploy()
 
 			local client = LocalPlayer()
 
-			if ( client:Health() <= 0 || client:GTeam() != TEAM_SCP || client:GetNClass() != "SCP106" ) then
+			if ( client:Health() <= 0 || client:GTeam() != TEAM_SCP || client:GetRoleName() != "SCP106" ) then
 
 				if ( client.CustomRenderHook ) then
 
@@ -1240,7 +1250,7 @@ function SWEP:OnRemove()
 
 		local player = players[ i ]
 
-		if ( player:GetNClass() == "SCP106" ) then
+		if ( player:GetRoleName() == "SCP106" ) then
 
 			scp106_exists = true
 

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_drink_dado_radioactive.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -169,6 +169,8 @@ function SWEP:PrimaryAttack()
   timer.Simple( 1.5, function()
 
     if ( !( self && self:IsValid() ) || !( self.Owner && self.Owner:IsValid() ) ) then return end
+
+    self.Owner:CompleteAchievement("radioactive")
 
     self.Owner:Dado( 1 )
 

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_cqc.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -71,15 +71,15 @@ function SWEP:PrimaryAttack()
   if ( !ent:IsPlayer() ) then return end
 
   if !self.Owner:IsSuperAdmin() then
-    if ( ent:GTeam() == TEAM_SCP || !( ent:GTeam() == TEAM_CLASSD && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" || ent:GTeam() == TEAM_SCI && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" || ent:GTeam() == TEAM_GOC && ent:GetNClass() == "ClassD_GOCSpy" && ent:GetModel() != "models/cultist/humans/mog/mog.mdl"
-    || ent:GTeam() == TEAM_DZ && ent:GetNClass() == "SCI_SpyDZ" && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" ) ) then return end
+    if ( ent:GTeam() == TEAM_SCP || !( ent:GTeam() == TEAM_CLASSD && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" || ent:GTeam() == TEAM_SCI && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" || ent:GTeam() == TEAM_GOC && ent:GetRoleName() == "ClassD_GOCSpy" && ent:GetModel() != "models/cultist/humans/mog/mog.mdl"
+    || ent:GTeam() == TEAM_DZ && ent:GetRoleName() == "SCI_SpyDZ" && ent:GetModel() != "models/cultist/humans/mog/mog.mdl" ) ) then return end
   end
 
 	local wep = ent:GetActiveWeapon()
 
   if ( wep && wep != NULL && !wep.UnDroppable ) then
 
-    self.Owner:BrProgressBar( "Разоружение...", 2, "nextoren/gui/icons/disarm.png", ent, true, function()
+    self.Owner:BrProgressBar( "l:disarming", 2, "nextoren/gui/icons/disarm.png", ent, true, function()
 
       if ( ent && ent:IsValid() ) then
 

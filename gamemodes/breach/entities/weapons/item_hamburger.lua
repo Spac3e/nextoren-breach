@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_hamburger.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -167,17 +167,17 @@ function SWEP:PrimaryAttack()
 
       if ( self && self:IsValid() ) then
 
-        if ( self.Owner:GetNClass():find( "Fat" ) ) then
+        if ( self.Owner:GetRoleName():find( "Fat" ) ) then
 
           self.Owner:SetHealth( self.Owner:GetMaxHealth() )
-          self.Owner:BrTip( 0, "[VAULT]", Color(255,0,0, 210), "Вы съели бургер. Здоровье полностью восстановлено.", color_white )
+          self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "l:you_ate_burger", color_white )
 
         else
 
 					local clamp_health = math.Clamp( self.Owner:Health() + ( self.Owner:GetMaxHealth() * .3 ), 0, self.Owner:GetMaxHealth() )
 					local show_health = clamp_health - self.Owner:Health()
           self.Owner:SetHealth( clamp_health )
-          self.Owner:BrTip( 0, "[VAULT]", Color(255,0,0, 210), "Вы съели бургер. Восполнено " .. show_health .. " здоровья.", color_white )
+          self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "l:you_ate_burger_hp_regenerated_pt1 " .. show_health .. " l:you_ate_burger_hp_regenerated_pt2", color_white )
 
         end
 

@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/gamemode/modules/sh_notificators.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -92,14 +92,28 @@ if CLIENT then
 		local message = net.ReadTable()
 	
 		if message == nil then return end
-			chat.AddText(Color(0, 230, 0), "[VAULT] ", Color(255, 255, 255), unpack(message))
+			for k, v in ipairs(message) do
+				if !isstring(v) then
+					continue
+				end
+	
+				if v != GetLangRole(v) then
+					message[k] = GetLangRole(v)
+				end
+	
+				if v:find("l:") or v:find("dont_translate:") then
+					message[k] = BREACH.TranslateString(v)
+				end
+			end
+	
+			chat.AddText(Color(0, 230, 0), "[RXSEND] ", Color(255, 255, 255), unpack(message))
 	end)
-
+	
 	net.Receive("BreachWarningFromServer", function()
 		local message = net.ReadString()
 	
 		if message == nil then return end
-			chat.AddText(Color(230, 0, 0), "[VAULT] ", Color(255, 150, 150), message)
+			chat.AddText(Color(230, 0, 0), "[RXSEND] ", Color(255, 150, 150), message)
 	end)
 	
 	--1.0 compatibility
@@ -111,16 +125,38 @@ if CLIENT then
 	
 	function RXSENDNotify(msg)
 		if isstring(msg) then msg = {msg} end
-			chat.AddText(Color(0, 230, 0), "[VAULT] ", Color(255, 255, 255), unpack(msg))
+		
+		for k, v in ipairs(msg) do
+				if IsColor(v) then
+					continue
+				end
+				
+				if v:find("l:") or v:find("dont_translate:") then
+					msg[k] = BREACH.TranslateString(v)
+				end
+			end
+			chat.AddText(Color(0, 230, 0), "[RXSEND] ", Color(255, 255, 255), unpack(msg))
 	end
 	
-function RXSENDWarning(message)
-if message == nil then return end
-message = tostring(message)
-		chat.AddText(Color(230, 0, 0), "[VAULT] ", Color(255, 150, 150), message)
-end
-
-end
+	function RXSENDWarning(message)
+	if message == nil then return end
+	
+	if isstring(message) then message = {message} end
+	
+	for k, v in ipairs(message) do
+				if IsColor(v) then
+					continue
+				end
+				
+				if v:find("l:") or v:find("dont_translate:") then
+					message[k] = BREACH.TranslateString(v)
+				end
+			end
+			chat.AddText(Color(230, 0, 0), "[RXSEND] ", Color(255, 150, 150), unpack(message))
+	end
+	
+	end
+	
 	if SERVER then
 	local RunConsoleCommand = RunConsoleCommand;
 	local tonumber = tonumber;

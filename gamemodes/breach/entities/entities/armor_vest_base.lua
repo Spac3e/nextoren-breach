@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_vest_base.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -55,26 +55,27 @@ function ENT:Initialize()
 end
 
 function ENT:Use(ply)
-	if ply:GetNClass() == "Class-D Fat" then return end
-	if ply:GetNClass() == "Class-D Bor" then return end
-	if ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetNClass() == "GOC Spy" or ply:GetNClass() == "SH Spy" or ply:GetNClass() == "UIU Spy" then 
+	if ply:GetRoleName() == "Class-D Fat" then return end
+	if ply:GetRoleName() == "Class-D Bor" then return end
+	if ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetRoleName() == "GOC Spy" or ply:GetRoleName() == "SH Spy" or ply:GetRoleName() == "UIU Spy" then 
 		if SERVER then
 			if ply:GetUsingArmor() != "" then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "На вас уже надет бронежилет. Снимите текущий.", Color(255, 255, 255) )
+				ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:take_off_vest_to_wear_vest", Color(255, 255, 255) )
 				return
 			end
 
 			if ( ply:GetUsingCloth() != "armor_sci" and ply:GetUsingCloth() != "armor_medic" and ply:GetUsingCloth() != "" ) or ply:GetModel():find("goc.mdl") then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "Вам нужно снять форму, что-бы надеть бронежилет!", Color(255, 255, 255) )
+				ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:take_off_uniform_to_wear_vest", Color(255, 255, 255) )
 				return
 			end
 
-			ply:BrProgressBar("Подождите...", 1.5, "nextoren/gui/icons/hand.png", self, false, function()
+			ply:BrProgressBar("l:progress_wait", 1.5, "nextoren/gui/icons/hand.png", self, false, function()
+				if !IsValid(self) or !self.ArmorModel then return end
 				ply.VestBonemerge = Bonemerge(self.ArmorModel, ply)
 
 				ply.BodyResist = self.MaxHitsHelmet
 	
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "Вы успешно надели бронежилет!", Color(255, 255, 255))
+				ply:BrTip( 0, "[RX Breach]", Color(255, 0, 0), "l:put_on_vest", Color(255, 255, 255))
 		
 				ply:SetUsingArmor(self:GetClass())
 
@@ -87,7 +88,7 @@ function ENT:Use(ply)
 		end
 	else
 		if SERVER then
-			ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "Вы не можете надеть бронежилет!", Color(255, 255, 255) )
+			ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:you_cant_wear_vest", Color(255, 255, 255) )
 		end
 	end
 end

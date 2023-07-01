@@ -1,8 +1,16 @@
--- oink.industries
--- lua source: gamemodes/breach/gamemode/modules/anim_base/cl_legs.lua
-Shaky_LEGS = Shaky_LEGS || {}
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/anim_base/cl_legs.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
 
-local LegsEnabled = CreateClientConVar("br_legs", 1, true, false, "", 0, 1)
+Shaky_LEGS = Shaky_LEGS || {}
 
 Shaky_LEGS.legEnt = Shaky_LEGS.legEnt || nil
 Shaky_LEGS.playBackRate = 1
@@ -79,7 +87,7 @@ function META:ShouldDrawLegs()
 
   return Shaky_LEGS.legEnt && Shaky_LEGS.legEnt:IsValid() && self:Alive()
   && !self:InVehicle() && self:GetViewEntity() == self
-  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && LegsEnabled:GetBool()
+  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && GetConVar("breach_config_draw_legs"):GetBool()
 
 end
 
@@ -107,7 +115,7 @@ function Shaky_LEGS:CreateLegs()
 
   legEnt.LastTick = 0
 
-  self.lastCharName = ply:GetName() || "none"
+  self.lastCharName = ply:GetNamesurvivor() || "none"
 
   self.legEnt = legEnt
 
@@ -205,7 +213,7 @@ function Shaky_LEGS:LegsWork( ply, speed )
 
   if ( !( self.legEnt && self.legEnt:IsValid() ) ) then return end
 
-  if ( self.lastCharName != ply:GetName() ) then
+  if ( self.lastCharName != ply:GetNamesurvivor() ) then
 
     self.legEnt:Remove()
     self:CreateLegs()
@@ -225,7 +233,7 @@ function Shaky_LEGS:LegsWork( ply, speed )
     self.forwardOffset = -20
     self.nextMatSet = CurTime() + 10
 
-    self.lastCharName = ply:GetName()
+    self.lastCharName = ply:GetNamesurvivor()
 
   end
 
@@ -386,7 +394,7 @@ function Shaky_LEGS:RenderScreenspaceEffects()
 
   local ply = LocalPlayer()
   local plytable = ply:GetTable()
-  if ( !ply:IsSolid() || ( ply:GTeam() == team_index_scp && !plytable.IsZombie && !allowedscp[ply:GetNClass()] ) ) then return end
+  if ( !ply:IsSolid() || ( ply:GTeam() == team_index_scp && !plytable.IsZombie && !allowedscp[ply:GetRoleName()] ) ) then return end
 
 
   local self = Shaky_LEGS
@@ -467,4 +475,3 @@ function Shaky_LEGS:RenderScreenspaceEffects()
 
 end
 hook.Add( "PostDrawOpaqueRenderables", "Legs_ScreenSpaceEffects", Shaky_LEGS.RenderScreenspaceEffects )
-

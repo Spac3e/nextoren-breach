@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_outline.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -60,6 +72,14 @@ function Add( ents, color, mode )
 	if ( ListSize >= 255 ) then return end				--Maximum 255 reference values
 	if ( !istable( ents ) ) then ents = { ents } end	--Support for passing Entity as first argument
 	if ( ents[ 1 ] == nil ) then return end				--Do not pass empty tables
+
+	for i, v in pairs(ents) do
+		if v:IsPlayer() then
+			for _, bnm in pairs(v:LookupBonemerges()) do
+				table.insert(ents, bnm)
+			end
+		end
+	end
 
 	local t = {
 		[ ENTS ] = ents,

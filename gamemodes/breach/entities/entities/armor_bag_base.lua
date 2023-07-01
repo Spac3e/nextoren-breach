@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_bag_base.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -63,12 +63,12 @@ function ENT:Use(ply)
 		if SERVER then
 
 			if ply:GetUsingBag() != "" then
-				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "На вас уже надета сумка!", Color(255, 255, 255))
+				ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:already_have_the_bag", Color(255, 255, 255))
 				return
 			end
 
-			ply:BrProgressBar("Подождите...", 1.5, "nextoren/gui/icons/hand.png", self, false, function()
-				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "Вы успешно надели сумку!", Color(255, 255, 255))
+			ply:BrProgressBar("l:progress_wait", 1.5, "nextoren/gui/icons/hand.png", self, false, function()
+				ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:took_on_the_bag", Color(255, 255, 255))
 		
 				ply:SetMaxSlots(ply:GetMaxSlots() + self.Slots)
 				ply:SetUsingBag(self:GetClass())
@@ -83,7 +83,7 @@ function ENT:Use(ply)
 		end
 	else
 		if SERVER then
-			ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "Вы не можете надеть сумку!", Color(255, 255, 255) )
+			ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:you_cant_wear_the_bag", Color(255, 255, 255) )
 		end
 	end
 end

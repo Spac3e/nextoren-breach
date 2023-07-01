@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/breach_keycard_crack.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -25,10 +25,10 @@ SWEP.Skin = 19
 SWEP.KeyCategory = "CLevelSUP"
 SWEP.CLevels = {
 
-  CLevel = 5,
-  CLevelSCI = 11,
-  CLevelGuard = 11,
-  CLevelMTF = 11,
-  CLevelSUP = 11
+  CLevel = 7,
+  CLevelSCI = 7,
+  CLevelGuard = 7,
+  CLevelMTF = 7,
+  CLevelSUP = 7
 
 }

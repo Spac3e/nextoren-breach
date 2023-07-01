@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/br_camera.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -17,7 +17,7 @@ ENT.Base        = "base_gmodentity"
 ENT.Type        = "anim"
 ENT.Category    = "Breach"
 ENT.RenderGroup = RENDERGROUP_OPAQUE
-ENT.Model       = Model( "models/props_blackmesa/securitycamera.mdl" )
+ENT.Model       = Model( "models/props_glackmesa/securitycamera.mdl" )
 
 function ENT:SetupDataTables()
   self:NetworkVar("Bool", 0, "Broken")

@@ -1,66 +1,22 @@
+concommand.Add( "player_position", function( ply, cmd, args )
+	chat.AddText( Color( 255, 255, 255 ), "skopiroval v clipboard")
+	SetClipboardText(("Vector(%s)"):format(string.gsub(tostring(ply:GetPos())," ", ",")))
+end )
+
 MODULES_PATH = GM.FolderName .. "/gamemode/modules"
 LANGUAGES_PATH = GM.FolderName .. "/gamemode/languages"
 MAP_CONFIG_PATH = GM.FolderName .. "/gamemode/mapconfigs"
 
 ALLLANGUAGES = {}
 WEPLANG = {}
-BREACH = {} or BREACH
-concommand.Add( "player_position", function( ply, cmd, args )
-	chat.AddText( Color( 255, 255, 255 ), "Ваша позиция была скопирована. CTRL+V,чтобы вставить")
-	SetClipboardText(("Vector(%s)"):format(string.gsub(tostring(ply:GetPos())," ", ",")))
-end )
---ARG
-
-BREACH.ARG_TYPE_BOOL = 0
-BREACH.ARG_TYPE_COLOR = 1
-BREACH.ARG_TYPE_PLAYER = 2
-BREACH.ARG_TYPE_PLAYERLIST = 3
-BREACH.ARG_TYPE_LIST = 4
-BREACH.ARG_TYPE_NUMBER = 5
-BREACH.ARG_TYPE_STRING = 6
-BREACH.ARG_TYPE_TIME = 7
-
-
---Mute types
-BREACH.MUTE_TYPE_NONE = 0
-BREACH.MUTE_TYPE_CHAT = 2^0
-BREACH.MUTE_TYPE_VOICE = 2^1
-BREACH.MUTE_TYPE_ALL = bit.bor( BREACH.MUTE_TYPE_CHAT, BREACH.MUTE_TYPE_VOICE )
-
-
---Script side
-BREACH.SIDE_CLIENT = 2^0
-BREACH.SIDE_SERVER = 2^1
-BREACH.SIDE_SHARED = bit.bor( BREACH.SIDE_CLIENT, BREACH.SIDE_SERVER )
-
-
---Var type
-BREACH.VAR_TYPE_ANY = 0
-BREACH.VAR_TYPE_BOOL = 1
-BREACH.VAR_TYPE_INTEGER = 2
-BREACH.VAR_TYPE_REAL = 3
-BREACH.VAR_TYPE_STRING = 4
-
-BREACH.Enums = {}
-
+BREACH = BREACH || {}
 
 MsgC( Color(255,0,255), "[NextOren Breach] Legend: ", Color(0,255,255), "Server ", Color(255,255,0), "Shared ", Color(255,100,0), "Client\n" )
 Msg("======================================================================\n")
 MsgC( Color(0,255,0), "----------------Loading Languages----------------\n")
-local files = file.Find(LANGUAGES_PATH .. "/*.lua", "LUA" )
-for k, f in pairs( files ) do
-	if SERVER then
-		MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
-		AddCSLuaFile( LANGUAGES_PATH.."/"..f )
-		include( LANGUAGES_PATH.."/"..f )
-	else
-		MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
-		include( LANGUAGES_PATH.."/"..f )
-		if string.sub( f, 1, 3 ) != "wep" then
-			MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
-		end
-	end
-end
+
+russian = russian or {} --для неготовых переводов, где есть таблица russian
+nontranslated = {}
 
 if SERVER then
 	AddCSLuaFile( "modules/cl_module.lua" )
@@ -71,6 +27,82 @@ if SERVER then
 else
 	include( "modules/cl_module.lua" )
 	include( "modules/sh_module.lua" )
+end
+
+local files = file.Find(LANGUAGES_PATH .. "/*.lua", "LUA" )
+for k, f in pairs( files ) do
+	if SERVER then
+		MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
+		AddCSLuaFile( LANGUAGES_PATH.."/"..f )
+		include( LANGUAGES_PATH.."/"..f )
+	else
+		MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
+		include( LANGUAGES_PATH.."/"..f )
+		if string.sub( f, 1, 3 ) != "wep" then
+			--MsgC( Color(255,255,0), "[NextOren Breach] Loading Language: " .. f .. "\n" )
+		end
+	end
+end
+
+MsgC( Color(255,255,0), "[NextOren Breach] Comparing languages: \n" )
+
+function BREACH.CompareLanguage(lang)
+	local no_translations = {}
+	for k, v in pairs(russian) do
+		local found = false
+		for _, ass in pairs(lang) do
+			if _ == k then
+				found = true
+			end
+		end
+		if !found then
+			no_translations[k] = v
+		end
+	end
+
+	return no_translations
+end
+
+local function AutoComplete(cmd, stringargs)
+	local tbl = {}
+    for k, v in pairs(ALLLANGUAGES) do
+    	table.insert(tbl, "breach_compare_language "..tostring(k))
+    end
+    return tbl
+end
+
+concommand.Add("breach_compare_language",
+	function(ply, cmd, args, argstr)
+		if !ALLLANGUAGES[args[1]] then
+			print("language not found: "..args[1])
+			return
+		end
+		local tbl = BREACH.CompareLanguage(ALLLANGUAGES[args[1]])
+		if #table.GetKeys(tbl) > 0 then
+			PrintTable(tbl)
+			print("found "..#table.GetKeys(tbl).." missing phrases")
+		else
+			print("language is up to date")
+		end
+	end,
+AutoComplete)
+
+local obsolete_found = false
+for k, v in pairs(ALLLANGUAGES) do
+	local tbl = BREACH.CompareLanguage(v)
+
+	if #table.GetKeys(tbl) > 0 then
+		MsgC( Color(255,0,0), "[NextOren Breach] Language "..tostring(k).." is obsolete. Found "..#table.GetKeys(tbl).." missing phrases\n" )
+		obsolete_found = true
+	else
+		MsgC( Color(0,255,0), "[NextOren Breach] Language "..tostring(k).." is up to date\n" )
+	end
+end
+
+if obsolete_found then
+	MsgC( Color(255,255,0), "[NextOren Breach] Use command breach_compare_language (language) to get missing phrases\n" )
+else
+	MsgC( Color(0,255,0), "[NextOren Breach] All languages are up to date\n" )
 end
 
 MsgC( Color(0,255,0),"----------------Loading Modules----------------\n")
@@ -152,6 +184,10 @@ for k, f in pairs( modules ) do
 	end
 end
 
+MsgC( Color(0,255,0),"-----------------Animation Base is ready!-----------------\n")
+
+MsgC( Color(0,255,0),"#\n" )
+MsgC( Color(0,255,0),"# Skipped files: " .. skipped.."\n")
 
 MsgC( Color(0,255,0),"---------------Loading Map Config----------------\n" )
 if file.Exists( MAP_CONFIG_PATH .. "/" .. game.GetMap() .. ".lua", "LUA" ) then

@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/item_scp_1025/shared.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -25,7 +25,13 @@ function ENT:Initialize()
 
   self:SetSolid(SOLID_VPHYSICS)
 
+  self:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+
   self:PhysWake()
+
+  self:AddEFlags(EFL_NO_DAMAGE_FORCES)
+
+  self.BlockDrag = true
 
   if SERVER then
     self:SetUseType(SIMPLE_USE)

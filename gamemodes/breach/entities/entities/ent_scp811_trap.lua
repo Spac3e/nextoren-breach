@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_scp811_trap.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -103,7 +103,7 @@ if ( SERVER ) then
 
   function ENT:Use( caller )
 
-    if ( self:GetCanTrigger() && caller:GetNClass() == "SCP811" ) then
+    if ( self:GetCanTrigger() && caller:GetRoleName() == "SCP811" ) then
 
       caller:SetSpecialMax( caller:GetSpecialMax() + 1 )
 
@@ -144,7 +144,7 @@ if ( SERVER ) then
 
     local owner = self:GetOwner()
 
-    if ( owner && owner:IsValid() && owner:GetNClass() == "SCP811" ) then
+    if ( owner && owner:IsValid() && owner:GetRoleName() == "SCP811" ) then
 
       owner:SetSpecialMax( owner:GetSpecialMax() + 1 )
 

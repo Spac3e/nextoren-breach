@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_860.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -86,7 +86,7 @@ local prim_maxs = Vector( 12, 2, 32 )
 function SWEP:Initialize()
 
   hook.Add("PlayerButtonDown", "SCP8602", function(ply, butt)
-    if ply:GetNClass() != "SCP8602" then return end
+    if ply:GetRoleName() != "SCP8602" then return end
 
     if butt == KEY_LSHIFT and self.AbilityIcons[3].CooldownTime <= CurTime() then
       self.AbilityIcons[3].CooldownTime = CurTime() + self.AbilityIcons[3].Cooldown
@@ -118,7 +118,7 @@ function SWEP:Initialize()
           net.Start("ForcePlaySound")
           net.WriteString("shaky/860/shift.ogg")
           net.Send(self.Owner)
-          self.Owner:SetHealth(750)
+          self.Owner:AnimatedHeal(750)
           ply:ScreenFade(SCREENFADE.IN, color_black, 2,1.5)
 
           sound.Play("shaky/860/shift2.ogg", ply:GetPos(), 100, 100, 100)

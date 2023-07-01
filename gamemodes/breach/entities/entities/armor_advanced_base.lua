@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_advanced_base.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -62,7 +62,7 @@ function ENT:Use(ply)
 				return
 			end
 
-			ply:BrProgressBar("Подождите...", 7, "nextoren/gui/icons/hand.png")
+			ply:BrProgressBar("l:progress_wait", 7, "nextoren/gui/icons/hand.png")
 			
 			timer.Create("WearingClothThink"..ply:SteamID(), 1, 6, function()
 				if ply:GetEyeTrace().Entity != self.Entity then

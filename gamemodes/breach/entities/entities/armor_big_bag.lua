@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_big_bag.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -13,7 +13,7 @@ File Path:   gamemodes/breach/entities/entities/armor_big_bag.lua
 AddCSLuaFile()
 
 ENT.Base = "armor_bag_base"
-ENT.PrintName 			= "Рюкзак"
+ENT.PrintName 			= "l:big_bag"
 ENT.Type 						=	"anim"
 ENT.InvIcon = Material("backpack_inventory/backpack_big.png")
 ENT.ArmorType = "Bag"

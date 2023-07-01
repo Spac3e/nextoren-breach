@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/sh_class_breach.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local RunConsoleCommand = RunConsoleCommand;
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -62,7 +74,7 @@ local PLAYER = {}
 
 function PLAYER:SetupDataTables()
 	
-	self.Player:NetworkVar( "String", 0, "NClass" )
+	self.Player:NetworkVar( "String", 0, "RoleName" )
 	self.Player:NetworkVar( "String", 1, "LastRole" )
 	self.Player:NetworkVar( "String", 2, "Namesurvivor")
 	self.Player:NetworkVar( "String", 3, "UsingCloth")
@@ -75,6 +87,7 @@ function PLAYER:SetupDataTables()
 	self.Player:NetworkVar( "Int", 5, "SpecialMax" )
 	self.Player:NetworkVar( "Int", 6, "NEscapes" )
     self.Player:NetworkVar( "Int", 7, "NDeaths" )
+    self.Player:NetworkVar( "Int", 8, "PenaltyAmount" )
 	self.Player:NetworkVar( "Float", 0, "SpecialCD" )
 	self.Player:NetworkVar( "Float", 1, "StaminaScale" )
 	self.Player:NetworkVar( "Float", 6, "Stamina")
@@ -91,7 +104,7 @@ function PLAYER:SetupDataTables()
 	
 	if SERVER then
 		print("Setting up datatables for " .. self.Player:Nick())
-		self.Player:SetNClass("Spectator")
+		self.Player:SetRoleName("Spectator")
 		self.Player:SetNamesurvivor( "none" )
 		self.Player:SetLastRole( "" )
 		self.Player:SetLastTeam( 0 )
@@ -105,23 +118,11 @@ function PLAYER:SetupDataTables()
 		
 		CheckPlayerData( self.Player, "breach_exp" )
 		self.Player:SetNEXP( tonumber( self.Player:GetPData( "breach_exp", 0 ) ) )
-		if templevel == 0 then
-			CheckPlayerData( self.Player, "breach_level" )
-			self.Player:SetNLevel( tonumber( self.Player:GetPData( "breach_level", 0 ) ) )
-		else
-			self.Player:SetNLevel( templevel )
-		end
+		CheckPlayerData( self.Player, "breach_level" )
+		self.Player:SetNLevel( math.max(0, tonumber( self.Player:GetPData( "breach_level", 0 ) ) ) )
 
-		if bonuslevel > 0 then
-
-			if self.Player:GetNLevel() < bonuslevel then
-
-				self.Player:SetNLevel( bonuslevel )
-				self.Player:SetPData( "breach_level", bonuslevel )
-
-			end
-
-		end
+		CheckPlayerData( self.Player, "breach_penalty" )
+		self.Player:SetPenaltyAmount( tonumber( self.Player:GetPData( "breach_penalty", 0 ) ) )
 
 		self.Player:SetNGTeam(1)
 		self.Player:SetNActive(true)
@@ -139,14 +140,6 @@ function PLAYER:SetupDataTables()
 		self.Player:SetSpecialMax( 0 )
 		self.Player:SetStunned(false)
 		self.Player:SetStaminaScale(1.0)
-		if SERVER then
-			if self.Player:GetPData("AlphaTester", false) then
-				self.Player:SetNWBool("AlphaTester", true)
-			end
-			if self.Player:GetPData("BetaTester", false) then
-				self.Player:SetNWBool("BetaTester", true)
-			end
-		end
 	end
 end
 

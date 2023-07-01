@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_ammocrate.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -26,7 +26,6 @@ ENT.Ammo_Quantity = {
   Revolver = 120,
   Pistol = 150,
   Sniper = 60,
-  GOC = 600,
   ["RPG_Rocket"] = 2,
 
 }
@@ -41,7 +40,6 @@ local maxs = {
 	AR2 = 120,
 	Shotgun = 80,
   Sniper = 30,
-  GOC = 600,
   ["RPG_Rocket"] = 2,
 
 }
@@ -70,8 +68,8 @@ if ( SERVER ) then
 
     if ( ( self.NextUse || 0 ) > CurTime() ) then return end
 
-    if ( survivor:GTeam() == TEAM_SECURITY or survivor:GetNClass() == "CI Spy" ) and !table.HasValue(self.SecurityLIST, survivor:GetName()) then
-      self.SecurityLIST[#self.SecurityLIST + 1] = survivor:GetName()
+    if ( survivor:GTeam() == TEAM_SECURITY or survivor:GetRoleName() == "CI Spy" ) and !table.HasValue(self.SecurityLIST, survivor:GetNamesurvivor()) then
+      self.SecurityLIST[#self.SecurityLIST + 1] = survivor:GetNamesurvivor()
       survivor:GiveAmmo(300, "pistol")
       survivor:GiveAmmo(300, "revolver")
       survivor:EmitSound( "nextoren/equipment/ammo_pickup.wav", 75, math.random( 95, 105 ), .75, CHAN_STATIC )
@@ -93,15 +91,19 @@ if ( SERVER ) then
 
         if ( !current_ammo ) then return end
 
-        if ( current_ammo >= maxs[ wep.Primary.Ammo ] ) then
+        local max_ammo = maxs[ wep.Primary.Ammo ]
 
-          BREACH.Players:ChatPrint( survivor, true, true, "Вы больше не можете брать патроны для данного типа оружия. Достигнут лимит." )
+        if survivor:GetRoleName() == role.ClassD_Banned then max_ammo = math.floor(max_ammo/2) end
+
+        if ( current_ammo >= max_ammo ) then
+
+          BREACH.Players:ChatPrint( survivor, true, true, "l:ammocrate_max_ammo" )
 
           return
 
         elseif ( self.Ammo_Quantity[ wep.Primary.Ammo ] <= 0 ) then
 
-          BREACH.Players:ChatPrint( survivor, true, true, "К сожалению, в ящике больше не осталось патрон для данного типа оружия." )
+          BREACH.Players:ChatPrint( survivor, true, true, "l:ammocrate_no_ammo" )
 
           return
         end
@@ -110,7 +112,6 @@ if ( SERVER ) then
         self:ResetSequence( 1 )
 
         local have_ammo = self.Ammo_Quantity[ wep.Primary.Ammo ]
-        local max_ammo = maxs[ wep.Primary.Ammo ]
         local need_ammo = math.max( max_ammo - current_ammo, max_ammo )
 
         if ( need_ammo > have_ammo ) then
@@ -126,7 +127,7 @@ if ( SERVER ) then
 
       else
 
-        BREACH.Players:ChatPrint( survivor, true, true, "Возьмите в руки оружие, для которого требуются патроны." )
+        BREACH.Players:ChatPrint( survivor, true, true, "l:ammocrate_weapon_needed" )
 
       end
 

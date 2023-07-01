@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_427.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -88,7 +88,7 @@ function SWEP:PrimaryAttack()
 
 		if ( SERVER ) then
 
-			self.Owner:BrTip( 3, "[VAULT]", Color( 0, 255, 0, 180 ), "SCP-427 медленно восстанавливает Ваши жизненные силы.", color_white )
+			self.Owner:BrTip( 3, "[RX Breach]", Color( 0, 255, 0, 180 ), "l:scp427_regenerates_health", color_white )
 
 		end
 
@@ -99,7 +99,7 @@ function SWEP:PrimaryAttack()
 
 		if ( SERVER ) then
 
-			self.Owner:BrTip( 3, "[VAULT]", Color( 255, 0, 0, 180 ), "Вы сняли с себя SCP-427. Лечение остановлено.", color_white )
+			self.Owner:BrTip( 3, "[RX Breach]", Color( 255, 0, 0, 180 ), "l:you_took_off_scp427", color_white )
 
 		end
 
@@ -144,7 +144,7 @@ function SWEP:Think()
 		if ( !self.Tip ) then
 
 			self.Tip = true
-			self.Owner:Tip( 3, "[VAULT]", Color( 255, 0, 0, 180 ), "Вы стали странно себя ощущать. Наверное, стоит прекратить использование SCP-427?", color_white )
+			self.Owner:Tip( 3, "[RX Breach]", Color( 255, 0, 0, 180 ), "Вы стали странно себя ощущать. Наверное, стоит прекратить использование SCP-427?", color_white )
 
 		end
 

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_542.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -25,18 +25,6 @@ SWEP.maxs = Vector( 8, 10, 5 )
 
 SWEP.AbilityIcons = {
 
-  {
-
-    [ "Name" ] = "Tracking victims",
-    [ "Description" ] = "Вы видите людей с малым количеством здоровья сквозь стены.",
-    [ "Cooldown" ] = 80,
-    [ "CooldownTime" ] = 0,
-    [ "KEY" ] = "RMB",
-    [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp_542_tracking.png",
-    [ "Abillity" ] = nil
-
-  },
   {
 
     [ "Name" ] = "Charge",
@@ -134,7 +122,7 @@ function SWEP:Deploy()
 
       if ( butt == KEY_F ) then
 
-        if ( ply:GetNClass() == "SCP542" ) then
+        if ( ply:GetRoleName() == "SCP542" ) then
 
           local wep = ply:GetActiveWeapon()
 
@@ -173,7 +161,7 @@ function SWEP:Deploy()
 
       local client = LocalPlayer()
 
-      if ( client:Health() <= 0 || client:GetNClass() != "SCP542" ) then
+      if ( client:Health() <= 0 || client:GetRoleName() != "SCP542" ) then
 
         hook.Remove( "PreDrawOutlines", "DrawPlayersHealth" )
 
@@ -343,30 +331,6 @@ local NextAttack_sec = 0
 
 function SWEP:SecondaryAttack()
 
-  if ( ( NextAttack_sec || 0 ) > CurTime() ) then return end
-
-  NextAttack_sec = CurTime() + 80
-
-  if ( CLIENT ) then
-
-    self.UsingSpecialAbility = true
-
-    timer.Simple( 20, function()
-
-      if ( self && self:IsValid() ) then
-
-        self.UsingSpecialAbility = nil
-
-      end
-
-    end )
-
-    self.AbilityIcons[ 1 ].Using = false
-    self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 80
-
-    return
-  end
-
 end
 
 local vec_zero = vector_origin
@@ -381,7 +345,7 @@ function SWEP:Grab( attacker, victim, melee )
 
 	local vec_pos = shoot_pos + attacker:GetAngles():Forward() * 35
 
-	vec_pos.z = BREACH.GroundPos( vec_pos ).z
+	vec_pos.z = GroundPos( vec_pos ).z
 
 	attacker:SetLocalVelocity( vec_zero )
 
@@ -392,6 +356,11 @@ function SWEP:Grab( attacker, victim, melee )
   local unique_id = "ForceLook" .. victim:EntIndex()
 
 	timer.Create( unique_id, 0, 0, function()
+
+    if !IsValid(victim) or victim:Health() <= 0 or victim:GTeam() == TEAM_SPEC or !IsValid(attacker) or attacker:Health() <= 0 or attacker:GTeam() == TEAM_SPEC then
+      timer.Remove(unique_id)
+      return
+    end
 
 		victim:SetEyeAngles( ( attacker:EyePos() - victim:GetShootPos() ):Angle() )
 		attacker:SetEyeAngles( ( victim_eye_pos - shoot_pos ):Angle() )
@@ -443,8 +412,6 @@ function SWEP:Grab( attacker, victim, melee )
 
 		victim:StopParticles()
 
-		attacker:SetNotSolid( false )
-
 	end )
 
 	timer.Simple( .1, function()
@@ -491,9 +458,6 @@ function SWEP:Grab( attacker, victim, melee )
 
 	timer.Simple( .25, function()
 
-		attacker:SetNotSolid( true )
-		victim:SetNotSolid( true )
-
 		ParticleEffect( "Blood_Drain2", attacker:GetBonePosition( attacker:LookupBone( "ValveBiped.Bip01_Spine1" ) ) + attacker:GetAimVector() * 28 + Vector( 0, 0, 8 ), attacker:GetAngles(), attacker )
 
 	end )
@@ -502,9 +466,9 @@ end
 
 function SWEP:Reload()
 
-  if ( self.AbilityIcons[ 2 ].CooldownTime > CurTime() ) then return end
+  if ( self.AbilityIcons[ 1 ].CooldownTime > CurTime() ) then return end
 
-  self.AbilityIcons[ 2 ].CooldownTime = CurTime() + self.AbilityIcons[ 2 ].Cooldown
+  self.AbilityIcons[ 1 ].CooldownTime = CurTime() + self.AbilityIcons[ 1 ].Cooldown
 
   self.Owner:SetRunSpeed( self.Owner:GetRunSpeed() * 3 )
   self.Owner:SetWalkSpeed( self.Owner:GetWalkSpeed() * 3 )
@@ -540,9 +504,9 @@ SWEP.NextVoiceLine = 0
 
 function SWEP:Think()
 
-  if ( CLIENT && self.AbilityIcons[ 3 ].CooldownTime != self:GetNextGrab() ) then
+  if ( CLIENT && self.AbilityIcons[ 2 ].CooldownTime != self:GetNextGrab() ) then
 
-    self.AbilityIcons[ 3 ].CooldownTime = self:GetNextGrab()
+    self.AbilityIcons[ 2 ].CooldownTime = self:GetNextGrab()
 
   end
 
@@ -607,7 +571,7 @@ function SWEP:OnRemove()
 
     local player = players[ i ]
 
-    if ( player && player:IsValid() && player:GetNClass() == "SCP542" ) then return end
+    if ( player && player:IsValid() && player:GetRoleName() == "SCP542" ) then return end
 
   end
 

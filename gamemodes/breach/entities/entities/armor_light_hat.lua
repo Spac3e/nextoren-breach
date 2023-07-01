@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_light_hat.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -16,7 +16,7 @@ ENT.Base = "armor_helmet_base"
 ENT.PrintName 			= "Light Helmet"
 ENT.Type 						=	"anim"
 ENT.ArmorType = "Hat"
-ENT.MaxHitsHelmet = 5
+ENT.MaxHitsHelmet = 1
 ENT.InvIcon = Material( "nextoren/gui/icons/light_helmet.png" )
 ENT.Model = Model( "models/cultist/humans/security/head_gear/helmet.mdl" )
 ENT.ArmorModel 			= "models/cultist/humans/security/head_gear/helmet.mdl"

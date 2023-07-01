@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_breachmelee_fireaxe.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -92,7 +92,7 @@ if ( CLIENT ) then
 
 end
 
-SWEP.HoldType = "melee2"
+SWEP.HoldType = "axe"
 SWEP.ViewModelFlip = false
 SWEP.ImpactDecal = "ManhackCut"
 SWEP.Spawnable = true

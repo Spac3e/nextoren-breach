@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   addons/[effects]_bloodpool/lua/autorun/ttt_blood_pools.lua
 		 __        __              __             ____     _                ____                __             __         

@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_scp_1499.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -88,11 +88,11 @@ function SWEP:Think()
 
       end
 
-      local old_name = client:GetName()
+      local old_name = client:GetNamesurvivor()
 
       hook.Add( "SetupWorldFog", "SCP1499_Dimension_Fog", function()
 
-        if ( client:GetNClass() == "Spectator" || client:GetName() != old_name || client:Health() <= 0 || !client:HasWeapon( "item_scp_1499" ) || !client:GetWeapon( "item_scp_1499" ):GetActivated() ) then
+        if ( client:GetRoleName() == "Spectator" || client:GetNamesurvivor() != old_name || client:Health() <= 0 || !client:HasWeapon( "item_scp_1499" ) || !client:GetWeapon( "item_scp_1499" ):GetActivated() ) then
 
           hook.Remove( "SetupWorldFog", "SCP1499_Dimension_Fog" )
           client.Fog_Overlay = nil
@@ -121,7 +121,7 @@ function SWEP:Think()
 
       hook.Add( "SetupSkyboxFog", "SCP1499_Dimension_Fog", function()
 
-        if ( client:GetNClass() == "Spectator" || client:GetName() != old_name || client:Health() <= 0 || !client:HasWeapon( "item_scp_1499" ) || !client:GetWeapon( "item_scp_1499" ):GetActivated() ) then
+        if ( client:GetRoleName() == "Spectator" || client:GetNamesurvivor() != old_name || client:Health() <= 0 || !client:HasWeapon( "item_scp_1499" ) || !client:GetWeapon( "item_scp_1499" ):GetActivated() ) then
 
           hook.Remove( "SetupSkyboxFog", "SCP1499_Dimension_Fog" )
           client.Fog_Overlay = nil
@@ -152,7 +152,7 @@ function SWEP:Think()
 
         local client = LocalPlayer()
 
-        if ( client:GetNClass() == "Spectator" || client:GetName() != old_name ) then
+        if ( client:GetRoleName() == "Spectator" || client:GetNamesurvivor() != old_name ) then
 
           hook.Remove( "RenderScreenspaceEffects", "SCP1499_Mask_Overlay" )
 
@@ -224,6 +224,8 @@ function SWEP:TeleportSequence( pos )
 
       if ( ( self && self:IsValid() ) && ( self.Owner && self.Owner:IsValid() && self.Owner:Alive() ) && pos ) then
 
+        if self.Owner:GetInDimension() then return end
+
         self.Owner:SetPos( pos )
 
       end
@@ -242,6 +244,8 @@ function SWEP:PrimaryAttack()
 
   if ( CLIENT ) then return end
 
+  if self.Owner:GetInDimension() then return end
+
   if ( !self:GetActivated() ) then
 
     self:SetActivated( true )
@@ -259,6 +263,8 @@ function SWEP:PrimaryAttack()
     timer.Simple( .25, function()
 
       if ( ( self && self:IsValid() ) && ( self.Owner && self.Owner:IsValid() && self.Owner:Alive() ) ) then
+
+        if self.Owner:GetInDimension() then return end
 
         self:TeleportSequence( dimension_initial_position + Vector( math.Rand( 1, 74 ), math.Rand( 1, 74 ), 0 ) )
 

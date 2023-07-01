@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/dz_commander_portal.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -28,11 +28,7 @@ end
 
 local Table_Teleport_Positions = {
   Vector(-4746.1157226563, 4143.806640625, -1999.96875),
-  Vector(-2620.0705566406, 1809.0070800781, 256.03125),
-  Vector(-5493.8676757813, 1024.8741455078, 2452.5256347656),
   Vector(-3375.8940429688, 2355.3884277344, 128.03125),
-  Vector(2499.513671875, 4467.4008789063, -98.96875),
-  Vector(2155.0578613281, 4084.3933105469, 99.500061035156),
   Vector(2385.0075683594, 5921.865234375, 0.03125),
   Vector(1721.3276367188, 4318.0034179688, 0.03125),
   Vector(1804.2415771484, 3475.7448730469, 106.7883605957),
@@ -47,7 +43,6 @@ local Table_Teleport_Positions = {
   Vector(9195.7998046875, -1922.6776123047, 1.4442405700684),
   Vector(9754.2470703125, -3262.2045898438, 1.3310508728027),
   Vector(10160.37890625, -4286.5078125, -126.66874694824),
-  Vector(7584.6201171875, -5070.4208984375, -126.66874694824),
   Vector(6170.001953125, -5666.8715820313, 129.33126831055),
   Vector(8921.845703125, -5696.1254882813, 2.3312492370605),
   Vector(-644.49621582031, -5973.9873046875, -2400.96875),
@@ -96,8 +91,20 @@ function ENT:Think()
     if ( !self.StartPatricle ) then
 
       self.StartPatricle = true
-      ParticleEffect( "portal4_green", self:GetPos() + vec_up, angle_zero, self )
+      ParticleEffect( "mr_portal_2a", self:GetPos() + vec_up, angle_zero, self )
 
+    end
+
+    local dlight = DynamicLight( self:EntIndex() )
+    if ( dlight ) then
+      dlight.pos = self:GetPos() + Vector(0,0,7)
+      dlight.r = 0
+      dlight.g = 155
+      dlight.b = 0
+      dlight.brightness = 3
+      dlight.Decay = 400
+      dlight.Size = 256
+      dlight.DieTime = CurTime() + 5
     end
 
   end

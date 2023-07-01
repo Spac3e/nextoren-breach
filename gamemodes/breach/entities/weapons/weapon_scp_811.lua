@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_811.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -156,9 +156,17 @@ function SWEP:Deploy()
 
   self.Deployed = true
 
+	hook.Add( "EntityTakeDamage", "SCP_811_EntityTakeDamage", function( target, dmginfo )
+		local attacker = dmginfo:GetAttacker()
+
+		if ( target:IsPlayer() and target:GTeam() == TEAM_SCP and IsValid(attacker) and attacker:IsPlayer() and attacker:GetRoleName() == "SCP811" ) then
+			return true
+		end
+	end )
+
   hook.Add( "PlayerButtonDown", "SCP_811_ButtonTrigger", function( player, button )
 
-    if ( player:GetNClass() != "SCP811" ) then return end
+    if ( player:GetRoleName() != "SCP811" ) then return end
 
     local wep = player:GetActiveWeapon()
 
@@ -320,7 +328,7 @@ function SWEP:AOEExplode()
 
   local explode_dmginfo = DamageInfo()
   explode_dmginfo:SetDamage( math.random( 400, 500 ) )
-  explode_dmginfo:SetDamageType( DMG_BUCKSHOT )
+  explode_dmginfo:SetDamageType( DMG_BLAST )
   explode_dmginfo:SetAttacker( self.Owner )
   explode_dmginfo:SetInflictor( self )
 
@@ -336,11 +344,13 @@ function SWEP:OnRemove()
 
     local player = players[ i ]
 
-    if ( player && player:IsValid() && player:GetNClass() == "SCP811" ) then return end
+    if ( player && player:IsValid() && player:GetRoleName() == "SCP811" ) then return end
 
   end
 
   hook.Remove( "PlayerButtonDown", "SCP_811_ButtonTrigger" )
+
+  hook.Remove( "EntityTakeDamage", "SCP_811_EntityTakeDamage" )
 
 end
 
@@ -372,7 +382,7 @@ function SWEP:Vomit()
 
     self:SetVomiting( false )
 
-    if ( self.Owner:Health() > 0 && self.Owner:GetNClass() == "SCP811" ) then
+    if ( self.Owner:Health() > 0 && self.Owner:GetRoleName() == "SCP811" ) then
 
       self.Owner:SetMoveType( MOVETYPE_WALK )
 

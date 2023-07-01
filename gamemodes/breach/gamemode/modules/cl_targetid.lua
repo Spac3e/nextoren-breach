@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_targetid.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -73,7 +85,7 @@ function GM:HUDDrawTargetID()
 
 		if ply:GetPos():Distance(LocalPlayer():GetPos()) > 200 then return end
 
-		if not ply.GetNClass then
+		if not ply.GetRoleName then
 
 			player_manager.RunClass( ply, "SetupDataTables" )
 
@@ -85,7 +97,7 @@ function GM:HUDDrawTargetID()
 
 		if ply:GetNWBool( 'IsInsideLocker', true ) then return end
 
-		if ply:GetNClass() == SCP966 then
+		if ply:GetRoleName() == SCP966 then
 
 			local hide = true
 
@@ -161,7 +173,7 @@ function GM:HUDDrawTargetID()
 
 							draw.Text( {
 
-							text = " SCP Number: " ..GetLangRole(ply:GetNClass()),
+							text = " SCP Number: " ..GetLangRole(ply:GetRoleName()),
 
 							pos = { ScrW() / 2, ScrH() / 2  },
 
@@ -193,7 +205,7 @@ function GM:HUDDrawTargetID()
 
 	          })
 
-						if ply:GetNClass() == SCP082 then
+						if ply:GetRoleName() == SCP082 then
 
 						draw.Text( {
 
@@ -221,7 +233,7 @@ function GM:HUDDrawTargetID()
 
 		end
 
-		if ply:GetNClass() == CHAOSSPY then
+		if ply:GetRoleName() == CHAOSSPY then
 
 			local hide = false
 
@@ -285,13 +297,13 @@ function GM:HUDDrawTargetID()
 
 		end
 
-		if ply:GTeam() == TEAM_GUARD or ply:GetNClass() == CHAOSSPY then
+		if ply:GTeam() == TEAM_GUARD or ply:GetRoleName() == CHAOSSPY then
 
 			local hide = false
 
 
 
-			if (LocalPlayer():GetNClass()  == MTFGeneral) then
+			if (LocalPlayer():GetRoleName()  == MTFGeneral) then
 
 			    hide = false
 
@@ -317,7 +329,7 @@ function GM:HUDDrawTargetID()
 
 		end
 
-		if ply:GetNClass() == SCP1471 then
+		if ply:GetRoleName() == SCP1471 then
 
 			local hide = true
 
@@ -343,7 +355,7 @@ function GM:HUDDrawTargetID()
 
 		if ply:GTeam() == TEAM_SCP then
 
-			text = GetLangRole(ply:GetNClass())
+			text = GetLangRole(ply:GetRoleName())
 
 			clr = gteams.GetColor(ply:GTeam())
 
@@ -395,7 +407,7 @@ function GM:HUDDrawTargetID()
 
 	draw.Text( {
 
-		text = ply:GetName() .. " ",
+		text = ply:GetNamesurvivor() .. " ",
 
 		pos = { x, y },
 
@@ -445,7 +457,7 @@ local function DrawTargetID()
 
 	if ply:Health() < 0 then return true end --alive is slow
 
-	--if ( ply:GetName() == "Tolya Pechenushkin" ) then return true end
+	--if ( ply:GetNamesurvivor() == "Tolya Pechenushkin" ) then return true end
 
 	--if ply:Crouching() then return true end
 
@@ -467,7 +479,7 @@ local function DrawTargetID()
 
   ang:RotateAroundAxis( ang:Right(), 90 )
 
-	local nickp = ply:GetName()
+	local nickp = ply:GetNamesurvivor()
 
 	local spos = pos:ToScreen()
 
@@ -504,9 +516,9 @@ local function DrawTargetID()
 
 	    local sizex,_ = surface.GetTextSize( nickp )
 
-			local plyrole = ply:GetNClass()
+			local plyrole = ply:GetRoleName()
 			
-			if plyrole == ROLES.ROLE_MTFCOM or plyrole == ROLES.ROLE_HOF then
+			if plyrole == role.MTF_Com or plyrole == role.MTF_HOF then
 
 		    surface.SetDrawColor( 0, 0, 255, 255 )
 

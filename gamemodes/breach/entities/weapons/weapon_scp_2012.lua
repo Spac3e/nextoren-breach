@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/weapon_scp_2012.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 SWEP.Category = "BREACH SCP"
 SWEP.PrintName = "SCP-2012"
 SWEP.WorldModel = "models/cultist/scp/scp2012/scp_sword.mdl"
@@ -306,7 +319,7 @@ function SWEP:Deploy()
 
     hook.Add( "PlayerButtonDown", "SCP2012_ChangeWeapon", function( player, button )
 
-      if ( player:GetNClass() != "SCP2012" ) then return end
+      if ( player:GetRoleName() != "SCP2012" ) then return end
 
       local wep = player:GetActiveWeapon()
 
@@ -327,7 +340,7 @@ function SWEP:Deploy()
 
         timer.Simple( 1.25, function()
 
-          if ( !( player && player:IsValid() ) || player:GetNClass() != "SCP2012" ) then return end
+          if ( !( player && player:IsValid() ) || player:GetRoleName() != "SCP2012" ) then return end
 
           if ( !player:HasWeapon( "weapon_scp_2012_crossbow" ) ) then
 
@@ -387,7 +400,7 @@ function SWEP:CreateShield()
 
     local parent = self:GetParent()
 
-    if ( !( parent && parent:IsValid() ) || parent:Health() <= 0 || parent:GetNClass() != "SCP2012" || ( parent:GetActiveWeapon().GetStance && parent:GetActiveWeapon():GetStance() != 1 ) ) then
+    if ( !( parent && parent:IsValid() ) || parent:Health() <= 0 || parent:GetRoleName() != "SCP2012" || ( parent:GetActiveWeapon().GetStance && parent:GetActiveWeapon():GetStance() != 1 ) ) then
 
       self:Remove()
 
@@ -437,7 +450,7 @@ function SWEP:StanceChanged( stance_id, anim_client, firstdeploy )
 
   end
 
-  if ( CLIENT && LocalPlayer():GetNClass() == "SCP2012" ) then
+  if ( CLIENT && LocalPlayer():GetRoleName() == "SCP2012" ) then
 
     self:ChooseAbility( self.AbilityIcons[ stance_id ] )
 

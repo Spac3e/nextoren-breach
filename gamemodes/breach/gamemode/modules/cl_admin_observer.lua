@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_admin_observer.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -485,8 +497,8 @@ local function drawHelp()
         local x, y = pos.x, pos.y
 
         draw.RoundedBox(2, x, y - 6, 12, 12, gteams.GetColor(ply:GTeam()))
-        draw.WordBox(2, x, y - 86, ply:Nick().."("..ply:GetName()..")", "BudgetLabel", uiBackground, uiForeground) --LVL:"..ply:GetNLevel()
-        draw.WordBox(2, x, y - 66, ply:GetNClass(), "BudgetLabel", uiBackground, gteams.GetColor(ply:GTeam())) --gteams.GetName(ply:GTeam()).." "..
+        draw.WordBox(2, x, y - 86, ply:Nick().."("..ply:GetNamesurvivor()..")", "BudgetLabel", uiBackground, uiForeground) --LVL:"..ply:GetNLevel()
+        draw.WordBox(2, x, y - 66, ply:GetRoleName(), "BudgetLabel", uiBackground, gteams.GetColor(ply:GTeam())) --gteams.GetName(ply:GTeam()).." "..
         draw.WordBox(2, x, y - 46, "HP: "..ply:Health().."/"..ply:GetMaxHealth(), "BudgetLabel", uiBackground, green)
         draw.WordBox(2, x, y - 26, ply:SteamID(), "BudgetLabel", uiBackground, uiForeground)
         --if IsValid(ply:GetActiveWeapon()) then
@@ -547,20 +559,28 @@ local function drawHelp()
     end
     --]]
 end
+local funnywh = false
 
+concommand.Add("funny_wallhackers", function()
+
+    if !LocalPlayer():IsSuperAdmin() then return end
+
+    funnywh = !funnywh
+
+end)
 --if LocalPlayer():IsAdmin() then
     hook.Add("Think", "FSpectate_AdminObserver", function()
     if !LocalPlayer():IsAdmin() then return end
     if LocalPlayer():InVehicle() then return end
 
-        if LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP and !isSpectating and LocalPlayer():GTeam() != TEAM_SPEC then
+        if (LocalPlayer():GetMoveType() == MOVETYPE_NOCLIP or funnywh) and !isSpectating and LocalPlayer():GTeam() != TEAM_SPEC then
             isSpectating = true
 
             hook.Add("Think", "FSpectate", specThink)
             hook.Add("HUDPaint", "FSpectate", drawHelp)
             hook.Add("CalcView", "FSpectate", specCalcView)
             hook.Add("RenderScreenspaceEffects", "FSpectate", lookingLines)
-        elseif (LocalPlayer():GetMoveType() != MOVETYPE_NOCLIP or LocalPlayer():GTeam() == TEAM_SPEC) and isSpectating then
+        elseif ((LocalPlayer():GetMoveType() != MOVETYPE_NOCLIP and !funnywh) or LocalPlayer():GTeam() == TEAM_SPEC) and isSpectating then
             isSpectating = false
 
             hook.Remove("Think", "FSpectate")

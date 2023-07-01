@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/breach_baseammo.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -57,7 +57,7 @@ function ENT:Use( activator, caller )
 
 				if ( caller:GetAmmoCount( ammo ) >= ( maxs[ ammo ] || 90 ) ) then
 
-					caller:setBottomMessage( "You have the maximum number of ammo." )
+					caller:setBottomMessage( "l:ammo_maximum" )
 
 					return
 				end
@@ -68,7 +68,7 @@ function ENT:Use( activator, caller )
 
 			else
 
-				caller:setBottomMessage( "These ammunition are not suitable for your weapon." )
+				caller:setBottomMessage( "l:ammo_not_suitable" )
 			end
 
 		end

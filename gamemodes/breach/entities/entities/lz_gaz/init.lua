@@ -3,29 +3,14 @@ AddCSLuaFile( "shared.lua" )
 include('shared.lua')
 
 function ENT:Initialize()
---52
 	auto_lz_gaz_time = 0
-
 	kashli_na_vbr = { "nextoren/unity/cough1.ogg", "nextoren/unity/cough2.ogg", "nextoren/unity/cough3.ogg"}
-
-end
-
-local function easedLerp(fraction, from, to)
-	return LerpVector(math.ease.InSine(fraction), from, to)
-end
-
-function ENT:Use( activator, caller )
-	--print(heli_hui)
-	--timer.Create( "tolkatel_heli", 2, 0, function() self:SetPos(Vector(heli_hui)) end )
 end
  
 function ENT:Think()
 for k,v in pairs(player.GetAll()) do
-	if v:GTeam() == TEAM_SPEC then return end
-end
 	if CurTime() < auto_lz_gaz_time then return end	
-
-			print("иди нахуй")
+    if !v:GetRoleName() == role.Spectator then
 			local entsinbox = ents.FindInBox( Vector( 4424, -8052, -127 ), Vector( 10572, -2956, 1233 ) ) 
 			for k, v in ipairs( entsinbox ) do
 			if ( v:IsPlayer() ) then
@@ -76,5 +61,6 @@ end
 			end
 			end
 	auto_lz_gaz_time = CurTime() + 3
-
-end
+    end
+  end
+  end

@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_999.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -33,7 +33,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "LMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_4.png",
+    [ "Icon" ] = "shaky/scp999_abil/ability_4.png",
 
   },
 
@@ -45,7 +45,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "RMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_3.png",
+    [ "Icon" ] = "shaky/scp999_abil/ability_3.png",
 
   },
 
@@ -57,7 +57,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_F"],
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_2.png",
+    [ "Icon" ] = "shaky/scp999_abil/ability_2.png",
 
   },
 
@@ -69,7 +69,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_G"],
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp999_abil/ability_1.png",
+    [ "Icon" ] = "shaky/scp999_abil/ability_1.png",
 
   },
 
@@ -80,7 +80,7 @@ function SWEP:Deploy()
   self:SetHoldType( self.HoldType )
 
   hook.Add( "PlayerButtonDown", "SCP_999_ABIL_USE", function( ply, butt )
-    if ply:GetNClass() != SCP999 then return end
+    if ply:GetRoleName() != SCP999 then return end
     if butt == KEY_G and self.AbilityIcons[4].CooldownTime <= CurTime() then
       local plys = ents.FindInSphere(ply:GetPos(), 450)
 
@@ -163,21 +163,21 @@ function SWEP:PrimaryAttack()
 
   if !IsValid(ply) or !ply:IsPlayer() then return end
 
-  if ply:Health() >= ply:GetMaxHealth() then if SERVER then self.Owner:RXSENDNotify("He's fully healthy.") end return end
+  if ply:Health() >= ply:GetMaxHealth() then if SERVER then self.Owner:RXSENDNotify("l:scp999_healthy") end return end
 
   if SERVER then
     local function start()
       if self.AntiInfiniteHeal then return end
       timer.Create("SCP999_HEAL", 1, 3, function()
 
-        if IsValid(ply) and IsValid(self.Owner) and ply:Health() > 0 and self.Owner:Health() > 0 and self.Owner:GetNClass() == SCP999 then
+        if IsValid(ply) and IsValid(self.Owner) and ply:Health() > 0 and self.Owner:Health() > 0 and self.Owner:GetRoleName() == SCP999 then
 
           self.AntiInfiniteHeal = true
 
           ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 0.5, 0)
           self.Owner:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 0.5, 0)
 
-          ply:SetHealth(10)
+          ply:AnimatedHeal(10)
 
         end
 
@@ -188,28 +188,28 @@ function SWEP:PrimaryAttack()
     local function finish()
       self.AntiInfiniteHeal = nil
       if ply:GTeam() == TEAM_SCP then
-        ply:SetHealth(95)
+        ply:AnimatedHeal(95)
         ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
         self:Cooldown(1, 40)
         self:SetNextPrimaryFire(CurTime() + 40)
-      --  self.Owner:AddToStatistics("Healing", 100)
-        self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+100 exp", color_white)
+        self.Owner:AddToStatistics("l:scp999_healing_bonus", 100)
+        self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+100 l:exp", color_white)
       else
-        ply:SetHealth(ply:GetMaxHealth() - ply:Health())
+        ply:AnimatedHeal(ply:GetMaxHealth() - ply:Health())
         ply:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
         self:Cooldown(1, self.AbilityIcons[1].Cooldown)
         self:SetNextPrimaryFire(CurTime() + self.AbilityIcons[1].Cooldown)
-      --  self.Owner:AddToStatistics("Healing", 45)
-        self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+45 exp", color_white)
+        self.Owner:AddToStatistics("l:scp999_healing_bonus", 45)
+        self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+45 l:exp", color_white)
       end
     end
 
     local function stop()
       timer.Remove("SCP999_HEAL")
     end
-    local name = "Healing  "..ply:GetName()
+    local name = "l:scp999_healing "..ply:GetNamesurvivor()
     if ply:GTeam() == TEAM_SCP then
-      name = "Healing "..GetLangRole(ply:GetNClass())
+      name = "l:scp999_healing "..GetLangRole(ply:GetRoleName())
     end
     self.Owner:BrProgressBar(name, 6, self.AbilityIcons[1].Icon, ply, false, finish, start, stop)
   end
@@ -233,11 +233,11 @@ function SWEP:SecondaryAttack()
         v:ScreenFade(SCREENFADE.IN, Color(0,255,0,155), 2, 1)
 
         if v:GTeam() == TEAM_SCP then
-          v:SetHealth(155)
+          v:AnimatedHeal(155)
           if v != self.Owner then exp = exp + 50 end
         else
           if v:Health() < v:GetMaxHealth() then
-            v:SetHealth(v:GetMaxHealth() - v:Health())
+            v:AnimatedHeal(v:GetMaxHealth() - v:Health())
             exp = exp + 40
           end
         end
@@ -246,8 +246,8 @@ function SWEP:SecondaryAttack()
 
     end
     if exp != 0 then
-     self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+"..tostring(exp).." exp", color_white)
-    --  self.Owner:AddToStatistics("Healing", exp)
+      self.Owner:BrTip(1, "[SCP-999-2] ", Color(255,0,0), "+"..tostring(exp).." l:exp", color_white)
+      self.Owner:AddToStatistics("l:scp999_healing_bonus", exp)
     end
   end
 
@@ -269,7 +269,7 @@ function SWEP:OnRemove()
 
     local player = players[ i ]
 
-    if ( player && player:IsValid() && player:GetNClass() == "SCP999" ) then return end
+    if ( player && player:IsValid() && player:GetRoleName() == "SCP999" ) then return end
 
   end
 

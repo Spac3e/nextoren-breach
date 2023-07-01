@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_scp_409.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -43,7 +43,7 @@ function ENT:Use( activator, caller )
 
     if ( SERVER && caller:IsPlayer() ) then
 
-      caller:Give( "weapon_scp_409" )
+      caller:BreachGive( "weapon_scp_409" )
 
     end
 
@@ -65,7 +65,7 @@ if ( SERVER ) then
 
     for _, v in ipairs( ents.FindInSphere( self:GetPos(), 240 ) ) do
 
-      if ( v:IsPlayer() && v:Health() > 0 && !( v:GTeam() == TEAM_SPEC || v:GetNClass() == role.ClassD_FartInhaler || v:GTeam() == TEAM_SCP || v:GetNClass() == role.DZ_Gas ) && !v:HasHazmat() && ( v:GTeam() != TEAM_GOC or v:GetNClass() == role.ClassD_GOCSpy ) && !v.GASMASK_Equiped ) then
+      if ( v:IsPlayer() && v:Health() > 0 && !( v:GTeam() == TEAM_SPEC || v:GetRoleName() == role.ClassD_FartInhaler || v:GTeam() == TEAM_SCP || v:GetRoleName() == role.DZ_Gas ) && !v:HasHazmat() && ( v:GTeam() != TEAM_GOC or v:GetRoleName() == role.ClassD_GOCSpy ) && !v.GASMASK_Equiped ) then
 
         if ( !v.Infected409 ) then
 

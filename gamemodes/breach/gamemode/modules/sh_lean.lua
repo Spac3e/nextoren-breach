@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/sh_lean.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local PMETA = FindMetaTable( "Player" )
 
 PMETA.old_getshootpos = PMETA.old_getshootpos || PMETA.GetShootPos
@@ -17,16 +29,10 @@ end
 
 function PMETA:EyePos()
 
-
   local offset = Vector( 0, self:GetNW2Int( "LeanOffset" ), 0 )
-
   offset:Rotate( self:EyeAngles() )
 
-
-
-  local _, result = pcall( self.old_getshootpos, self )
-
-
+  local _, result = pcall( self.old_eyepos, self )
 
   return result - offset
 
@@ -300,7 +306,7 @@ end
 
 if CLIENT then
   hook.Add("PlayerButtonDown", "DisableLean", function(ply, button)
-    if ply:IsLeaning() and button == input.GetKeyCode(input.LookupBinding("+speed")) and IsFirstTimePredicted() then
+    if ply:IsLeaning() and ply:KeyDown(IN_SPEED) and IsFirstTimePredicted() then
         net.Start( "Cancel_Lean", true )
         net.SendToServer()
     end

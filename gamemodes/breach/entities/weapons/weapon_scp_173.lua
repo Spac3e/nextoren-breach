@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_173.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -13,18 +13,6 @@ File Path:   gamemodes/breach/entities/weapons/weapon_scp_173.lua
 AddCSLuaFile()
 
 SWEP.AbilityIcons = {
-
-	{
-
-		["Name"] = "Teleport",
-		["Description"] = "Teleport to the random player",
-		["Cooldown"] = 170,
-		["CooldownTime"] = 0,
-		["KEY"] = "RMB",
-		["Using"] = false,
-		["Icon"] = "nextoren/gui/special_abilities/scp173_invisibility.png"
-
-	},
 
 	{
 
@@ -47,7 +35,19 @@ SWEP.AbilityIcons = {
 		["Using"] = false,
 		["Icon"] = "nextoren/gui/special_abilities/scp173_eye.png"
 
-	}
+	},
+
+	{
+
+		["Name"] = "Return to statue",
+		["Description"] = "Teleports you back to your statue entity.",
+		["Cooldown"] = 15,
+		["CooldownTime"] = 0,
+		["KEY"] = _G[ "KEY_B" ],
+		["Using"] = false,
+		["Icon"] = "nextoren/gui/special_abilities/scp173_invisibility.png"
+
+	},
 
 }
 
@@ -120,7 +120,7 @@ end
 
 function SWEP:Initialize()
 	if #player.GetAll() < 10 then return end
-	self.AbilityIcons[1].CooldownTime = CurTime() + 450
+	self.AbilityIcons[1].CooldownTime = CurTime() + 45
 end
 
 --
@@ -164,24 +164,35 @@ end)
 
 	hook.Add( "PlayerButtonDown", "SCP_173_Ability", function( activator, butt )
 
-		if ( butt != KEY_F ) then return end
+		if ( butt != KEY_F and butt != KEY_B ) then return end
 
 		local wep = activator:GetActiveWeapon()
 		if ( activator:GTeam() != TEAM_SCP || wep && wep:IsValid() && wep:GetClass() != "weapon_scp_173" ) then return end
-		if wep.AbilityIcons[ 2 ].CooldownTime > CurTime() then return end
 
 		local self = wep
 
+		if butt == KEY_B then
+
+			if wep.AbilityIcons[3].CooldownTime > CurTime() then return end
+
+			if SERVER then self.Owner:SetPos(self.StatueEntity:GetPos()) end
+			wep.AbilityIcons[3].CooldownTime = CurTime() + wep.AbilityIcons[3].Cooldown
+
+			return
+		end
+
+		if wep.AbilityIcons[1].CooldownTime > CurTime() then return end
+
 		if !self.Owner:IsLZ() and !self.Owner:IsHardZone() and !self.Owner:IsEntrance() then
 			self:SetNextSecondaryFire( CurTime() + 5 )
-			self.AbilityIcons[ 2 ].CooldownTime = CurTime() + 5
-			self.Owner:SendLua("LocalPlayer():GetActiveWeapon().AbilityIcons[2].CooldownTime = CurTime() + 5")
-			if SERVER then self.Owner:RXSENDNotify("Вы не можете использовать данную способность в этой зоне!") end
+			self.AbilityIcons[1].CooldownTime = CurTime() + 5
+			self.Owner:SendLua("LocalPlayer():GetActiveWeapon().AbilityIcons[1].CooldownTime = CurTime() + 5")
+			if SERVER then self.Owner:RXSENDNotify("l:scp173_bad_zone") end
 			return
 		end
 
 
-		local plys = player.GetAll()
+		local plys = ents.FindInSphere(self.Owner:GetPos(), 400)
 
 		if SERVER then
 
@@ -197,19 +208,13 @@ end)
 
 				local ply = plys[i]
 
+				if !ply:IsPlayer() then continue end
 				if ply:GTeam() == TEAM_SPEC then continue end
 				if ply:GTeam() == TEAM_SCP then continue end
-				if ply:GTeam() == TEAM_DZ then continue end
-
-				if ply:IsLZ() and !activator:IsLZ() then continue end
-				if ply:IsEntrance() and !activator:IsEntrance() then continue end
-				if ply:IzHardZone() and !activator:IzHardZone() then continue end
-
-				if ply:Outside() then continue end
 
 				tab[#tab + 1] = ply
 
-				ply:ScreenFade(SCREENFADE.IN, Color(0,0,0, 215), 1, 6)
+				ply:ScreenFade(SCREENFADE.IN, Color(0,0,0, 245), 1, 6)
 				ply.SCP173Effect = true
 
 				timer.Simple(6, function()
@@ -226,8 +231,8 @@ end)
 
 		end
 
-		self.Owner:SendLua("LocalPlayer():GetActiveWeapon().AbilityIcons[2].CooldownTime = CurTime() + "..wep.AbilityIcons[ 2 ].Cooldown)
-		wep.AbilityIcons[ 2 ].CooldownTime = CurTime() + wep.AbilityIcons[ 2 ].Cooldown
+		self.Owner:SendLua("LocalPlayer():GetActiveWeapon().AbilityIcons[1].CooldownTime = CurTime() + "..wep.AbilityIcons[1].Cooldown)
+		wep.AbilityIcons[1].CooldownTime = CurTime() + wep.AbilityIcons[1].Cooldown
 
 	end )
 
@@ -356,9 +361,9 @@ local team_spec_index = TEAM_SPEC
 function SWEP:Think()
 	local watching = self:GetWatching()
 	if watching == 0 then
-		self.AbilityIcons[3].CooldownTime = 0
+		self.AbilityIcons[2].CooldownTime = 0
 	else
-		self.AbilityIcons[3].CooldownTime = CurTime() + watching
+		self.AbilityIcons[2].CooldownTime = CurTime() + watching
 	end
 
 	if ( !self.StatueEntity || !self.StatueEntity:IsValid() ) then return end
@@ -383,7 +388,7 @@ function SWEP:Think()
 			self:PrimaryAttack()
 		else
 			local vel = self.Owner:GetVelocity() * -4
-			vel[3] = math.Clamp( vel[3], 0, 10 )
+			vel[2] = math.Clamp( vel[2], 0, 10 )
 
 			self.Owner:SetVelocity( vel )
 
@@ -391,7 +396,7 @@ function SWEP:Think()
 
 				self.NextTip = CurTime() + 2
 
-				self.Owner:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Не уходите слишком далеко от своего тела", Color( 255, 0, 0, 180 ) )
+				self.Owner:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "l:dont_go_far_away_from_body", Color( 255, 0, 0, 180 ) )
 
 			end
 		end
@@ -441,7 +446,7 @@ function SWEP:Think()
 		self:SetWatching(self.watching)
 	end
 
-	self.AbilityIcons[3].CooldownTime = CurTime() + self:GetWatching()
+	self.AbilityIcons[2].CooldownTime = CurTime() + self:GetWatching()
 
 	if ( !self:GetNoDraw() ) then
 
@@ -511,7 +516,7 @@ function SWEP:PrimaryAttack()
 
 		if ( !self.Owner:IsLineOfSightClear( self.StatueEntity ) ) then
 
-			BREACH.Players:ChatPrint( self.Owner, true, true, "Вы не в поле зрения своего тела." )
+			BREACH.Players:ChatPrint( self.Owner, true, true, "l:scp173_not_in_los" )
 
 			return
 		end
@@ -558,7 +563,7 @@ end
 
 
 SWEP.NextSpecial = 0
-function SWEP:SecondaryAttack()
+function SWEP:SecondaryAttack()--[[
 
 	if self.AbilityIcons[1].CooldownTime > CurTime() then
 		self:SetNextSecondaryFire(self.AbilityIcons[1].CooldownTime)
@@ -568,7 +573,7 @@ function SWEP:SecondaryAttack()
 	if !self.Owner:IsLZ() and !self.Owner:IsHardZone() and !self.Owner:IsEntrance() then
 		self:SetNextSecondaryFire( CurTime() + 5 )
 		self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 5
-		if SERVER then self.Owner:RXSENDNotify("Вы не можете использовать данную способность в этой зоне!") end
+		if SERVER then self.Owner:RXSENDNotify("l:scp173_bad_zone") end
 		return
 	end
 
@@ -606,7 +611,7 @@ function SWEP:SecondaryAttack()
 
 		end
 
-	end]]
+	end
 
 	if SERVER then
 
@@ -625,6 +630,12 @@ function SWEP:SecondaryAttack()
 			if ply:IsLZ() and !self.Owner:IsLZ() then continue end
 			if ply:IsHardZone() and !self.Owner:IsHardZone() then continue end
 			if ply:IsEntrance() and !self.Owner:IsEntrance() then continue end
+			if ply:GetPos().z < -2071 then continue end
+			if ply:GetPos().x < -9123 then continue end
+			if ply:GetPos():WithinAABox(Vector(-2368.326660, 6488.070801, 386.768158), Vector(-2172.091797, 6286.301758, 65.254898)) then continue end
+			if ply:GetPos():WithinAABox(Vector(985.352478, 6247.241211, 1730.303223), Vector(1294.752197, 6495.883789, 1469.279907)) then continue end
+			if ply:GetPos():WithinAABox(Vector(-554.336182, 4831.873047, 392.835785), Vector(-954.619263, 5391.576172, 79.074532)) then continue end
+			if ply:GetPos():WithinAABox(Vector(-3484.999023, 2485.092041, 333.920380), Vector(-3086.511230, 1934.331543, 37.339333)) then continue end
 
 			if ply:Outside() then continue end
 
@@ -683,6 +694,6 @@ function SWEP:SecondaryAttack()
 
 		end
 
-	end
+	end]]
 
 end

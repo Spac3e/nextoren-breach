@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_nightvision_goc.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -124,7 +124,7 @@ function SWEP:Reload()
 
 		if ( CLIENT ) then
 
-			BREACH.Player:ChatPrint( true, true, "Для начала снимите текущие очки ночного видения." )
+			BREACH.Player:ChatPrint( true, true, "l:take_off_nvg_first" )
 
 		end
 

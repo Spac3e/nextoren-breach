@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_035.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -207,13 +207,13 @@ function SWEP:ChooseAbility( table )
   BREACH.Abilities:SetPos( ScrW() / 2 - ( 32 * #BREACH.Abilities.AbilityIcons ), ScrH() / 1.2 )
   BREACH.Abilities:SetSize( 64 * #BREACH.Abilities.AbilityIcons, 64 )
   BREACH.Abilities:SetText( "" )
-  BREACH.Abilities.SCP_Name = LocalPlayer():GetNClass()
+  BREACH.Abilities.SCP_Name = LocalPlayer():GetRoleName()
   BREACH.Abilities.Alpha = 1
   BREACH.Abilities.Paint = function( self, w, h )
 
     local client = LocalPlayer()
 
-    if ( client:Health() <= 0 || client:GetNClass() != self.SCP_Name ) then
+    if ( client:Health() <= 0 || client:GetRoleName() != self.SCP_Name ) then
 
       self:Remove()
 

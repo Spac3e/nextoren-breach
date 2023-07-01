@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/weapon_flashlight.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 SWEP.Spawnable = true
 SWEP.UseHands = true
 
@@ -110,9 +123,23 @@ function SWEP:Deploy()
 	self:EmitSound( "weapons/m249/handling/m249_armmovement_02.wav", 75, math.random( 100, 120 ), 1, CHAN_WEAPON )
 	self:SetHoldType(self.HoldType)
 
+	if CLIENT then
+		hook.Remove("PreRender", "ManualFlashLightThink")
+	end
+
+	if SERVER then self.bnmrg:SetInvisible(true) end
+
 end
 
+function shkest()
+	CreateParticleSystem( Entity(1), "aircraft_landing_light02", PATTACH_POINT_FOLLOW, 3 )
+end
+
+local rememberang = angle_zero
+
 function SWEP:Think()
+
+	--if CLIENT and LocalPlayer():IsSuperAdmin() then print("CHECK") end
 
 	if ( CLIENT && self:GetActive() ) then
 
@@ -130,10 +157,11 @@ function SWEP:Think()
 
 		local att = self.att_ViewModel:GetAttachment( 1 )
 
-		if ( att ) then
+		if ( att and LocalPlayer():GetActiveWeapon() == self ) then
 
 			self.projectedLight:SetPos( att.Pos )
 			self.projectedLight:SetAngles( att.Ang )
+			rememberang = att.ang
 
 		end
 
@@ -252,6 +280,46 @@ function SWEP:Holster()
 
 			end
 
+			hook.Add("PreRender", "ManualFlashLightThink", function()
+				if !LocalPlayer():HasWeapon("weapon_flashlight") or !IsValid(self) or self:GetOwner() != LocalPlayer() then
+					hook.Remove("PreRender", "ManualFlashLightThink")
+					return
+				end
+
+				if LocalPlayer():GetActiveWeapon() != self then
+
+					if ( !IsValid( self.projectedLight ) ) then
+
+							self:BuildLight()
+
+						end
+
+					local bone = LocalPlayer():GetBonePosition( LocalPlayer():LookupBone("ValveBiped.Bip01_Pelvis") )
+					local ang = LocalPlayer():EyeAngles()
+
+					ang.p = 0
+					ang.y = ang.y+2
+
+					self.projectedLight:SetPos( bone+ang:Right()*7 )
+					self.projectedLight:SetAngles( ang )
+
+				if ( self.projectedLight:GetNearZ() != 1 ) then
+
+							self.projectedLight:SetNearZ( 1 )
+
+						end
+
+					--self.projectedLight:Update()
+
+				end
+
+
+			end)
+
+		else
+
+			if SERVER then self.bnmrg:SetInvisible(false) end
+
 		end
 
 		return true
@@ -263,15 +331,27 @@ function SWEP:Holster()
 
 end
 
-local light_clr = Color( 198, 198, 198, 180 )
+function SWEP:Equip(Owner)
+
+	if !IsValid(Owner.FlashLightBonemerge) then
+		Owner.FlashLightBonemerge = Bonemerge("models/cultist/items/flashlight/bonemerge.mdl", Owner)
+		self.bnmrg = Owner.FlashLightBonemerge
+	else
+		self.bnmrg = Owner.FlashLightBonemerge
+	end
+
+end
+
+local light_clr = Color( 198, 198, 198, 250 )
 
 function SWEP:BuildLight()
 
 	self.projectedLight = ProjectedTexture()
 	self.projectedLight:SetEnableShadows( false )
-	self.projectedLight:SetFarZ( 256 )
-	self.projectedLight:SetFOV( 60 )
-	self.projectedLight:SetColor( light_clr )
+	self.projectedLight:SetFarZ( 885 )
+	self.projectedLight:SetBrightness(2.2)
+	self.projectedLight:SetFOV( 76 )
+	self.projectedLight:SetColor( color_white )
 	self.projectedLight:SetTexture( "nextoren/flashlight/flashlight001" )
 
 end
@@ -285,6 +365,12 @@ function SWEP:OnDrop()
 
 	end
 
+	if SERVER then
+		if IsValid(self.bnmrg) then
+			self.bnmrg:Remove()
+		end
+	end
+
 end
 
 
@@ -295,8 +381,11 @@ function SWEP:OnRemove()
 		self.projectedLight:SetNearZ( 0 )
 		self.projectedLight:Update()
 		self.projectedLight:Remove()
+		hook.Remove("PreRender", "ManualFlashLightThink")
 
 	end
+
+	if IsValid(self.bnmrg) then self.bnmrg:Remove() end
 
 	return true
 

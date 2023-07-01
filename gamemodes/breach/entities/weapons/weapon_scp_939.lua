@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_939.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -90,7 +90,7 @@ function SWEP:PrimaryAttack()
 
     self.dmginfo = DamageInfo()
     self.dmginfo:SetDamageType( DMG_SLASH )
-    self.dmginfo:SetDamage( target:GetMaxHealth() * .25 )
+    self.dmginfo:SetDamage( target:GetMaxHealth() * .4 )
     self.dmginfo:SetDamageForce( target:GetAimVector() * 25 )
     self.dmginfo:SetInflictor( self )
     self.dmginfo:SetAttacker( self.Owner )
@@ -126,7 +126,7 @@ function SWEP:SecondaryAttack()
 		ply:LagCompensation(false)
 		local tr = DASUKADAIMNEEGO.Entity
 		if tr and tr:IsValid() and tr:GetClass() == "prop_ragdoll" and tr:GetModel() != "models/cultist/humans/corpse.mdl" then
-			ply:BrProgressBar("Пожираем труп...", 15, "nextoren/gui/special_abilities/scp_062_fr_cannibal.png", tr, false, function()
+			ply:BrProgressBar("l:scp939_eating_body", 15, "nextoren/gui/special_abilities/scp_062_fr_cannibal.png", tr, false, function()
 				tr:SetModel("models/cultist/humans/corpse.mdl")
 				tr:SetSkin( 2 )
 				tr.AlreadyEaten = true
@@ -152,7 +152,7 @@ function SWEP:SecondaryAttack()
 				end
 			end)
 		else
-			ply:RXSENDNotify("Вам нужно смотреть на труп!")
+			ply:RXSENDNotify("l:scp939_look_on_body")
 		end
 	end
 	self.AbilityIcons[ 1 ].CooldownTime = CurTime() + 3
@@ -161,7 +161,7 @@ end
 
 function SWEP:CanSeePlayer( v )
 
-  return self.UsingSpecialAbility && v:Health() <= v:GetMaxHealth() * .5 || v:GetVelocity():Length2DSqr() > .25 || v:GetStamina() < 20 || v:KeyDown( IN_ATTACK ) || v:IsSpeaking() || v:IsTyping()
+  return v:Health() <= v:GetMaxHealth() * .5 || v:GetVelocity():Length2DSqr() > .25 || v:KeyDown( IN_ATTACK ) || v:IsSpeaking() || v:IsTyping()
 
 end
 
@@ -170,7 +170,7 @@ function SWEP:Deploy()
 	--if SERVER then
 		hook.Add( "PlayerButtonDown", "SCP939_Buttons", function( caller, button )
 
-			if ( caller:GetNClass() != "SCP939" ) then return end
+			if ( caller:GetRoleName() != "SCP939" ) then return end
 
 			local wep = caller:GetActiveWeapon()
 
@@ -205,17 +205,22 @@ function SWEP:Deploy()
 
 	if ( CLIENT ) then
 
+		hook.Add("OnPlayerChat", "SCP_939", function(ply)
+			if LocalPlayer():GTeam() != TEAM_SCP then hook.Remove("OnPlayerChat", "SCP_939") end
+			ply.NextTransmit = CurTime() + 1.5
+		end)
+
     self:ChooseAbility( self.AbilityIcons )
 
 		colour = 0
 
-		hook.Add( "PreDrawOutlines", "DrawPlayers", function()
+		hook.Add( "HUDPaint", "DrawPlayers", function()
 
 			local client = LocalPlayer()
 
-      if ( client:GetNClass() != "SCP939" || client:Health() <= 0 ) then
+      if ( client:GetRoleName() != "SCP939" || client:Health() <= 0 ) then
 
-        hook.Remove( "PreDrawOutlines", "DrawPlayers" )
+        hook.Remove( "HUDPaint", "DrawPlayers" )
 
         return
       end
@@ -229,17 +234,18 @@ function SWEP:Deploy()
 
 				local ent = sphere_ents[ i ]
 
-				if ( ent:IsPlayer() && ent != client && self:CanSeePlayer( ent ) ) then
+				if ( ent:IsPlayer() && ent != client && self:CanSeePlayer( ent ) && ent:GTeam() != TEAM_SPEC and ent:GetMoveType() != MOVETYPE_NOCLIP ) then
+					if ent:GTeam() == TEAM_SCP then continue end
 
 					draw_tab[ #draw_tab + 1 ] = ent
+					cam.Start3D()
+						ent:DrawModel()
+						for i, v in pairs(ent:LookupBonemerges()) do
+							if IsValid(v) then v:DrawModel() end
+						end
+					cam.End3D()
 
 				end
-
-			end
-
-			if ( #draw_tab > 0 ) then
-
-				outline.Add( draw_tab, clr_red, OUTLINE_MODE_VISIBLE )
 
 			end
 
@@ -251,6 +257,16 @@ end
 
 if ( SERVER ) then
 
+	function RecursiveSetPreventTransmit(ent, ply, stopTransmitting)
+	    if ent ~= ply and IsValid(ent) and IsValid(ply) then
+	        ent:SetPreventTransmit(ply, stopTransmitting)
+	        local tab = ent:GetChildren()
+	        for i = 1, #tab do
+	            RecursiveSetPreventTransmit(tab[ i ], ply, stopTransmitting)
+	        end
+	    end
+	end
+
 	function SWEP:Think()
 
 		local sphere_ents = ents.FindInSphere( self.Owner:GetPos(), 680 )
@@ -261,13 +277,26 @@ if ( SERVER ) then
 
 			if ( v:IsPlayer() && v != self.Owner ) then
 
-				if ( v:GetVelocity():Length2DSqr() > .25 || v:GetStamina() < 20 || v:KeyDown( IN_ATTACK ) ) then
+				if v:IsSpeaking() or v:IsTyping() then
+					v.NextTransmit = CurTime() + 1.5
+				end
+				if !v.NextTransmit then v.NextTransmit = 0 end
 
-					--RecursiveSetPreventTransmit( v, self.Owner, false )
+				if v:GTeam() == TEAM_DZ or v:GTeam() == TEAM_SCP then
+
+					RecursiveSetPreventTransmit( v, self.Owner, false )
 
 				else
 
-					--RecursiveSetPreventTransmit( v, self.Owner, true )
+					if ( v:GetVelocity():Length2DSqr() > .25 || v:KeyDown( IN_ATTACK ) || v:IsSpeaking() || v.NextTransmit > CurTime() ) then
+
+						RecursiveSetPreventTransmit( v, self.Owner, false )
+
+					else
+
+						RecursiveSetPreventTransmit( v, self.Owner, true )
+
+					end
 
 				end
 
@@ -288,7 +317,7 @@ if ( SERVER ) then
 
 			local player = players[ i ]
 
-			if ( player:GetNClass() == "SCP939" ) then
+			if ( player:GetRoleName() == "SCP939" ) then
 
 				scp939_exists = true
 
@@ -312,7 +341,7 @@ if ( SERVER ) then
 
 			if ( player && player:IsValid() ) then
 
-				--RecursiveSetPreventTransmit( player, self.Owner, false )
+				RecursiveSetPreventTransmit( player, self.Owner, false )
 
 			end
 

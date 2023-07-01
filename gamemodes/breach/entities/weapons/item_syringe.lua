@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_syringe.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -152,6 +152,12 @@ function SWEP:PrimaryAttack()
 	timer.Simple( 1.3, function()
 
     if ( ( self && self:IsValid() ) && ( self.Owner && self.Owner:IsValid() ) ) then
+
+    	if ( CLIENT ) then
+
+	      self.Owner.Stamina = self.Owner.Stamina + 30
+
+	    end
 
       self.Owner:Boosted( 2, math.random( 17, 20 ) )
       self.Owner:ScreenFade( SCREENFADE.IN, ColorAlpha( effect_clr, 10 ), 0.2, 20 )

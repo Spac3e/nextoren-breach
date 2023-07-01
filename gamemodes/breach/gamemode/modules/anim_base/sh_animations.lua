@@ -1,5 +1,15 @@
--- oink.industries
--- lua source: gamemodes/breach/gamemode/modules/anim_base/sh_animations.lua
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/anim_base/sh_animations.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local Breach  = BREACH
 local string  = string;
 local math    = math;
@@ -270,8 +280,8 @@ BREACH.AnimationTable.Soldiers = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL", -- Safe-mode
-    "AHL_StandAim_PISTOL", -- Fire-mode
-    "AHL_StandAim_PISTOL" -- Aim-mode
+    "DOD_StandAim_PISTOL", -- Fire-mode
+    "DOD_StandAim_PISTOL" -- Aim-mode
 
   },
   [ "revolver_run" ] = {
@@ -283,8 +293,8 @@ BREACH.AnimationTable.Soldiers = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "AHL_w_WalkAim_50AE",
-    "AHL_w_WalkAim_50AE"
+    "DOD_w_WalkAim_PISTOL",
+    "DOD_w_WalkAim_PISTOL"
 
   },
   [ "revolver_crouch" ] = {
@@ -1042,8 +1052,8 @@ BREACH.AnimationTable.SCPS = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL", -- Safe-mode
-    "AHL_StandAim_PISTOL", -- Fire-mode
-    "AHL_StandAim_PISTOL" -- Aim-mode
+    "DOD_StandAim_PISTOL", -- Fire-mode
+    "DOD_StandAim_PISTOL" -- Aim-mode
 
   },
   [ "revolver_run" ] = {
@@ -1055,8 +1065,8 @@ BREACH.AnimationTable.SCPS = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "AHL_w_WalkAim_50AE",
-    "AHL_w_WalkAim_50AE"
+    "DOD_w_WalkAim_PISTOL",
+    "DOD_w_WalkAim_PISTOL"
 
   },
   [ "revolver_crouch" ] = {
@@ -1456,6 +1466,22 @@ BREACH.AnimationTable.Guards = {
     "AHL_cw_CrouchWalkAim_KNIFE",
     "AHL_CrouchAim_KNIFE"
 
+  },
+
+  ["fist_idle"] = "AHL_StandAim_KUNGFU",
+  ["fist_walk"] = "AHL_w_WalkAim_KUNGFU",
+  ["fist_run"] = "AHL_r_RunAim_KUNGFU",
+  ["attack_fist"] = {
+    "AHL_Attack_KUNGFU",
+    "AHL_Attack_KUNGFU2",
+    "AHL_Attack_KUNGFU3",
+    "AHL_Attack_KUNGFU4",
+    "AHL_Attack_KUNGFU5",
+    "AHL_Attack_KUNGFU6"
+  },
+  ["crouch_fist"] = {
+    "AHL_cw_CrouchWalkAim_KUNGFU",
+    "AHL_CrouchAim_KUNGFU",
   },
 
   ["idle_zombie"] = {
@@ -1911,8 +1937,8 @@ BREACH.AnimationTable.Guards = {
   [ "revolver_idle" ] = {
 
     "DOD_StandIdle_PISTOL",
-    "AHL_StandAim_PISTOL",
-    "AHL_StandAim_PISTOL"
+    "DOD_StandAim_PISTOL",
+    "DOD_StandAim_PISTOL"
 
   },
   [ "revolver_run" ] = {
@@ -1924,8 +1950,8 @@ BREACH.AnimationTable.Guards = {
   [ "revolver_walk" ] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "AHL_w_WalkAim_50AE",
-    "AHL_w_WalkAim_50AE"
+    "DOD_w_WalkAim_PISTOL",
+    "DOD_w_WalkAim_PISTOL"
 
   },
   [ "revolver_crouch" ] = {
@@ -2657,8 +2683,8 @@ BREACH.AnimationTable.maleHuman = {
   ["revolver_idle"] = {
 
     "DOD_StandIdle_PISTOL",
-    "AHL_StandAim_PISTOL",
-    "AHL_StandAim_PISTOL"
+    "DOD_StandAim_PISTOL",
+    "DOD_StandAim_PISTOL"
 
   },
   ["revolver_run"] = {
@@ -2670,8 +2696,8 @@ BREACH.AnimationTable.maleHuman = {
   ["revolver_walk"] = {
 
     "DOD_w_WalkIdle_PISTOL",
-    "AHL_w_WalkAim_50AE",
-    "AHL_w_WalkAim_50AE"
+    "DOD_w_WalkAim_PISTOL",
+    "DOD_w_WalkAim_PISTOL"
 
   },
   ["revolver_crouch"] = {
@@ -2954,20 +2980,27 @@ local soldier_models = {
   [ "models/cultist/humans/russian/russians.mdl" ] = true,
   [ "models/cultist/humans/chaos/chaos.mdl" ] = true,
   [ "models/cultist/humans/obr/obr.mdl" ] = true,
+  [ "models/cultist/humans/obr/obr_new.mdl" ] = true,
   [ "models/cultist/humans/osn/osn.mdl" ] = true,
 }
 
 local banned_roles = {
+
+  [ "CI Spy" ] = true,
   [ "GOC Spy" ] = true,
+  [ "SH Spy" ] = true,
+  [ "UIU Spy" ] = true,
+  [ "Dispatcher" ] = true,
+
 }
 
 function Breach.AnimationTable:GetTable( player, model )
 
-  if ( ( soldier_teams[ player:GTeam() ] && !banned_roles[ player:GetNClass() ] ) ) || ( player:GetNClass() == ROLES.ROLE_CLASSDPIDORAS and soldier_models[ model ] ) then
+  if ( ( soldier_teams[ player:GTeam() ] && !banned_roles[ player:GetRoleName() ] ) ) || ( player:GetRoleName() == role.ClassD_Hitman and soldier_models[ model ] ) then
 
     return BREACH.Animations.SoldiersAnimations, "1"
 
-  elseif ( ( guard_teams[ player:GTeam() ] && !banned_roles[ player:GetNClass() ] ) || guard_models[ model ] )  then
+  elseif ( ( guard_teams[ player:GTeam() ] && !banned_roles[ player:GetRoleName() ] ) || guard_models[ model ] )  then
 
     return BREACH.Animations.GuardAnimations, "2"
 
@@ -2981,11 +3014,11 @@ end
 
 function AnimationTableGetTable( player, model )
 
-  if ( ( soldier_teams[ player:GTeam() ] && !banned_roles[ player:GetNClass() ] ) ) || ( player:GetNClass() == ROLES.ROLE_CLASSDPIDORAS and soldier_models[ model ] ) then
+  if ( ( soldier_teams[ player:GTeam() ] && !banned_roles[ player:GetRoleName() ] ) ) || ( player:GetRoleName() == role.ClassD_Hitman and soldier_models[ model ] ) then
 
     return BREACH.Animations.SoldiersAnimations, "1"
 
-  elseif ( ( guard_teams[ player:GTeam() ] && !banned_roles[ player:GetNClass() ] ) || guard_models[ model ] )  then
+  elseif ( ( guard_teams[ player:GTeam() ] && !banned_roles[ player:GetRoleName() ] ) || guard_models[ model ] )  then
 
     return BREACH.Animations.GuardAnimations, "2"
 
@@ -3018,4 +3051,3 @@ function GetSequenceList( ply )
 
 end
 --concommand.Add("GetID", GetSequenceList)
-

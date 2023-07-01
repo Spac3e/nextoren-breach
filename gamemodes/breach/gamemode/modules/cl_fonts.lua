@@ -1,12 +1,63 @@
+local surface = surface
+local Material = Material
+local draw = draw
+local DrawBloom = DrawBloom
+local DrawSharpen = DrawSharpen
+local DrawToyTown = DrawToyTown
+local Derma_StringRequest = Derma_StringRequest;
+local RunConsoleCommand = RunConsoleCommand;
+local tonumber = tonumber;
+local tostring = tostring;
+local CurTime = CurTime;
+local Entity = Entity;
+local unpack = unpack;
+local table = table;
+local pairs = pairs;
+local ScrW = ScrW;
+local ScrH = ScrH;
+local concommand = concommand;
+local timer = timer;
+local ents = ents;
+local hook = hook;
+local math = math;
+local draw = draw;
+local pcall = pcall;
+local ErrorNoHalt = ErrorNoHalt;
+local DeriveGamemode = DeriveGamemode;
+local vgui = vgui;
+local util = util
+local net = net
+local player = player
+BREACH.FontsCreated = BREACH.FontsCreated or false
+
+if BREACH.FontsCreated then
+	return
+end
+
+BREACH.FontsCreated = true
+
 surface.CreateFont( "char_title", { font = "Arial", size = 48, antialias = true })
 
 surface.CreateFont( "char_title24", { font = "Segoe UI Bold", size = 24, antialias = true })
 
-surface.CreateFont( "nowyfont", {
-	font = "Courier New",
+surface.CreateFont( "BudgetNewMini", {
+
+	font = "Arial",
+
+	size = 16,
+	
+	weight = 100,
+
+	scanlines = 0,
+
+})
+
+surface.CreateFont("MainMenuFontmini_russian", {
+
+	font = "Univers LT Std 47 Cn Lt",
+	size = 26,
 	extended = true,
-	size = ScrW() * 0.010,
-	weight = 380,
+	weight = 800,
 	blursize = 0,
 	scanlines = 0,
 	antialias = true,
@@ -17,30 +68,30 @@ surface.CreateFont( "nowyfont", {
 	rotary = false,
 	shadow = true,
 	additive = false,
-	outline = false,
-} )
-
-surface.CreateFont( "JuneFont", {
-
-
-
-	font = "Junegull",
-  
-	size = 16,
-  
-	weight = 500,
-  
-	antialias = true,
-  
-	  extended = true,
-  
-	shadow = false,
-  
 	outline = false
   
+})
+
+surface.CreateFont("MainMenuFont_russian", {
+
+	font = "Univers LT Std 47 Cn Lt",
+	size = 24,
+	extended = true,
+	weight = 800,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false
   
-  
-  })
+})
+
 surface.CreateFont("MainMenuFontmini", {
 
 	font = "Conduit ITC",
@@ -48,6 +99,45 @@ surface.CreateFont("MainMenuFontmini", {
 	weight = 800,
 	blursize = 0,
 	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false
+  
+})
+
+surface.CreateFont("MainMenuFont_new_russian", {
+
+	font = "Univers LT Std 47 Cn Lt",
+	size = 35,
+	extended = true,
+	weight = 800,
+	blursize = 0,
+	scanlines = 3,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false
+  
+})
+
+surface.CreateFont("MainMenuFont_new", {
+
+	font = "Conduit ITC",
+	size = 35,
+	weight = 800,
+	blursize = 0,
+	scanlines = 3,
 	antialias = true,
 	underline = false,
 	italic = false,
@@ -217,7 +307,7 @@ surface.CreateFont( "LZTextVerySmall", {
 
 })
 
-surface.CreateFont( "char_title", { font = "Segoe UI Bold", size = 48, antialias = true })
+surface.CreateFont( "char_title", { font = "Segoe UI", extended = true, size = 48, antialias = true })
 surface.CreateFont( "char_title1", { font = "Segoe UI Bold", size = 40, antialias = true })
 surface.CreateFont( "char_title64", { font = "Segoe UI Bold", size = 64, antialias = true })
 surface.CreateFont( "char_title36", { font = "Segoe UI Bold", size = 17, antialias = true })
@@ -394,6 +484,21 @@ surface.CreateFont( "ScoreboardContent",
 	size = 16,
 })
 
+surface.CreateFont( "WikiFont",
+{
+	font = "Bauhaus LT",
+	weight = 1000,
+	size = 20,
+})
+
+surface.CreateFont( "WikiFontSelected",
+{
+	font = "Bauhaus LT",
+	weight = 1000,
+	size = 20,
+	blursize = 1,
+})
+
 surface.CreateFont( "Scoreboardtext",
 {
 	font = "Bauhaus LT",
@@ -423,16 +528,45 @@ surface.CreateFont( "ChatFont_new", {
   
 })
 
+surface.CreateFont( "tazer_font", {
+	font = "Univers LT Std 47 Cn Lt",
+	size = 21,
+	weight = 0,
+	antialias = true,
+	extended = true,
+	shadow = false,
+	outline = true,
+	scanlines = 3,
+  
+})
+
 surface.CreateFont( "ChatFont_properties", {
 
   font = "Univers LT Std 47 Cn Lt",
   size = 22,
   weight = 500,
-  antialias = true,
-	extended = true,
+  antialias = false,
+	extended = false,
   shadow = false,
   outline = false
 
+})
+
+surface.CreateFont( "killfeed_font", {
+    font = "Segoe UI",    
+	size = 17,
+	weight = 100,
+	blursize = 0,
+	scanlines = 0,
+	antialias = false,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
+	additive = false,
+	outline = false,
 })
 
 surface.CreateFont( "HUDFont", {
@@ -469,6 +603,22 @@ surface.CreateFont( "HUDFont3", {
 	outline = false,
 })
 
+surface.CreateFont( "MVP_Font", {
+    font = "Bauhaus",    
+	size = 20,
+	weight = 100,
+	blursize = 0,
+	scanlines = 3,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
+	additive = false,
+	outline = false,
+})
 surface.CreateFont( "HUDFont4", {
     font = "Bauhaus",    
 	size = 30,

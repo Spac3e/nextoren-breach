@@ -1,4 +1,34 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/sh_gteams.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
 
+local RunConsoleCommand = RunConsoleCommand;
+local FindMetaTable = FindMetaTable;
+local CurTime = CurTime;
+local pairs = pairs;
+local string = string;
+local table = table;
+local timer = timer;
+local hook = hook;
+local math = math;
+local pcall = pcall;
+local unpack = unpack;
+local tonumber = tonumber;
+local tostring = tostring;
+local ents = ents;
+local ErrorNoHalt = ErrorNoHalt;
+local DeriveGamemode = DeriveGamemode;
+local util = util
+local net = net
+local player = player
 gteams = {}
 gteams.Teams = {}
 
@@ -13,6 +43,28 @@ function gteams.SetUp(index, name, color)
 	else
 		ErrorNoHalt( "GTEAMS [ERROR] tried to setup invalid team!" )
 		print(debug.traceback())
+	end
+end
+
+function gteams.GetName(input)
+	if isnumber(input) then
+		for k,v in pairs(gteams.Teams) do
+			if v.index == input then
+				return v.name
+			end
+		end
+	elseif isstring(input) then
+		for k,v in pairs(gteams.Teams) do
+			if v.name == input then
+				return v.name
+			end
+		end
+	elseif IsColor(input) then
+		for k,v in pairs(gteams.Teams) do
+			if v.color == input then
+				return v.name
+			end
+		end
 	end
 end
 
@@ -152,9 +204,13 @@ function mply:SetGTeam(input)
 	if not self.SetNGTeam then
 		player_manager.RunClass( self, "SetupDataTables" )
 	end
+
+local team_before = self:GetNGTeam()
+
 	if isnumber(input) then
 		for k,v in pairs(gteams.Teams) do
 			if v.index == input then
+				LogTeamChangeFromBreach(self, team_before, v.index)
 				//if self.SetNGTeam
 				self:SetNGTeam(v.index)
 				return
@@ -163,6 +219,7 @@ function mply:SetGTeam(input)
 	elseif isstring(input) then
 		for k,v in pairs(gteams.Teams) do
 			if v.name == input then
+				LogTeamChangeFromBreach(self, team_before, v.index)
 				self:SetNGTeam(v.index)
 				return
 			end
@@ -170,6 +227,7 @@ function mply:SetGTeam(input)
 	elseif IsColor(input) then
 		for k,v in pairs(gteams.Teams) do
 			if v.color == input then
+				LogTeamChangeFromBreach(self, team_before, v.index)
 				self:SetNGTeam(v.index)
 				return
 			end

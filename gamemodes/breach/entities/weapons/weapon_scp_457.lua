@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_457.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -42,7 +42,7 @@ SWEP.AbilityIcons = {
   {
 
     Name = "Inferno Wall",
-    Description = "Blocks bullets and sets fire on people on contact",
+    Description = "Sets fire on people on contact",
     Cooldown = 45,
     KEY = "RMB",
     Icon = "nextoren/gui/special_abilities/scp_457_wall.png"
@@ -110,7 +110,7 @@ if ( SERVER ) then
 
   hook.Add( "DoPlayerDeath", "Explosion", function( ply )
 
-    if ( ply:GetNClass() != "SCP457" ) then return end
+    if ( ply:GetRoleName() != "SCP457" ) then return end
 
     ply:StopParticles()
 
@@ -252,7 +252,7 @@ function SWEP:Think()
       if ( v && v:IsValid() && v != self.Owner && v:IsPlayer() && v:Health() > 0 && !v.IgniteParticle && !( v:GTeam() == TEAM_SPEC || v:GTeam() == TEAM_SCP || v:GTeam() == TEAM_DZ ) ) then
 
         self.Owner:SetHealth( math.Clamp( self.Owner:Health() + math.random( 5, 10 ), 0, self.Owner:GetMaxHealth() ) )
-        v:Ignite( self.IgniteTime )
+        v:SetOnFire( self.IgniteTime )
 
       end
 

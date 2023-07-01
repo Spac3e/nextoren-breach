@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/armor_lighthazmat_1.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -13,7 +13,7 @@ File Path:   gamemodes/breach/entities/entities/armor_lighthazmat_1.lua
 AddCSLuaFile()
 
 ENT.Base = "armor_base"
-ENT.PrintName 			= "Light Hazmat White"
+ENT.PrintName 			= "l:armor_lighthazmat_white"
 ENT.InvIcon = Material( "nextoren/gui/icons/hazmat_1.png" )
 ENT.Type 						=	"anim"
 ENT.RenderGroup 		= RENDERGROUP_OPAQUE

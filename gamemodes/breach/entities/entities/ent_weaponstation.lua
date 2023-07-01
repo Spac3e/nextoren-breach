@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/ent_weaponstation.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -20,11 +20,12 @@ if ( CLIENT ) then
 
     if ( bool ) then
 
-      BREACH.Player:ChatPrint( true, true, "Доступно редактирование вооружения! Нажмите клавишу \"" .. input.LookupBinding( "+menu_context" ):upper() || "none" .. "\" для модификации Вашего оружия." )
+    local gays = input.LookupBinding( "+menu_context" ):upper() || "none"
+      BREACH.Player:ChatPrint( true, true, "l:temp_attach_avaliable_pt1 \"" .. gays .. "\" l:temp_attach_avaliable_pt2" )
 
     else
 
-      BREACH.Player:ChatPrint( true, true, "Вы покинули зону редактирования вооружения." )
+      BREACH.Player:ChatPrint( true, true, "l:temp_attach_zone_left" )
 
       local survivor = LocalPlayer()
 
@@ -64,11 +65,9 @@ ENT.Pos         = {
 function ENT:Initialize()
 
   self:SetModel( self.Model )
-  self:SetMoveType( MOVETYPE_NONE )
 
+  self:SetMoveType( MOVETYPE_NONE )
   self:SetSolid( SOLID_BBOX )
-  self:PhysicsInit( SOLID_BBOX )
-  self:SetMoveType(MOVETYPE_NONE)
 
 
   if ( !self.n_Type ) then return end
@@ -105,6 +104,7 @@ if ( SERVER ) then
           table.RemoveByValue( self.AllSurvivors, survivor )
 
           survivor.CanAttach = nil
+          survivor:SetNW2Bool("Breach:CanAttach", false)
 
         end
 
@@ -127,6 +127,7 @@ if ( SERVER ) then
     net.Send( survivor )
 
     survivor.CanAttach = true
+    survivor:SetNW2Bool("Breach:CanAttach", true)
 
     self.AllSurvivors[ #self.AllSurvivors + 1 ] = survivor
 
@@ -143,6 +144,7 @@ if ( SERVER ) then
       if ( survivor && survivor:IsValid() ) then
 
         survivor.CanAttach = nil
+        survivor:SetNW2Bool("Breach:CanAttach", false)
 
       end
 

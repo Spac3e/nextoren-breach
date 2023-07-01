@@ -1,5 +1,5 @@
 --[[
-Server Name: [RXSEND] Breach 2.6.0
+Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/entities/special_sphere.lua
 		 __        __              __             ____     _                ____                __             __         
@@ -61,7 +61,7 @@ end
 
     end
     local owner = self:GetOwner()
-    if !(IsValid(owner) and owner:HaveSpecialAb(ROLES.ROLE_SHIELD) and owner:Health() > 0 and owner:Alive()) and SERVER then
+    if !(IsValid(owner) and owner:HaveSpecialAb(role.SCI_SPECIAL_SHIELD) and owner:Health() > 0 and owner:Alive()) and SERVER then
       self:Remove()
     end
     self:SetPos(owner:GetPos())

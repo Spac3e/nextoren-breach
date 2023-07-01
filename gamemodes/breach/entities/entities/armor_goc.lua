@@ -1,7 +1,19 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/entities/armor_goc.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 ENT.Base = "armor_base"
-ENT.PrintName 			= "GOC Armor"
+ENT.PrintName 			= "l:armor_goc"
 
 ENT.Type 						=	"anim"
 ENT.RenderGroup 		= RENDERGROUP_OPAQUE
@@ -15,9 +27,9 @@ ENT.CantStrip = true
 ENT.SlotNeeded = 2
 
 ENT.FuncOnPickup = function( ply )
-  ply:Give( "breach_keycard_crack" )
-  ply:Give( "cw_cultist_semisniper_arx160" )
-  ply:Give( "item_nightvision_goc" )
+  ply:BreachGive( "breach_keycard_crack" )
+  ply:BreachGive( "cw_cultist_semisniper_arx160" )
+  ply:BreachGive( "item_nightvision_white" )
 
   ply:ClearBodyGroups()
 
@@ -25,9 +37,9 @@ ENT.FuncOnPickup = function( ply )
 
   ply:StripWeapon("item_knife")
 
-  BREACH.Players:ChatPrint( ply, true, true, "Вы нашли снаряжение. Выполняйте основную задачу." )
+  BREACH.Players:ChatPrint( ply, true, true, "l:sgoc_first_objective" )
 
-  --ply:AddToStatistics( "First objective complete", 100 )
+  ply:AddToStatistics( "l:sgoc_first_objective_completed", 100 )
 
   ply:SetUsingCloth("")
 
@@ -65,7 +77,7 @@ if ( CLIENT ) then
 
     local client = LocalPlayer()
 
-    if ( client:GetNClass() == ROLES.ROLE_GOCSPY ) then
+    if ( client:GetRoleName() == role.ClassD_GOCSpy ) then
 
       self:DrawModel()
 

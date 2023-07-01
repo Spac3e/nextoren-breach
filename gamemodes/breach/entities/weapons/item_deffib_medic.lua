@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/entities/weapons/item_deffib_medic.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 SWEP.ViewModelFOV	= 62
 SWEP.ViewModelFlip	= false
 SWEP.ViewModel		= ""
@@ -134,16 +147,16 @@ function SWEP:Think()
 
 end
 
-function RevivePlayer( self, ply, body, force )
+function RevivePlayer( self, ply, body, force, wep )
 
 	if !IsValid(ply) or CLIENT then return end
 
 	if !force then
 		if body.__Team == TEAM_SCP then return end
 
-		if body:GetModel():find("corpse.mdl") then self:RXSENDNotify("Это уже даже не труп а кости да мясо ", Color(255,0,0), "Вы уже ничем ему не поможете") return end
+		if body:GetModel():find("corpse.mdl") then self:RXSENDNotify("l:deffib_body_decayed_pt1 ", Color(255,0,0), "l:deffib_body_decayed_pt2") return end
 
-		if body.DieWhen + 45 <= CurTime() then self:RXSENDNotify("Похоже, что слишком поздно ", Color(255,0,0), "Вы уже ничем ему не поможете") return end
+		--if body.DieWhen + 45 <= CurTime() then self:RXSENDNotify("l:deffib_body_too_late_pt1 ", Color(255,0,0), "l:deffib_body_too_late_pt2") return end
 
 		local isheadgibbed = false
 
@@ -156,14 +169,14 @@ function RevivePlayer( self, ply, body, force )
 
 		end
 
-		if ( body.KilledByWeapon and body.LastHit == HITGROUP_HEAD ) or isheadgibbed then self:RXSENDNotify("Похоже, что труп убит в голову ", Color(255,0,0), "Вы уже ничем ему не поможете") return end
+		if ( body.KilledByWeapon and body.LastHit == HITGROUP_HEAD ) or isheadgibbed then self:RXSENDNotify("l:deffib_headshot ", Color(255,0,0), "l:deffib_headshot_pt2") return end
 
-		self:BrProgressBar("Возрождаю...", 2,"nextoren/gui/icons/medic_kit.png", body, false, nil, nil, function() self:StopForcedAnimation() end)
+		self:BrProgressBar("l:ressurecting_someone", 2,"nextoren/gui/icons/medic_kit.png", body, false, nil, nil, function() self:StopForcedAnimation() end)
 	end
 
 	local finishcallback = function()
 
-		self:StripWeapon("item_deffib_medic")
+		if IsValid(wep) then wep:Remove() end
 
 		self:CompleteAchievement("deffib")
 
@@ -178,7 +191,7 @@ function RevivePlayer( self, ply, body, force )
 		ply:SetModel(body:GetModel())
 		ply:SetSkin(body:GetSkin())
 		ply:SetGTeam(body.__Team)
-		ply:SetNClass(body.Role)
+		ply:SetRoleName(body.Role)
 		ply:SetMaxHealth(body.__Health) 
 		ply:SetHealth(ply:GetMaxHealth() * .65)
 		ply:SetUsingCloth(body.Cloth)
@@ -309,7 +322,7 @@ function SWEP:PrimaryAttack()
 
 	if ( ent && ent:IsValid() && ent:GetClass() == "prop_ragdoll" && !ent.NOREVIVE ) then
 
-		RevivePlayer( self.Owner, ent:GetOwner(), ent )
+		RevivePlayer( self.Owner, ent:GetOwner(), ent, nil, self )
 
 	end
 
@@ -318,6 +331,14 @@ function SWEP:PrimaryAttack()
 	  self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
 
   end )]]
+
+end
+
+function SWEP:OnDrop()
+
+		if IsValid(self.Owner) then
+			self.Owner:BrStopProgressBar("l:ressurecting_someone")
+		end
 
 end
 

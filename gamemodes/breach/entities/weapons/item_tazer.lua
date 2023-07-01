@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_tazer.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -19,9 +19,9 @@ if ( CLIENT ) then
 
 end
 
-SWEP.ViewModelFOV	= 45
+SWEP.ViewModelFOV	= 81
 SWEP.ViewModelFlip	= false
-SWEP.ViewModel		= "models/cultist/items/taser/c_taser_small.mdl"
+SWEP.ViewModel		= "models/weapons/shaky/breach_items/tazer/v_tazer.mdl"
 SWEP.WorldModel		= "models/cultist/items/taser/w_taser_small.mdl"
 SWEP.PrintName		= "Электрошокер"
 SWEP.Slot			= 1
@@ -34,8 +34,8 @@ SWEP.AdminSpawnable	= false
 
 SWEP.droppable				= true
 
-SWEP.Primary.ClipSize		= -1
-SWEP.Primary.DefaultClip	= -1
+SWEP.Primary.ClipSize		= 1000
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Ammo			=  "none"
 SWEP.Primary.Automatic		= false
 
@@ -52,8 +52,9 @@ SWEP.Deployed = false
 
 function SWEP:Deploy()
 
-  self.IdleDelay = CurTime() + .5
+  self.IdleDelay = CurTime() + 0.7555555835771
   self:PlaySequence( "draw" )
+  self.HolsterDelay = nil
 	timer.Simple( .25, function()
 
     if ( self && self:IsValid() ) then
@@ -96,9 +97,11 @@ function SWEP:Holster()
 
   if ( !self.HolsterDelay ) then
 
-		self.HolsterDelay = CurTime() + 1
+		self.HolsterDelay = CurTime() + 0.35
     self.IdleDelay = CurTime() + 3
-  	self:PlaySequence( "holster" )
+    if SERVER then
+	  	self:PlaySequence( "holster" )
+	  end
     self:EmitSound( "weapons/m249/handling/m249_armmovement_01.wav", 75, math.random( 80, 100 ), 1, CHAN_WEAPON )
 
 	end
@@ -167,6 +170,14 @@ function SWEP:PrimaryAttack()
 
 	self:SetNextPrimaryFire( CurTime() + .1 )
 
+	if self:Clip1() <= 0 then
+		if SERVER then
+			self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "Вы не можете использовать Электрошокер, ибо заряд закончился.", color_white )
+		end
+		self:SetNextPrimaryFire( CurTime() + 2.5 )
+		return
+	end
+
 	local owner = self:GetOwner()
 
 	local tr = owner:GetEyeTrace()
@@ -174,8 +185,6 @@ function SWEP:PrimaryAttack()
 	local ent = tr.Entity
 
 	local imba = 48
-
-	if self.Owner:IsSuperAdmin() then imba = 10000 end
 
   local tr = {}
   tr.start = owner:GetShootPos()
@@ -191,16 +200,14 @@ function SWEP:PrimaryAttack()
 
   if ( ent && ent:IsValid() && ent:IsPlayer() && ent:GetGroundEntity() != NULL && ( ent:GTeam() != TEAM_SCP or self.Owner:IsSuperAdmin() ) ) then
 
-		if !self.Owner:IsSuperAdmin() then self:SetNextPrimaryFire( CurTime() + 2.5 ) end
+		self:SetNextPrimaryFire( CurTime() + 2.5 )
 
-		self.IdleDelay = CurTime() + .5
-	  self:PlaySequence( "melee" )
+		self:SetClip1(self:Clip1() - 1)
 
-		timer.Simple( 1, function()
-
-			self:PlaySequence( "idle" )
-
-		end )
+		self.IdleDelay = CurTime() + 1.1
+		if SERVER then
+		  self:PlaySequence( "attack" )
+		end
 
 		if ( CLIENT ) then
 
@@ -210,10 +217,8 @@ function SWEP:PrimaryAttack()
 
     if ( SERVER ) then
 
-    if !ent:IsSuperAdmin() then
       ent:ScreenFade( SCREENFADE.IN, color_white, .1, 2 )
       ent:Freeze( true )
-  end
 
 			if IsValid(ent.ProgibTarget) then
 				ent.ProgibTarget:StopForcedAnimation()
@@ -248,8 +253,13 @@ function SWEP:PrimaryAttack()
 
 		timer.Create("ZAP_SHOCKER_"..ent:SteamID64(), 2, 1, function()
 
+				if !IsValid(ent.ProgibTarget) then
+					ent:Freeze( false )
+				end
+
         ent:StopParticles()
-        ent:Freeze( false )
+
+
 
       end )
 

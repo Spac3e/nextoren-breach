@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/battery_3.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -21,21 +21,22 @@ if ( CLIENT ) then
 
 end
 
-SWEP.ViewModelFOV	= 70
+SWEP.ViewModelFOV	= 60
 SWEP.ViewModelFlip	= false
-SWEP.ViewModel		= ""
 SWEP.WorldModel		= "models/cultist/items/battery/battery.mdl"
-SWEP.PrintName		= "Спец. батарейка"
+SWEP.ViewModel = "models/weapons/shaky/breach_items/battery/v_battery.mdl"
+SWEP.PrintName		= "Батарейка"
 SWEP.Slot			= 1
 SWEP.SlotPos		= 1
 SWEP.DrawAmmo		= false
-SWEP.Skin = 1
+SWEP.Skin = 3
 SWEP.DrawCrosshair	= true
 SWEP.HoldType		= "items"
 SWEP.Spawnable		= false
 SWEP.AdminSpawnable	= false
 
-SWEP.Charge = 65
+SWEP.Charge = 15
+SWEP.Equipableitem 		= true
 
 SWEP.droppable				= true
 
@@ -53,9 +54,25 @@ SWEP.UseHands = true
 SWEP.Pos = Vector( 1, 3, -2 )
 SWEP.Ang = Angle( 240, -90, 240 )
 
+function SWEP:Initialize()
+	self:SetHoldType(self.HoldType)
+end
+
 function SWEP:Deploy()
 
-  self.Owner:DrawViewModel( false )
+	self:PlaySequence( "draw" )
+
+	if ( self.Skin ) then
+
+    local vm = self.Owner:GetViewModel()
+
+    if ( vm && vm:IsValid() ) then
+
+      self.Owner:GetViewModel():SetSkin( self.Skin )
+
+    end
+    
+  end
 
 end
 

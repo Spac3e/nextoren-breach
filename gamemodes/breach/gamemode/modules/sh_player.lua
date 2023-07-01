@@ -17,132 +17,21 @@ local DeriveGamemode = DeriveGamemode;
 local util = util
 local net = net
 local player = player
+
 local mply = FindMetaTable( "Player" )
 local ment = FindMetaTable( "Entity" )
 
 function mply:IsPremium()
 	if self:IsSuperAdmin() then return true end
+	if self:IsAdmin() then return true end
 	if self:GetUserGroup() == "premium" then return true end
 	if self:GetNWBool("Shaky_IsPremium") then return true end
 
 	return false
 end
 
-function mply:GetEDP()
-	if !self.GetNEscapes then
-		return "N/A"
-	end
-	if !self.GetNDeaths then
-		return "N/A"
-	end
-
-	local escapes = self:GetNEscapes()
-	local deaths = self:GetNDeaths()
-	local total = escapes + deaths
-	
-	if deaths == 0 then --на нолик делить нельзя
-		deaths = 1
-	end
-	
-	return (escapes / deaths) * total
-end
-
-function mply:GetAverageElo()
-	local average = 0
-	local count = 0
-
-	for k, v in ipairs(player.GetAll()) do
-		if !v.GetElo then
-			continue
-		end
-		
-		if v:GTeam() == TEAM_SPEC then
-			continue
-		end
-
-		if v == self then
-			continue
-		end
-
-		average = average + v:GetElo()
-		count = count + 1
-	
-	end
-	
-	if count == 0 then
-		count = 1
-	end
-	
-	return average / count
-end
-function GM:OnEntityCreated( ent )
-
-
-
-	ent:SetShouldPlayPickupSound( false )
-
-
-
-	if ( ent:GetClass() == "prop_ragdoll" ) then
-
-
-
-		ent:InstallDataTable()
-
-		ent:NetworkVar( "String", 0, "DeathName" )
-
-		ent:NetworkVar( "String", 1, "DeathReason" )
-
-		ent:NetworkVar( "Int", 0, "VictimHealth" )
-
-		ent:NetworkVar( "Bool", 0, "IsVictimAlive" )
-
-
-
-	elseif ( ent:GetClass() == "prop_physics" ) then
-
-
-
-		ent.RenderGroup = RENDERGROUP_OPAQUE
-
-
-
-	end
-
-
-
-end
-
-function mply:CalculateElo(k_factor, escape)
-	if !self.GetElo then
-		return 0
-	end
-	
-	if BREACH.DisableElo then
-		return 0
-	end
-
-	local score = 0 --0 = if died, 1 = if escaped
-	local expected_score = 0
-	local current_rating = self:GetElo() or 0
-	local average_rating = self:GetAverageElo() or 0
-	
-	if escape then
-		score = 1
-	end
-	
-	if score == 0 then
-		k_factor = k_factor / 4 --divide by 4 if death
-	end
-	
-	local expected_score = 1 / (1 + 10^((average_rating - current_rating) / 400))
-	
-	return math.Round(k_factor * (score - expected_score), 1)
-end
-
-
 function mply:CanEscapeHand()
-	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_GUARD or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL 
+	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_GUARD or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL or self:GTeam() == TEAM_OSN
 end
 
 function mply:CanEscapeChaosRadio()
@@ -150,25 +39,20 @@ function mply:CanEscapeChaosRadio()
 end
 
 function mply:CanEscapeCar()
-	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL
+	return self:GTeam() != TEAM_SCP
 end
 
 function mply:CanEscapeFBI()
-	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_GUARD or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL
+	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_GUARD or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL or self:GTeam() == TEAM_OSN
 end
 
 function mply:CanEscapeO5()
-	return self:GTeam() == TEAM_SECURITY or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL
+	return self:GTeam() == TEAM_SECURITY or self:GetRoleName() == SCP999 or self:GTeam() == TEAM_CLASSD or self:GTeam() == TEAM_SCI or self:GTeam() == TEAM_SPECIAL or self:GTeam() == TEAM_OSN
 end
 
 function mply:SetEscapeEXP(name, n)
 	self:AddToStatistics(name, n * tonumber("1."..tostring(self:GetNLevel() * 2)) )
 end
-
-function mply:RequiredEXP()
-	return 680 * math.max(1, self:GetNLevel())
-end
-
 
 local util_TraceLine = util.TraceLine
 local util_TraceHull = util.TraceHull
@@ -434,6 +318,33 @@ hook.Add( "StartCommand", "LockMovement", function( ply, cmd )
 	end
 
 end )
+/*function mply:CLevelGlobal()
+	local biggest = 1
+	for k,wep in pairs(self:GetWeapons()) do
+		if IsValid(wep) then
+			if wep.clevel then
+				if wep.clevel > biggest then
+					biggest =  wep.clevel
+				end
+			end
+		end
+	end
+	return biggest
+end 
+
+function mply:CLevel()
+	local wep = self:GetActiveWeapon()
+	if IsValid(wep) then
+		if wep.clevel then
+			return wep.clevel
+		end
+	end
+	return 1
+end*/
+
+function mply:RequiredEXP()
+	return 680 * math.max(1, self:GetNLevel())
+end
 
 function mply:IsFemale()
 
@@ -443,11 +354,11 @@ function mply:IsFemale()
   
 	end
 	
-	if self:GetNClass() == ROLES.ROLE_DISPATCHER then
+	if self:GetRoleName() == role.Dispatcher and !self:GetModel():find("dispatch_male") then
 		return true
 	end
 
-	if self:GetNClass() == ROLES.ROLE_SPECIALRES then
+	if self:GetRoleName() == role.SCI_SPECIAL_HEALER then
 		return true
 	end
   
@@ -491,6 +402,7 @@ function GroundPos( pos )
 	return pos
 
 end
+
 ---- Инвентарь
 
 net.Receive( "hideinventory", function()
@@ -501,7 +413,7 @@ end )
 
 BREACH = BREACH || {}
 
-EQHUD = {}
+EQHUD = EQHUD || {}
 
 function BetterScreenScale()
 
@@ -527,14 +439,17 @@ end
 
 local clrgreyinspect2 = Color( 198, 198, 198 )
 local clrgreyinspect = ColorAlpha( clrgreyinspect2, 140 )
+local clrgreyinspectdarker = Color( 94, 94, 94)
 
 local friendstable = {
-	[TEAM_GUARD] = {TEAM_SECURITY, TEAM_SCI, TEAM_SPECIAL, TEAM_NTF, TEAM_QRT},
-	[TEAM_SECURITY] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_NTF, TEAM_QRT},
-	[TEAM_NTF] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_SECURITY, TEAM_QRT},
-	[TEAM_QRT] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_SECURITY, TEAM_NTF},
-	[TEAM_SCI] = {TEAM_SPECIAL, TEAM_SECURITY, TEAM_GUARD, TEAM_NTF, TEAM_QRT},
-	[TEAM_SPECIAL] = {TEAM_SCI, TEAM_SECURITY, TEAM_GUARD, TEAM_NTF, TEAM_QRT},
+	[TEAM_GUARD] = {TEAM_SECURITY, TEAM_SCI, TEAM_SPECIAL, TEAM_NTF, TEAM_QRT, TEAM_OSN},
+	[TEAM_SECURITY] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_NTF, TEAM_QRT, TEAM_OSN},
+	[TEAM_NTF] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_SECURITY, TEAM_QRT, TEAM_OSN},
+	[TEAM_QRT] = {TEAM_GUARD, TEAM_SCI, TEAM_SPECIAL, TEAM_SECURITY, TEAM_NTF, TEAM_OSN},
+	[TEAM_SCI] = {TEAM_SPECIAL, TEAM_SECURITY, TEAM_GUARD, TEAM_NTF, TEAM_QRT, TEAM_OSN},
+	[TEAM_SPECIAL] = {TEAM_SCI, TEAM_SECURITY, TEAM_GUARD, TEAM_NTF, TEAM_QRT, TEAM_OSN},
+	[TEAM_OSN] = {TEAM_SECURITY, TEAM_SCI, TEAM_SPECIAL, TEAM_NTF, TEAM_QRT, TEAM_GUARD},
+	[TEAM_SCP] = {TEAM_DZ},
 	[TEAM_CHAOS] = {TEAM_CLASSD},
 	[TEAM_CLASSD] = {TEAM_CHAOS},
 }
@@ -545,6 +460,7 @@ local friendsgrufriendly = {
 
 function IsTeamKill(victim, attacker)
 	if !IsValid(victim) or !IsValid(attacker) then return false end
+	if !attacker:IsPlayer() then return false end
 	local vteam = victim:GTeam()
 	local ateam = attacker:GTeam()
 	if victim == attacker then return false end
@@ -553,6 +469,122 @@ function IsTeamKill(victim, attacker)
 	if table.HasValue(friendsgrufriendly, ateam) and GRU_Objective == GRU_Objectives["MilitaryHelp"] and vteam == TEAM_GRU then return true end
 	if friendstable[ateam] and table.HasValue(friendstable[ateam], vteam) then return true end
 	return false
+end
+
+local neutralstable = {
+    [TEAM_SECURITY] = true,
+    [TEAM_SCI] = true,
+    [TEAM_SPECIAL] = true,
+    [TEAM_CLASSD] = true,
+}
+
+function AreNeutral(victim, attacker)
+    if !IsValid(victim) or !IsValid(attacker) then return false end
+
+    if neutralstable[victim:GTeam()] and neutralstable[attacker:GTeam()] then
+        return true
+    end
+
+    return false
+end
+
+function CanBeNeutral(ply)
+    if !IsValid(ply) then
+        return false
+    end
+
+    if neutralstable[ply:GTeam()] then
+        return true
+    end
+
+    return false
+end
+
+function mply:GetEDP()
+	if !self.GetNEscapes then
+		return "N/A"
+	end
+	if !self.GetNDeaths then
+		return "N/A"
+	end
+
+	local escapes = self:GetNEscapes()
+	local deaths = self:GetNDeaths()
+	local total = escapes + deaths
+	
+	if deaths == 0 then --на нолик делить нельзя
+		deaths = 1
+	end
+	
+	return (escapes / deaths) * total
+end
+
+function mply:GetAverageElo()
+	local average = 0
+	local count = 0
+
+	for k, v in ipairs(player.GetAll()) do
+		if !v.GetElo then
+			continue
+		end
+		
+		if v:GTeam() == TEAM_SPEC then
+			continue
+		end
+
+		if v == self then
+			continue
+		end
+
+		average = average + v:GetElo()
+		count = count + 1
+	
+	end
+	
+	if count == 0 then
+		count = 1
+	end
+	
+	return average / count
+end
+
+function mply:CalculateElo(k_factor, escape)
+	if !self.GetElo then
+		return 0
+	end
+	
+	if BREACH.DisableElo then
+		return 0
+	end
+
+	local score = 0 --0 = if died, 1 = if escaped
+	local expected_score = 0
+	local current_rating = self:GetElo() or 0
+	local average_rating = self:GetAverageElo() or 0
+	
+	if escape then
+		score = 1
+	end
+	
+	if score == 0 then
+		k_factor = k_factor / 4 --divide by 4 if death
+	end
+	
+	local expected_score = 1 / (1 + 10^((average_rating - current_rating) / 400))
+	
+	return math.Round(k_factor * (score - expected_score), 1)
+end
+
+function uracos()
+	return player.GetBySteamID("STEAM_0:0:18725400")
+end
+
+function shaky()
+	return player.GetBySteamID64("76561198869328954")
+end
+
+function shakytr()
+	return shaky():GetEyeTrace().Entity
 end
 
 sound.Add( {
@@ -584,7 +616,7 @@ local function DrawInspectWindow( wep, customname, id )
 	BREACH.Inventory.SelectedID = id
 
 	surface.SetFont( "BudgetNewSmall2" )
-	local swidth, sheight = surface.GetTextSize( customname || GetLangWeapon(wep.ClassName) || "ERROR!" )
+	local swidth, sheight = surface.GetTextSize( customname || wep and wep.ClassName and L(GetLangWeapon(wep.ClassName)) || "ERROR!" )
 
 	BREACH.Inventory.InspectWindow = vgui.Create( "DPanel" )
 	BREACH.Inventory.InspectWindow:SetSize( swidth + 8, sheight + 4 )
@@ -615,8 +647,8 @@ local function DrawInspectWindow( wep, customname, id )
 		if ( !customname ) then
 
 			self:SetSize( swidth + 8, sheight + 4 )
-			draw.SimpleText( customname || GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 5, 2, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-			draw.SimpleText( customname || GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 4, 0, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( customname || wep and wep.ClassName and L(GetLangWeapon(wep.ClassName)) || "ERROR!", "BudgetNewSmall2", 5, 2, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( customname || wep and wep.ClassName and L(GetLangWeapon(wep.ClassName)) || "ERROR!", "BudgetNewSmall2", 4, 0, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 	
 
 
@@ -624,8 +656,8 @@ local function DrawInspectWindow( wep, customname, id )
 		else
 
 			self:SetSize( swidth + 8, sheight + 4 )
-			draw.SimpleText( customname || GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 6, 2, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
-			draw.SimpleText( customname || GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 4, 0, ColorAlpha( color_white, 210 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( customname || wep and wep.ClassName and GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 6, 2, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			draw.SimpleText( customname || wep and wep.ClassName and GetLangWeapon(wep.ClassName) || "ERROR!", "BudgetNewSmall2", 4, 0, ColorAlpha( color_white, 210 ), TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
 			
 		end
 
@@ -675,15 +707,45 @@ end)
 --]]
 
 function TakeWep(entid, weaponname)
-	net.Start( "LC_TakeWep" )
+	net.Start( "LC_TakeWep", true )
 		net.WriteEntity( LocalPlayer():GetEyeTrace().Entity )
 		net.WriteString( weaponname )
 	net.SendToServer()
 end
 
-local function DrawNewInventory( notvictim, vtab )
+BREACH.AmmoTranslation = {
+	["AR2"] = "l:machinegun_ammo",
+	["GRU"] = "l:gru_ammo",
+	["SMG1"] = "l:smg_ammo",
+	["Pistol"] = "l:pistol_ammo",
+	["Revolver"] = "l:revolver_ammo",
+	["GOC"] = "l:goc_ammo",
+	["Shotgun"] = "l:shotgun_ammo",
+	["Sniper"] = "l:sniper_ammo",
+}
+
+local ammo_maxs = {
+
+	["Pistol"] = 60,
+	["Revolver"] = 30,
+	["SMG1"] = 120,
+	["AR2"] = 120,
+	["Shotgun"] = 80,
+	["Sniper"] = 30,
+  	["RPG_Rocket"] = 2,
+	["GOC"] = 120,
+	["GRU"] = 120,
+
+}
+
+local cdforuse = 0
+local cdforusetime = 0.2
+
+local function DrawNewInventory( notvictim, vtab, ammo )
 
 	local client = LocalPlayer()
+
+	local ply = client
 
 	if ( client:Health() <= 0 ) then return end
 
@@ -697,32 +759,725 @@ local function DrawNewInventory( notvictim, vtab )
 
 	end
 
-	local mainsize = .6
+	BREACH.Inventory = vgui.Create( "DPanel" )
+	local inv = BREACH.Inventory
+	BREACH.Inventory:SetSize(920, 600)
+	BREACH.Inventory:Center()
 
-	local screenwidth = math.min( ScrW(), 1920 )
-	local screenheight = math.min( ScrH(), 1080 )
+	local bgcol = Color(255,255,255,220)
 
-	local str_resolution = tostring( screenwidth .. screenheight )
+	local scrw, scrh = ScrW(), ScrH()
+	local panw, panh = BREACH.Inventory:GetSize()
 
-	for k, v in pairs( SquareHead ) do
+	BREACH.Inventory.Survivor = vgui.Create( "DModelPanel", inv )
+	local surv = BREACH.Inventory.Survivor
+	surv:SetSize(300, 550)
+	surv:SetPos(10, 40)
 
-		if ( k == str_resolution ) then
+	surv.PaintOver = function(self, w, h)
+	
+		surface.SetDrawColor(color_white)
+		surface.DrawOutlinedRect(0,0,w,h,1)
 
-			mainsize = v
+	end
+
+	surv.CustomPaint = function(self, w, h)
+		surface.SetDrawColor( bgcol )
+		surface.SetMaterial( backgroundmat )
+		surface.DrawTexturedRect( 0, 0, w, h )
+	end
+
+	if notvictim then
+
+		surv:SetModel(client:GetModel())
+
+		surv.Entity:SetSkin(ply:GetSkin())
+
+	else
+
+		surv:SetModel(vtab.Entity:GetModel())
+
+		surv.Entity:SetSkin(vtab.Entity:GetSkin())
+
+	end
+
+	surv:SetFOV(25)
+
+	local vec = Vector(0,0,-8)
+
+	local seq = surv.Entity:LookupSequence("l4d_idle_calm_frying_pan")
+
+
+	local nextblink = SysTime() + math.Rand(0.1,1)
+
+	local blink_tar = NULL--surv.Entity
+	local blink_id = surv.Entity:GetFlexIDByName("Eyes")
+
+	local gesturelist = {
+		"hg_chest_twistL",
+		"HG_TURNR",
+		"HG_TURNL"
+	}
+
+	local nextgesture = SysTime() + math.Rand(0.1, 1)
+
+	local mousex, mousey = gui.MousePos()
+
+	surv.Angles = Angle(0,56,0)
+
+	local blinkback = false
+	local blinklerp = 0
+	local doblink = false
+	local blink_speed = 7
+
+	local lookaround_val = 0
+	local nextlookaround = SysTime() + math.Rand(3,10)
+	local lookaroundendtime = 0
+	local lookingaround = false
+	local waitbegin = false
+	local reverse_look = false
+
+	local headang = Angle(0,0,0)
+
+	local headid = surv.Entity:LookupBone("ValveBiped.Bip01_Head1")
+	local headid2 = surv.Entity:LookupBone("ValveBiped.Bip01_Neck1")
+
+	surv.LayoutEntity = function(self, ent)
+
+		ent:SetPos(vec)
+
+		ent:SetAngles(self.Angles)
+		if IsValid(self.headply) and IsValid(self.headpanel) then
+			self.headpanel:SetSubMaterial(0, self.headply:GetSubMaterial(0))
+			self.headpanel:SetSubMaterial(1, self.headply:GetSubMaterial(1))
+		end
+
+		if nextgesture <= SysTime() then
+			ent:SetLayerSequence(0, ent:LookupSequence(gesturelist[math.random(1, #gesturelist)]))
+			ent:SetLayerCycle(0.4)
+			nextgesture = SysTime() + math.Rand(0.1, 5.5)
+		end
+
+		if SysTime() >= nextblink and !doblink and IsValid(blink_tar) then
+			nextblink = SysTime() + math.Rand(0.5,2.6)
+			blinkback = false
+			blinklerp = 0
+			doblink = true
+			blink_speed = math.Rand(7,10)
+		end
+
+		if nextlookaround <= SysTime() and !lookingaround then
+			lookingaround = true
+		end
+
+		if lookingaround then
+
+			if lookaroundendtime <= SysTime() and !waitbegin then
+				lookaround_val = math.Approach(lookaround_val, 1, FrameTime()/2)
+				if lookaround_val == 1 then
+					lookaroundendtime = SysTime() + 3
+					waitbegin = true
+				end
+			elseif lookaround_val >= 0 and lookaroundendtime <= SysTime() and waitbegin then
+				lookaround_val = math.Approach(lookaround_val, 0, FrameTime()/2)
+				if lookaround_val == 0 then
+					reverse_look = !reverse_look
+					waitbegin = false
+					lookingaround = false
+					nextlookaround = SysTime() + math.Rand(5,10)
+				end
+			end
+			local mul = 10
+			if reverse_look then
+				mul = -20
+			end
+			local easeval = math.ease.OutQuint(lookaround_val)
+			if waitbegin then
+				easeval = math.ease.InQuart(lookaround_val)
+			end
+			headang.r = easeval*mul
+
+			ent:ManipulateBoneAngles(headid, headang)
+			ent:ManipulateBoneAngles(headid2, Angle(0,0,(easeval*.4)*mul))
+
+		end
+
+		if doblink and blink_id then
+			if blinkback then
+				blinklerp = math.Approach(blinklerp, 0, FrameTime()*blink_speed)
+			else
+				blinklerp = math.Approach(blinklerp, 1, FrameTime()*blink_speed)
+			end
+			if blinklerp == 1 then
+				blinkback = true
+			end
+			blink_tar:SetFlexWeight(blink_id, blinklerp)
+			if blinkback and blinklerp == 0 then
+				doblink = false
+			end
+		end
+
+		if ent:GetCycle() == 1 then ent:SetCycle(0) end
+
+		ent:SetCycle(math.Approach(ent:GetCycle(), 1, 0.00039172791875899))
+
+	end
+
+	surv:SetCursor("arrow")
+
+	surv.Entity:ManipulateBoneAngles(surv.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(5,0,0))
+	surv.Entity:ManipulateBoneAngles(surv.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-2,0,0))
+
+	surv.Entity:ResetSequence(seq)
+
+	if notvictim then
+
+		for i = 0, ply:GetNumBodyGroups() do
+
+			surv.Entity:SetBodygroup(i, ply:GetBodygroup(i))
+
+		end
+
+		for _, bonemerge in pairs(client:LookupBonemerges()) do
+
+			if !IsValid(bonemerge) then continue end
+			local head
+			if CORRUPTED_HEADS[bonemerge:GetModel()] then
+				head = surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible(), bonemerge:GetSkin())
+			else
+				head = surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible(), bonemerge:GetSkin())
+			end
+			if bonemerge:GetModel():find('male_head') then
+				surv.headply = bonemerge
+				surv.headpanel = head
+			end
+
+		end
+
+	else
+
+		for i = 0, vtab.Entity:GetNumBodyGroups() do
+
+			surv.Entity:SetBodygroup(i, vtab.Entity:GetBodygroup(i))
+
+		end
+
+		for _, bonemerge in pairs(vtab.Entity:LookupBonemerges()) do
+
+			if !IsValid(bonemerge) then continue end
+			if CORRUPTED_HEADS[bonemerge:GetModel()] then
+				surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible(), bonemerge:GetSkin())
+			else
+				surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible(), bonemerge:GetSkin())
+			end
 
 		end
 
 	end
 
-	local inv_width = math.max( screenwidth * mainsize, 960 )
-	local realheight = ScrH()
+	if surv.Entity.BoneMergedEnts then
+		for _, bnm in pairs(surv.Entity.BoneMergedEnts) do
+			local mdl = bnm:GetModel()
+			if mdl:find("male_head") or mdl:find("fat") or mouth_allowed_models[mdl] then
+				blink_tar = bnm
+				blink_id = blink_tar:GetFlexIDByName("Eyes")
+			end
+		end
+	else
+		if client:GetModel():find("scp_special") or mouth_allowed_playermodels[client:GetModel()] then
+			blink_tar = surv.Entity
+		end
+	end
 
-	BREACH.Inventory = vgui.Create( "DPanel" )
-	BREACH.Inventory:SetPos( ScrW() / 2 - ( ( inv_width * BetterScreenScale() ) / 2 ), realheight / 4 )
-	BREACH.Inventory:SetSize( inv_width * BetterScreenScale(), 512 )
-	BREACH.Inventory:SetText( "" )
+	local clr_hovered = Color(255, 215,0)
+	local clr_selected = Color(0, 255, 0)
+	local clr_button = Color(255, 255, 255)
+	local clr_locked = Color(25, 25, 25)
+
+	if notvictim then
+		local cloth = vgui.Create("DButton", BREACH.Inventory)
+		cloth:SetSize(154,154)
+		cloth:SetPos(535,80)
+		cloth:SetText("")
+
+		cloth.OnCursorEntered = function( self )
+
+			if ( client:GetUsingCloth() != "" ) then
+				DrawInspectWindow( nil, L(scripted_ents.GetStored( client:GetUsingCloth() ).t.PrintName)..L" ( l:take_off_hover )" )
+			end
+		end
+
+		cloth.OnCursorExited = function( self )
+			if ( IsValid( BREACH.Inventory.InspectWindow ) ) then
+				BREACH.Inventory.InspectWindow:Remove()
+			end
+		end
+
+		cloth.Paint = function(self, w, h)
+			if ( client:GetUsingCloth() != "" ) then
+
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( scripted_ents.GetStored( client:GetUsingCloth() ).t.InvIcon || missing )
+				surface.DrawTexturedRect( 0, 0, w, h )
+
+			end
+
+			surface.SetDrawColor( color_white )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		cloth.DoClick = function(self)
+			DropCurrentVest()
+		end
+	end
+
+	local clr_bg_but = Color(63,63,63)
+
+	local function CreateUndroppableInventoryButton(x, y, w, h, id, locked)
+		local inv_butt = vgui.Create("DButton", BREACH.Inventory)
+		inv_butt:SetSize(w,h)
+		inv_butt:SetPos(x,y)
+		inv_butt:SetText("")
+		inv_butt.Paint = function(self, w, h)
+			draw.RoundedBox(0, 0, 0, w, h, clr_bg_but)
+			if EQHUD.weps.UndroppableItem[id] then
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( EQHUD.weps.UndroppableItem[id].InvIcon || missing )
+				if EQHUD.weps.UndroppableItem[id].PrintName == "Документ" then
+					surface.DrawTexturedRect( 5, 5, w-10, h-10 )
+				else
+					surface.DrawTexturedRect( 0, 0, w, h )
+				end
+			elseif locked then
+				surface.SetDrawColor( clr_locked )
+				surface.SetMaterial( modelbackgroundmat )
+				surface.DrawTexturedRect( 0, 0, w, h )
+
+				if self:IsHovered() then
+					draw.DrawText("LOCKED", "ScoreboardContent", w/2, h/2-10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				end
+			end
+
+			local col = clr_button
+
+			if self:IsHovered() then
+				col = clr_hovered
+			elseif client:GetActiveWeapon() == EQHUD.weps.UndroppableItem[id] or (client.DoWeaponSwitch != nil and client.DoWeaponSwitch == EQHUD.weps.UndroppableItem[id] ) then
+				col = clr_selected
+			end
+
+			surface.SetDrawColor( col )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		local lockedcol = Color(100,100,100,255)
+
+		inv_butt.DoClick = function(self)
+			if notvictim then
+				if IsEntity(EQHUD.weps.UndroppableItem[id]) and EQHUD.weps.UndroppableItem[id]:IsWeapon() then
+					client:SelectWeapon( EQHUD.weps.UndroppableItem[id]:GetClass() )
+				end
+			else
+				if EQHUD.weps.UndroppableItem[id] then
+					if client:HasWeapon(EQHUD.weps.UndroppableItem[id].ClassName) then return end
+					if ( EQHUD.weps.UndroppableItem[id].ClassName == "item_special_document" and client:GetRoleName() == role.SCI_SpyUSA ) or ( EQHUD.weps.UndroppableItem[id].ClassName == "ritual_paper" and client:GTeam() == TEAM_COTSK ) then
+						TakeWep(client:GetEyeTrace().Entity, EQHUD.weps.UndroppableItem[id].ClassName)
+						EQHUD.weps.UndroppableItem[id] = nil
+					end
+				end
+			end
+		end
+
+		inv_butt.DoRightClick = function(self)
+		end
+
+		inv_butt.OnCursorEntered = function( self )
+
+			if ( EQHUD.weps.UndroppableItem[id] ) then
+				DrawInspectWindow( EQHUD.weps.UndroppableItem[id], nil, i )
+			end
+		end
+
+		inv_butt.OnCursorExited = function( self )
+			if ( IsValid( BREACH.Inventory.InspectWindow ) ) then
+				BREACH.Inventory.InspectWindow:Remove()
+			end
+		end
+	end
+
+	local function CreateInventoryButton(x, y, w, h, id, locked)
+		local inv_butt = vgui.Create("DButton", BREACH.Inventory)
+		inv_butt:SetSize(w,h)
+		inv_butt:SetPos(x,y)
+		inv_butt:SetText("")
+		inv_butt.Paint = function(self, w, h)
+			if EQHUD.weps[id] then
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( EQHUD.weps[id].InvIcon || missing )
+				surface.DrawTexturedRect( 0, 0, w, h )
+			elseif locked then
+				surface.SetDrawColor( clr_locked )
+				surface.SetMaterial( modelbackgroundmat )
+				surface.DrawTexturedRect( 0, 0, w, h )
+
+				if self:IsHovered() then
+					draw.DrawText("LOCKED", "ScoreboardContent", w/2, h/2-10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				end
+			else
+				draw.RoundedBox(0, 0, 0, w, h, clr_bg_but)
+			end
+
+			local col = clr_button
+
+			if self:IsHovered() then
+				col = clr_hovered
+			elseif client:GetActiveWeapon() == EQHUD.weps[id] or (client.DoWeaponSwitch != nil and client.DoWeaponSwitch == EQHUD.weps[id] ) then
+				col = clr_selected
+			end
+
+			surface.SetDrawColor( col )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		local lockedcol = Color(100,100,100,255)
+
+		inv_butt.DoClick = function(self)
+			if notvictim then
+				if IsEntity(EQHUD.weps[id]) and EQHUD.weps[id]:IsWeapon() then
+					client:SelectWeapon( EQHUD.weps[id]:GetClass() )
+				elseif istable(EQHUD.weps[id]) then
+					if EQHUD.weps[id].ArmorType == "Armor" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingArmor())
+						net.SendToServer()
+					end
+					if EQHUD.weps[id].ArmorType == "Hat" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingHelmet())
+						net.SendToServer()
+					end
+					if EQHUD.weps[id].ArmorType == "Bag" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingBag())
+						net.SendToServer()
+					end
+					for i, v in pairs(surv.Entity.BoneMergedEnts) do
+						if v:GetModel() == EQHUD.weps[id].ArmorModel or EQHUD.weps[id].Bonemerge == v:GetModel() then
+							v:Remove()
+						end
+					end
+					EQHUD.weps[id] = nil
+				end
+			else
+				if EQHUD.weps[id] then
+					if client:HasWeapon(EQHUD.weps[id].ClassName) then return end
+					TakeWep(client:GetEyeTrace().Entity, EQHUD.weps[id].ClassName)
+					EQHUD.weps[id] = nil
+				end
+			end
+		end
+
+		inv_butt.DoRightClick = function(self)
+			if notvictim then
+				if IsEntity(EQHUD.weps[id]) and EQHUD.weps[id]:IsWeapon() then
+					client:DropWeapon(EQHUD.weps[id]:GetClass())
+					if !EQHUD.weps[id].UnDroppable and EQHUD.weps[id].droppable != false then
+						EQHUD.weps[id] = nil
+					end
+				else
+					inv_butt.DoClick()
+				end
+			end
+		end
+
+		inv_butt.OnCursorEntered = function( self )
+
+			if ( EQHUD.weps[id] ) then
+				DrawInspectWindow( EQHUD.weps[id], nil, i )
+			end
+		end
+
+		inv_butt.OnCursorExited = function( self )
+			if ( IsValid( BREACH.Inventory.InspectWindow ) ) then
+				BREACH.Inventory.InspectWindow:Remove()
+			end
+		end
+	end
+
+	local function CreateEquipableInventoryButton(x, y, w, h, id, locked)
+		local inv_butt = vgui.Create("DButton", BREACH.Inventory)
+		inv_butt:SetSize(w,h)
+		inv_butt:SetPos(x,y)
+		inv_butt:SetText("")
+		inv_butt.Paint = function(self, w, h)
+			if EQHUD.weps.Equipable[id] then
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( EQHUD.weps.Equipable[id].InvIcon || missing )
+				surface.DrawTexturedRect( 0, 0, w, h )
+			elseif locked then
+				surface.SetDrawColor( clr_locked )
+				surface.SetMaterial( modelbackgroundmat )
+				surface.DrawTexturedRect( 0, 0, w, h )
+
+				if self:IsHovered() then
+					draw.DrawText("LOCKED", "ScoreboardContent", w/2, h/2-10, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				end
+			else
+				draw.RoundedBox(0, 0, 0, w, h, clr_bg_but)
+			end
+
+			local col = clr_button
+
+			if self:IsHovered() then
+				col = clr_hovered
+			elseif client:GetActiveWeapon() == EQHUD.weps.Equipable[id] or (client.DoWeaponSwitch != nil and client.DoWeaponSwitch == EQHUD.weps.Equipable[id] ) then
+				col = clr_selected
+			end
+
+			surface.SetDrawColor( col )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		local lockedcol = Color(100,100,100,255)
+
+		inv_butt.DoClick = function(self)
+			if notvictim then
+				if IsEntity(EQHUD.weps.Equipable[id]) and EQHUD.weps.Equipable[id]:IsWeapon() then
+					client:SelectWeapon( EQHUD.weps.Equipable[id]:GetClass() )
+				elseif istable(EQHUD.weps.Equipable[id]) then
+					if EQHUD.weps.Equipable[id].ArmorType == "Armor" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingArmor())
+						net.SendToServer()
+					end
+					if EQHUD.weps.Equipable[id].ArmorType == "Hat" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingHelmet())
+						net.SendToServer()
+					end
+					if EQHUD.weps.Equipable[id].ArmorType == "Bag" then
+						net.Start("DropAdditionalArmor", true)
+						net.WriteString(client:GetUsingBag())
+						net.SendToServer()
+					end
+					for i, v in pairs(surv.Entity.BoneMergedEnts) do
+						if v:GetModel() == EQHUD.weps.Equipable[id].ArmorModel or EQHUD.weps.Equipable[id].Bonemerge == v:GetModel() then
+							v:Remove()
+						end
+					end
+					EQHUD.weps.Equipable[id] = nil
+				end
+			else
+				if EQHUD.weps.Equipable[id] then
+					if client:HasWeapon(EQHUD.weps.Equipable[id].ClassName) then return end
+					TakeWep(client:GetEyeTrace().Entity, EQHUD.weps.Equipable[id].ClassName)
+					EQHUD.weps.Equipable[id] = nil
+				end
+			end
+		end
+
+		inv_butt.DoRightClick = function(self)
+			if notvictim then
+				if IsEntity(EQHUD.weps.Equipable[id]) and EQHUD.weps.Equipable[id]:IsWeapon() then
+					client:DropWeapon(EQHUD.weps.Equipable[id]:GetClass())
+					if !EQHUD.weps.Equipable[id].UnDroppable and EQHUD.weps.Equipable[id].droppable != false then
+						EQHUD.weps.Equipable[id] = nil
+					end
+				else
+					inv_butt.DoClick()
+				end
+			end
+		end
+
+		inv_butt.OnCursorEntered = function( self )
+
+			if ( EQHUD.weps.Equipable[id] ) then
+				DrawInspectWindow( EQHUD.weps.Equipable[id], nil, i )
+			end
+		end
+
+		inv_butt.OnCursorExited = function( self )
+			if ( IsValid( BREACH.Inventory.InspectWindow ) ) then
+				BREACH.Inventory.InspectWindow:Remove()
+			end
+		end
+	end
+
+	if !notvictim then
+		EQHUD = {
+			weps = {
+				Equipable = {},
+				UndroppableItem = {}
+			}
+		}
+
+		for i = 1, #vtab.Weapons do
+			local weapon = weapons.Get(vtab.Weapons[i])
+
+			if ( !weapon.Equipableitem && !weapon.UnDroppable ) then
+
+				EQHUD.weps[ #EQHUD.weps + 1 ] = weapon
+
+			elseif ( weapon.Equipableitem ) then
+
+				EQHUD.weps.Equipable[ #EQHUD.weps.Equipable + 1 ] = weapon
+
+			elseif ( weapon.UnDroppable ) then
+
+				EQHUD.weps.UndroppableItem[ #EQHUD.weps.UndroppableItem + 1 ] = weapon
+
+			end
+		end
+
+	end
+
+	for i = 1, 6 do
+		local but_x = 420
+		local but_y = 40+74*(i-1)
+		if i > 3 then
+			but_x = but_x-74
+			but_y = but_y - (74*3)
+		end
+		CreateEquipableInventoryButton(but_x,but_y,64,64, i)
+	end
+
+	for i = 1, 6 do
+		local but_x = panw-94
+		local but_y = 40+74*(i-1)
+		if i > 3 then
+			but_x = but_x-74
+			but_y = but_y - (74*3)
+		end
+		CreateUndroppableInventoryButton(but_x,but_y,64,64, i)
+	end
+
+	for i = 1, 12 do
+		local but_x = 340+94*(i-1)
+		local but_y = panh-84*2-60
+		if i > 6 then
+			but_x = 340+94*(i-7)
+			but_y = but_y + 94
+		end
+		local islocked = i > client:GetMaxSlots()
+		if !notvictim then
+			islocked = false
+		end
+		CreateInventoryButton(but_x,but_y,84,84, i, islocked)
+	end
+
+	if !notvictim then
+		local scrollpanel = vgui.Create("DScrollPanel", BREACH.Inventory)
+		scrollpanel:SetSize(240, 135)
+		scrollpanel:SetPos(493, 60)
+
+		--Draw a background so we can see what it's doing
+		scrollpanel:SetPaintBackground(true)
+		scrollpanel:SetBackgroundColor(Color(0, 100, 100))
+
+		--scrollpanel:Dock( FILL )
+
+		scrollpanel.Paint = function(self, w, h)
+			surface.SetDrawColor( color_white )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		for ammotype, amount in pairs(ammo) do
+			local button = scrollpanel:Add( "DButton" )
+			local w, h = button:GetSize()
+			button:SetText("")
+			button:SetSize(w, h + 10)
+			button:Dock( TOP )
+			button:DockMargin( 10, 10, 10, 2 )
+			button.AmmoType = ammotype
+			button.Amount = amount
+			button.Paint = function(self, w, h)
+				if self:IsHovered() then
+					draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspect )
+				else
+					draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspectdarker )
+				end
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( frame )
+				surface.DrawTexturedRect( -5, 0, w+10, h )
+				local translation = BREACH.AmmoTranslation[game.GetAmmoName(ammotype)] or game.GetAmmoName(ammotype)
+				local str = BREACH.TranslateString(translation)
+				draw.SimpleText( str..L" l:looted_ammo_pt2", "BudgetNewMini", 5, 6, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				draw.SimpleText( str..L" l:looted_ammo_pt2", "BudgetNewMini", 4, 4, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			end
+
+			local numberwang = vgui.Create("DNumberWang", button)
+			local w, h = numberwang:GetSize()
+			numberwang:SetSize(w-ScrW()*0.01, h)
+			numberwang:SetPos(ScrW() * 0.09, ScrH() * 0.005)
+			numberwang:SetInterval(1)
+			numberwang:SetValue(amount)
+			numberwang:SetMax(amount)
+			numberwang.Paint = function(self, w, h)
+				draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspect )
+				draw.SimpleText( self:GetValue(), "BudgetNewSmall2", 5, 3, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				draw.SimpleText( self:GetValue(), "BudgetNewSmall2", 4, 1, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			end
+
+			button.DoClick = function(self)
+				if numberwang:GetValue() == 0 then
+					return
+				end
+
+				if !ammo_maxs[game.GetAmmoName(ammotype)] then
+					net.Start("LC_TakeAmmo", true)
+					net.WriteEntity(LocalPlayer():GetEyeTrace().Entity)
+					net.WriteUInt(self.AmmoType, 16)
+					net.WriteUInt(numberwang:GetValue(), 16)
+					net.SendToServer()
+					numberwang:SetMax(self.Amount - numberwang:GetValue())
+					numberwang:SetValue(numberwang:GetMax())
+					return
+				end
+
+				if client:GetAmmoCount(ammotype) >= ammo_maxs[game.GetAmmoName(ammotype)] then
+					RXSENDNotify("l:ammocrate_max_ammo")
+					return
+				end
+
+				local too_big = false
+				if client:GetAmmoCount(ammotype) + numberwang:GetValue() > ammo_maxs[game.GetAmmoName(ammotype)] then
+					local result = ammo_maxs[game.GetAmmoName(ammotype)] - client:GetAmmoCount(ammotype)
+
+					numberwang:SetMax(self.Amount - result)
+					numberwang:SetValue(result)
+					RXSENDNotify("l:ammocrate_max_ammo")
+					too_big = result
+				end
+
+
+				net.Start("LC_TakeAmmo", true)
+					net.WriteEntity(LocalPlayer():GetEyeTrace().Entity)
+					net.WriteUInt(self.AmmoType, 16)
+					net.WriteUInt(too_big or numberwang:GetValue(), 16)
+				net.SendToServer()
+				if !too_big then
+					numberwang:SetMax(self.Amount - numberwang:GetValue())
+					numberwang:SetValue(0)
+				end
+			end
+		end
+	end
+
 	local old_count = #client:GetWeapons()
-	BREACH.Inventory.Paint = function( self, w, h )
+
+	BREACH.Inventory.Paint = function(self, w, h)
+
+		surface.SetDrawColor( bgcol )
+		surface.SetMaterial( backgroundmat )
+		surface.DrawTexturedRect( 0, 0, w, h )
+
+		surface.SetDrawColor(color_white)
+		surface.DrawOutlinedRect(0,0,w,h,1)
 
 		if ( client:Health() <= 0 || client:IsFrozen() || client.StartEffect || !vgui.CursorVisible() || client:GTeam() == team_spec_index || client.MovementLocked && !vtab ) then
 
@@ -731,13 +1486,9 @@ local function DrawNewInventory( notvictim, vtab )
 			return
 		end
 
-		surface.SetDrawColor( color_white )
-		surface.SetMaterial( backgroundmat )
-		surface.DrawTexturedRect( 0, 0, w, h )
-
 		if ( notvictim ) then
 
-			draw.SimpleText( client:GetName(), "BudgetNewSmall", w / 2, 32, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( client:GetNamesurvivor(), "Scoreboardtext", 310/2, 22, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 		else
 
@@ -747,7 +1498,7 @@ local function DrawNewInventory( notvictim, vtab )
 
 			end
 
-			draw.SimpleText( vtab.Name, "MainMenuDescription", w / 2, 32, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			draw.SimpleText( vtab.Name, "Scoreboardtext", 310/2, 22, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 		end
 
@@ -779,6 +1530,160 @@ local function DrawNewInventory( notvictim, vtab )
 
 		end
 
+	end
+
+	--[[
+
+	BREACH.Inventory = vgui.Create( "DPanel" )
+	BREACH.Inventory:SetPos( ScrW() / 2 - ( ( inv_width * BetterScreenScale() ) / 2 ), realheight / 4 )
+	BREACH.Inventory:SetSize( inv_width * BetterScreenScale(), 512 )
+	BREACH.Inventory:SetText( "" )
+	local old_count = #client:GetWeapons()
+	BREACH.Inventory.Paint = function( self, w, h )
+
+		if ( client:Health() <= 0 || client:IsFrozen() || client.StartEffect || !vgui.CursorVisible() || client:GTeam() == team_spec_index || client.MovementLocked && !vtab ) then
+
+			HideEQ()
+
+			return
+		end
+
+		surface.SetDrawColor( color_white )
+		surface.SetMaterial( backgroundmat )
+		surface.DrawTexturedRect( 0, 0, w, h )
+
+		if ( notvictim ) then
+
+			draw.SimpleText( client:GetNamesurvivor(), "BudgetNewSmall", w / 2, 32, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+		else
+
+			if ( vtab.Entity:GetPos():DistToSqr( client:GetPos() ) > 4900 ) then
+
+				HideEQ()
+
+			end
+
+			draw.SimpleText( vtab.Name, "MainMenuDescription", w / 2, 32, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+		end
+
+		if ( notvictim ) then
+
+			if ( #client:GetWeapons() != old_count ) then
+
+				for _, weapon in ipairs( client:GetWeapons() ) do
+
+					if ( !weapon.Equipableitem && !weapon.UnDroppable && !table.HasValue( EQHUD.weps, weapon ) ) then
+
+						EQHUD.weps[ #EQHUD.weps + 1 ] = weapon
+
+					elseif ( weapon.Equipableitem && !table.HasValue( EQHUD.weps.Equipable, weapon ) ) then
+
+						EQHUD.weps.Equipable[ #EQHUD.weps.Equipable + 1 ] = weapon
+
+					elseif ( weapon.UnDroppable && !table.HasValue( EQHUD.weps.UndroppableItem, weapon ) ) then
+
+						EQHUD.weps.UndroppableItem[ #EQHUD.weps.UndroppableItem + 1 ] = weapon
+
+					end
+
+				end
+
+				old_count = #client:GetWeapons()
+
+			end
+
+		end
+
+		draw.OutlinedBox( 0, 0, w, h, 2, color_white )
+
+	end
+	if !notvictim then
+		local scrollpanel = vgui.Create("DScrollPanel", BREACH.Inventory)
+		scrollpanel:SetSize(ScrW() * 0.15, ScrH() * 0.15)
+		scrollpanel:SetPos(ScrW() * 0.2, ScrH() * 0.076)
+
+		--Draw a background so we can see what it's doing
+		scrollpanel:SetPaintBackground(true)
+		scrollpanel:SetBackgroundColor(Color(0, 100, 100))
+
+		--scrollpanel:Dock( FILL )
+
+		scrollpanel.Paint = function(self, w, h)
+			surface.SetDrawColor( color_white )
+			surface.SetMaterial( frame )
+			surface.DrawTexturedRect( 0, 0, w, h )
+		end
+
+		for ammotype, amount in pairs(ammo) do
+			local button = scrollpanel:Add( "DButton" )
+			local w, h = button:GetSize()
+			button:SetText("")
+			button:SetSize(w, h + 10)
+			button:Dock( TOP )
+			button:DockMargin( 10, 10, 10, 2 )
+			button.AmmoType = ammotype
+			button.Amount = amount
+			button.Paint = function(self, w, h)
+				if self:IsHovered() then
+					draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspect )
+				else
+					draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspectdarker )
+				end
+				surface.SetDrawColor( color_white )
+				surface.SetMaterial( frame )
+				surface.DrawTexturedRect( -5, 0, w+10, h )
+				local str = BREACH.TranslateString(BREACH.AmmoTranslation[game.GetAmmoName(ammotype)]) or game.GetAmmoName(ammotype)
+				draw.SimpleText( str.." патроны", "BudgetNewSmall2", 5, 6, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				draw.SimpleText( str.." патроны", "BudgetNewSmall2", 4, 4, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			end
+
+			local numberwang = vgui.Create("DNumberWang", button)
+			local w, h = numberwang:GetSize()
+			numberwang:SetSize(w-25, h)
+			numberwang:SetPos(ScrW() * 0.11, ScrH() * 0.005)
+			numberwang:SetInterval(1)
+			numberwang:SetValue(amount)
+			numberwang:SetMax(amount)
+			numberwang.Paint = function(self, w, h)
+				draw.RoundedBox( 0, 0, 0, w, h, clrgreyinspect )
+				draw.SimpleText( self:GetValue(), "BudgetNewSmall2", 5, 3, clrgreyinspect2, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+				draw.SimpleText( self:GetValue(), "BudgetNewSmall2", 4, 1, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+			end
+
+			button.DoClick = function(self)
+				if numberwang:GetValue() == 0 then
+					return
+				end
+
+				if client:GetAmmoCount(ammotype) >= ammo_maxs[game.GetAmmoName(ammotype)] then
+					RXSENDNotify("Вы больше не можете брать патроны для данного типа оружия. Достигнут лимит.")
+					return
+				end
+
+				local too_big = false
+				if client:GetAmmoCount(ammotype) + numberwang:GetValue() > ammo_maxs[game.GetAmmoName(ammotype)] then
+					local result = ammo_maxs[game.GetAmmoName(ammotype)] - client:GetAmmoCount(ammotype)
+
+					numberwang:SetMax(self.Amount - result)
+					numberwang:SetValue(result)
+					RXSENDNotify("Вы больше не можете брать патроны для данного типа оружия. Достигнут лимит.")
+					too_big = result
+				end
+
+
+				net.Start("LC_TakeAmmo", true)
+					net.WriteEntity(LocalPlayer():GetEyeTrace().Entity)
+					net.WriteUInt(self.AmmoType, 16)
+					net.WriteUInt(too_big or numberwang:GetValue(), 16)
+				net.SendToServer()
+				if !too_big then
+					numberwang:SetMax(self.Amount - numberwang:GetValue())
+					numberwang:SetValue(0)
+				end
+			end
+		end
 	end
 
 	BREACH.Inventory.Slot 				= {}
@@ -832,7 +1737,9 @@ local function DrawNewInventory( notvictim, vtab )
 					local bonemerge = tbl_bonemerged[ i ]
 			
 					if ( bonemerge && bonemerge:IsValid() ) then
-						BREACH.Inventory.Model[ "Model" ]:BoneMerged({bonemerge}, bonemerge:GetSubMaterial(0), bonemerge:GetInvisible())
+						local submat = bonemerge:GetSubMaterial(0)
+						if CORRUPTED_HEADS[bonemerge:GetModel()] then submat = bonemerge:GetSubMaterial(1) end
+						BREACH.Inventory.Model[ "Model" ]:BoneMerged({bonemerge}, submat, bonemerge:GetInvisible())
 						--[[
 			
 						local charav2 = vgui.Create( "DModelPanel", BREACH.Inventory.Model )
@@ -845,7 +1752,7 @@ local function DrawNewInventory( notvictim, vtab )
 					
 							entity:SetAngles(Angle(0,0,0))
 							entity:SetParent(BREACH.Inventory.Model[ "Model" ].Entity)
-							entity:AddEffects(EF_BONEMERGE)
+							entity:AddEffects(bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL))
 
 							if ! (bonemerge && bonemerge:IsValid()) then return end
 							entity:SetSkin(bonemerge:GetSkin())
@@ -858,7 +1765,7 @@ local function DrawNewInventory( notvictim, vtab )
 							charav2:SetLookAt( obb )
 							charav2:SetCamPos( Vector( 0, ( modelpanel_height / 2 ) - ( ( obb.z / 2 ) * BetterScreenScale() ), obb.z + 5 ) )
 						end
-						--]]
+						--
 					end
 			
 				end
@@ -962,7 +1869,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1106,7 +2013,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1244,7 +2151,7 @@ local function DrawNewInventory( notvictim, vtab )
 	
 					timer.Simple( 0.1, function()
 						client.JustSpawned = false
-					end)]]
+					end)
                     TakeWep(client:GetEyeTrace().Entity, EQHUD.weps[ i ].ClassName)
 
 					EQHUD.weps[i] = nil
@@ -1315,7 +2222,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1406,7 +2313,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1514,7 +2421,7 @@ local function DrawNewInventory( notvictim, vtab )
 
 	end
 
-	--[[ Extra slots ]]--
+
 	for i = 1, 4 do
 
 		if ( i <= 2 ) then
@@ -1636,7 +2543,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ 8 + i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1743,7 +2650,7 @@ local function DrawNewInventory( notvictim, vtab )
 					client:DropWeapon( EQHUD.weps[ 8 + i ]:GetClass() )
 					if ( SERVER ) then
 
-						net.Start( "DropAnimation" )
+						net.Start( "DropAnimation", true )
 						net.Send( client )
 
 					end
@@ -1881,17 +2788,17 @@ local function DrawNewInventory( notvictim, vtab )
 
 			if ( EQHUD.weps.Equipable[i].ArmorType ) then 
 				if EQHUD.weps.Equipable[i].ArmorType == "Armor" then
-					net.Start("DropAdditionalArmor")
+					net.Start("DropAdditionalArmor", true)
 					net.WriteString(client:GetUsingArmor())
 					net.SendToServer()
 				end
 				if EQHUD.weps.Equipable[i].ArmorType == "Hat" then
-					net.Start("DropAdditionalArmor")
+					net.Start("DropAdditionalArmor", true)
 					net.WriteString(client:GetUsingHelmet())
 					net.SendToServer()
 				end
 				if EQHUD.weps.Equipable[i].ArmorType == "Bag" then
-					net.Start("DropAdditionalArmor")
+					net.Start("DropAdditionalArmor", true)
 					net.WriteString(client:GetUsingBag())
 					net.SendToServer()
 				end
@@ -1913,7 +2820,14 @@ local function DrawNewInventory( notvictim, vtab )
 			end
 
 		end
-		BREACH.Inventory.Items[ i ].DoRightClick = BREACH.Inventory.Items[ i ].DoClick
+		BREACH.Inventory.Items[ i ].DoRightClick = function()
+			if ( EQHUD.weps.Equipable[i] && notvictim && EQHUD.weps.Equipable[ i ].GetClass  ) then
+
+				client:DropWeapon( EQHUD.weps.Equipable[ i ]:GetClass() )
+				EQHUD.weps.Equipable[i] = nil
+
+			end
+		end
 
 		BREACH.Inventory.Items[ i ].Paint = function( self, w, h )
 
@@ -2038,7 +2952,7 @@ local function DrawNewInventory( notvictim, vtab )
 	end
 	BREACH.Inventory.Clothes.DoClick = function( self )
 
-		net.Start( "DropCurrentVest" )
+		net.Start( "DropCurrentVest", true )
 		net.SendToServer()
 
 
@@ -2157,6 +3071,12 @@ local function DrawNewInventory( notvictim, vtab )
 
 			end
 
+			if !notvictim && EQHUD.weps.UndroppableItem[ i ].ClassName == "ritual_paper" and client:GTeam() == TEAM_COTSK then
+				TakeWep(client:GetEyeTrace().Entity, EQHUD.weps.UndroppableItem[ i ].ClassName)
+
+				EQHUD.weps.UndroppableItem[ i ] = nil
+			end
+
 		end
 
 		BREACH.Inventory.Undroppable[ i ].OnCursorEntered = function( self )
@@ -2191,7 +3111,7 @@ local function DrawNewInventory( notvictim, vtab )
 
 		end
 
-	end
+	end]]
 
 end
 
@@ -2202,10 +3122,7 @@ end
 end
 hook.Add( "DrawOverlay", "DrawEQ", DrawEQ )]]
 
-local cdforuse = 0
-local cdforusetime = 0.2
-
-function ShowEQ( notlottable, vtab )
+function ShowEQ( notlottable, vtab, ammo )
 
 	local client = LocalPlayer()
 
@@ -2227,7 +3144,9 @@ function ShowEQ( notlottable, vtab )
 		for _, weapon in pairs( vtab.Weapons ) do
 
 			weapon = weapons.GetStored( weapon )
-
+			if !weapon then
+				continue
+			end
 			if ( !weapon.Equipableitem && !weapon.UnDroppable ) then
 
 				EQHUD.weps[ #EQHUD.weps + 1 ] = weapon
@@ -2274,7 +3193,7 @@ function ShowEQ( notlottable, vtab )
 
 				EQHUD.weps.Equipable[ #EQHUD.weps.Equipable + 1 ] = weapon
 
-			elseif ( weapon.UnDroppable ) then
+			elseif ( weapon.UnDroppable and weapon:GetClass() != "item_special_document" ) then
 
 				EQHUD.weps.UndroppableItem[ #EQHUD.weps.UndroppableItem + 1 ] = weapon
 
@@ -2284,7 +3203,7 @@ function ShowEQ( notlottable, vtab )
 
 	end
 
-	DrawNewInventory( notlottable, vtab )
+	DrawNewInventory( notlottable, vtab, ammo )
 
 end
 
@@ -2307,7 +3226,7 @@ function HideEQ( open_inventory )
 
 	if ( open_inventory ) then
 
-		net.Start( "ShowEQAgain" )
+		net.Start( "ShowEQAgain", true )
 		net.SendToServer()
 
 	else
@@ -2316,7 +3235,7 @@ function HideEQ( open_inventory )
 
 		if ( client.MovementLocked && !client.AttackedByBor ) then
 
-			net.Start( "LootEnd" )
+			net.Start( "LootEnd", true )
 			net.SendToServer()
 
 			client.MovementLocked = nil
@@ -2343,22 +3262,23 @@ function IsEQVisible()
 
 end
 
-function mply:HaveSpecialAb(name)
-	for i, v in pairs(ALLCLASSES) do
+function mply:HaveSpecialAb(rolename)
+	for i, v in pairs(BREACH_ROLES) do
 		if i == "SCP" or i == "OTHER" then continue end
-		for _, group in pairs(ALLCLASSES) do
-			for _, class in pairs(group.roles) do
-				if class.name != name then continue end
-				if !class["ability"] then continue end
-				if self:GetNWString("AbilityName") == class["ability"][1] then return true end
+		for _, group in pairs(v) do
+			for _, role in pairs(group.roles) do
+				if role.name != rolename then continue end
+				if !role["ability"] then continue end
+				if self:GetNWString("AbilityName") == role["ability"][1] then return true end
 			end
 		end
 	end
 	return false
 end
+
 hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
-	if ( button == KEY_H ) then
+	if ( SERVER and button == ply.specialability ) or ( CLIENT and button == GetConVar("breach_config_useability"):GetInt() ) then
 
 		if ply:GetSpecialCD() > CurTime() then return end
 
@@ -2366,7 +3286,59 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 		if ply.MovementLocked == true then return end
 
-		if ply:HaveSpecialAb(ROLES.ROLE_VOR) then
+		if ply:HaveSpecialAb(role.Goc_Special) then
+
+			if SERVER then
+
+				if !ply.TempValues.UsedTeleporter then
+
+					ply:SetSpecialCD(CurTime() + 3)
+
+					if ply:GetPos():WithinAABox(Vector(-9240.0830078125, -1075.4862060547, 2639.8430175781), Vector(-12292.916015625, 1553.1733398438, 1209.9250488281)) then return end
+
+					ply.TempValues.UsedTeleporter = true
+
+					if !ply:IsOnGround() then
+						ply:SetSpecialCD(CurTime() + 5)
+						return
+					end
+
+					local teleporter = ents.Create("ent_goc_teleporter")
+					teleporter:SetOwner(ply)
+					teleporter:SetPos(ply:GetPos() + Vector(0,0,3))
+					teleporter:Spawn()
+
+					ply.teleporterentity = teleporter
+
+				elseif IsValid(ply.teleporterentity) then
+
+					ply:SetSpecialCD(CurTime() + 45)
+
+					BroadcastLua("ParticleEffectAttach(\"mr_portal_1a\", PATTACH_POINT_FOLLOW, Entity("..ply:EntIndex().."), Entity("..ply:EntIndex().."):LookupAttachment(\"waist\"))")
+
+					net.Start("ThirdPersonCutscene2", true)
+					net.WriteUInt(2, 4)
+					net.WriteBool(false)
+					net.Send(ply)
+					ply:SetMoveType(MOVETYPE_OBSERVER)
+
+					ply:EmitSound("nextoren/others/introfirstshockwave.wav", 115, 100, 1.4)
+					ply:ScreenFade(SCREENFADE.OUT, color_white, 1.4, 1)
+
+					timer.Create("goc_special_teleport"..ply:SteamID64(), 2, 1, function()
+						ply:ScreenFade(SCREENFADE.IN, color_white, 2, 0.3)
+						ply:StopParticles()
+						ply:SetMoveType(MOVETYPE_WALK)
+						ply:SetPos(ply.teleporterentity:GetPos())
+					end)
+
+					ply:SetForcedAnimation("MPF_Deploy")
+
+				end
+
+			end
+
+		elseif ply:HaveSpecialAb(role.ClassD_Thief) then
 
 			if CLIENT then return end
 			ply:LagCompensation(true)
@@ -2378,31 +3350,31 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:LagCompensation(false)
 			local target = DASUKADAIMNEEGO.Entity
 			if !IsValid(target) or !target:IsPlayer() or target:GTeam() == TEAM_SCP then
-				ply:RXSENDNotify("Вы должны смотреть на цель, что-бы украсть у него что-то!")
+				ply:RXSENDNotify("l:thief_look_on_them")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
 			if !IsValid(target:GetActiveWeapon()) or target:GetActiveWeapon().UnDroppable or target:GetActiveWeapon().droppable == false then
-				ply:RXSENDNotify("Вы не можете украсть данный предмет у игрока!")
+				ply:RXSENDNotify("l:thief_cant_steal")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
 			if ply:GetPrimaryWeaponAmount() == ply:GetMaxSlots() then
-				ply:RXSENDNotify("Вы должны иметь свободный слот в инвентаре для кражи!")
+				ply:RXSENDNotify("l:thief_need_slot")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
 			if ply:HasWeapon(target:GetActiveWeapon():GetClass()) then
-				ply:RXSENDNotify("У вас уже есть данный предмет!")
+				ply:RXSENDNotify("l:thief_has_already")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
 			local stealweapon = target:GetActiveWeapon()
-			ply:BrProgressBar("Обворовываем...", 1.45, "nextoren/gui/special_abilities/ability_placeholder.png", target, false, function()
+			ply:BrProgressBar("l:stealing", 1.45, "nextoren/gui/special_abilities/ability_placeholder.png", target, false, function()
 				if IsValid(stealweapon) and stealweapon:GetOwner() == target then
 					target:ForceDropWeapon(stealweapon:GetClass())
 					ply.Shaky_PICKUPWEAPON = stealweapon
@@ -2430,7 +3402,63 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end
 			end)
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_CHAOSCMD) then
+		elseif ply:HaveSpecialAb(role.SCI_SpyUSA) then
+
+			ply:SetSpecialCD(CurTime() + 7)
+
+			if SERVER then
+				local all_documents = ents.FindByClass("item_special_document")
+
+				local search_corpses = ents.FindByClass("prop_ragdoll")
+
+				for i = 1, #search_corpses do
+
+					local corpse = search_corpses[i]
+
+					if corpse.vtable and corpse.vtable.Weapons and table.HasValue(corpse.vtable.Weapons, "item_special_document") then
+						all_documents[#all_documents + 1] = corpse
+						corpse:SetNWBool("HasDocument", true)
+					end
+
+				end
+
+				for i = 1, #all_documents do
+
+					local doc = all_documents[i]
+
+					local location_color = color_white
+
+					local location = "локация неизвестна"
+					if doc:IsLZ() then
+						location = "находится в легкой зоне"
+						location_color = Color(0,153,230)
+					elseif doc:Outside() then
+						location = "находится на поверхности"
+					elseif doc:IsEntrance() then
+						location = "находится в офисной зоне"
+						location_color = Color(230,153,0)
+					elseif doc:IsHardZone() then
+						location = "находится в тяжелой зоне"
+						location_color = Color(100,100,100)
+					end
+
+					local dist = math.Round(doc:GetPos():Distance(ply:GetPos()) / 52.49, 1)
+					local dist_clr_far = Color(0,255,0)
+					local dist_clr_near = Color(230,153,0)
+					local dist_clr_close = Color(255,0,0)
+
+					local dist_clr = dist_clr_far
+					if dist < 16 then
+						dist_clr = dist_clr_close
+					elseif dist < 60 then
+						dist_clr = dist_clr_near
+					end
+
+					ply:RXSENDNotify("l:uiuspy_doc_dist_pt1 "..i.." = ",dist_clr,dist.."m",color_white,", l:uiuspy_doc_dist_pt2 ",location_color,location)
+				end
+			end
+
+		elseif ply:HaveSpecialAb(role.Chaos_Commander) then
 
 			if ply:GetSpecialMax() == 0 then return end
 
@@ -2454,11 +3482,15 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 		
 			local target = trace.Entity
 
-			if ( target && target:IsValid() && target:IsPlayer() && target:Health() > 0 && target:GTeam() == TEAM_CLASSD ) then
+			if ( target && target:IsValid() && target:IsPlayer() && target:Health() > 0 && (target:GetRoleName() == "CI Spy" or target:GTeam() == TEAM_CLASSD ) ) then
 
 				if target:GetModel() == "models/cultist/humans/chaos/chaos.mdl" or target:GetModel() == "models/cultist/humans/chaos/fat/chaos_fat.mdl" then 
-					ply:RXSENDNotify("Цель уже получила экипировку.")
+					ply:RXSENDNotify("l:cicommander_conscripted_already")
 					return 
+				end
+
+				if target:GetUsingCloth() != "" or (target:GetRoleName() == role.ClassD_Hitman and !target:GetModel():find("class_d")) then
+					ply:RXSENDNotify("l:cicommander_need_to_take_off_smth")
 				end
 
 				local count = 0
@@ -2475,14 +3507,14 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 				if ( ( count + 1 ) >= target:GetMaxSlots() ) then
 
-					ply:ChatPrint("Цели требуется освободить место в инвентаре.")
+					ply:RXSENDNotify("l:cicommander_no_slots")
 
 					return
 
 				end
 
 				if SERVER then
-					ply:BrProgressBar("Выдача униформы...", 8, "nextoren/gui/special_abilities/ability_placeholder.png")
+					ply:BrProgressBar("l:giving_uniform", 8, "nextoren/gui/special_abilities/ability_placeholder.png")
 				end
 
 				old_target = target
@@ -2520,7 +3552,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 						if ( ( count + 1 ) >= target:GetMaxSlots() ) then
 
-							ply:ChatPrint("Цели требуется освободить место в инвентаре.")
+							ply:RXSENDNotify("l:cicommander_no_slots")
 
 							return
 
@@ -2529,15 +3561,14 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 						ply:SetSpecialMax( ply:GetSpecialMax() - 1 )
 
 						if SERVER then
-							if target:GetNClass() != ROLES.ROLE_FAT then
+							if target:GetRoleName() != role.ClassD_Fat then
 
 								target:ClearBodyGroups()
 
 							    target:SetModel("models/cultist/humans/chaos/chaos.mdl")
 
-							    target:SetBodygroup( 1, 1 )
-
-								target:SetBodygroup( 4, 1 )
+								target:SetBodygroup( 2, 1 )
+								
 								local hitgroup_head = target.ScaleDamage["HITGROUP_HEAD"]
 								target.ScaleDamage = {
 
@@ -2579,7 +3610,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 							target:EmitSound( Sound("nextoren/others/cloth_pickup.wav") )
 
-							target:Give("cw_kk_ins2_ak12")
+							target:BreachGive("cw_kk_ins2_ak12")
 
 							target:GiveAmmo(180, "AR2", true)
 
@@ -2595,7 +3626,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_LESSION) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_MINE) then
 
 			if ply:GetSpecialMax() <= 0 then return end
 
@@ -2608,13 +3639,13 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			} )
 			ply:LagCompensation(false)
 			if !DASUKADAIMNEEGO.Hit then
-				ply:RXSENDNotify("Похоже, вы слишком далеко от точки на которой хотите поставить мину")
+				ply:RXSENDNotify("l:feelon_too_far")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
-			if !DASUKADAIMNEEGO.Hit then
-				ply:RXSENDNotify("Мина должна стоять на полу!")
+			if !DASUKADAIMNEEGO.Hit or !IsGroundPos(DASUKADAIMNEEGO.HitPos) then
+				ply:RXSENDNotify("l:feelon_no_ground")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
@@ -2627,7 +3658,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetSpecialCD(CurTime() + 40)
 			ply:EmitSound("nextoren/vo/special_sci/trapper/trapper_"..math.random(1,10)..".mp3")
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_CHAOSDESTROYER) then
+		elseif ply:HaveSpecialAb(role.MTF_Engi) then
 
 			if ply:GetSpecialMax() <= 0 then return end
 
@@ -2639,26 +3670,189 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				filter = ply
 			} )
 			ply:LagCompensation(false)
-			if !DASUKADAIMNEEGO.Hit then
-				ply:RXSENDNotify("Похоже, вы слишком далеко от точки на которой хотите поставить мину")
+
+			if !DASUKADAIMNEEGO.Hit or !DASUKADAIMNEEGO.HitWorld or !IsGroundPos(DASUKADAIMNEEGO.HitPos) or DASUKADAIMNEEGO.HitNonWorld then
+				ply:RXSENDNotify("l:engi_no_ground")
 				ply:SetSpecialCD(CurTime() + 5)
 				return
 			end
 
-			if !DASUKADAIMNEEGO.Hit then
-				ply:RXSENDNotify("Мина должна стоять на полу!")
-				ply:SetSpecialCD(CurTime() + 5)
-				return
-			end
-
-			local claymore = ents.Create("ent_chaos_mine")
-			claymore:SetPos(DASUKADAIMNEEGO.HitPos)
-			claymore:SetOwner(ply)
-			claymore:Spawn()
+			local mine = ents.Create("ent_engineer_turret")
+			mine:SetPos(DASUKADAIMNEEGO.HitPos)
+			mine:SetOwner(ply)
+			mine:Spawn()
 			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
-			ply:SetSpecialCD(CurTime() + 4)
 
-		elseif ply:HaveSpecialAb(ROLES.ClassD_Bor) then
+		elseif ( ply:HaveSpecialAb(role.ClassD_Hitman) ) then
+			if SERVER then
+				ply:LagCompensation(true)
+				local DASUKADAIMNEEGO = util.TraceLine( {
+					start = ply:GetShootPos(),
+					endpos = ply:GetShootPos() + ply:GetAimVector() * 130,
+					filter = ply
+				} )
+				local target = DASUKADAIMNEEGO.Entity
+				ply:LagCompensation(false)
+
+				local blockedTeams = { TEAM_GOC, TEAM_DZ, TEAM_COTSK, TEAM_SPECIAL, TEAM_SCP }
+				local blockedRoles = { role.ClassD_Bor, role.ClassD_Fat, role.Dispatcher, role.MTF_HOF, role.MTF_Jag, role.SCI_Head }
+				local allowedRoles = { role.ClassD_GOCSpy, role.SCI_SpyDZ }
+
+				if !IsValid(target) or !target.vtable or target:GetClass() != "prop_ragdoll" or ( table.HasValue(blockedTeams, target.__Team) and !table.HasValue(allowedRoles, target.Role) ) or table.HasValue(blockedRoles, target.Role) or target:GetModel():find("goc.mdl") or target.IsFemale then return end
+				if target:GetModel():find("corpse") then return end
+
+				if ply:GetUsingArmor() != "" then
+					ply:RXSENDNotify("l:hitman_take_off_helmet")
+					return
+				end
+				if ply:GetUsingHelmet() != "" then
+					ply:RXSENDNotify("l:hitman_take_off_vest")
+					return
+				end
+
+				local function finish()
+
+					if !IsValid(target) then return end
+					if !IsValid(ply) then return end
+					if !ply:Alive() then return end
+					if ply:Health() <= 0 then return end
+					if target:GetModel():find("corpse") then return end
+
+					ply:SetSpecialCD(CurTime() + 15)
+
+					local savemodel = ply:GetModel()
+					local saveskin = ply:GetSkin()
+					local remembername = ply:GetNamesurvivor()
+					local bodygroups = {}
+					for _, v in pairs(ply:GetBodyGroups()) do
+						bodygroups[v.id] = ply:GetBodygroup(v.id)
+					end
+					local bnmrgs = ply:LookupBonemerges()
+
+					ply:SetUsingCloth("")
+					ply:SetModel(target:GetModel())
+					for _, v in pairs(target:GetBodyGroups()) do
+						ply:SetBodygroup(v.id, target:GetBodygroup(v.id))
+					end
+					ply:SetSkin(target:GetSkin())
+					if ply:GetModel():find("class_d.mdl") then
+						ply:SetSkin(0)
+					end
+
+					local corpse_face = "models/all_scp_models/shared/heads/head_1_1"
+					local havebalaclava = false
+					local foundhead = false
+
+					for i, v in pairs(target:LookupBonemerges()) do
+						if v:GetModel():find("hair") then continue end
+						if v:GetModel():find("gasmask") then continue end
+						if v:GetModel():find("male_head") or v:GetModel():find("balaclava") then
+							foundhead = true
+							if CORRUPTED_HEADS[v:GetModel()] then
+								corpse_face = v:GetSubMaterial(1)
+							else
+								corpse_face = v:GetSubMaterial(0)
+							end
+						end
+						if v:GetModel():find("balaclava") then
+							havebalaclava = true
+							for _, v1 in pairs(bnmrgs) do
+								if v1:GetModel():find("male_head") then
+									local remember = v:GetModel()
+									if CORRUPTED_HEADS[v1:GetModel()] then
+										v1:SetSubMaterial(0, v1:GetSubMaterial(1))
+										v1:SetSubMaterial(1, "")
+									end
+									ply.rememberface = v1:GetModel()
+									v:SetModel("models/cultist/heads/male/male_head_1")
+									v1:SetModel(remember)
+								end
+							end
+						end
+					end
+
+					if !foundhead then
+						Bonemerge(PickHeadModel(), target)
+					end
+
+					for i, v in pairs(target:LookupBonemerges()) do
+						if v:GetModel():find("hair") then continue end
+						if !v:GetModel():find("male_head") and !v:GetModel():find("balaclava") then
+							Bonemerge(v:GetModel(), ply, v:GetSkin())
+							v:Remove()
+						end
+					end
+
+					for i, v in pairs(bnmrgs) do
+						if v:GetModel():find("hair") then continue end
+						if v:GetModel():find("gasmask") then continue end
+						if v:GetModel():find("balaclava") and !havebalaclava then
+							for _, v1 in pairs(target:LookupBonemerges()) do
+								if v1:GetModel():find("male_head") then
+									local remember = v:GetModel()
+									if ply.rememberface == nil then ply.rememberface = "models/cultist/heads/male/male_head_1" end
+									v:SetModel(ply.rememberface)
+									v1:SetModel(remember)
+								end
+							end
+						end
+						if !v:GetModel():find("male_head") and !v:GetModel():find("balaclava") then
+							Bonemerge(v:GetModel(), target, v:GetSkin())
+							v:Remove()
+						end
+					end
+
+					target:SetModel(savemodel)
+					for i, v in pairs(bodygroups) do
+						target:SetBodygroup(i,v)
+					end
+					target:SetSkin(saveskin)
+
+					if target:GetModel():find("class_d.mdl") and corpse_face:find("black") then
+						target:SetSkin(1)
+					end
+
+					for i, v in pairs(ply:LookupBonemerges()) do
+						v:SetInvisible(false)
+					end
+
+					ply:SetNamesurvivor(target.__Name)
+					ply:SetRunSpeed(target.RunSpeed)
+					target.__Name = remembername
+
+					ply:RXSENDNotify("l:hitman_disguised")
+					ply:SetupHands()
+
+					ply:ScreenFade(SCREENFADE.IN, color_black, 1, 1)
+
+					if ply:GetModel():find("hazmat") then
+						for i, v in pairs(ply:LookupBonemerges()) do
+							v:SetInvisible(true)
+						end
+					else
+						for i, v in pairs(ply:LookupBonemerges()) do
+							v:SetInvisible(false)
+						end
+					end
+
+					if target:GetModel():find("hazmat") then
+						for i, v in pairs(target:LookupBonemerges()) do
+							v:SetInvisible(true)
+						end
+					else
+						for i, v in pairs(target:LookupBonemerges()) do
+							v:SetInvisible(false)
+						end
+					end
+
+					ply:EmitSound( Sound("nextoren/others/cloth_pickup.wav") )
+
+				end
+
+				ply:BrProgressBar( "l:changing_identity", 30, "nextoren/gui/icons/notifications/breachiconfortips.png", target, false, finish )
+
+			end
+		elseif ( ply:HaveSpecialAb(role.ClassD_Bor) or ply.KACHOKABILITY == true ) and SERVER then
 			local angle_zero = Angle(0,0,0)
 			ply:LagCompensation(true)
 		local DASUKADAIMNEEGO = util.TraceLine( {
@@ -2670,33 +3864,41 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 		ply:LagCompensation(false)
 
 		if !ply:IsOnGround() then
-			ply:RXSENDNotify("Вы должны стоять на полу.")
+			ply:RXSENDNotify("l:strong_no_ground")
 			ply:SetSpecialCD(CurTime() + 3)
 			return
 		end
 		if !IsValid(target) or !target.GTeam or target:GTeam() == TEAM_SPEC then
-			ply:RXSENDNotify("Для прогиба смотрите на цель.")
+			ply:RXSENDNotify("l:strong_look_on_them")
 			ply:SetSpecialCD(CurTime() + 3)
 			return
 		end
 		if !ply:IsSuperAdmin() and target:GTeam() == TEAM_SCP and !target.IsZombie then
-			ply:RXSENDNotify("Для прогиба смотрите на цель.")
+			ply:RXSENDNotify("l:strong_look_on_them")
 			ply:SetSpecialCD(CurTime() + 3)
 			return
 		end
 		ply:Freeze(true)
 		target:Freeze(true)
+		local pos = ply:GetShootPos() + ply:GetAngles():Forward()*44
+		pos.z = ply:GetPos().z
 		ply:SetMoveType(MOVETYPE_OBSERVER)
+		net.Start( "ThirdPersonCutscene", true )
+
+			net.WriteUInt( 6, 4 )
+
+		net.Send( ply )
 		target:SetMoveType(MOVETYPE_OBSERVER)
 		ply:SetNWBool("IsNotForcedAnim", false)
 		target:SetNWBool("IsNotForcedAnim", false)
+		target:SetPos(pos)
 		ply:SetSpecialCD(CurTime() + 65)
 		local startcallbackattacker = function()
-			ply:SetNWEntity("NTF1Entity", ply)
+			--ply:SetNWEntity("NTF1Entity", ply)
 			ply:Freeze(true)
 			ply.ProgibTarget = target
-			sound.Play("nextoren/charactersounds/special_moves/bor/grab_start.wav", ply:GetPos(), 120, 100, 2)
-			sound.Play("nextoren/charactersounds/special_moves/bor/victim_struggle_6.wav", ply:GetPos(), 120, 100, 2)
+			sound.Play("^nextoren/charactersounds/special_moves/bor/grab_start.wav", ply:GetPos(), 75, 100, 1)
+			sound.Play("^nextoren/charactersounds/special_moves/bor/victim_struggle_6.wav", ply:GetPos(), 75, 100, 1)
 			target.ProgibTarget = ply
 			local vec_pos = target:GetShootPos() + ( ply:GetShootPos() - target:EyePos() ):Angle():Forward() * 1.5
 			vec_pos.z = ply:GetPos().z
@@ -2723,7 +3925,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetMoveType(MOVETYPE_WALK)
 
 			target:StopForcedAnimation()
-			sound.Play("nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1, 2)..".wav", ply:GetShootPos(), math.random(50,70), 555)
+			sound.Play("^nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1, 2)..".wav", ply:GetShootPos(), 75, 100, 1)
 		end
 		local startcallbackvictim = function()
 			target:SetNWEntity("NTF1Entity", target)
@@ -2749,8 +3951,9 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 		end
 		ply:SetForcedAnimation(ply:LookupSequence("1_bor_progib_attacker"), 5.5, startcallbackattacker, finishcallbackattacker, stopcallbackattacker)
 		target:SetForcedAnimation(target:LookupSequence("1_bor_progib_resiver"), 5.5, startcallbackvictim, finishcallbackvictim, stopcallbackvictim)
+		target:StopGestureSlot( GESTURE_SLOT_CUSTOM )
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_GoPCMD) then
+		elseif ply:HaveSpecialAb(role.Goc_Commander) then
 			ply:SetSpecialCD(CurTime() + 80)
 			if CLIENT then 
 				local hands = ply:GetHands()
@@ -2765,12 +3968,12 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			util.Effect("gocabilityeffect", ef)
 			BroadcastLua("local ef = EffectData() ef:SetEntity(Entity("..tostring(ply:EntIndex())..")) util.Effect(\"gocabilityeffect\", ef)")
 
-			ply:BrProgressBar("Вход в невидимость...", 0.8, "nextoren/gui/icons/notifications/breachiconfortips.png")
+			ply:BrProgressBar("l:becoming_invisible", 0.8, "nextoren/gui/icons/notifications/breachiconfortips.png")
 
 			timer.Simple(0.8, function()
-				if IsValid(ply) and ply:HaveSpecialAb(ROLES.ROLE_GoPCMD) then
+				if IsValid(ply) and ply:HaveSpecialAb(role.Goc_Commander) then
 					ply:ScreenFade(SCREENFADE.IN, gteams.GetColor(TEAM_GOC), 0.5, 0)
-					ply:RXSENDNotify("Ваша способность была активирована, теперь вы невидимы.")
+					ply:RXSENDNotify("l:became_invisible")
 					ply:SetNoDraw(true)
 					ply.CommanderAbilityActive = true
 					for _, wep in pairs(ply:GetWeapons()) do wep:SetNoDraw(true) end
@@ -2783,7 +3986,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end
 			end)
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SCIRECRUITER) then
+		elseif ply:HaveSpecialAb(role.SCI_Recruiter) then
 			if ply:GetSpecialMax() == 0 then return end
 			local angle_zero = Angle(0,0,0)
 			ply:LagCompensation(true)
@@ -2796,21 +3999,44 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:LagCompensation(false)
 			if SERVER then
 				if !IsValid(target) or !target:IsPlayer() or target:GTeam() == TEAM_SPEC then
-					ply:RXSENDNotify("Для начала смотрите на цель!")
+					ply:RXSENDNotify("l:commitee_look_on_them")
 					ply:SetSpecialCD(CurTime() + 2)
 					return
 				end
-				if ( target:GTeam() != TEAM_CLASSD and target:GetNClass() != ROLES.ROLE_GOCSPY ) or target:GetNClass() == ROLES.ClassD_Bor or target:GetNClass() == ROLES.ROLE_FAT or target:GetUsingCloth() != "" then
-					ply:RXSENDNotify("Вы не можете надеть снаряжение на данного игрока!")
+				if ( target:GTeam() != TEAM_CLASSD and target:GetRoleName() != role.ClassD_GOCSpy ) or target:GetUsingCloth() != "" or target:GetModel():find('goc') then
+					ply:RXSENDNotify("l:commitee_cant_conscript")
 					ply:SetSpecialCD(CurTime() + 2)
 					return
 				end
-				if ply:GetPrimaryWeaponAmount() >= ply:GetMaxSlots() then
-					ply:RXSENDNotify("Игроку нужно освободить одну ячейку в инвентаре для снаряжения!")
+				if target:GetPrimaryWeaponAmount() >= target:GetMaxSlots() then
+					ply:RXSENDNotify("l:commitee_no_slots")
 					ply:SetSpecialCD(CurTime() + 2)
+					return
+				end
+				if IsValid(target:GetActiveWeapon()) and target:GetActiveWeapon():GetClass() != "br_holster" then
+					ply:RXSENDNotify("l:commitee_active_weapon")
 					return
 				end
 				local finishcallback = function()
+					if !IsValid(target) or !target:IsPlayer() or target:GTeam() == TEAM_SPEC then
+						ply:RXSENDNotify("l:commitee_look_on_them")
+						ply:SetSpecialCD(CurTime() + 2)
+						return
+					end
+					if ( target:GTeam() != TEAM_CLASSD and target:GetRoleName() != role.ClassD_GOCSpy ) or target:GetUsingCloth() != "" or target:GetModel():find('goc') then
+						ply:RXSENDNotify("l:commitee_cant_conscript")
+						ply:SetSpecialCD(CurTime() + 2)
+						return
+					end
+					if target:GetPrimaryWeaponAmount() >= target:GetMaxSlots() then
+						ply:RXSENDNotify("l:commitee_no_slots")
+						ply:SetSpecialCD(CurTime() + 2)
+						return
+					end
+					if IsValid(target:GetActiveWeapon()) and target:GetActiveWeapon():GetClass() != "br_holster" then
+						ply:RXSENDNotify("l:commitee_active_weapon")
+						return
+					end
 					ply:SetSpecialMax( ply:GetSpecialMax() - 1 )
 					if target:GTeam() != TEAM_GOC then
 						target:SetGTeam(TEAM_SCI)
@@ -2833,23 +4059,38 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 						end
 				
 					end
-					target:SetModel("models/cultist/humans/sci/scientist.mdl")
-					target:ClearBodyGroups()
-			 		target:SetBodygroup(0, 2)
-			 		target:SetBodygroup(2, 1)
-			 		target:SetBodygroup(4, 1)
+					if target:GetRoleName() != role.ClassD_Fat and target:GetRoleName() != role.ClassD_Bor then
+						if target:GetModel():find("female") then
+							target:SetModel("models/cultist/humans/sci/scientist_female.mdl")
+						else
+							target:SetModel("models/cultist/humans/sci/scientist.mdl")
+						end
+						target:ClearBodyGroups()
+				 		target:SetBodygroup(0, 2)
+				 		target:SetBodygroup(2, 1)
+				 		target:SetBodygroup(4, 1)
+				 	else
+				 		if target:GetRoleName() == role.ClassD_Fat then
+							target:SetModel("models/cultist/humans/sci/class_d_fat.mdl")
+						else
+							target:SetModel("models/cultist/humans/sci/class_d_bor.mdl")
+							target:SetBodygroup(0, 0)
+						end
+				 	end
+				 	target.AbilityTAB = nil
+				 	target:SetNWString("AbilityName", "")
 					target:StripWeapon("hacking_doors")
 					target:StripWeapon("item_knife")
-					target:Give("weapon_pass_sci")
+					target:BreachGive("weapon_pass_sci")
 					target:EmitSound( Sound("nextoren/others/cloth_pickup.wav") )
 					target:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 1, 1 )
 					target:SetupHands()
 					ply:AddToAchievementPoint("comitee", 1)
 				end
-				ply:BrProgressBar("Выдача снаряжения...", 8, "nextoren/gui/special_abilities/ability_recruiter.png", target, false, finishcallback)
+				ply:BrProgressBar("l:giving_equipment", 8, "nextoren/gui/special_abilities/ability_recruiter.png", target, false, finishcallback)
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_GOC_JAG) then
+		elseif ply:HaveSpecialAb(role.Goc_Jag) then
 
 			ply:SetSpecialCD( CurTime() + 75)
 
@@ -2860,7 +4101,8 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				shield:Spawn()
 
 			end
-		elseif ply:HaveSpecialAb(ROLES.ROLE_UIUSPEC) then
+
+		elseif ply:HaveSpecialAb(role.UIU_Specialist) then
 
 			maxs_uiu_spec = Vector( 8, 10, 5 )
 
@@ -2885,7 +4127,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				old_target_uiu = target
 
 				if SERVER then
-					ply:BrProgressBar("Блокирование двери...", 5, "nextoren/gui/special_abilities/special_fbi_hacker.png")
+					ply:BrProgressBar("l:blocking_door", 5, "nextoren/gui/special_abilities/special_fbi_hacker.png")
 				end
 
 				timer.Create("Blocking_UIU_Check"..ply:SteamID(), 1, 5, function()
@@ -2911,7 +4153,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end)
 
 			end
-		elseif ply:HaveSpecialAb(ROLES.ROLE_DZCMD) then
+		elseif ply:HaveSpecialAb(role.DZ_Commander) then
 
 			ply:SetSpecialCD( CurTime() + 90 )
 		
@@ -2931,7 +4173,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 				por:SetOwner( ply )
 
-				por:SetPos( ply:GetPos() + forward_portal * 150 )
+				por:SetPos( ply:GetPos() + forward_portal * 150 + Vector(0, 0, 20) )
 
 				por:SetAngles(siusiakko12 - Angle(0,0,0))
 
@@ -2939,54 +4181,34 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SECURITYSPY) then
+		elseif ply:HaveSpecialAb(role.SECURITY_Spy) then
 
 			ply:SetSpecialCD( CurTime() + 40 )
 
 			if CLIENT then return end
 
-			net.Start("Chaos_SpyAbility")
+			net.Start("Chaos_SpyAbility", true)
 			net.Send(ply)
-		elseif ply:HaveSpecialAb(ROLES.ROLE_Engi) then
 
-			if ply:GetSpecialMax() <= 0 then return end
-
-			if CLIENT then return end
-			ply:LagCompensation(true)
-			local DASUKADAIMNEEGO = util.TraceLine( {
-				start = ply:GetShootPos(),
-				endpos = ply:GetShootPos() + ply:GetAimVector() * 130,
-				filter = ply
-			} )
-			ply:LagCompensation(false)
-
-			if !DASUKADAIMNEEGO.Hit then
-				ply:RXSENDNotify("Туррель должнна быть на земле.")
-				ply:SetSpecialCD(CurTime() + 5)
-				return
-			end
-
-			local tur = ents.Create("ent_engineer_turret")
-			tur:SetPos(DASUKADAIMNEEGO.HitPos)
-			tur:SetOwner(ply)
-			tur:Spawn()
-			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
-
-		elseif ply:HaveSpecialAb(ROLES.ROLE_CULTSPEC) then
+		elseif ply:HaveSpecialAb(role.Cult_Specialist) then
 
 			ply:SetSpecialCD( CurTime() + 50 )
 
-			net.Start("Cult_SpecialistAbility")
+			if CLIENT then return end
+
+			net.Start("Cult_SpecialistAbility", true)
 			net.Send(ply)
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_USACMD) then
+		elseif ply:HaveSpecialAb(role.UIU_Commander) then
 
 			ply:SetSpecialCD( CurTime() + 45 )
 
-			net.Start("fbi_commanderabillity")
+			if CLIENT then return end
+
+			net.Start("fbi_commanderabillity", true)
 			net.Send(ply)
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_NTFCMD) then
+		elseif ply:HaveSpecialAb(role.NTF_Commander) then
 
 			ply:SetSpecialCD( CurTime() + 2 )
 
@@ -2994,7 +4216,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				Choose_Faction()
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_UIU_Clocker) then
+		elseif ply:HaveSpecialAb(role.UIU_Clocker) then
 
 			if SERVER then
 
@@ -3021,7 +4243,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 					["HITGROUP_RIGHTLEG"] = 0.2
 				}
 
-				ply:SetRunSpeed(ply:GetRunSpeed() + 155)
+				ply:SetRunSpeed(ply:GetRunSpeed() + 65)
 
 				if ply:GetActiveWeapon() == ply:GetWeapon("weapon_fbi_knife") then
 
@@ -3035,7 +4257,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end
 
 				timer.Simple(15, function()
-					if IsValid(ply) and ply:Health() > 0 and ply:Alive() and ply:HaveSpecialAb(ROLES.ROLE_UIU_Clocker) then
+					if IsValid(ply) and ply:Health() > 0 and ply:Alive() and ply:HaveSpecialAb(role.UIU_Clocker) then
 						ply.ScaleDamage = saveresist
 						ply:SetRunSpeed(savespeed)
 						ply:SetArmor(0)
@@ -3055,7 +4277,43 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 		end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SHIELD) then
+		elseif ply:HaveSpecialAb(role.NTF_Specialist) then
+
+			maxs_uiu_spec = Vector( 8, 10, 5 )
+
+			local trace = {}
+
+			trace.start = ply:GetShootPos()
+
+			trace.endpos = trace.start + ply:GetAimVector() * 165
+
+			trace.filter = ply
+
+			trace.mins = -maxs_uiu_spec
+
+			trace.maxs = maxs_uiu_spec
+		
+			trace = util.TraceHull( trace )
+		
+			local target = trace.Entity
+
+			if target && target:IsValid() && target:IsPlayer() && target:GTeam() == TEAM_SCP && target:Health() > 0 && target:Alive() then
+				ply:SetSpecialCD( CurTime() + 90 )
+				target:Freeze(true)
+				old_name = target:GetNamesurvivor()
+				old_role = target:GetRoleName()
+				if target:GetModel() == "models/cultist/scp/scp_682.mdl" then
+					target:SetForcedAnimation("0_Stun_29", false, false, 6)
+				else
+					target:SetForcedAnimation("0_SCP_542_lifedrain", false, false, 6)
+				end
+				timer.Create("UnFreezeNTF_Special"..target:SteamID(), 6, 1, function()
+					if target:GetNamesurvivor() != old_name && target:GetRoleName() != old_role && target:GTeam() != TEAM_SCP then return end
+					target:Freeze(false)
+				end)
+			end
+
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_SHIELD) then
 
 			ply:SetSpecialCD( CurTime() + 80 )
 
@@ -3073,13 +4331,13 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPECIALRESS) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_VISION) then
 
 			ply:SetSpecialCD( CurTime() + 60 )
 
 			if CLIENT then HedwigAbility() end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPEEED) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_SPEED) then
 
 			ply:SetSpecialCD( CurTime() + 57 )
 
@@ -3091,9 +4349,9 @@ if SERVER then
 				for _, tply in pairs(special_buff_radius) do
 					if IsValid(tply) and tply:IsPlayer() and tply:GTeam() != TEAM_SPEC and tply:GTeam() != TEAM_SCP then
 						tply:SetRunSpeed(tply:GetRunSpeed() + 40)
-						tply.Shaky_SPEEDName = tply:GetName()
+						tply.Shaky_SPEEDName = tply:GetNamesurvivor()
 						timer.Simple(25, function()
-							if IsValid(tply) and tply:IsPlayer() and tply:GetName() == tply.Shaky_SPEEDName then tply:SetRunSpeed(tply:GetRunSpeed() - 40) end
+							if IsValid(tply) and tply:IsPlayer() and tply:GetNamesurvivor() == tply.Shaky_SPEEDName then tply:SetRunSpeed(tply:GetRunSpeed() - 40) end
 						end)
 					end
 				end
@@ -3101,9 +4359,9 @@ if SERVER then
 			end
 
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SCI_CLOAKER) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_INVISIBLE) then
 
-			ply:SetSpecialCD( CurTime() + 110 )
+			ply:SetSpecialCD( CurTime() + 201 )
 
 			if SERVER then
 				local special_buff_radius = ents.FindInSphere( ply:GetPos(), 450 )
@@ -3116,10 +4374,12 @@ if SERVER then
 						BroadcastLua("local ef = EffectData() ef:SetEntity(Entity("..tostring(tply:EntIndex())..")) util.Effect(\"gocabilityeffect\", ef)")
 						timer.Simple(0.8, function()
 							tply:SetNoDraw(true)
+							for i, v in pairs(tply:LookupBonemerges()) do v:SetNoDraw(true) end
 							tply.CommanderAbilityActive = true
 							for _, wep in pairs(tply:GetWeapons()) do wep:SetNoDraw(true) end
 							timer.Create("Goc_Commander_"..tply:UniqueID(), 20, 1, function()
 								if !tply.CommanderAbilityActive then return end
+								for i, v in pairs(tply:LookupBonemerges()) do v:SetNoDraw(false) end
 								tply:SetNoDraw(false)
 								tply.CommanderAbilityActive = nil
 								for _, wep in pairs(ply:GetWeapons()) do wep:SetNoDraw(false) end
@@ -3130,7 +4390,7 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPECIALRES) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_HEALER) then
 
 			ply:SetSpecialCD( CurTime() + 45 )
 
@@ -3148,7 +4408,7 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_CULT_PSIH_AKA_EBANUTUY) then
+		elseif ply:HaveSpecialAb(role.Cult_Psycho) then
 
 			ply:SetSpecialCD( CurTime() + 205 )
 
@@ -3168,19 +4428,21 @@ if SERVER then
 				 },
 
 				ply:Boosted( 2, 30 )
+				ply:SetArmor(255)
+				ply.DamageModifier = 0.4
 
-				local old_name_psycho = ply:GetName()
+				local old_name_psycho = ply:GetNamesurvivor()
 
 				timer.Simple(30, function()
-					if ply:GetName() != old_name_psycho or ply:Health() < 0 or !ply:Alive() or ply:GTeam() == TEAM_SPEC then return end
-					ply:AddToStatistics("Bravery", 50)
+					if ply:GetNamesurvivor() != old_name_psycho or ply:Health() < 0 or !ply:Alive() or ply:GTeam() == TEAM_SPEC then return end
+					ply:AddToStatistics("l:psycho_bravery_bonus", 50)
 					ply:Kill()
 				end)
 
 			end
 
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPECIALRESSSS) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_SLOWER) then
 
 			ply:SetSpecialCD( CurTime() + 85 )
 
@@ -3191,13 +4453,13 @@ if SERVER then
 				ply:EmitSound("nextoren/vo/special_sci/scp_slower/scp_slower_"..math.random(1,14)..".mp3")
 				for _, ply in pairs(special_slow_radius) do
 					if IsValid(ply) and ply:IsPlayer() and ply:GTeam() == TEAM_SCP then
-						local remembername = ply:GetNClass()
+						local remembername = ply:GetRoleName()
 						local rememberwalk = ply:GetWalkSpeed()
 						local rememberrun = ply:GetRunSpeed()
 						ply:SetRunSpeed(ply:GetRunSpeed()*.45)
 						ply:SetWalkSpeed(ply:GetWalkSpeed()*.45)
 						timer.Create("ply_slower_special_"..ply:SteamID(), 15, 1, function()
-							if remembername == ply:GetNClass() then
+							if remembername == ply:GetRoleName() then
 								ply:SetWalkSpeed(rememberwalk)
 								ply:SetRunSpeed(rememberrun)
 							end
@@ -3207,7 +4469,7 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPECIALRESSS) then
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_DAMAGE) then
 
 			ply:SetSpecialCD( CurTime() + 65 )
 
@@ -3227,7 +4489,7 @@ if SERVER then
 				
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_NAZI_OFICER) then
+		elseif ply:HaveSpecialAb(role.SKP_Offizier) then
 
 			ply:SetSpecialCD( CurTime() + 120 )
 
@@ -3248,7 +4510,47 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_SPEEED) then
+		elseif ply:HaveSpecialAb(role.ClassD_Fast) then
+
+			ply:SetSpecialCD( CurTime() + 1 )
+
+			if SERVER then
+
+				if ply:GetRunSpeed() == 231 or ply:GetRunSpeed() == 288 then
+					if ply:GetRunSpeed() == 231 then
+						ply:SetRunSpeed(288)
+						ply:RXSENDNotify("Включен спортивный бег")
+						if ply:GetActiveWeapon() == ply:GetWeapon("br_holster") then
+
+							ply.SafeRun = ply:LookupSequence("phalanx_b_run")
+
+							net.Start("ChangeRunAnimation", true)
+							net.WriteEntity(ply)
+							net.WriteString("run_all_02")
+							net.Broadcast()
+
+						end
+					else
+						ply:SetRunSpeed(231)
+						ply:RXSENDNotify("Включен обычный бег")
+						if ply:GetActiveWeapon() == ply:GetWeapon("br_holster") then
+
+							ply.SafeRun = ply:LookupSequence("phalanx_b_run")
+
+							net.Start("ChangeRunAnimation", true)
+							net.WriteEntity(ply)
+							net.WriteString("run_all_01")
+							net.Broadcast()
+
+						end
+					end
+				else
+					ply:RXSENDNotify("Невозможно сменить скорость")
+				end
+
+			end
+
+		elseif ply:HaveSpecialAb(role.SCI_SPECIAL_BOOSTER) then
 
 			ply:SetSpecialCD( CurTime() + 100 )
 
@@ -3268,7 +4570,7 @@ if SERVER then
 
 			end
 
-		elseif ply:HaveSpecialAb(ROLES.ROLE_GRUCMD) then
+		elseif ply:HaveSpecialAb(role.GRU_Commander) then
 
 			maxs_uiu_spec = Vector( 8, 10, 5 )
 
@@ -3293,7 +4595,7 @@ if SERVER then
 				old_target = target
 
 				if SERVER then
-					ply:BrProgressBar("Идёт допрос цели...", 5, "nextoren/gui/special_abilities/special_gru_commander.png")
+					ply:BrProgressBar("l:interrogation", 5, "nextoren/gui/special_abilities/special_gru_commander.png")
 				end
 
 				timer.Create("GRU_Com_Check"..ply:SteamID(), 1, 5, function()
@@ -3309,7 +4611,7 @@ if SERVER then
 					ply:SetSpecialCD( CurTime() + 50)
 
 					if SERVER then
-					    target:AddToStatistics("Interrogation by GRU", -40)
+					    target:AddToStatistics("l:interrogated_by_gru", -40)
 					end
 
 					local players = player.GetAll()
@@ -3332,7 +4634,7 @@ if SERVER then
 
 					end
 
-					net.Start("GRU_CommanderAbility")
+					net.Start("GRU_CommanderAbility", true)
 					    net.WriteString(target:GTeam())
 					net.Send(ply)
 
@@ -3346,24 +4648,32 @@ if SERVER then
 
 end)
 
+local inventory_button = CreateConVar("breach_config_openinventory", KEY_Q, FCVAR_ARCHIVE, "number you will open inventory with")
+
 function GM:PlayerButtonDown( ply, button )
 
 	if CLIENT and IsFirstTimePredicted() then
 		//local bind = _G[ "KEY_"..string.upper( input.LookupBinding( "+menu" ) or "q" ) ] or 
 		local key = input.LookupBinding( "+menu" )
 
-		if ( button == KEY_Q ) then
+		if LocalPlayer().cantopeninventory then return end
+
+		if ( button == inventory_button:GetInt() ) then
 
 			if ( CanShowEQ() && !IsEQVisible() ) then
 
 				ShowEQ( true )
 
+				RestoreCursorPosition()
+
 			elseif ( IsEQVisible() ) then
+
+				RememberCursorPosition()
 
 				HideEQ()
 
 			end
-	
+
 
 		end
 	end
@@ -3376,7 +4686,7 @@ function GM:PlayerButtonUp( ply, button )
 		local key = input.LookupBinding( "+menu" )
 
 		if key then
-			if input.GetKeyCode( KEY_Q ) == button and IsEQVisible() then
+			if input.GetKeyCode( inventory_button:GetInt() ) == button and IsEQVisible() then
 				HideEQ()
 			end
 		end
@@ -3385,7 +4695,7 @@ end
 
 function mply:HasHazmat()
 
-  if ( string.find( string.lower( self:GetModel() ), "hazmat" ) ) then
+  if ( string.find( string.lower( self:GetModel() ), "hazmat" ) or self:GetRoleName() == role.DZ_Gas or self:GetRoleName() == role.ClassD_FartInhaler ) then
 
     return true
 
@@ -3402,13 +4712,13 @@ function mply:Dado( kind )
 	if ( kind == 1 ) then
 
 		local unique_id = "Radiation" .. self:SteamID64()
-        local old_name = self:GetName()
+        local old_name = self:GetNamesurvivor()
 
 		self.radiation = true
 
         timer.Create( unique_id, .25, 0, function()
 
-            if ( !( self && self:IsValid() ) || self:GetName() != old_name || self:GTeam() == TEAM_SPEC || self:Health() <= 0 ) then
+            if ( !( self && self:IsValid() ) || self:GetNamesurvivor() != old_name || self:GTeam() == TEAM_SPEC || self:Health() <= 0 ) then
 
                 timer.Remove( unique_id )
 
@@ -3455,13 +4765,14 @@ function mply:Dado( kind )
 	elseif ( kind == 2 ) then
 
 		local unique_id = "FireBlow" .. self:SteamID64()
-		local old_name = self:GetName()
+		local old_name = self:GetNamesurvivor()
 
 		self.abouttoexplode = true
+		self.burn_to_death = true
 
 		timer.Create( unique_id, 10, 1, function()
 
-			if ( !( self && self:IsValid() ) || self:GetName() != old_name || self:GTeam() == TEAM_SPEC || self:Health() <= 0 ) then
+			if ( !( self && self:IsValid() ) || self:GetNamesurvivor() != old_name || self:GTeam() == TEAM_SPEC || self:Health() <= 0 ) then
 
 				timer.Remove( unique_id )
 
@@ -3493,14 +4804,14 @@ function mply:Dado( kind )
 				trigger_ent:Spawn()
 				trigger_ent.Die = CurTime() + 50
 
-				net.Start( "CreateParticleAtPos" )
+				net.Start( "CreateParticleAtPos", true )
 
 					net.WriteString( "pillardust" )
 					net.WriteVector( current_pos )
 
 				net.Broadcast()
 
-				net.Start( "CreateParticleAtPos" )
+				net.Start( "CreateParticleAtPos", true )
 
 					net.WriteString( "gas_explosion_main" )
 					net.WriteVector( current_pos )
@@ -3526,7 +4837,7 @@ function mply:Dado( kind )
 
 						if ( v:IsPlayer() && v:GTeam() != TEAM_SPEC && ( v:GTeam() != TEAM_SCP || !v:GetNoDraw() ) ) then
 							
-							v:Ignite(4)
+							v:SetOnFire(4)
 
 						end
 
@@ -3548,9 +4859,9 @@ function mply:Boosted( kind, timetodie )
 
 		if ( self:GetEnergized() ) then
 
-			local current_name = self:GetName()
+			local current_name = self:GetNamesurvivor()
 
-			net.Start( "ForcePlaySound" )
+			net.Start( "ForcePlaySound", true )
 
 				net.WriteString( "nextoren/others/heartbeat_stop.ogg" )
 
@@ -3558,7 +4869,7 @@ function mply:Boosted( kind, timetodie )
 
 			timer.Simple( 15, function()
 
-				if ( self && self:IsValid() && self:Health() > 0 && self:GetName() == current_name && self:GTeam() != TEAM_SPEC ) then
+				if ( self && self:IsValid() && self:Health() > 0 && self:GetNamesurvivor() == current_name && self:GTeam() != TEAM_SPEC ) then
 
 					self:Kill()
 
@@ -3587,10 +4898,16 @@ function mply:Boosted( kind, timetodie )
 
 		self:SetBoosted( true )
 
+		if self.exhausted then
+			self.exhausted = false
+			if SERVER then
+				self:SetRunSpeed( self.RunSpeed )
+				self:SetJumpPower( self.jumppower )
+			end
+		end
+
 		self:SetWalkSpeed( self:GetWalkSpeed() * 1.3 )
 		self:SetRunSpeed( self:GetRunSpeed() * 1.3 )
-
-		self:SetStaminaScale( self:GetStaminaScale() * .7 )
 
 		timer.Simple( ( timetodie || 10 ), function()
 
@@ -3598,10 +4915,8 @@ function mply:Boosted( kind, timetodie )
 
 				self:SetBoosted( false )
 
-				self:SetWalkSpeed( self:GetWalkSpeed() * .7 )
-				self:SetRunSpeed( self:GetRunSpeed() * .7 )
-
-				self:SetStaminaScale( self:GetStaminaScale() * 1.3 )
+				self:SetWalkSpeed( math.Round(self:GetWalkSpeed() * 0.77) )
+				self:SetRunSpeed( math.Round(self:GetRunSpeed() * 0.77) )
 
 			end
 
@@ -3615,7 +4930,7 @@ function mply:Boosted( kind, timetodie )
 
 		self.old_maxhealth = self.old_maxhealth || self:GetMaxHealth()
 
-		local old_name = self:GetName()
+		local old_name = self:GetNamesurvivor()
 
 		self:SetHealth( self:Health() + randomhealth )
 		self:SetMaxHealth( self:GetMaxHealth() + randomhealth )
@@ -3626,7 +4941,7 @@ function mply:Boosted( kind, timetodie )
 
 			if ( !( self && self:IsValid() ) ) then timer.Remove( unique_id ) return end
 
-			if ( self:Health() < 2 || !self:Alive() || self:GTeam() == TEAM_SPEC || self:GTeam() == TEAM_SCP || self:GetMaxHealth() == old_maxhealth || self:GetName() != old_name ) then
+			if ( self:Health() < 2 || !self:Alive() || self:GTeam() == TEAM_SPEC || self:GTeam() == TEAM_SCP || self:GetMaxHealth() == old_maxhealth || self:GetNamesurvivor() != old_name ) then
 
 				self:SetMaxHealth( self.old_maxhealth )
 				self.old_maxhealth = nil
@@ -3688,175 +5003,6 @@ function mply:GetExp()
 		ErrorNoHalt( "Cannot get the exp, GetNEXP invalid" )
 		return 0
 	end
-end
-
-function mply:GetLevel()
-	if not self.GetNLevel then
-		player_manager.RunClass( self, "SetupDataTables" )
-	end
-	if self.GetNLevel and self.SetNLevel then
-		return self:GetNLevel()
-	else
-		ErrorNoHalt( "Cannot get the exp, GetNLevel invalid" )
-		return 0
-	end
-end
-
-if SERVER then
-
-	util.AddNetworkString("SetStamina")
-
-	function mply:SetStamina(float)
-		net.Start("SetStamina")
-		net.WriteFloat(float)
-		net.WriteBool(false)
-		net.Send(self)
-	end
-
-	function mply:AddStamina(float)
-		net.Start("SetStamina")
-		net.WriteFloat(float)
-		net.WriteBool(true)
-		net.Send(self)
-	end
-
-end
-
-net.Receive("SetStamina", function()
-
-	local stamina = net.ReadFloat()
-	local add = net.ReadBool()
-
-	if !add then
-		LocalPlayer().Stamina = stamina
-	else
-		if LocalPlayer().Stamina == nil then LocalPlayer().Stamina = 100 end
-		LocalPlayer().Stamina = LocalPlayer().Stamina + stamina
-	end
-
-end)
-
-local cd_stamina = 0
-if CLIENT then
-	concommand.Add("test111", function()
-		LocalPlayer().Stamina = 10
-	end)
-	hook.Add("KeyPress", "Stamina_drain", function(ply, press)
-
-		if press == IN_JUMP and ply.Stamina then
-			if !ply:GetEnergized() and !ply:GetAdrenaline() then
-				ply.Stamina = ply.Stamina - 6
-			end
-		end
-
-	end)
-end
-function Sprint( ply, mv )
-
-	if ply:GTeam() == TEAM_SPEC then
-		ply.Stamina = nil
-		ply.exhausted = nil
-		return
-	end
-
-	local pl = ply:GetTable()
-	local n_new = ply:GetStaminaScale()
-	local stamina = pl.Stamina
-	local maxstamina = n_new*100
-	local movetype = ply:GetMoveType()
-	local invehicle = ply:InVehicle()
-	local energized = ply:GetEnergized()
-	local boosted = ply:GetBoosted()
-	local adrenaline = ply:GetAdrenaline()
-	local plyteam = ply:GTeam()
-	local activeweapon = ply:GetActiveWeapon()
-	if stamina == nil then pl.Stamina = maxstamina end
-	stamina = pl.Stamina
-
-	if stamina > maxstamina then stamina = maxstamina end
-
-	if pl.exhausted then
-		if exhausted_cd <= CurTime() then
-			pl.exhausted = nil
-		end
-		--return
-	end
-
-	local isrunning = false
-
-	if IsValid(activeweapon) and activeweapon.HoldingBreath then
-		stamina = stamina - 0.025
-	end
-
-	if !adrenaline then
-		if mv:KeyDown(IN_SPEED) and !( ply:GetVelocity():Length2DSqr() < 0.25 or movetype == MOVETYPE_NOCLIP or movetype == MOVETYPE_LADDER or movetype == MOVETYPE_OBSERVER or invehicle ) and plyteam != TEAM_SCP and !pl.exhausted then
-			if !energized then stamina = stamina - 0.0115 end
-			cd_stamina = CurTime() + 1.5
-			isrunning = true
-		end
-	end
-	if !isrunning and !ply:GetPos():WithinAABox(Vector(-4120.291504, -11427.226563, 38.683075), Vector(1126.214844, -15695.861328, -3422.429688)) then
-		if cd_stamina <= CurTime() then
-			local add = FrameTime()
-			if energized then
-				add = add *2
-			end
-			if stamina < 0 then stamina = 0 end
-			stamina = math.Approach(stamina, maxstamina, add)
-		end
-	end
-
-	if stamina < 0 and !pl.exhausted and !boosted then
-		make_bottom_message("I need to catch my breath")
-		net.Start("catch_breath")
-		net.SendToServer()
-		pl.exhausted = true
-		exhausted_cd = CurTime() + 7
-	end
-
-
-	pl.Stamina = stamina
-
-end
-
-hook.Add("SetupMove", "stamina_new", function(ply, mv)
-	if CLIENT then Sprint(ply, mv) end
-end)
-
-hook.Add("CreateMove", "stamina_new", function(mv)
-	local ply = LocalPlayer()
-	local pl = ply:GetTable()
-	if ( pl.exhausted and !pl:GetBoosted() ) then
-		if mv:KeyDown(IN_SPEED) then
-			mv:SetButtons(mv:GetButtons() - IN_SPEED)
-		end
-		if mv:KeyDown(IN_JUMP) then
-			mv:SetButtons(mv:GetButtons() - IN_JUMP)
-		end
-	end
-end)
-
-if CLIENT then
-	function mply:DropWeapon( class )
-		net.Start( "DropWeapon" )
-			net.WriteString( class )
-		net.SendToServer()
-	end
-
-	function mply:SelectWeapon( class )
-		if ( !self:HasWeapon( class ) ) then return end
-		self.DoWeaponSwitch = self:GetWeapon( class )
-	end
-	
-	hook.Add( "CreateMove", "WeaponSwitch", function( cmd )
-		if !IsValid( LocalPlayer().DoWeaponSwitch ) then return end
-
-		cmd:SelectWeapon( LocalPlayer().DoWeaponSwitch )
-
-		if LocalPlayer():GetActiveWeapon() == LocalPlayer().DoWeaponSwitch then
-			LocalPlayer().DoWeaponSwitch = nil
-		end
-	end )
 end
 
 local box_parameters = Vector( 5, 5, 5 )
@@ -3936,7 +5082,7 @@ net.Receive( "ThirdPersonCutscene", function()
 end )
 
 function BreachUtilEffect(effectname, effectdata)
-	net.Start("Shaky_UTILEFFECTSYNC")
+	net.Start("Shaky_UTILEFFECTSYNC", true)
 	net.WriteString(effectname)
 	net.WriteTable({effectdata})
 	net.Broadcast()
@@ -3944,7 +5090,7 @@ end
 function BreachParticleEffect(ParticleName, Position, angles, EntityParent)
 	if EntityParent == nil then EntityParent = NULL end
 	ParticleEffect(ParticleName, Position, angles, EntityParent)
-	net.Start("Shaky_PARTICLESYNC")
+	net.Start("Shaky_PARTICLESYNC", true)
 	net.WriteString(ParticleName)
 	net.WriteVector(Position)
 	net.WriteAngle(angles)
@@ -3954,7 +5100,7 @@ end
 function BreachParticleEffectAttach(ParticleName, attachType, entity, attachmentID)
 	if EntityParent == nil then EntityParent = NULL end
 	ParticleEffectAttach(ParticleName, attachType, entity, attachmentID)
-	net.Start("Shaky_PARTICLEATTACHSYNC")
+	net.Start("Shaky_PARTICLEATTACHSYNC", true)
 	net.WriteString(ParticleName)
 	net.WriteUInt(attachtype, 4)
 	net.WriteEntity(entity)
@@ -3981,6 +5127,18 @@ if CLIENT then
 		local attachmentID = net.ReadUInt(20)
 		ParticleEffectAttach(ParticleName, attachType, entity, attachmentID)
 	end)
+end
+
+function mply:GetLevel()
+	if not self.GetNLevel then
+		player_manager.RunClass( self, "SetupDataTables" )
+	end
+	if self.GetNLevel and self.SetNLevel then
+		return self:GetNLevel()
+	else
+		ErrorNoHalt( "Cannot get the exp, GetNLevel invalid" )
+		return 0
+	end
 end
 
 function mply:WouldDieFrom( damage, hitpos )
@@ -4041,3 +5199,327 @@ function mply:MeleeViewPunch( damage )
 	self:ViewPunch( Angle( math.Rand( minpunch, maxpunch ), math.Rand( minpunch, maxpunch ), math.Rand( minpunch, maxpunch ) ) )
 
 end
+
+--[[
+function Sprint( ply )
+
+	n_new = ply:GetStaminaScale()
+
+	sR = tonumber( string.sub( 2 - .5 / 2, 1, 1, 1.0 - 1 ) )
+    sL = tonumber( string.sub( 3.5 - n_new, 1, 1.0, string.len( n_new ) ) ) or tonumber( string.sub( 3 - n_new, 1, 1.0 + 1, string.len( n_new ) ) )
+
+	if not ply.RunSpeed then ply.RunSpeed = 0 end
+
+	if not ply.lTime then ply.lTime = 0 end
+
+	if !ply.GetRunSpeed then return end
+
+	if ( ply:GetAdrenaline() ) then return end
+
+	if ( ply:GetBoosted() ) then return end
+
+	if ( ply:GetEnergized() ) then return end
+
+	if ply:GetRunSpeed() == ply:GetWalkSpeed() or GetConVar("br_stamina_enable"):GetInt() == 0 then
+
+		ply:SetStamina(100)
+
+	else
+
+		if !ply:GetStamina() then ply:SetStamina(100) end
+
+		if ply.exhausted then
+
+			if ply:GetStamina() >= 30 then
+
+				ply.exhausted = false
+
+				ply:SetRunSpeed( ply.RunSpeed )
+
+				ply:SetJumpPower( ply.jumppower )
+
+			end
+
+			if ply.lTime < CurTime() then
+
+				ply.lTime = CurTime() + 0.1
+
+				ply:SetStamina(ply:GetStamina() + sR) 
+
+			end
+
+		else
+
+			if ply:GetStamina() <= 0 then
+
+				ply:SetStamina(0)
+
+				ply.exhausted = true
+
+				ply.RunSpeed = ply:GetRunSpeed()
+
+				ply.jumppower = ply:GetJumpPower()
+
+				ply:SetRunSpeed( ply:GetWalkSpeed() + 1 )
+
+				ply:SetJumpPower(20)
+
+			end
+
+			if ply.lTime < CurTime() then
+
+				ply.lTime = CurTime() + 0.1
+
+				if ply.sprintEnabled and !( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER or ply:GetMoveType() == MOVETYPE_OBSERVER  or ply:InVehicle() ) and ply:GTeam() != TEAM_SCP then
+
+					ply:SetStamina(ply:GetStamina() - sL) 
+
+				else
+
+				    ply.lTime = CurTime() + 0.1
+
+					ply:SetStamina(ply:GetStamina() + sR)
+
+				end
+
+				if ply.jumped and !( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER or ply:GetMoveType() == MOVETYPE_OBSERVER  or ply:InVehicle() or ply:OnGround() ) and ply:GTeam() != TEAM_SCP then
+
+					ply:GetStamina(ply:GetStamina() - 25)
+
+
+
+				end
+
+			end
+
+		end
+
+		if ply:GetStamina() > 100 then ply:SetStamina(100) end
+
+		if ply.Using714 and ply:GetStamina() > 30 then ply:SetStamina(30) end
+
+	end
+
+end
+--]]
+
+if SERVER then
+
+	util.AddNetworkString("SetStamina")
+
+	function mply:SetStamina(float)
+		net.Start("SetStamina", true)
+		net.WriteFloat(float)
+		net.WriteBool(false)
+		net.Send(self)
+	end
+
+	function mply:AddStamina(float)
+		net.Start("SetStamina", true)
+		net.WriteFloat(float)
+		net.WriteBool(true)
+		net.Send(self)
+	end
+
+end
+
+net.Receive("SetStamina", function()
+
+	local stamina = net.ReadFloat()
+	local add = net.ReadBool()
+
+	if !add then
+		LocalPlayer().Stamina = stamina
+	else
+		if LocalPlayer().Stamina == nil then LocalPlayer().Stamina = 100 end
+		LocalPlayer().Stamina = LocalPlayer().Stamina + stamina
+	end
+
+end)
+
+local cd_stamina = 0
+if CLIENT then
+	concommand.Add("test111", function()
+		LocalPlayer().Stamina = 10
+	end)
+	hook.Add("KeyPress", "Stamina_drain", function(ply, press)
+		if ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_OBSERVER then
+			return
+		end
+
+		if press == IN_JUMP and ply.Stamina and !ply:Crouching() then
+			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:18725400" then
+				ply.Stamina = ply.Stamina - 6
+			end
+		end
+
+	end)
+end
+function Sprint( ply, mv )
+
+	if ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_OBSERVER then
+		return
+	end
+
+	if ply:GTeam() == TEAM_SPEC then
+		ply.Stamina = nil
+		ply.exhausted = nil
+		return
+	end
+
+	local pl = ply:GetTable()
+	local n_new = ply:GetStaminaScale()
+	local stamina = pl.Stamina
+	local maxstamina = n_new*100
+	local movetype = ply:GetMoveType()
+	local invehicle = ply:InVehicle()
+	local energized = ply:GetEnergized()
+	local boosted = ply:GetBoosted()
+	local adrenaline = ply:GetAdrenaline()
+	local plyteam = ply:GTeam()
+	local activeweapon = ply:GetActiveWeapon()
+	if stamina == nil then pl.Stamina = maxstamina end
+	stamina = pl.Stamina
+
+	if stamina > maxstamina then stamina = maxstamina end
+
+	if pl.exhausted then
+		if exhausted_cd <= CurTime() then
+			pl.exhausted = nil
+		end
+		--return
+	end
+
+	local isrunning = false
+
+	if IsValid(activeweapon) and activeweapon.HoldingBreath then
+		stamina = stamina - 0.025
+	end
+
+	if !adrenaline then
+		if mv:KeyDown(IN_SPEED) and !( ply:GetVelocity():Length2DSqr() < 0.25 or movetype == MOVETYPE_NOCLIP or movetype == MOVETYPE_LADDER or movetype == MOVETYPE_OBSERVER or invehicle ) and plyteam != TEAM_SCP and !pl.exhausted then
+			if !energized then stamina = stamina - 0.0115 end
+			cd_stamina = CurTime() + 1.5
+			isrunning = true
+		end
+	end
+	if !isrunning and !ply:GetPos():WithinAABox(Vector(-4120.291504, -11427.226563, 38.683075), Vector(1126.214844, -15695.861328, -3422.429688)) then
+		if cd_stamina <= CurTime() then
+			local add = FrameTime()
+			if energized then
+				add = add *2
+			end
+			if stamina < 0 then stamina = 0 end
+			stamina = math.Approach(stamina, maxstamina, add)
+		end
+	end
+
+	if isrunning and mv:KeyPressed(IN_JUMP) and IsFirstTimePredicted() then
+		stamina = stamina - 15
+	end
+
+	if stamina < 0 and !pl.exhausted and !boosted then
+		make_bottom_message("I need to catch my breath")
+		net.Start("catch_breath", true)
+		net.SendToServer()
+		pl.exhausted = true
+		exhausted_cd = CurTime() + 7
+	end
+
+	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:18725400" then stamina = 100 end
+
+
+	pl.Stamina = stamina
+
+end
+
+hook.Add("SetupMove", "stamina_new", function(ply, mv)
+	if CLIENT then Sprint(ply, mv) end
+end)
+
+hook.Add("Move", "LeanSpeed", function(ply, mv)
+	if ply:IsLeaning() and CanLean(ply) then
+		local speed = ply:GetWalkSpeed() * 0.55
+		mv:SetMaxSpeed( speed )
+		mv:SetMaxClientSpeed( speed )
+	end
+end)
+
+hook.Add("CreateMove", "stamina_new", function(mv)
+	local ply = LocalPlayer()
+	local pl = ply:GetTable()
+
+	if ( pl.exhausted and !pl:GetBoosted() ) or ply:GetInDimension() then
+		if mv:KeyDown(IN_SPEED) then
+			mv:SetButtons(mv:GetButtons() - IN_SPEED)
+		end
+		if mv:KeyDown(IN_JUMP) then
+			mv:SetButtons(mv:GetButtons() - IN_JUMP)
+		end
+	end
+end)
+
+if CLIENT then
+	function mply:DropWeapon( class )
+		net.Start( "DropWeapon", true )
+			net.WriteString( class )
+		net.SendToServer()
+	end
+
+	function mply:SelectWeapon( class )
+		if ( !self:HasWeapon( class ) ) then return end
+		self.DoWeaponSwitch = self:GetWeapon( class )
+	end
+	
+	hook.Add( "CreateMove", "WeaponSwitch", function( cmd )
+		if !IsValid( LocalPlayer().DoWeaponSwitch ) then return end
+
+		cmd:SelectWeapon( LocalPlayer().DoWeaponSwitch )
+
+		if LocalPlayer():GetActiveWeapon() == LocalPlayer().DoWeaponSwitch then
+			LocalPlayer().DoWeaponSwitch = nil
+		end
+	end )
+end
+
+--[[
+hook.Add("KeyPress", "stm_on", function( ply, button )
+
+	if button == IN_SPEED then ply.sprintEnabled = true end
+
+end )
+
+
+
+hook.Add("KeyPress", "stmj_on", function( ply, button )
+
+	if button == IN_JUMP then ply.jumped = true end
+
+end )
+
+
+
+hook.Add("KeyRelease", "stmj_off", function( ply, button )
+
+	if button == IN_JUMP then ply.jumped = false end
+
+end )
+
+
+
+hook.Add("KeyRelease", "stm_off", function( ply, button )
+
+	if button == IN_SPEED then ply.sprintEnabled = false end
+
+end )
+
+function GM:KeyPress(ply, key)
+
+	if ( key == IN_SPEED ) then
+
+		Sprint(ply)
+
+	end
+
+end
+--]]

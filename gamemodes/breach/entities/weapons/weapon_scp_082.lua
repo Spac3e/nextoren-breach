@@ -1,6 +1,6 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/weapon_scp_082.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -17,13 +17,15 @@ SWEP.Slot = 1
 SWEP.SlotPos = 1
 SWEP.DrawCrosshair = false
 SWEP.WorldModel = ""
-SWEP.ViewModel = ""
 SWEP.HoldType = "bogdan"
 SWEP.AlertWindow = false
 SWEP.AbillityID = 0
 SWEP.maxs = Vector( 8, 10, 5 )
 SWEP.Rage = false
 SWEP.Damage = 300
+SWEP.ViewModelFOV = 58
+
+SWEP.ViewModel = Model("models/cultist/scp/scp_082_hands.mdl")
 
 SWEP.droppable = false
 SWEP.Primary.Delay = 3
@@ -137,7 +139,7 @@ end
 
 function SWEP:Deploy()
 
-	self.Owner:DrawViewModel( false )
+	--self.Owner:DrawViewModel( false )
 
 	if ( SERVER ) then
 
@@ -163,9 +165,22 @@ local BannedDoors = {
 
 }
 
+SWEP.ViewModelFlip = false
+
+local sequencelist = {
+	["attack_1"] = Angle(-5,-10,0),
+	["attack_2"] = Angle(10,10,0),
+}
+
 function SWEP:PrimaryAttack()
 
-	self:SetNextPrimaryFire( CurTime() + 1.5 )
+	local sequence = "attack_2"
+
+	if self.Rage then
+		self:SetNextPrimaryFire( CurTime() + 0.5 )
+	else
+		self:SetNextPrimaryFire( CurTime() + 1 )
+	end
 
 	self.Owner:LagCompensation( true )
 
@@ -186,7 +201,7 @@ function SWEP:PrimaryAttack()
 
 	if ( SERVER && ent && ent:IsValid() && ent:GetClass() == "prop_dynamic" ) then
 
-		self.Owner:MeleeViewPunch( self.Damage * .5 )
+		--self.Owner:MeleeViewPunch( self.Damage * .5 )
 		self:EmitSound( "nextoren/scp/082/attack_miss.mp3" )
 
 		local door = ent:GetParent()
@@ -212,24 +227,54 @@ function SWEP:PrimaryAttack()
 
 	if ( !ent:IsPlayer() ) then
 
-		self.Owner:MeleeViewPunch( self.Damage * .5 )
+		--self.Owner:MeleeViewPunch( self.Damage * .5 )
 		self:EmitSound( "nextoren/scp/082/attack_miss.mp3" )
 
-		return
+	else
+		sequence = "attack_1"
 	end
+
+	self.ViewModelFlip = !self.ViewModelFlip
+	if SERVER then
+		self:PlaySequence(sequence)
+	end
+
+	local velocity = sequencelist[self.Owner:GetViewModel():GetSequenceName(self.Owner:GetViewModel():GetSequence())]
+
+	if self.ViewModelFlip then
+		velocity.y = -velocity.y
+	end
+
+	self.Owner:ViewPunch(velocity)
+
+	if ( !ent:IsPlayer() ) then return end
 
 	if ( friendly_teams[ ent:GTeam() ] ) then return end
 
+	self.Owner:SetHealth( math.min( self.Owner:Health() + math.random(100,200), self.Owner:GetMaxHealth() ) )
 	ent:ThrowFromPositionSetZ( self.Owner:GetPos(), 80 )
-	self.Owner:MeleeViewPunch( self.Damage * .4 )
+	--self.Owner:MeleeViewPunch( self.Damage * .4 )
 	ent:MeleeViewPunch( self.Damage )
 	self:ApplyMeleeDamage( ent, trace, self.Damage )
 
 end
 
+local BannedDoors = {
+
+	[ 2142 ] = true,
+	[ 2141 ] = true,
+	[ 4394 ] = true
+
+}
+
 if ( SERVER ) then
 
 	function SWEP:Think()
+
+		if !self.Rage and self.Owner:GetRunSpeed() > 100 then
+			self.Owner:SetRunSpeed(100)
+			self.Owner:SetWalkSpeed(100)
+		end
 
 		if ( self:GetRageNumber() >= 100 && !self.Rage ) then
 
@@ -302,6 +347,28 @@ if ( SERVER ) then
 
 			end
 
+		end
+
+		if self.Rage then
+			for _, v in ipairs( ents.FindInSphere( self.Owner:GetPos(), 60 ) ) do
+
+				if ( !preparing && SCPLockDownHasStarted == true && v:GetClass() == "func_door" && !v.OpenedBySCP096 && self.Owner:GetVelocity():Length2DSqr() > .25 && !BannedDoors[ v:MapCreationID() ] ) then
+
+					v.OpenedBySCP096 = true
+					v:EmitSound( "nextoren/scp/096/metal_break3.wav" )
+					v:Fire( "Unlock" )
+					v:Fire( "Open" )
+					v:Fire( "Lock" )
+					timer.Simple( 6, function()
+
+						v:Fire( "Unlock" )
+						v.OpenedBySCP096 = false
+
+					end )
+
+				end
+
+			end
 		end
 
 	end

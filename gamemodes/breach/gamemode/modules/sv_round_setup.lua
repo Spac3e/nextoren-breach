@@ -5,28 +5,30 @@ function GetRoleTable( all )
 	sb_kol_vo = 0
 	spec_kol_vo = 0
 	d_kol_vo = 0
-
-	if all < 35 then
-		scp_kol_vo = 2
-	else
-		scp_kol_vo = math.floor( ( all - 14 ) / 7 ) + 3
+	if all < 20 then
+		scp_kol_vo = 1
+	elseif
+		 all > 20 then
+			scp_kol_vo = 2
+		else 
+		scp_kol_vo = 4
 	end
 	
 	all = all - scp_kol_vo
 
 	//if all < 14 then
-		mtf_kol_vo = math.Round( all * 0.2 )
+		mtf_kol_vo = math.floor( all * 0.2 )
 	//else
 		//mtf = math.Round( all * 0.27 )
 	//end
 
 	all = all - mtf_kol_vo
 
-	res_kol_vo = math.floor( all * 0.2 )
+	res_kol_vo = math.floor( all * 0.3 )
 	all = all - res_kol_vo
-	sb_kol_vo = math.floor( all * 0.2 )
+	sb_kol_vo = math.floor( all * 0.4 )
 	all = all - sb_kol_vo
-	spec_kol_vo = 2
+	spec_kol_vo = 1
 	all = all - spec_kol_vo
 	d_kol_vo = all
 
@@ -41,9 +43,9 @@ local function PlayerLevelSorter(a, b)
 end
 
 function SetupPlayers( tab, multibreach )
-	local players = GetActivePlayers()
+	local players = player.GetAll()
 
-	//Send info about penalties
+		//Send info about penalties
 	for k, v in pairs( players ) do
 		local r = tonumber( v:GetPData( "scp_penalty", 0 ) )
 
@@ -98,7 +100,7 @@ function SetupPlayers( tab, multibreach )
 	table.sort( mtfs, PlayerLevelSorter )
 
 	for i, v in ipairs( mtfs ) do
-		local mtfroles = table.Copy( ALLCLASSES.mtf.roles )
+		local mtfroles = table.Copy( BREACH_ROLES.MTF.mtf.roles )
 		local selected
 
 		repeat
@@ -116,8 +118,7 @@ function SetupPlayers( tab, multibreach )
 		until #mtfroles == 0
 
 		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 001" )
-			selected = ALLCLASSES.mtf.roles[1]
+			selected = BREACH_ROLES.MTF.mtf.roles[1]
 		end
 
 		mtfsinuse[selected.name] = mtfsinuse[selected.name] + 1
@@ -132,92 +133,6 @@ function SetupPlayers( tab, multibreach )
 		print( "Assigning "..v:Nick().." to role: "..selected.name.." [MTF]" )
 	end
 
-	//Select SB
-	local sbsinuse = {}
-	local sbspawns = table.Copy( SPAWN_SECURITY )
-
-	for i = 1, sb_kol_vo do
-		local ply = table.Random( players )
-
-		local sbroles = table.Copy( ALLCLASSES.security.roles )
-		local selected
-
-		repeat
-			local role = table.remove( sbroles, math.random( #sbroles ) )
-			sbsinuse[role.name] = sbsinuse[role.name] or 0
-
-			if role.max == 0 or sbsinuse[role.name] < role.max then
-				if role.level <= ply:GetLevel() then
-					if !role.customcheck or role.customcheck( ply ) then
-						selected = role
-						break
-					end
-				end
-			end
-		until #sbroles == 0
-
-		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 002" )
-			selected = ALLCLASSES.security.roles[1]
-		end
-
-		sbsinuse[selected.name] = sbsinuse[selected.name] + 1
-
-		table.RemoveByValue( players, ply )
-
-		if #sbspawns == 0 then sbspawns = table.Copy( SPAWN_SECURITY ) end
-		local spawn = table.remove( sbspawns, math.random( #sbspawns ) )
-
-		ply:SetupNormal()
-		ply:ApplyRoleStats( selected )
-		ply:SetPos( spawn )
-
-		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [RESEARCHERS]" )
-	end
-
-	//Select Spec
-	local specsinuse = {}
-	local specspawns = table.Copy( SPAWN_SCIENT )
-
-	for i = 1, spec_kol_vo do
-		local ply = table.Random( players )
-
-		local specroles = table.Copy( ALLCLASSES.special.roles )
-		local selected
-
-		repeat
-			local role = table.remove( specroles, math.random( #specroles ) )
-			specsinuse[role.name] = specsinuse[role.name] or 0
-
-			if role.max == 0 or specsinuse[role.name] < role.max then
-				if role.level <= ply:GetLevel() then
-					if !role.customcheck or role.customcheck( ply ) then
-						selected = role
-						break
-					end
-				end
-			end
-		until #specroles == 0
-
-		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 002" )
-			selected = ALLCLASSES.special.roles[1]
-		end
-
-		specsinuse[selected.name] = specsinuse[selected.name] + 1
-
-		table.RemoveByValue( players, ply )
-
-		if #specspawns == 0 then specspawns = table.Copy( SPAWN_SCIENT ) end
-		local spawn = table.remove( specspawns, math.random( #specspawns ) )
-
-		ply:SetupNormal()
-		ply:ApplyRoleStats( selected )
-		ply:SetPos( spawn )
-
-		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [RESEARCHERS]" )
-	end
-
 	//Select Researchers
 	local resinuse = {}
 	local resspawns = table.Copy( SPAWN_SCIENT )
@@ -225,7 +140,7 @@ function SetupPlayers( tab, multibreach )
 	for i = 1, res_kol_vo do
 		local ply = table.Random( players )
 
-		local resroles = table.Copy( ALLCLASSES.researchers.roles )
+		local resroles = table.Copy( BREACH_ROLES.SCI.sci.roles )
 		local selected
 
 		repeat
@@ -243,8 +158,7 @@ function SetupPlayers( tab, multibreach )
 		until #resroles == 0
 
 		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 002" )
-			selected = ALLCLASSES.researchers.roles[1]
+			selected = BREACH_ROLES.SCI.sci.roles[1]
 		end
 
 		resinuse[selected.name] = resinuse[selected.name] + 1
@@ -261,14 +175,142 @@ function SetupPlayers( tab, multibreach )
 		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [RESEARCHERS]" )
 	end
 
+
+	//Select SB
+	local sbsinuse = {}
+	local sbspawns = table.Copy( SPAWN_SECURITY )
+
+	for i = 1, sb_kol_vo do
+		local ply = table.Random( players )
+
+		local sbroles = table.Copy( BREACH_ROLES.SECURITY.security.roles )
+		local selected
+
+		repeat
+			local role = table.remove( sbroles, math.random( #sbroles ) )
+			sbsinuse[role.name] = sbsinuse[role.name] or 0
+
+			if role.max == 0 or sbsinuse[role.name] < role.max then
+				if role.level <= ply:GetLevel() then
+					if !role.customcheck or role.customcheck( ply ) then
+						selected = role
+						break
+					end
+				end
+			end
+		until #sbroles == 0
+
+		if !selected then
+			selected = BREACH_ROLES.SECURITY.security.roles[1]
+		end
+
+		sbsinuse[selected.name] = sbsinuse[selected.name] + 1
+
+		table.RemoveByValue( players, ply )
+
+		if #sbspawns == 0 then sbspawns = table.Copy( SPAWN_SECURITY ) end
+		local spawn = table.remove( sbspawns, math.random( #sbspawns ) )
+
+		ply:SetupNormal()
+		ply:ApplyRoleStats( selected )
+		ply:SetPos( spawn )
+
+		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [RESEARCHERS]" )
+	end
+
+
+	//Select Spec
+	local specsinuse = {}
+	local specspawns = table.Copy( SPAWN_SCIENT )
+
+	for i = 1, 1 do
+		local ply = table.Random( players )
+
+		local specroles = table.Copy( BREACH_ROLES.SPECIAL.special.roles )
+		local selected
+
+		repeat
+			local role = table.remove( specroles, math.random( #specroles ) )
+			specsinuse[role.name] = specsinuse[role.name] or 0
+
+			if role.max == 0 or specsinuse[role.name] < role.max then
+				if role.level <= ply:GetLevel() then
+					if !role.customcheck or role.customcheck( ply ) then
+						selected = role
+						break
+					end
+				end
+			end
+		until #specroles == 0
+
+		if !selected then
+			selected = BREACH_ROLES.SPECIAL.special.roles[1]
+		end
+
+		specsinuse[selected.name] = specsinuse[selected.name] + 1
+
+		table.RemoveByValue( players, ply )
+
+		if #specspawns == 0 then specspawns = table.Copy( SPAWN_SCIENT ) end
+		local spawn = table.remove( specspawns, math.random( #specspawns ) )
+
+		ply:SetupNormal()
+		ply:ApplyRoleStats( selected )
+		ply:SetPos( spawn )
+
+		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [RESEARCHERS]" )
+	end
+
 	//Select Class D
-	local dinuse = {}
+	local dsinuse = {}
 	local dspawns = table.Copy( SPAWN_CLASSD )
 
 	for i = 1, d_kol_vo do
 		local ply = table.Random( players )
 
-		local droles = table.Copy( ALLCLASSES.classds.roles )
+		local droles = table.Copy( BREACH_ROLES.CLASSD.classd.roles )
+		local selected
+
+		repeat
+			local role = table.remove( droles, math.random( #droles ) )
+			dsinuse[role.name] = dsinuse[role.name] or 0
+
+			if role.max == 0 or dsinuse[role.name] < role.max then
+				if role.level <= ply:GetLevel() then
+					if !role.customcheck or role.customcheck( ply ) then
+						selected = role
+						break
+					end
+				end
+			end
+		until #droles == 0
+
+		if !selected then
+			selected = BREACH_ROLES.CLASSD.classd.roles[1]
+		end
+
+		dsinuse[selected.name] = dsinuse[selected.name] + 1
+
+		table.RemoveByValue( players, ply )
+
+		if #dspawns == 0 then dspawns = table.Copy( SPAWN_CLASSD ) end
+		local spawn = table.remove( dspawns, math.random( #dspawns ) )
+
+		ply:SetupNormal()
+		ply:ApplyRoleStats( selected )
+		ply:SetPos( spawn )
+
+		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [d]" )
+	end
+
+--[[
+	local dinuse = {}
+	local dspawns = table.Copy( SPAWN_CLASSD )
+
+	for i = 1, ( d_kol_vo + 4 ) do
+		local ply = table.Random( players )
+
+		local droles = table.Copy( BREACH_ROLES.CLASSD.classd.roles )
 		local selected
 
 		repeat
@@ -287,10 +329,10 @@ function SetupPlayers( tab, multibreach )
 
 		if !selected then
 			ErrorNoHalt( "Something went wrong! Error code: 003" )
-			selected = ALLCLASSES.classds.roles[1]
+			selected = BREACH_ROLES.CLASSD.classd.roles[1]
 		end
 
-		dinuse[selected.name] = dinuse[selected.name] + 1
+		--dinuse[selected.name] = dinuse[selected.name] + 1
 
 		table.RemoveByValue( players, ply )
 
@@ -303,7 +345,7 @@ function SetupPlayers( tab, multibreach )
 
 		print( "Assigning "..ply:Nick().." to role: "..selected.name.." [CLASS D]" )
 	end
-
+]]--
 	//Send info to everyone
 	net.Start("RolesSelected")
 	net.Broadcast()
