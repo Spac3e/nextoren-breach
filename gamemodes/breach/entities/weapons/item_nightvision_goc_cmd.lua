@@ -20,7 +20,7 @@ end
 
 
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "Прототип тепловизора"
+SWEP.PrintName = "Тепловизор ГОК"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.UseHands = true
@@ -187,6 +187,12 @@ function SWEP:Reload()
 						net.WriteString( "GOC" )
 
 					net.Send( self.Owner )
+
+					net.Start( "NightvisionOn" )
+
+					net.WriteString( "red" )
+
+				net.Send( self.Owner )
 
 				end
 

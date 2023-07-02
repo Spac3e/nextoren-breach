@@ -1,5 +1,5 @@
 --[[
-Server Name: RXSEND Breach
+Server Name: [RXSEND] Breach 2.6.0
 Server IP:   46.174.50.119:27015
 File Path:   gamemodes/breach/entities/weapons/item_nightvision_white.lua
 		 __        __              __             ____     _                ____                __             __         

@@ -1,7 +1,7 @@
 --[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/weapons/item_nightvision_green.lua
+Server Name: Breach 2.6.0 [Alpha]
+Server IP:   94.26.255.7:27415
+File Path:   gamemodes/breach/entities/weapons/item_nightvision_goc.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -20,7 +20,7 @@ end
 
 
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "Очки ночного видения"
+SWEP.PrintName = "тепловизора"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.UseHands = true
@@ -50,7 +50,6 @@ SWEP.Slot				= 0
 SWEP.SlotPos			= 0
 --Link2006's fix for Nightvision;
 SWEP.droppable				= true
-SWEP.teams					= {2,3,4,6}
 
 
 function SWEP:Initialize()
@@ -125,7 +124,7 @@ function SWEP:Reload()
 
 		if ( CLIENT ) then
 
-			BREACH.Player:ChatPrint( true, true, "l:take_off_nvg_first" )
+			BREACH.Player:ChatPrint( true, true, "Для начала снимите текущие очки ночного видения." )
 
 		end
 
@@ -150,7 +149,7 @@ function SWEP:Reload()
 
 		if ( self.Nightvision ) then
 
-			timer.Simple( 1.2, function()
+			timer.Simple(1.2, function()
 
 				if ( !( self && self:IsValid() ) || !( self.Owner && self.Owner:IsValid() ) ) then return end
 
@@ -165,8 +164,8 @@ function SWEP:Reload()
 					self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
 					if ( !banned_models[ self.Owner:GetModel() ] ) then
 
-						Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
-						for _, v in ipairs( self.Owner.BoneMergedEnts ) do
+					Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
+						for _, v in ipairs( ents.FindByClassAndParent( "ent_bonemerged", self.Owner ) ) do
 
 							if ( v && v:IsValid() && v:GetModel():find( "_nvg_" ) ) then
 					
@@ -174,13 +173,14 @@ function SWEP:Reload()
 								local nvg_bonemerge = v
 
 								self.Owner.NVG_Bonemerged = nvg_bonemerge
-								--self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
-					
+								self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
+								
 							end
 					
 						end
 
 					end
+
 
 					net.Start( "NightvisionOn" )
 
@@ -190,17 +190,20 @@ function SWEP:Reload()
 
 				end
 
-			end )
+			end)
 
 		elseif ( !self.Nightvision ) then
 
 			self.Owner:DrawViewModel( true )
+
 			self.Owner:ScreenFade( SCREENFADE.IN, color_black, 0.9, 0 )
 
-			if ( self.Owner.NVG_Bonemerged && self.Owner.NVG_Bonemerged:IsValid() ) then
-
-				self.Owner.NVG_Bonemerged:Remove()
-
+			local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self.Owner )
+			for i = 1, #tbl_bonemerged do
+			local bonemerge = tbl_bonemerged[ i ]
+			if bonemerge:GetModel() == "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl" then
+				bonemerge:Remove()
+			end
 			end
 
 			self.Nightvision_Owner = nil
@@ -269,7 +272,7 @@ function SWEP:Think()
 
 		self.IdlePlaying = true
 		self:PlaySequence( "idle", true )
-    
+
 	end
 
 end
@@ -279,7 +282,7 @@ function SWEP:DrawWorldModel()
 	if ( !IsValid( self.Owner ) ) then
 
 		self:DrawModel()
-		self:SetSkin( 1 )
+		self:SetSkin( 2 )
 
 	end
 
@@ -291,16 +294,15 @@ function SWEP:OnDrop()
 
 	if ( SERVER && self.Nightvision_Owner ) then
 
-		if ( self.Nightvision_Owner && self.Nightvision_Owner:IsValid() && self.Nightvision_Owner:Health() > 0 && istable( self.Nightvision_Owner.BoneMergedEnts ) || self.Nightvision_Owner && self.Nightvision_Owner:IsValid() && self.Nightvision ) then
+		if ( self.Nightvision_Owner && self.Nightvision_Owner:IsValid() && self.Nightvision_Owner:Health() > 0 && istable( self.Nightvision_Owner.BoneMergedEnts ) ) then
 
 			if ( self.Nightvision_Owner.NVG_Bonemerged && self.Nightvision_Owner.NVG_Bonemerged:IsValid() ) then
 
 				self.Nightvision_Owner.NVG_Bonemerged:Remove()
+				self.Nightvision_Owner:SendLua( 'LocalPlayer().NVG = nil' )
+				self.Nightvision_Owner = nil
 
 			end
-
-			self.Nightvision_Owner:SendLua( 'LocalPlayer().NVG = nil' )
-			self.Nightvision_Owner = nil
 
 		end
 

@@ -569,6 +569,7 @@ function mply:ApplyRoleStats( role )
 	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
+	self:ClearBodyGroups()
 	if role.models and role.fmodels then
 		selfmodel = {role.fmodels, role.models}
 		finalselfmodel = selfmodel[math.random(1, #selfmodel)]

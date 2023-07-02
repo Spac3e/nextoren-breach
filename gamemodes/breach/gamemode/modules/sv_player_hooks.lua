@@ -5,6 +5,7 @@ util.AddNetworkString("camera_swap")
 util.AddNetworkString("camera_exit")
 util.AddNetworkString("FirstPerson")
 util.AddNetworkString("BreachAnnouncerLoud")
+util.AddNetworkString("FirstPerson_Remove")
 
 function Player:SetBottomMessage( msg )
     net.Start( "SetBottomMessage" )
@@ -175,6 +176,8 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	ply:SetupHands()
 	if ply:GTeam() != TEAM_SCP or ply:GTeam() != TEAM_SPEC then
 		net.Start("Death_Scene")
+		net.WriteBool(true)
+		net.WriteEntity(ply)
 		net.Send(ply)
 	end
 	if ply:GTeam() == TEAM_SCP then
@@ -239,9 +242,11 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end
 	end
 	victim:SetRoleName(role.Spectator)
-	local roundstats = roundstats || {}
-	local deaths = deaths || {}
+	local roundstats = {}
+	local deaths = {}
+	if roundstats then
 	roundstats.deaths = roundstats.deaths + 1
+	end
 	local wasteam = victim:GTeam()
 	victim:SetTeam(TEAM_SPEC)
 	victim:SetGTeam(TEAM_SPEC)
