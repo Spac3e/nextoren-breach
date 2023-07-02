@@ -1,6 +1,9 @@
 
 local mply = FindMetaTable( "Player" )
 
+function mply:AddToMVP()
+end
+
 local femname = {
 	"Olivia", "Emma", "Ava", "Sophia", "Isabella", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn",
 	"Abigail", "Emily", "Elizabeth", "Mila", "Ella", "Avery", "Sofia", "Camila", "Aria", "Scarlett",
@@ -133,22 +136,6 @@ end
 	  end
   end
   
-  function mply:TakeHealth(number)
-	  local hp = self:Health()
-	  local new = hp - number
-	  if new <= 0 then
-		  self:Kill()
-		  return
-	  end
-	  self:SetHealth(new)
-  end
-  
-  function mply:AnimatedHeal()
-	  local health, max = self:Health(), self:GetMaxHealth()
-	  local new = health + number
-	  self:SetHealth(math.min(new, max))
-  end
-   
   function GetTableOverride( tab )
 	  local metatable = {
 		  __add = function( left, right )
@@ -177,6 +164,28 @@ function mply:AddToAchievementPoint()
 end
 
 function mply:LevelBar()
+end
+
+function mply:TakeHealth(number)
+	local hp = self:Health()
+	local new = hp - number
+	if new <= 0 then
+		self:Kill()
+		return
+	end
+	self:SetHealth(new)
+end
+
+function mply:AnimatedHeal()
+	local health, max = self:Health(), self:GetMaxHealth()
+	local new = health + number
+	self:SetHealth(math.min(new, max))
+end
+
+function mply:AddHealth(number)
+	local health, max = self:Health(), self:GetMaxHealth()
+	local new = health + number
+	self:SetHealth(math.min(new, max))
 end
 
 function mply:UnUseBag()
@@ -557,7 +566,7 @@ function mply:ApplyRoleStats( role )
 		self:SetAsCiSpy()
 	end
 	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
-	if role.weapons and role.weapons != "" then self:Give(role.weapons)
+	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	if role.models and role.fmodels then

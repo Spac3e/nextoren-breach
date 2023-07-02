@@ -76,12 +76,12 @@ function SWEP:Heal( target )
 
     if ( target:Health() >= target:GetMaxHealth() ) then
 
-      --BREACH.Players:ChatPrint( self.Owner, true, true, target:GetNamesurvivor() .. " не нуждается в лечении." )
+      BREACH.Players:ChatPrint( self.Owner, true, true, target:GetNamesurvivor() .. " не нуждается в лечении." )
 
       return
     end
 
-    --BREACH.Players:ChatPrint( target, true, true, "Подождите: " .. self.Owner:GetNamesurvivor() .. " пытается Вас вылечить." )
+    BREACH.Players:ChatPrint( target, true, true, "Подождите: " .. self.Owner:GetNamesurvivor() .. " пытается Вас вылечить." )
 
     animation = "l4d_Heal_Friend_Standing"
 
@@ -89,16 +89,16 @@ function SWEP:Heal( target )
 
     self.Healing = true
 
-    self.Owner:BrProgressBar( "l:medkit_healing " .. target:GetNamesurvivor() .. "...", heal_time, self.ProgressIcon, target, false, function()
+    self.Owner:BrProgressBar( "l:medkit_healing " .. target:GetName() .. "...", heal_time, self.ProgressIcon, target, false, function()
 
       self.Heal_Left = self.Heal_Left - 1
 
       self.Healing = false
 
-      --BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetNamesurvivor() .. " восстановлено." )
-      --BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetNamesurvivor() )
-      self.Owner:AddToMVP("heal", math.min(target:GetMaxHealth() - target:Health(), target:GetMaxHealth() * self.PercentHeal))
-      target:AnimatedHeal( target:GetMaxHealth() * self.PercentHeal )
+      BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetNamesurvivor() .. " восстановлено." )
+      BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetNamesurvivor() )
+     -- self.Owner:AddToMVP("heal", math.min(target:GetMaxHealth() - target:Health(), target:GetMaxHealth() * self.PercentHeal))
+      target:AddHealth( target:GetMaxHealth() * self.PercentHeal )
 
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
@@ -119,6 +119,7 @@ function SWEP:Heal( target )
     self.Healing = true
 
     heal_time = select( 2, self.Owner:LookupSequence( animation ) )
+    
 
     self.Owner:BrProgressBar( "l:medkit_healing", heal_time, self.ProgressIcon, nil, false, function()
 
@@ -128,9 +129,9 @@ function SWEP:Heal( target )
 
       BREACH.Players:ChatPrint( self.Owner, true, true, "l:medkit_heal_ended" )
 
-      self.Owner:AddToMVP("heal", math.min(self.Owner:GetMaxHealth() - self.Owner:Health(), self.Owner:GetMaxHealth() * self.PercentHeal))
-      self.Owner:AnimatedHeal( self.Owner:GetMaxHealth() * self.PercentHeal )
-      self.Owner:SetNWEntity( "NTF1Entity", NULL )
+    --  self.Owner:AddToMVP("heal", math.min(self.Owner:GetMaxHealth() - self.Owner:Health(), self.Owner:GetMaxHealth() * self.PercentHeal))
+    self.Owner:AddHealth( self.Owner:GetMaxHealth() * self.PercentHeal )
+    self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
       self.Heal_Left = self.Heal_Left - 1
 
@@ -152,7 +153,7 @@ function SWEP:PrimaryAttack()
 
   if ( current_health >= max_health ) then
 
-    --BREACH.Players:ChatPrint( self.Owner, true, true, "Вы не нуждаетесь в лечении." )
+    BREACH.Players:ChatPrint( self.Owner, true, true, "Вы не нуждаетесь в лечении." )
 
   else
 
