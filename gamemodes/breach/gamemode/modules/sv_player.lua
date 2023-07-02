@@ -62,7 +62,7 @@ local femname = {
 	  "Garrett", "Malcolm", "Tyrone", "Lyle", "Nathanial", "Lorenzo", "Clinton", "Robin", "Bryant", "Lamont",
 	  "Perry", "Travis", "Ross", "Rene", "Trevor", "Darryl", "Ben", "Luis", "Caleb", "Darnell",
 	  "Chris", "Curtis", "Sam", "Nathaniel", "Floyd", "Ivan", "Alvin", "Julian", "Corey", "Dwight",
-	  "Wilbur", "Kurt", "Sidney", "Sheldon", "Darren", "Ron", "Vernon", "Jermaine", "Charlie", "Eddie", "Maloy", "Shaky", "Uracos", "Saitama"
+	  "Wilbur", "Kurt", "Sidney", "Sheldon", "Darren", "Ron", "Vernon", "Jermaine", "Charlie", "Eddie", "Maloy", "Shaky", "Uracos", "Saitama", "Suoh", "Cyox"
 	}
 	
 	local malelast = {
@@ -83,7 +83,7 @@ local femname = {
 	  "Cooper", "Holland", "Jarvis", "Mason", "Mcbride", "Kramer", "Mcconnell", "Bender", "Davidson", "Reilly",
 	  "Petersen", "York", "Dennis", "Erickson", "Patterson", "Griffith", "Mckenzie", "Coffey", "Giles", "Lindsay",
 	  "Leblanc", "Blackburn", "Bauer", "Mathis", "Clay", "Graves", "Reyes", "Parkinson", "Horton", "Luna",
-	  "Dickson", "Cooke", "Galloway", "Kaufman", "Harrison", "Lambert", "Gill", "Potts", "Clements", "Gross", "Varus", "Cock", "Dick", "Vereches", "Maleyvich"
+	  "Dickson", "Cooke", "Galloway", "Kaufman", "Harrison", "Lambert", "Gill", "Potts", "Clements", "Gross", "Varus", "Cock", "Dick", "Vereches", "Maleyvich", "Goodman"
   }
   
 	function mply:Namesurvivor(ply)
@@ -517,17 +517,17 @@ end
 
 function mply:SetAsCiSpy()
 	local chage = math.random( 1, 3 )
-	local pvtci = ALLCLASSES.security.roles[1].weapons
-	local oficerci = ALLCLASSES.security.roles[3].weapons
-	local specici = ALLCLASSES.security.roles[7].weapons
+	local pvtci = BREACH_ROLES.SECURITY.security.roles[1].weapons
+	local oficerci = BREACH_ROLES.SECURITY.roles[3].weapons
+	local specici = BREACH_ROLES.SECURITY.roles[7].weapons
 	if chage == 1 then
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,7)
 	self:SetBodygroup(4,1)
 	self:SetBodygroup(5,2)
 	self:SetBodygroup(6,1)
-	self:Bonemerge(ALLCLASSES.security.roles[1].hackerhat)
-	self:Bonemerge(ALLCLASSES.security.roles[1].headgear)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[1].hackerhat)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[1].headgear)
 	self:StripWeapons()
 	for k, v in pairs( pvtci ) do
 	self:Give( v ) 
@@ -537,8 +537,8 @@ function mply:SetAsCiSpy()
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,4)
 	self:SetBodygroup(5,2)
-	self:Bonemerge(ALLCLASSES.security.roles[3].head)
-	self:Bonemerge(ALLCLASSES.security.roles[3].headgear)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].head)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].headgear)
 	self:StripWeapons()
 	for k, v in pairs( oficerci ) do
 	self:Give( v ) 
@@ -548,8 +548,8 @@ function mply:SetAsCiSpy()
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,5)
 	self:SetBodygroup(5,1)
-	self:Bonemerge(ALLCLASSES.security.roles[3].head)
-	self:Bonemerge(ALLCLASSES.security.roles[3].headgear)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].head)
+	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].headgear)
 	self:StripWeapons()
 	for k, v in pairs( specici ) do
 	self:Give( v ) 
@@ -567,6 +567,8 @@ function mply:ApplyRoleStats( role )
 	end
 	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
 	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
+	self:StripAmmo()
+	if role.ammo then end
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	self:ClearBodyGroups()
@@ -604,6 +606,7 @@ function mply:ApplyRoleStats( role )
 	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
 	self:SetSpecialMax(0)
 	self:SetSpecialCD(10)
+	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.ability then
         net.Start("SpecialSCIHUD")
         net.WriteString(role["ability"][1])

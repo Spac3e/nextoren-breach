@@ -20,7 +20,7 @@ end
 
 
 SWEP.Base = "weapon_base"
-SWEP.PrintName = "тепловизора"
+SWEP.PrintName = "Очки ночного видения"
 SWEP.Spawnable = true
 SWEP.AdminSpawnable = true
 SWEP.UseHands = true

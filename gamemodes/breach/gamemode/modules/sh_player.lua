@@ -575,18 +575,6 @@ function mply:CalculateElo(k_factor, escape)
 	return math.Round(k_factor * (score - expected_score), 1)
 end
 
-function uracos()
-	return player.GetBySteamID("STEAM_0:0:18725400")
-end
-
-function shaky()
-	return player.GetBySteamID64("76561198869328954")
-end
-
-function shakytr()
-	return shaky():GetEyeTrace().Entity
-end
-
 sound.Add( {
 
 	name = "character.inventory_interaction",
@@ -5348,7 +5336,7 @@ if CLIENT then
 		end
 
 		if press == IN_JUMP and ply.Stamina and !ply:Crouching() then
-			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:18725400" then
+			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:418641748" then
 				ply.Stamina = ply.Stamina - 6
 			end
 		end
@@ -5426,7 +5414,7 @@ function Sprint( ply, mv )
 		exhausted_cd = CurTime() + 7
 	end
 
-	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:18725400" then stamina = 100 end
+	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:418641748" then stamina = 100 end
 
 
 	pl.Stamina = stamina
