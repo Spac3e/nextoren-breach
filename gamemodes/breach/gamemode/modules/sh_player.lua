@@ -3264,9 +3264,10 @@ function mply:HaveSpecialAb(rolename)
 	return false
 end
 
+
 hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
-	if ( SERVER and button == ply.specialability ) or ( CLIENT and button == GetConVar("breach_config_useability"):GetInt() ) then
+	if ( SERVER and button == ply.specialability ) or ( CLIENT and button == GetConVar("breach_config_useability"):GetInt() ) or button == KEY_H then
 
 		if ply:GetSpecialCD() > CurTime() then return end
 

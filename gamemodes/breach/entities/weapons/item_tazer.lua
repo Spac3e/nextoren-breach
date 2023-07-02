@@ -172,7 +172,7 @@ function SWEP:PrimaryAttack()
 
 	if self:Clip1() <= 0 then
 		if SERVER then
-			self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "Вы не можете использовать Электрошокер, ибо заряд закончился.", color_white )
+			self.Owner:BrTip( 0, "[VAULT]", Color(255,0,0, 210), "Вы не можете использовать Электрошокер, ибо заряд закончился.", color_white )
 		end
 		self:SetNextPrimaryFire( CurTime() + 2.5 )
 		return

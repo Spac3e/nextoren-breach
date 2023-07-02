@@ -736,7 +736,7 @@ net.Receive("BreachNotifyFromServer", function()
     if message == nil then return end
     
     if isstring(message) then
-        chat.AddText(Color(0, 255, 0), "[RXSEND] ", Color(255, 255, 255), message)
+        chat.AddText(Color(0, 255, 0), "[VAULT] ", Color(255, 255, 255), message)
     end
     
 end)
@@ -1500,7 +1500,7 @@ end )
 timer.Create("ADVERT_NABOR_", 300, 0, function()
 
 	--[[if LocalPlayer().GTeam and LocalPlayer():GTeam() == TEAM_SPEC then
-		chat.AddText(Color(0,0,255), "[RXSEND] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку, https://forms.gle/fFc8dDgutUompCU38")
+		chat.AddText(Color(0,0,255), "[VAULT] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку, https://forms.gle/fFc8dDgutUompCU38")
 	end]]
 
 end)

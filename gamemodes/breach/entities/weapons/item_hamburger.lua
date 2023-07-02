@@ -170,14 +170,14 @@ function SWEP:PrimaryAttack()
         if ( self.Owner:GetRoleName():find( "Fat" ) ) then
 
           self.Owner:SetHealth( self.Owner:GetMaxHealth() )
-          self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "l:you_ate_burger", color_white )
+          self.Owner:BrTip( 0, "[VAULT]", Color(255,0,0, 210), "l:you_ate_burger", color_white )
 
         else
 
 					local clamp_health = math.Clamp( self.Owner:Health() + ( self.Owner:GetMaxHealth() * .3 ), 0, self.Owner:GetMaxHealth() )
 					local show_health = clamp_health - self.Owner:Health()
           self.Owner:SetHealth( clamp_health )
-          self.Owner:BrTip( 0, "[RX Breach]", Color(255,0,0, 210), "l:you_ate_burger_hp_regenerated_pt1 " .. show_health .. " l:you_ate_burger_hp_regenerated_pt2", color_white )
+          self.Owner:BrTip( 0, "[VAULT]", Color(255,0,0, 210), "l:you_ate_burger_hp_regenerated_pt1 " .. show_health .. " l:you_ate_burger_hp_regenerated_pt2", color_white )
 
         end
 

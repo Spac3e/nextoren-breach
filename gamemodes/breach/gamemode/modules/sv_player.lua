@@ -565,10 +565,12 @@ function mply:ApplyRoleStats( role )
 	if self:GetRoleName() == role.SECURITY_Spy then
 		self:SetAsCiSpy()
 	end
-	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
+	timer.Simple(0.1, function()
 	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
+	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
+	end)
 	self:StripAmmo()
-	if role.ammo then end
+    if role.ammo then end
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	self:ClearBodyGroups()
@@ -606,7 +608,6 @@ function mply:ApplyRoleStats( role )
 	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
 	self:SetSpecialMax(0)
 	self:SetSpecialCD(10)
-	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.ability then
         net.Start("SpecialSCIHUD")
         net.WriteString(role["ability"][1])
@@ -616,10 +617,10 @@ function mply:ApplyRoleStats( role )
         net.WriteBool(role["ability"][5])
         net.Send(self)
         self:SetNWString("AbilityName", (role["ability"][1]))
+	end
        if role.ability_max then
 	   self:SetSpecialMax( role["ability_max"] )
-    end
-    end
+       end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 100 * 1) end

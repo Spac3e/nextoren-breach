@@ -104,6 +104,10 @@ util.AddNetworkString("Change_player_settings_id")
 util.AddNetworkString("Change_player_settings")
 util.AddNetworkString("111roq")
 
+net.Receive("Load_player_data", function()
+	net.ReadTable(tab)
+end)
+
 net.Receive("111roq", function()
 end)
 

@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/weapons/item_nightvision_blue.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 AddCSLuaFile()
 
 if ( CLIENT ) then
@@ -165,8 +153,8 @@ function SWEP:Reload()
 					self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
 					if ( !banned_models[ self.Owner:GetModel() ] ) then
 
-						Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
-						for _, v in ipairs( self.Owner.BoneMergedEnts ) do
+					Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
+						for _, v in ipairs( ents.FindByClassAndParent( "ent_bonemerged", self.Owner ) ) do
 
 							if ( v && v:IsValid() && v:GetModel():find( "_nvg_" ) ) then
 					
@@ -174,13 +162,14 @@ function SWEP:Reload()
 								local nvg_bonemerge = v
 
 								self.Owner.NVG_Bonemerged = nvg_bonemerge
-								--self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
-					
+								self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
+								
 							end
 					
 						end
 
 					end
+
 
 					net.Start( "NightvisionOn" )
 
@@ -198,10 +187,12 @@ function SWEP:Reload()
 
 			self.Owner:ScreenFade( SCREENFADE.IN, color_black, 0.9, 0 )
 
-			if ( self.Owner.NVG_Bonemerged && self.Owner.NVG_Bonemerged:IsValid() ) then
-
-				self.Owner.NVG_Bonemerged:Remove()
-
+			local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self.Owner )
+			for i = 1, #tbl_bonemerged do
+			local bonemerge = tbl_bonemerged[ i ]
+			if bonemerge:GetModel() == "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl" then
+				bonemerge:Remove()
+			end
 			end
 
 			self.Nightvision_Owner = nil

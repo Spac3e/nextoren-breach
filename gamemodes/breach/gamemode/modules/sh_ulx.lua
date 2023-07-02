@@ -1858,15 +1858,15 @@ else
 			--name = ply:GetNamesurvivor()
 		end
 		if ply:IsMuted() then
-			chat.AddText(Color(0, 255, 0), "[RXSEND] ", Color(255, 255, 255), BREACH.TranslateString("l:ulx_unignore ")..name)
+			chat.AddText(Color(0, 255, 0), "[VAULT] ", Color(255, 255, 255), BREACH.TranslateString("l:ulx_unignore ")..name)
 		else
 			if client:GTeam() != TEAM_SPEC then
 				if !(client:GTeam() == TEAM_SCP and ply:GTeam() == TEAM_SCP) then
-					chat.AddText(Color(0, 255, 0), "[RXSEND] ", Color(255, 255, 255), BREACH.TranslateString("l:clientside_mute_spec_only"))
+					chat.AddText(Color(0, 255, 0), "[VAULT] ", Color(255, 255, 255), BREACH.TranslateString("l:clientside_mute_spec_only"))
 					return
 				end
 			end
-			chat.AddText(Color(0, 255, 0), "[RXSEND] ", Color(255, 255, 255), BREACH.TranslateString("l:ulx_ignore ")..name)
+			chat.AddText(Color(0, 255, 0), "[VAULT] ", Color(255, 255, 255), BREACH.TranslateString("l:ulx_ignore ")..name)
 		end
 		ply:SetMuted(!ply:IsMuted())
 	end)
