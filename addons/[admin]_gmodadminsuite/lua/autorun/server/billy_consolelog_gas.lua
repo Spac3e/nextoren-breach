@@ -1,132 +1,62 @@
---[[
 
-	https://support.billy.enterprises/console.log
-	This file uploads the server's console.log to my script support site.
-
-]]
-
---////////////////////////////////////////////////////////////////////////--
-
-if (concommand.GetTable()["billy_consolelog"] ~= nil) then return end
-
-local SupportURL = "https://support.billy.enterprises"
-
-concommand.Add("billy_consolelog", function(ply, _, args)
-	if (IsValid(ply)) then
-		ply:SendLua(string.Trim([[
-			MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "You are using the wrong console.", "\n")
-			gui.OpenURL("]] .. SupportURL .. [[/console.log")
-		]]))
-		return
-	end
-
-	local authentication_code = args[1]
-
-	if (not authentication_code) then
-		MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "We were unable to upload your console.log as you did not provide an authentication code. READ THIS: " .. SupportURL .. "/console.log", "\n")
-		return
-	end
-	if (#player.GetHumans() == 0) then
-		MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Please have a player join the server before performing this operation.", "\n")
-		return
-	end
-	if (not file.Exists("console.log", "GAME") and not file.Exists("logs/latest.log", "BASE_PATH")) then
-		MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "We couldn't find your console.log as it does not exist in your server. READ THIS: " .. SupportURL .. "/console.log", "\n")
-		return
-	end
-
-	MsgC(Color(0,255,255), "[Billy] ", Color(255,255,255), "Reading console.log...", "\n")
-
-	local console_log_raw
-	if (file.Exists("logs/latest.log", "BASE_PATH")) then
-		console_log_raw = file.Read("logs/latest.log", "BASE_PATH")
-	else
-		console_log_raw = file.Read("console.log", "GAME")
-	end
-
-	MsgC(Color(0,255,255), "[Billy] ", Color(255,255,255), "Plucking console.log...", "\n")
-
-	local console_log_lines = string.Explode("\n", console_log_raw)
-	local latest_console_log_rev = {}
-
-	for i = #console_log_lines, 1, -1 do
-		local v = console_log_lines[i]
-		latest_console_log_rev[#latest_console_log_rev + 1] = v
-		if (v == "WS: No +host_workshop_collection or it is invalid!" or v:sub(1,34) == "WS: Waiting for Steam to log us in") then
-			break
-		end
-	end
-
-	MsgC(Color(0,255,255), "[Billy] ", Color(255,255,255), "Reconstructing console.log...", "\n")
-
-	local console_log = ""
-	for i = #latest_console_log_rev, 1, -1 do
-		console_log = console_log .. latest_console_log_rev[i] .. "\n"
-	end
-
-	if (#console_log > 5000000) then
-		MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Your console.log is too large to upload. (>5 MB) READ THIS: " .. SupportURL .. "/console.log", "\n")
-		return
-	end
-
-	file.Write("consolelog.txt", console_log)
-
-	MsgC(Color(0,255,255), "[Billy] ", Color(255,255,255), "Reading server info...", "\n")
-
-	local ip_address = game.GetIPAddress()
-	local server_name = GetConVar("hostname"):GetString()
-	local gamemode = (GM or GAMEMODE).Name
-	if ((GM or GAMEMODE).BaseClass) then
-		gamemode = gamemode .. " (derived from " .. (GM or GAMEMODE).BaseClass.Name .. ")"
-	end
-	local avg_ping = 0
-	for _,v in ipairs(player.GetHumans()) do
-		avg_ping = avg_ping + v:Ping()
-	end
-	avg_ping = tostring(math.Round(avg_ping / #player.GetHumans()))
-
-	MsgC(Color(0,255,255), "[Billy] ", Color(255,255,255), "Starting upload...", "\n")
-
-	http.Post(
-
-		SupportURL .. "/console.log/upload",
-
-		{
-			authentication_code = authentication_code,
-			console_log = console_log,
-			
-			ip_address = ip_address,
-			server_name = server_name,
-			gamemode = gamemode,
-			avg_ping = avg_ping
-		},
-
-		function(body, size, headers, status_code)
-			if (status_code ~= 200) then
-				MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "HTTP Error " .. status_code, "\n")
-				return
-			end
-			if (size == 0) then
-				MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Empty body", "\n")
-				return
-			end
-			local decoded_body = util.JSONToTable(body)
-			if (not decoded_body) then
-				MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "JSON error", "\n")
-				return
-			end
-			if (decoded_body.success == true) then
-				MsgC(Color(0,255,0), "[Billy] ", Color(255,255,255), "Thank you; successfully uploaded your console.log to the support site :)", "\n")
-			elseif (decoded_body.failure ~= nil) then
-				MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Error: " .. decoded_body.failure, "\n")
-			else
-				MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Unknown error", "\n")
-			end
-		end,
-
-		function(err)
-			MsgC(Color(255,0,0), "[Billy] ", Color(255,255,255), "Error: " .. err, "\n")
-		end
-
-	)
-end)
+Discord.Lang = {
+    ONLINE_MESSAGE_TITLE = 'Сервер запущен',
+    ONLINE_MESSAGE_DESCRIPTION = 'Можно подключаться по IP <join_url>!',
+    PLAYER_JOIN = 'Игрок <name> (<steam_id>) заходит на сервер',
+    PLAYER_DISCONNECT = 'Игрок <name> (<steam_id>) вышел (<reason>)',
+    CHECK_DISCORD = 'Проверь свой статус игры в дискорде.',
+    RPC_ABORTED = 'Запрос отклонён.',
+    SOMETHING_WENT_WRONG = 'Ой. Что-то поломалось, проверьте консоль.',
+    DISCORD_NOT_FOUND = 'У вас не установлен модуль gdiscord.',
+    JOINED_DISCORD = '',
+    JOINED_DISCORD_ALREADY = '',
+    ACCOUNT_LINKED = '',
+    CONNECTIONS_NOT_FOUND = '',
+    SYNCED_RANK_DISCORD = '',
+    NONEXISTANT_ROLE = '',
+    NOT_CONFIGURED_FOR_USERGROUP = '',
+    NO_LINKED_ACCOUNTS = '',
+    RATELIMITED = 'Подождите.',
+    INTERNAL_SERVER_ERROR = 'Ошибка с серверной стороны. подождите.',
+    NO_STEAM_CONNECTIONS = '',
+    SYNCED_USERGROUP_GMOD = '',
+    CENTER_TEXT = '',
+    CENTER_BELOW_TEXT = '',
+    JOIN_BUTTON = 'Да',
+    LATER_BUTTON = 'Нет',
+    JOIN_REWARDS_NOT_CONFIGURED = 'Join Rewards is not configured properly on the server. Report to the server owner.',
+    COULDNT_RETRIEVE_TOKEN_DATA = 'Couldn\'t retrieve token data from Discord. Try again later.',
+    ACCESS_TOKEN_HAS_NO_REQUIRED_PERMS = 'Access token has no required permission.',
+    COULDNT_RETRIEVE_USER_DATA = 'Couldn\'t retrieve user data from Discord. Try again later.',
+    COULDNT_MAKE_YOU_JOIN = 'Couldn\'t make you join the discord. Try again later.',
+    SOMETHING_WENT_WRONG_CHECKING_PREVIOUS_JOIN_DATA = 'Something went wrong while trying to check for previous joins into the discord. Try again later.',
+    SOMETHING_WENT_WRONG_CONFIRMING_JOIN = 'Something went wrong while trying to confirm your joining into the discord. Try again later.',
+    RANK_SYNC_NOT_CONFIGURED = 'Rank Sync is not configured properly on the server. Report to the server owner.',
+    INTERNAL_ERROR_WHILE_LINKING_ACCOUNT = 'Internal error happened while trying to link your account, try again later.',
+    COMMAND_EVENT = 'Запущена команда',
+    COMMAND_ERROR = 'Лог ошибки команды',
+    NO_PERMISSIONS = 'У вас нет доступа к этой команде.',
+    IP = 'IP',
+    GAMEMODE = 'Режим',
+    MAP = 'Карта',
+    PLAYERS = 'Игроки',
+    STAFF_ONLINE = 'Администрация',
+    NO_ARGUMENT_PROVIDED = 'Отсутствует аргумент.',
+    PLAYER_COULDNT_BE_FOUND = 'Игрок не найден.',
+    SAID_AS_CONSOLE = 'Сказал ``<cmd>`` как консоль в чат.',
+    RAN_IN_CONSOLE = 'Запустил ``<cmd>`` в консоль.',
+    RAN_CODE_ON_SERVER = 'Код запущен:\n```lua\n<cmd>\n```',
+    KICKED_PLAYER_WITH_REASON = 'Игрок "<name>" был кикнут с причиной "<reason>".',
+    KICKED_PLAYER = 'Игрок "<name>". Был кикнут.',
+    FAILED_SCREENSHOTTING = 'Ошибка скриншота "<name>": <err>',
+    SCREENSHOT_OF_PLAYER = 'Скриншот игрока "<name>" (<sid64>)',
+    HELP_TITLE = 'Discord Integration - Help',
+    HELP_DESCRIPTION = [[status - Информация о сервере
+rcon <STRING> - Запустить код на серверной части в консоли
+lua <STRING> - Запустить код на серверной части
+kick <PLAYER> - Кикнуть игрока
+ss <PLAYER> - Взять скриншот с игрока]],
+    INVALID_PLAYER = 'Игрок не найден.',
+    ALREADY_BEING_SCREENSHOTTED = 'Экран этого игрока уже захватывается.',
+    ULX_TITLE = 'Лог действий через ULX',
+}

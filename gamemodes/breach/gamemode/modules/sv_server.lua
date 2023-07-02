@@ -102,7 +102,10 @@ util.AddNetworkString("SendPrefixData")
 util.AddNetworkString("Player_FullyLoadMenu")
 util.AddNetworkString("Change_player_settings_id")
 util.AddNetworkString("Change_player_settings")
+util.AddNetworkString("111roq")
 
+net.Receive("111roq", function()
+end)
 
 net.Receive("ProceedUnfreezeSUP", function()
 end)

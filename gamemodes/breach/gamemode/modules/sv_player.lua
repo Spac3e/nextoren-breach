@@ -556,8 +556,8 @@ function mply:ApplyRoleStats( role )
 	if self:GetRoleName() == role.SECURITY_Spy then
 		self:SetAsCiSpy()
 	end
-	for k, v in pairs( role.weapons ) do self:Give( v ) end
 	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
+	if role.weapons and role.weapons != "" then self:Give(role.weapons)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	if role.models and role.fmodels then
