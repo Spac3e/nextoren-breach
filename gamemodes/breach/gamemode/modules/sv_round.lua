@@ -795,7 +795,7 @@ function RoundRestart()
 	preparing = true
 	postround = false
 	activeRound = nil
-	if #GetActivePlayers() < MINPLAYERS then WinCheck() end
+	if #GetActivePlayers() < 10 then WinCheck() end
 	RoundTypeUpdate()
 	SetupCollide()
 	SetupAdmins( player.GetAll() )

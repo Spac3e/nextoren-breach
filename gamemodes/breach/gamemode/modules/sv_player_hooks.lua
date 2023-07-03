@@ -98,10 +98,10 @@ end
 
 function CheckStart()
 	MINPLAYERS = GetConVar("br_min_players"):GetInt()
-	if gamestarted == false and #GetActivePlayers() >= MINPLAYERS then
+	if gamestarted == false and #GetActivePlayers() >= 10 then
 		RoundRestart()
 	end
-	if #GetActivePlayers() == MINPLAYERS and #GetActivePlayers() == #player.GetAll() then
+	if #GetActivePlayers() == 10 and #GetActivePlayers() == #player.GetAll() then
 		RoundRestart()
 	end
 	if gamestarted then
@@ -255,7 +255,7 @@ end
 
 function GM:PlayerDisconnected( ply )
 	 ply:SetTeam(TEAM_SPEC)
-	 if #player.GetAll() < MINPLAYERS then
+	 if #player.GetAll() < 2 then
 		BroadcastLua('gamestarted = false')
 		gamestarted = false
 	 end
