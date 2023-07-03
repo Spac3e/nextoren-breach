@@ -575,6 +575,18 @@ function mply:CalculateElo(k_factor, escape)
 	return math.Round(k_factor * (score - expected_score), 1)
 end
 
+function uracos()
+	return player.GetBySteamID("STEAM_0:0:18725400")
+end
+
+function shaky()
+	return player.GetBySteamID64("76561198869328954")
+end
+
+function shakytr()
+	return shaky():GetEyeTrace().Entity
+end
+
 sound.Add( {
 
 	name = "character.inventory_interaction",
@@ -3264,7 +3276,6 @@ function mply:HaveSpecialAb(rolename)
 	return false
 end
 
-
 hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 	if ( SERVER and button == ply.specialability ) or ( CLIENT and button == GetConVar("breach_config_useability"):GetInt() ) or button == KEY_H then
@@ -4478,9 +4489,9 @@ if SERVER then
 				
 			end
 
-		elseif ply:HaveSpecialAb(role.SKP_Offizier) then
+		elseif ply:HaveSpecialAb(role.SKP_Jager) then
 
-			ply:SetSpecialCD( CurTime() + 120 )
+			ply:SetSpecialCD( CurTime() + 45 )
 
 			local special_speed_radius = ents.FindInSphere( ply:GetPos(), 450 )
 
@@ -4508,7 +4519,7 @@ if SERVER then
 				if ply:GetRunSpeed() == 231 or ply:GetRunSpeed() == 288 then
 					if ply:GetRunSpeed() == 231 then
 						ply:SetRunSpeed(288)
-						ply:RXSENDNotify("Включен спортивный бег")
+						ply:RXSENDNotify("l:sport_run")
 						if ply:GetActiveWeapon() == ply:GetWeapon("br_holster") then
 
 							ply.SafeRun = ply:LookupSequence("phalanx_b_run")
@@ -4521,7 +4532,7 @@ if SERVER then
 						end
 					else
 						ply:SetRunSpeed(231)
-						ply:RXSENDNotify("Включен обычный бег")
+						ply:RXSENDNotify("l:default_run")
 						if ply:GetActiveWeapon() == ply:GetWeapon("br_holster") then
 
 							ply.SafeRun = ply:LookupSequence("phalanx_b_run")
@@ -4534,7 +4545,7 @@ if SERVER then
 						end
 					end
 				else
-					ply:RXSENDNotify("Невозможно сменить скорость")
+					ply:RXSENDNotify("l:cant_change_run")
 				end
 
 			end
@@ -4921,8 +4932,8 @@ function mply:Boosted( kind, timetodie )
 
 		local old_name = self:GetNamesurvivor()
 
-		self:SetHealth( self:Health() + randomhealth )
-		self:SetMaxHealth( self:GetMaxHealth() + randomhealth )
+		self:SetHealth( math.min(self.old_maxhealth+200, self:Health() + randomhealth) )
+		self:SetMaxHealth( math.min(self.old_maxhealth+200, self:GetMaxHealth() + randomhealth) )
 
 		local unique_id = "ReduceHealthByPills" .. self:SteamID64()
 
@@ -5337,7 +5348,7 @@ if CLIENT then
 		end
 
 		if press == IN_JUMP and ply.Stamina and !ply:Crouching() then
-			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:418641748" then
+			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:18725400" then
 				ply.Stamina = ply.Stamina - 6
 			end
 		end
@@ -5415,7 +5426,7 @@ function Sprint( ply, mv )
 		exhausted_cd = CurTime() + 7
 	end
 
-	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:418641748" then stamina = 100 end
+	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:18725400" then stamina = 100 end
 
 
 	pl.Stamina = stamina

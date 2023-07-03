@@ -770,6 +770,7 @@ local AllowedModels = {
 	["models/cultist/humans/mog/mog_woman.mdl"] = true,
 	["models/cultist/humans/goc/goc_female_commander.mdl"] = true,
 	["models/cultist/humans/fbi/fbi_woman.mdl"] = true,
+	["models/cultist/humans/obr/obr_new.mdl"] = true,
 	["models/cultist/humans/ntf/ntf_female_sniper.mdl"] = true,
 }
 
@@ -834,8 +835,8 @@ hook.Add("CreateMove", "ToggleDuck", function(cmd)
 	local ply = LocalPlayer()
 
 	if induck then
-		LocalPlayer():SetDuckSpeed(0.1)
-		LocalPlayer():SetUnDuckSpeed(0.1)
+		LocalPlayer():SetDuckSpeed(0.05)
+		LocalPlayer():SetUnDuckSpeed(0.05)
 		cmd:AddKey(IN_DUCK)
 	else
 		cmd:RemoveKey(IN_DUCK)

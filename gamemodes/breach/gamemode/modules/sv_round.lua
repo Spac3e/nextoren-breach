@@ -676,6 +676,7 @@ function BREACH_Round_Open_Dblock()
 end
 
 function RestartGame()
+	SetGlobalInt("RoundUntilRestart", 10)
 	game.ConsoleCommand("changelevel "..game.GetMap().."\n")
 end
 
@@ -1125,10 +1126,10 @@ timer.Create("EXPTimer", 180, 0, function()
 end)
 
 function SetupCollide()
-	local vply = player.GetAll()
-	for k,v in pairs(vply) do
-		if v:GetRoleName() == role.Spectator or v:GetMoveType() == MOVETYPE_NOCLIP then return end
+	for k,v in pairs(player.GetAll()) do
+		if v:GetRoleName() == role.Spectator or v:GetMoveType() == MOVETYPE_NOCLIP or v:GetMoveType() == MOVETYPE_OBSERVER then return end
 	end
+	local vply = player.GetAll()
 	local fent = ents.GetAll()
 	for k, v in pairs( fent ) do
 		if v and v:GetClass() == "func_door" or v:GetClass() == "prop_dynamic" then

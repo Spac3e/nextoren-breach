@@ -251,7 +251,7 @@ function PANEL:PerformLayout()
 
   surface.SetFont( "ScoreboardHeader" )
 
-  local hname = "RxSend Breach 2.6.0"
+  local hname = "[VAULT] Breach 2.6.0"
   local tw, _ = surface.GetTextSize( hname )
 
   while ( tw > hw ) do

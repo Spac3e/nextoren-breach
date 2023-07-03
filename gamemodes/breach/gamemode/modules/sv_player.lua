@@ -416,6 +416,7 @@ function mply:UnUseArmor()
 end
 
 function mply:SetSpectator()
+	self:SetNamesurvivor("Spectator")
 	self:Flashlight( false )
 	self:AllowFlashlight( false )
 	self.handsmodel = nil
@@ -424,15 +425,16 @@ function mply:SetSpectator()
 	self:RemoveAllAmmo()
 	self:SetGTeam(TEAM_SPEC)
 	self:SetNoDraw(true)
-	if self.SetRoleName then
-		self:SetRoleName(role.Spectator)
-	end
+	if self.SetRoleName then self:SetRoleName(role.Spectator) end
 	self.Active = true
 	print("adding " .. self:Nick() .. " to spectators")
 	self.canblink = false
 	self:SetNoTarget( true )
 	self.BaseStats = nil
 	self.UsingArmor = nil
+	timer.Simple(0.1, function()
+	self:SetMoveType(MOVETYPE_NOCLIP)
+	end)
 	//self:Spectate(OBS_MODE_IN_EYE)
 end
 
@@ -569,8 +571,10 @@ function mply:ApplyRoleStats( role )
 	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
 	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
 	end)
+	timer.Simple(0.2, function()
 	self:StripAmmo()
     if role.ammo then end
+	end)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	self:ClearBodyGroups()
@@ -898,321 +902,70 @@ function mply:AddExp(amount, msg)
 		local xp = self:GetNEXP()
 		local lvl = self:GetNLevel()
 		if lvl == 0 then
-			if xp >= 500 then
+			if xp >= 3000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 500)
+				self:SetNEXP(xp - 3000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 1")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 1! Congratulations!")
 			end
 		elseif lvl == 1 then
-			if xp >= 1000 then
+			if xp >= 5000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 1000)
+				self:SetNEXP(xp - 5000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 2")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 2! Congratulations!")
 			end
 		elseif lvl == 2 then
-			if xp >= 1700 then
+			if xp >= 7500 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 1700)
+				self:SetNEXP(xp - 7500)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 3")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 3! Congratulations!")
 			end
 		elseif lvl == 3 then
-			if xp >= 2400 then
+			if xp >= 11000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 2400)
+				self:SetNEXP(xp - 11000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 4")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 4! Congratulations!")
 			end
 		elseif lvl == 4 then
-			if xp >= 3700 then
+			if xp >= 14000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 3700)
+				self:SetNEXP(xp - 14000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 5")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 5! Congratulations!")
 			end
 		elseif lvl == 5 then
-			if xp >= 5700 then
+			if xp >= 25000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 5700)
+				self:SetNEXP(xp - 25000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 6")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level OMNI! Congratulations!")
 			end
 		elseif lvl == 6 then
-			if xp >= 6700 then
+			if xp >= 100000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 6700)
+				self:SetNEXP(xp - 100000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 7")
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " is a now a Veteran! Congratulations!")
 			end
-		elseif lvl > 7 then
-			if xp >= 7350 then
+		elseif lvl > 6 then
+			if xp >= 100000 then
 				self:AddLevel(1)
-				self:SetNEXP(xp - 7350)
+				self:SetNEXP(xp - 100000)
 				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 8")
-			end
-		elseif lvl > 8 then
-			if xp >= 8700 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 8700)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 9")
-			end
-		elseif lvl > 9 then
-			if xp >= 9700 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 9700)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 10")
-			end
-		elseif lvl > 10 then
-			if xp >= 11200 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 11200)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 11")
-			end
-		elseif lvl > 11 then
-			if xp >= 12400 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 12400)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 12")
-			end
-		elseif lvl > 12 then
-			if xp >= 14450 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 14450)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 13")
-			end
-		elseif lvl > 13 then
-			if xp >= 15450 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 15450)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 14")
-			end
-		elseif lvl > 14 then
-			if xp >= 16600 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 16600)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 15")
-			end
-		elseif lvl > 15 then
-			if xp >= 17750 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 17750)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 16")
-			end
-		elseif lvl > 16 then
-			if xp >= 18999 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 18999)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 17")
-			end
-		elseif lvl > 17 then
-			if xp >= 19500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 19500)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 18")
-			end
-		elseif lvl > 18 then
-			if xp >= 21500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 21500)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 19")
-			end
-		elseif lvl > 19 then
-			if xp >= 23450 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 23450)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 20")
-			end
-		elseif lvl > 20 then
-			if xp >= 25210 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 25210)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 21")
-			end
-		elseif lvl > 21 then
-			if xp >= 27500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 27500)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 22")
-			end
-		elseif lvl > 22 then
-			if xp >= 29500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 29500)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 23")
-			end
-		elseif lvl > 23 then
-			if xp >= 31200 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 31200)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 24")
-			end
-			elseif lvl > 24 then
-				if xp >= 32500 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 32500)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 25")
-				end
-			elseif lvl > 25 then
-				if xp >= 33400 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 33400)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 26")
-				end
-			elseif lvl > 26 then
-				if xp >= 35500 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 35500)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 27")
-				end
-			elseif lvl > 27 then
-				if xp >= 36900 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 36900)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 28")
-				end
-			elseif lvl > 28 then
-				if xp >= 37999 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 37999)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 29")
-				end
-			elseif lvl > 29 then
-				if xp >= 38500 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 38500)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 30")
-				end
-			elseif lvl > 30 then
-				if xp >= 41000 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 41000)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 31")
-				end
-			elseif lvl > 31 then
-				if xp >= 42500 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 42500)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 32")
-				end
-			elseif lvl > 32 then
-				if xp >= 43900 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 43900)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 33")
-				end
-			elseif lvl > 33 then
-				if xp >= 44999 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 44999)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 34")
-				end
-			elseif lvl > 34 then
-			if xp >= 45900 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 45900)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 35")
-			end
-			elseif lvl > 35 then
-			if xp >= 47500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 47500)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 36")
-			end
-		elseif lvl > 36 then
-			if xp >= 49000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 49000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 37")
-			end
-		elseif lvl > 37 then
-			if xp >= 50900 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 50900)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 38")
-			end
-		elseif lvl > 38 then
-			if xp >= 52000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 52000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 39")
-			end
-		elseif lvl > 39 then
-			if xp >= 55000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 55000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 40")
-			end
-		elseif lvl > 40 then
-			if xp >= 59000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 59000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 41")
-			end
-		elseif lvl > 41 then
-			if xp >= 63000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 63000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 42")
-			end
-		elseif lvl > 42 then
-			if xp >= 67000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 67000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 43")
-			end
-		elseif lvl > 43 then
-			if xp >= 72000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 72000)
-				self:SaveLevel()
-				self:RXSENDNotify("l:levelup", " 44")
-			end		elseif lvl > 44 then
-			if xp >= 85000 then
-					self:AddLevel(1)
-					self:SetNEXP(xp - 85000)
-					self:SaveLevel()
-					self:RXSENDNotify("l:levelup", " 45")
-		  	end
+				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level "..lvl.."! Congratulations!")
 		end
-	end
+		self:SetPData( "breach_exp", self:GetExp() )
+	else
+		if self.SetNEXP then
+			self:SetNEXP( 0 )
+		else
+			ErrorNoHalt( "Cannot set the exp, SetNEXP invalid" )
+		end
+      end
+    end
 end
 
 function mply:AddLevel(amount)

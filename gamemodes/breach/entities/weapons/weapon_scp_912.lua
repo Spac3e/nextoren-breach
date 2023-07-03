@@ -73,7 +73,7 @@ end
 function SWEP:Initialize()
   if CLIENT then
     hook.Add("HUDPaint", "SCP_912_HUD", function()
-      if LocalPlayer():GetNClass() != SCP912 or !LocalPlayer():HasWeapon("weapon_scp_912") then 
+      if LocalPlayer():GetRoleName() != SCP912 or !LocalPlayer():HasWeapon("weapon_scp_912") then 
         hook.Remove("HUDPaint", "SCP_912_HUD")
         return
       end
@@ -88,7 +88,7 @@ function SWEP:Deploy()
     local deploycd = SysTime() + 1
     hook.Add( "PlayerButtonDown", "SCP912_Buttons", function( caller, button )
 
-      if ( caller:GetNClass() != "SCP912" ) then return end
+      if ( caller:GetRoleName() != "SCP912" ) then return end
 
       local wep = caller:GetWeapon("weapon_scp_912")
 
@@ -122,7 +122,7 @@ function SWEP:Deploy()
         caller:SetWalkSpeed(215)
 
         timer.Simple(15, function()
-          if caller:GetNClass() == SCP912 then
+          if caller:GetRoleName() == SCP912 then
             caller:SetRunSpeed(saverun)
             caller:SetWalkSpeed(savewalk)
           end
@@ -158,7 +158,7 @@ function SWEP:Deploy()
         end)
 
         timer.Simple(25, function()
-          if caller:GetNClass() == SCP912 then
+          if caller:GetRoleName() == SCP912 then
             caller:SelectWeapon("cw_kk_scp_912")
             caller:SetRunSpeed(saverun)
             caller:SetWalkSpeed(savewalk)
@@ -257,7 +257,7 @@ if ( SERVER ) then
 
       local player = players[ i ]
 
-      if ( player:GetNClass() == "SCP912" ) then
+      if ( player:GetRoleName() == "SCP912" ) then
 
         SCP638_exists = true
 

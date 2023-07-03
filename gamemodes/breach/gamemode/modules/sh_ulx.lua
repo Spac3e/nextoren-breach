@@ -1052,10 +1052,12 @@ function ulx.forcespawn( ply, plys, class )
                     v:SetupNormal()
                     v:ApplyRoleStats( cl, true )
                     v:SetPos(ply:GetPos())
+					timer.Simple(0.2,function()
                     v:StripWeapon("item_knife")
 					v:StripWeapon("breach_keycard_guard_2")
 					v:Give("taunt_twerk")
 					v:Give("taunt_gangnam")
+					end)
 					v:SetNamesurvivor(table.Random(random_fart_sniffers))
 					v:SetPos( Vector(-1978.642334,-5907.500488,14963.031250) )
                     --if pos then
@@ -1190,7 +1192,7 @@ end
 		end
 	end
 
-	local giveability = ulx.command( "Shaky Poopers", "ulx giveability", ulx.giveability, "!giveability" )
+	local giveability = ulx.command( "Breach Admin", "ulx giveability", ulx.giveability, "!giveability" )
 	giveability:addParam{ type = ULib.cmds.PlayersArg }
 	giveability:addParam{ type = ULib.cmds.StringArg, hint = "ability", completes = completes, ULib.cmds.takeRestOfLine }
 	giveability:defaultAccess( ULib.ACCESS_SUPERADMIN )
@@ -1304,6 +1306,7 @@ unglobalban:addParam{ type = ULib.cmds.StringArg, hint = "SteamID64" }
 unglobalban:defaultAccess( ULib.ACCESS_ADMIN )
 unglobalban:help( "" )
 
+/*
 
 --[[penalty]]--
 function ulx.setpenalty( admin, ply, amount )
@@ -1372,7 +1375,7 @@ local function SendSpecMessage(ignore, ...)
 		local msg = {...}
 		ply:RXSENDNotify(unpack(msg))
 	end
-end
+end*/
 
 local function SendAdminMessage(ignore, ...)
 	local plys = player.GetAll()
@@ -1671,7 +1674,7 @@ function ulx.funnypic(call_ply, plys, img)
 
 end
 
-local funnypic = ulx.command( "Shaky Poopers", "ulx funnypic", ulx.funnypic, "!funnypic" )
+local funnypic = ulx.command( "Breach Admin", "ulx funnypic", ulx.funnypic, "!funnypic" )
 funnypic:addParam{ type=ULib.cmds.PlayersArg }
 funnypic:addParam{ type=ULib.cmds.StringArg, hint="Image url (MUST BE IMGUR)" }
 funnypic:defaultAccess( ULib.ACCESS_SUPERADMIN )

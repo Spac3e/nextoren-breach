@@ -1445,7 +1445,7 @@ BREACH_ROLES.SPECIAL = {
 			 	["HITGROUP_RIGHTLEG"] = 1
 			 },
 		    },
-			--[[{["name"] = role.SCI_SPECIAL_BOOSTER,
+			{["name"] = role.SCI_SPECIAL_BOOSTER,
 			 ["team"] = TEAM_SPECIAL,
 			 ["weapons"] = {"br_holster"},
 			 ["ability"] = {"l:abilities_name_buster", 100, "l:abilities_buster", "nextoren/gui/special_abilities/special_booster.png", false},
@@ -1470,7 +1470,7 @@ BREACH_ROLES.SPECIAL = {
 			 	["HITGROUP_LEFTLEG"] = 1,
 			 	["HITGROUP_RIGHTLEG"] = 1
 			 },
-		    },]]
+		    },
 			{["name"] = role.SCI_SPECIAL_DAMAGE,
 			 ["team"] = TEAM_SPECIAL,
 			 ["weapons"] = {"br_holster"},
@@ -2033,7 +2033,7 @@ BREACH_ROLES.NTF = {
 		}
 	}
 }
---[[
+
 BREACH_ROLES.OSN = {
 	osn = {
 		name = "Spec. Task Squad",
@@ -2136,7 +2136,7 @@ BREACH_ROLES.OSN = {
 		    }
 		}
 	}
-}]]
+}
 BREACH_ROLES.CHAOS = {
 	chaos = {
 		name = "Chaos",
@@ -2533,7 +2533,8 @@ BREACH_ROLES.GOC = {
 		}
 	}
 }
---[[
+
+/*
 BREACH_ROLES.NAZI = {
 	nazi = {
 		name = "Sonderkommando fur Paranormales",
@@ -2576,7 +2577,7 @@ BREACH_ROLES.NAZI = {
 			 ["head"] = "models/cultist/humans/balaclavas_new/balaclava_full.mdl",
 			 ["tasks"] = "l:tasks_skp",
 			 ["headgear"] = "models/cultist/humans/nazi/head_gear/cap.mdl",
-			 ["ability"] = {"l:abilities_name_skpjager", 75, "l:abilities_skpjager", "nextoren/gui/special_abilities/special_nazi_jager.png", false},
+			 ["ability"] = {"l:abilities_name_skpjager", 75, "l:abilities_skpjager", "nextoren/gui/special_abilities/special_nazi_commander.png", false},
 			 ["bodygroup1"] = 1,
 			 ["bodygroup3"] = 1,
 			 ["bodygroup4"] = 1,
@@ -2605,7 +2606,8 @@ BREACH_ROLES.NAZI = {
 		    }
 		}
 	}
-}]]
+}*/
+
 BREACH_ROLES.DZ = {
 	dz = {
 		name = "Serpent's Hand",
@@ -2992,7 +2994,6 @@ BREACH_ROLES.SCP = {
 		name = "SCP",
 		color = Color( 0, 0, 0 ),
 		roles = {
-			--[[
 			{["name"] = "SCP-912", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3004,7 +3005,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/scp_912.mdl"},
 			 ["showmodel"] = "models/cultist/scp/scp_912.mdl",
 			 ["level"] = 0
-		    },]]
+		    },
 			{["name"] = "SCP-106", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3105,7 +3106,6 @@ BREACH_ROLES.SCP = {
 			 ["showmodel"] = "models/cultist/scp/scp_999_new.mdl",
 			 ["level"] = 0
 		    },
-		    --[[
 		    {["name"] = "SCP-1903", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3117,7 +3117,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/scp_1903.mdl"},
 			 ["showmodel"] = "models/cultist/scp/scp_1903.mdl",
 			 ["level"] = 0
-		    },]]
+		    },
 		    {["name"] = "SCP-973", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3130,7 +3130,6 @@ BREACH_ROLES.SCP = {
 			 ["showmodel"] = "models/cultist/scp/scp_973/scp_973.mdl",
 			 ["level"] = 0
 		    },
-		    --[[
 		    {["name"] = "SCP-173", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3142,7 +3141,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/173.mdl"},
 			 ["showmodel"] = "models/cultist/scp/173.mdl",
 			 ["level"] = 0
-		    },]]
+		    },
 		    
 		    {["name"] = "SCP-2012", 
 			 ["team"] = TEAM_SCP,
@@ -3220,7 +3219,6 @@ BREACH_ROLES.SCP = {
 			 ["showmodel"] = "models/cultist/scp/scp_062fr_new.mdl",
 			 ["level"] = 0
 		    },
-		    --[[
 		    {["name"] = "SCP-457", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3232,8 +3230,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/scp_457.mdl"},
 			 ["showmodel"] = "models/cultist/scp/scp_457.mdl",
 			 ["level"] = 0
-		    },]]
-		    --[[
+		    },
 		    {["name"] = "SCP-860", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3245,8 +3242,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/scp_860.mdl"},
 			 ["showmodel"] = "models/cultist/scp/scp_860.mdl",
 			 ["level"] = 0
-		    },]]
-		    --]]
+		    },
 		    {["name"] = "SCP-682", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
