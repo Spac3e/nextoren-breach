@@ -343,9 +343,9 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 
 
 
-SWEP.Primary.ClipSize		= 30
+SWEP.Primary.ClipSize		= 301
 
-SWEP.Primary.DefaultClip = 0 --	= 0
+SWEP.Primary.DefaultClip = 9999 --	= 0
 
 SWEP.Primary.Automatic		= true
 
@@ -353,13 +353,13 @@ SWEP.Primary.Ammo			= "SMG1"
 
 
 
-SWEP.FireDelay = 0.0566
+SWEP.FireDelay = 0.04
 
 SWEP.FireSound = "CW_KK_INS2_UMP45_FIRE"
 
 SWEP.FireSoundSuppressed = "CW_KK_INS2_UMP45_FIRE_SUPPRESSED"
 
-SWEP.Recoil = 1.4
+SWEP.Recoil = 0.5
 
 
 
@@ -377,7 +377,7 @@ SWEP.SpreadCooldown = 0.13
 
 SWEP.Shots = 1
 
-SWEP.Damage = 23
+SWEP.Damage = 13
 
 
 
@@ -393,15 +393,15 @@ SWEP.WeaponLength = 16
 
 
 
-SWEP.MuzzleVelocity = 700
+SWEP.MuzzleVelocity = 400
 
 
 
 SWEP.ReloadTimes = {
 
-	base_reload = {2.35, 3.15},
+	base_reload = {1, 1},
 
-	base_reloadempty = {2.8, 4.5},
+	base_reloadempty = {1, 1},
 
 }
 
