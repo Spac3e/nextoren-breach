@@ -122,7 +122,10 @@ end)
 local banned_sounds = {
 	[ "player/pl_drown1.wav" ] = true,
 	[ "player/pl_drown2.wav" ] = true,
-	[ "player/pl_drown3.wav" ] = true
+	[ "player/pl_drown3.wav" ] = true,
+	[ "player/pl_fallpain1.wav" ] = true,
+	[ "player/pl_fallpain2.wav" ] = true,
+	[ "player/pl_fallpain3.wav" ] = true
 }
 
 function GM:EntityEmitSound( s_table )
@@ -284,25 +287,6 @@ function IsValidSteamID( id )
 		return true
 	end
 	return false
-end
-
-function GM:PlayerDeathSound(ply)
-	ply:EmitSound( "beams/beamstart5.wav", SNDLVL_NORM, math.random( 70, 126 ) ) -- plays the sound with normal sound levels, and a random pitch between 70 and 126
-	return true -- we don't want the default sound!
-end
-
-function GM:PlayerHurt(victim, attacker)
-    if ( attacker:IsPlayer() ) then
-        victim:ChatPrint("You were attacked by : " .. attacker:Nick())
-    end
-end
-
-function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
-	if ( hitgroup == HITGROUP_HEAD ) then
-	   dmginfo:ScaleDamage( 2 ) // More damage when we're shot in the head
-	 else
-	   dmginfo:ScaleDamage( 0.50 )  // Less damage when shot anywhere else
-	end
 end
 
 --net.Receive( "RequestGateA", function( len, ply )

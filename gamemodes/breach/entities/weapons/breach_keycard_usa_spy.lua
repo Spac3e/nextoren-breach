@@ -27,10 +27,10 @@ SWEP.UnDroppable = true
 SWEP.KeyCategory = "CLevelUSA"
 SWEP.CLevels = {
 
-  CLevel = 0,
-  CLevelSCI = 0,
-  CLevelGuard = 0,
-  CLevelMTF = 0,
-  CLevelSUP = 0
+  CLevel = 7,
+  CLevelSCI = 7,
+  CLevelGuard = 7,
+  CLevelMTF = 7,
+  CLevelSUP = 8
 
 }

@@ -74,7 +74,8 @@ local Phrases = {
   [ TEAM_SECURITY ] = "из Службы Безопасности",
   [ TEAM_QRT ] = "из Отряда Быстрого Реагирования",
   [ TEAM_NTF ] = "из специальной группировки",
-  [ TEAM_GUARD ] = "из военного персонала"
+  [ TEAM_GUARD ] = "из военного персонала",
+  [ TEAM_OSN ] = "из Отряда Специального Назначения"
 
 }
 function SWEP:PrimaryAttack()

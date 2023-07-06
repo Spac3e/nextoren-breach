@@ -29,6 +29,6 @@ SWEP.CLevels = {
   CLevelSCI = 7,
   CLevelGuard = 7,
   CLevelMTF = 7,
-  CLevelSUP = 7
+  CLevelSUP = 6
 
 }

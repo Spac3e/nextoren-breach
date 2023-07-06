@@ -4,155 +4,73 @@ local mply = FindMetaTable( "Player" )
 function mply:AddToMVP()
 end
 
-local femname = {
-	"Olivia", "Emma", "Ava", "Sophia", "Isabella", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn",
-	"Abigail", "Emily", "Elizabeth", "Mila", "Ella", "Avery", "Sofia", "Camila", "Aria", "Scarlett",
-	"Victoria", "Madison", "Luna", "Grace", "Chloe", "Penelope", "Layla", "Riley", "Zoey", "Nora",
-	"Lily", "Eleanor", "Hannah", "Lillian", "Addison", "Aubrey", "Ellie", "Stella", "Natalie", "Zoe",
-	"Leah", "Hazel", "Violet", "Aurora", "Savannah", "Audrey", "Brooklyn", "Bella", "Claire", "Skylar",
-	"Lucy", "Paisley", "Everly", "Anna", "Caroline", "Nova", "Genesis", "Emilia", "Kennedy", "Samantha",
-	"Maya", "Willow", "Kinsley", "Naomi", "Aaliyah", "Elena", "Sarah", "Ariana", "Allison", "Gabriella",
-	"Alice", "Madelyn", "Cora", "Ruby", "Eva", "Serenity", "Autumn", "Adeline", "Hailey", "Gianna",
-	"Valentina", "Isla", "Eliana", "Quinn", "Nevaeh", "Ivy", "Sadie", "Piper", "Lydia", "Alexa",
-	"Julia", "Josephine", "Delilah", "Athena", "Maria", "Vivian", "Kaylee", "Sophie", "Brielle", "Madeline",
-	"Liliana", "Taylor", "Lauren", "Nova", "Lena", "Natalia", "Ashley", "Ruby", "Eliza", "Margaret",
-	"Willow", "Genesis", "Katherine", "Valerie", "Vanessa", "Jasmine", "Reagan", "Mackenzie", "Brooke", "Finley",
-	"Delaney", "Jade", "Eloise", "Melanie", "Molly", "Catherine", "Alexandra", "Diana", "Sabrina", "Leilani",
-	"Leslie", "Selena", "Giselle", "Alicia", "Kiara", "Miranda", "Laura", "Cassandra", "Nina", "Kelsey",
-	"Camille", "Adriana", "Daniela", "Amy", "Sienna", "Rebecca", "Chelsea", "Daisy", "Ayla", "Summer",
-	"Harmony", "Juliana", "Brianna", "Georgia", "Kate", "Morgan", "Lola", "Penelope", "Alice", "Evelyn"
-  }
-	
-  local femlast = {
-	"Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-	"Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-	"Lee", "Perez", "Thompson", "White", "Harris", "Clark", "Lewis", "Robinson", "Walker", "Hall",
-	"Young", "Allen", "Sanchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson",
-	"Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres",
-	"Parker", "Collins", "Edwards", "Stewart", "Flores", "Morris", "Nguyen", "Murphy", "Rivera", "Cook",
-	"Rogers", "Morgan", "Peterson", "Cooper", "Reed", "Bailey", "Bell", "Gomez", "Kelly", "Howard",
-	"Ward", "Cox", "Diaz", "Richardson", "Wood", "Watson", "Brooks", "Bennett", "Gray", "James",
-	"Reyes", "Cruz", "Hughes", "Price", "Myers", "Long", "Foster", "Sanders", "Ross", "Morales",
-	"Powell", "Sullivan", "Russell", "Ortiz", "Jenkins", "Gutierrez", "Perry", "Butler", "Barnes", "Fisher",
-	"Henderson", "Coleman", "Simmons", "Patterson", "Jordan", "Reynolds", "Hamilton", "Graham", "Kim", "Gonzales",
-	"Alexander", "Ramos", "Wallace", "Griffin", "West", "Cole", "Hayes", "Chavez", "Gibson", "Bryant",
-	"Ellis", "Stevens", "Murray", "Ford", "Marshall", "Owens", "Mcdonald", "Harrison", "Ruiz", "Kennedy", "Varus", "Cock", "Dick"
-  }
-  
-  local malename = {
-	  "James", "John", "Robert", "Michael", "William", "David", "Joseph", "Charles", "Thomas", "Daniel",
-	  "Matthew", "Anthony", "Donald", "Mark", "Paul", "Steven", "Andrew", "George", "Kenneth", "Joshua",
-	  "Kevin", "Brian", "Edward", "Ronald", "Timothy", "Jason", "Jeffrey", "Frank", "Gary", "Jacob",
-	  "Nicholas", "Eric", "Jonathan", "Stephen", "Larry", "Justin", "Scott", "Brandon", "Benjamin", "Samuel",
-	  "Gregory", "Patrick", "Alexander", "Jack", "Dennis", "Jerry", "Tyler", "Aaron", "Jose", "Henry",
-	  "Adam", "Douglas", "Nathan", "Peter", "Zachary", "Kyle", "Walter", "Harold", "Jeremy", "Ethan",
-	  "Carl", "Keith", "Roger", "Gerald", "Christian", "Terry", "Sean", "Arthur", "Austin", "Noah",
-	  "Lawrence", "Jesse", "Joe", "Bryan", "Billy", "Jordan", "Albert", "Dylan", "Bruce", "Willie",
-	  "Gabriel", "Alan", "Juan", "Logan", "Wayne", "Ralph", "Roy", "Eugene", "Randy", "Vincent",
-	  "Russell", "Louis", "Philip", "Bobby", "Johnny", "Bradley", "Arthur", "Jimmy", "Stanley", "Leonard",
-	  "Chester", "Mitchell", "Todd", "Craig", "Martin", "Leon", "Manuel", "Raymond", "Curtis", "Larry",
-	  "Cameron", "Lloyd", "Oliver", "Floyd", "Derek", "Francis", "Theodore", "Jorge", "Blake", "Maurice",
-	  "Emilio", "Oscar", "Ross", "Clarence", "Jerome", "Leo", "Javier", "Allen", "Evan", "Marcus",
-	  "Edwin", "Leroy", "Clyde", "Keith", "Milton", "Brad", "Antonio", "Neil", "Frederick", "Billy",
-	  "Jeremiah", "Alfred", "Hector", "Alberto", "Shawn", "Andre", "Everett", "Victor", "Jordan", "Harvey",
-	  "Elijah", "Gordon", "Cory", "Orlando", "Dustin", "Clifford", "Wesley", "Jerry", "Tyler", "Leroy",
-	  "Terrance", "Colin", "Joel", "Franklin", "Mario", "Brent", "Ricardo", "Brett", "Willard", "Cesar",
-	  "Jay", "Shane", "Preston", "Ruben", "Emmett", "Wade", "Simon", "Isaac", "Dale", "Darrell",
-	  "Felix", "Lester", "Dwayne", "Jessie", "Nelson", "Reginald", "Karl", "Leonardo", "Kelvin", "Don",
-	  "Garrett", "Malcolm", "Tyrone", "Lyle", "Nathanial", "Lorenzo", "Clinton", "Robin", "Bryant", "Lamont",
-	  "Perry", "Travis", "Ross", "Rene", "Trevor", "Darryl", "Ben", "Luis", "Caleb", "Darnell",
-	  "Chris", "Curtis", "Sam", "Nathaniel", "Floyd", "Ivan", "Alvin", "Julian", "Corey", "Dwight",
-	  "Wilbur", "Kurt", "Sidney", "Sheldon", "Darren", "Ron", "Vernon", "Jermaine", "Charlie", "Eddie", "Maloy", "Shaky", "Uracos", "Saitama", "Suoh", "Cyox"
-	}
-	
-	local malelast = {
-	  "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-	  "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
-	  "Lee", "Perez", "Thompson", "White", "Harris", "Clark", "Lewis", "Robinson", "Walker", "Hall",
-	  "Young", "Allen", "Sanchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson",
-	  "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres",
-	  "Parker", "Collins", "Edwards", "Stewart", "Flores", "Morris", "Nguyen", "Murphy", "Rivera", "Cook",
-	  "Rogers", "Morgan", "Peterson", "Cooper", "Reed", "Bailey", "Bell", "Gomez", "Kelly", "Howard",
-	  "Ward", "Cox", "Diaz", "Richardson", "Wood", "Watson", "Brooks", "Bennett", "Gray", "James",
-	  "Reyes", "Cruz", "Hughes", "Price", "Myers", "Long", "Foster", "Sanders", "Ross", "Morales",
-	  "Powell", "Sullivan", "Russell", "Ortiz", "Jenkins", "Gutierrez", "Perry", "Butler", "Barnes", "Fisher",
-	  "Henderson", "Coleman", "Simmons", "Patterson", "Jordan", "Reynolds", "Hamilton", "Graham", "Kim", "Gonzales",
-	  "Alexander", "Ramos", "Wallace", "Griffin", "West", "Cole", "Hayes", "Chavez", "Gibson", "Bryant",
-	  "Ellis", "Stevens", "Murray", "Ford", "Marshall", "Owens", "Mcdonald", "Harrison", "Ruiz", "Kennedy",
-	  "Fuller", "Woods", "Webb", "Freeman", "Snyder", "Hunt", "Bishop", "Haynes", "Russell", "Roberson",
-	  "Cooper", "Holland", "Jarvis", "Mason", "Mcbride", "Kramer", "Mcconnell", "Bender", "Davidson", "Reilly",
-	  "Petersen", "York", "Dennis", "Erickson", "Patterson", "Griffith", "Mckenzie", "Coffey", "Giles", "Lindsay",
-	  "Leblanc", "Blackburn", "Bauer", "Mathis", "Clay", "Graves", "Reyes", "Parkinson", "Horton", "Luna",
-	  "Dickson", "Cooke", "Galloway", "Kaufman", "Harrison", "Lambert", "Gill", "Potts", "Clements", "Gross", "Varus", "Cock", "Dick", "Vereches", "Maleyvich", "Goodman"
-  }
-  
-	function mply:Namesurvivor(ply)
-	  if !self:IsFemale() then
-		local namesurvivormale = table.Random(malename)
-		local namesurvivorlastmale = table.Random(malelast)
-	   self:SetNamesurvivor(namesurvivormale.." "..namesurvivorlastmale)
-	elseif
-	  self:IsFemale() then
-		local femnamesurv = table.Random(femname)
-		local femnamesurvlast = table.Random(femlast)
-	   self:SetNamesurvivor(femnamesurv.." "..femnamesurvlast)
-	end
-	if self:GTeam() == TEAM_SPECIAL then
-		local namesurvivorlastmale = table.Random(malelast)
-		local femnamesurvlast = table.Random(femlast)
-		if self:GetRoleName() == role.SCI_SPECIAL_HEALER then
-			self:SetNamesurvivor("Matilda".." "..femnamesurvlast)
-		end
-	if self:GetRoleName() == role.SCI_SPECIAL__SLOWER then
-			self:SetNamesurvivor("Speedwone".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_DAMAGE then
-			self:SetNamesurvivor("Kelen".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_VISION then
-			self:SetNamesurvivor("Hedwig".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_MINE then
-			self:SetNamesurvivor("Feelon".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_INVISIBLE then
-			self:SetNamesurvivor("Ruprecht".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_SPEED then
-			self:SetNamesurvivor("Lomao".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_SHIELD then
-			self:SetNamesurvivor("Shieldmeh".." "..namesurvivorlastmale)
-		end
-		if self:GetRoleName() == role.SCI_SPECIAL_BOOSTER then
-			self:SetNamesurvivor("Georg".." "..namesurvivorlastmale)
-		end
-	end
-end
-  
-  function mply:ClearBodyGroups(ply, ent)
-	  for k, v in pairs(self:GetBodyGroups()) do
-		  self:SetBodygroup(v.id, 0)
+local pastenames = http.Fetch("https://pastebin.com/m1m01KFd")
+
+function mply:Namesurvivor(ply)
+	if !self:IsFemale() then
+	  local namesurvivormale = table.Random.(pastenames.malename)
+	  local namesurvivorlastmale = table.Random(pastenames.malelast)
+	 self:SetNamesurvivor(namesurvivormale.." "..namesurvivorlastmale)
+  elseif
+	self:IsFemale() then
+	  local femnamesurv = table.Random(pastenames.femname)
+	  local femnamesurvlast = table.Random(pastenames.femlast)
+	 self:SetNamesurvivor(femnamesurv.." "..femnamesurvlast)
+  end
+  if self:GTeam() == TEAM_SPECIAL then
+	  local namesurvivorlastmale = table.Random(malelast)
+	  local femnamesurvlast = table.Random(femlast)
+	  if self:GetRoleName() == role.SCI_SPECIAL_HEALER then
+		  self:SetNamesurvivor("Matilda".." "..femnamesurvlast)
+	  end
+  if self:GetRoleName() == role.SCI_SPECIAL__SLOWER then
+		  self:SetNamesurvivor("Speedwone".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_DAMAGE then
+		  self:SetNamesurvivor("Kelen".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_VISION then
+		  self:SetNamesurvivor("Hedwig".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_MINE then
+		  self:SetNamesurvivor("Feelon".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_INVISIBLE then
+		  self:SetNamesurvivor("Ruprecht".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_SPEED then
+		  self:SetNamesurvivor("Lomao".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_SHIELD then
+		  self:SetNamesurvivor("Shieldmeh".." "..namesurvivorlastmale)
+	  end
+	  if self:GetRoleName() == role.SCI_SPECIAL_BOOSTER then
+		  self:SetNamesurvivor("Georg".." "..namesurvivorlastmale)
 	  end
   end
-  
-  function GetTableOverride( tab )
-	  local metatable = {
-		  __add = function( left, right )
-			  return AddTables( left, right )
-		  end
-	  }
-	  setmetatable( tab, metatable )
-	  return tab
-  end
-  
-  function mply:AddToStatistics(ply, ent) -- надо сделать новую exp систему nextoren like, u know?
-  end
+end
 
+function mply:ClearBodyGroups(ply, ent)
+	for k, v in pairs(self:GetBodyGroups()) do
+		self:SetBodygroup(v.id, 0)
+	end
+end
 
+function GetTableOverride( tab )
+	local metatable = {
+		__add = function( left, right )
+			return AddTables( left, right )
+		end
+	}
+	setmetatable( tab, metatable )
+	return tab
+end
 
-  function GM:PlayerSpray()
-    return self:IsSuperAdmin()
+function mply:AddToStatistics(ply, ent) -- надо сделать новую exp систему nextoren like, u know?
+end
+
+function GM:PlayerSpray()
+   return self:IsSuperAdmin()
 end
 
 local ScaleDamage = ScaleDamage || {}
@@ -532,6 +450,7 @@ function mply:SurvivorCleanUp()
 	self:ClearBodyGroups()
 	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self ) || {} if self:GTeam() != TEAM_SCP then for i = 1, #tbl_bonemerged do local bonemerge = tbl_bonemerged[ i ] bonemerge:Remove() end
 	self:StripWeapons()
+	self:SetSkin(0)
 	self:StripAmmo()
 	self:SetNW2Bool("Breach:CanAttach", false)
 	self:SetUsingCloth("")
@@ -547,12 +466,12 @@ function mply:SelectAsCISpy()
 	local oficerci = BREACH_ROLES.SECURITY.security.roles[3].weapons
 	local specici = BREACH_ROLES.SECURITY.security.roles[7].weapons
 	if chage == 1 then
-	timer.Simple(0.2, function()
+	timer.Simple(0.1, function()
 	self:SetBodygroup(3,7)
 	self:SetBodygroup(4,1)
 	self:SetBodygroup(5,2)
 	self:SetBodygroup(6,1)
-	--self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].hackerhat, self)
+	self:Bonemerge("models/cultist/heads/male/male_head_"..math.random(1,210)..".mdl",self)
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( pvtci ) do
@@ -560,18 +479,20 @@ function mply:SelectAsCISpy()
 	end 
 	end)
 	elseif chage == 2 then
-	timer.Simple(0.2, function()
+	timer.Simple(0.1, function()
 	self:SetBodygroup(3,4)
 	self:SetBodygroup(5,2)
+	timer.Simple(0.1, function()
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
+	end)
 	self:StripWeapons()
 	for k, v in pairs( oficerci ) do
 	self:BreachGive( v ) 
 	end 
 	end)
 	elseif chage == 3 then
-	timer.Simple(0.2, function()
+	timer.Simple(0.1, function()
 	self:SetBodygroup(3,5)
 	self:SetBodygroup(5,1)
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
@@ -589,7 +510,7 @@ function mply:ApplyRoleStats( role )
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
 	if role.cispy == true then self:SelectAsCISpy() end
-	timer.Simple(0.1, function() if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end  if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end end)
+	timer.Simple(0.1, function() if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end end)
 	timer.Simple(0.2, function() self:StripAmmo() if role.ammo then end end)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
@@ -624,7 +545,10 @@ function mply:ApplyRoleStats( role )
 	if role.hackerhat then
 		self:Bonemerge(role.hackerhat, self)
 	end
-	if role.skin then self:SetSkin(role.skin) else self:SetSkin(0) end
+	--if role.damage_modifiers then
+	--	self:ScaleDamage(role.damage_modifiers[hitgroup])
+	--end
+	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
 	if role.headgear then self:Bonemerge(role.headgear, self) end
@@ -646,45 +570,26 @@ function mply:ApplyRoleStats( role )
         net.Send(self)
         self:SetNWString("AbilityName", (role["ability"][1]))
 	end
-       if role.ability_max then
+    if role.ability_max then
 	   self:SetSpecialMax( role["ability_max"] )
-       end
+    end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 100 * 1) end
 	if role.runspeed then self:SetRunSpeed(210 * role.runspeed or 210 * 1) end
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 190 * 1) end
-	if role.bodygroup0 then
-		self:SetBodygroup(0, role.bodygroup0)
-	end
-	if role.bodygroup1 then
-		self:SetBodygroup(1, role.bodygroup1)
-	end
-	if role.bodygroup2 then
-		self:SetBodygroup(2, role.bodygroup2)
-	end
-	if role.bodygroup3 then
-		self:SetBodygroup(3, role.bodygroup3)
-	end
-	if role.bodygroup4 then
-		self:SetBodygroup(4, role.bodygroup4)
-	end
-	if role.bodygroup5 then
-		self:SetBodygroup(5, role.bodygroup5)
-	end
-	if role.bodygroup6 then
-		self:SetBodygroup(6, role.bodygroup6)
-	end
-	if role.bodygroup7 then
-		self:SetBodygroup(7, role.bodygroup7)
-	end
-	if role.bodygroup8 then
-		self:SetBodygroup(8, role.bodygroup8)
-	end
-	if role.bodygroup9 then
-		self:SetBodygroup(9, role.bodygroup9)
-	end
+	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
+	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
+	if role.bodygroup2 then self:SetBodygroup(2, role.bodygroup2)end
+	if role.bodygroup3 then self:SetBodygroup(3, role.bodygroup3)end
+	if role.bodygroup4 then self:SetBodygroup(4, role.bodygroup4)end
+	if role.bodygroup5 then self:SetBodygroup(5, role.bodygroup5)end
+	if role.bodygroup6 then self:SetBodygroup(6, role.bodygroup6) end
+	if role.bodygroup7 then self:SetBodygroup(7, role.bodygroup7) end
+	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
+	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
 	if role.maxslots then self:SetMaxSlots(role.maxslots) end
+	timer.Simple(2,function() if self:GTeam() == TEAM_CLASSD then self:SetSkin(math.random(1,7)) end end)
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)
@@ -743,11 +648,11 @@ function mply:SetSecurityI1()
 end
 
 function mply:SetClassD()
-	self:SetRoleBestFrom("classds")
+	self:SetRoleBestFrom("classd")
 end
 
 function mply:SetResearcher()
-	self:SetRoleBestFrom("researchers")
+	self:SetRoleBestFrom("sci")
 end
 
 function mply:SetRoleBestFrom(role)
@@ -779,15 +684,15 @@ function mply:SetRoleBestFrom(role)
 		end
 	end
 	if thebestone == nil then
-		thebestone = BREACH_ROLES[role]["roles"][1]
+		thebestone = BREACH_ROLES.CLASSD[role]["roles"][1]
 	end
-	if thebestone == BREACH_ROLES["classd"]["roles"][4] and #player.GetAll() < 4 then
-		thebestone = BREACH_ROLES["classd"]["roles"][3]
+	if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][4] and #player.GetAll() < 4 then
+		thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][3]
 	end
 	if ( GetConVar("br_dclass_keycards"):GetInt() != 0 ) then
-		if thebestone == BREACH_ROLES["classd"]["roles"][1] then thebestone = BREACH_ROLES["classds"]["roles"][2] end
+		if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][1] then thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][2] end
 	else
-		if thebestone == BREACH_ROLES["classd"]["roles"][2] then thebestone = BREACH_ROLES["classds"]["roles"][1] end
+		if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][2] then thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][1] end
 	end
 	self:SetupNormal()
 	self:ApplyRoleStats(thebestone)

@@ -1337,6 +1337,7 @@ function CutScene()
 	end
 
 end
+concommand.Add("intro_ci", CutScene)
 
 local ci_icon = Material( "nextoren/gui/roles_icon/gru.png" )
 local ranktable = {
@@ -1498,6 +1499,7 @@ function GRUSpawn()
 	end
 
 end
+concommand.Add("intro_gru", GRUSpawn)
 
 local function Ending( status )
 

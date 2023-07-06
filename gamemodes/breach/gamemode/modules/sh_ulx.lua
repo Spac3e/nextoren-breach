@@ -1652,7 +1652,7 @@ else
 			if self.m_Image then
 				if !self.disappear then
 					self.disappear = true
-					surface.PlaySound("npc/stalker/go_alert2a.wav")
+					surface.PlaySound("nextoren/others/horror/horror_"..math.random(0,16)..".ogg")
 					self:AlphaTo(0, 5, 0, function() self:Remove() end)
 				end
 				surface.SetDrawColor(255,255,255)

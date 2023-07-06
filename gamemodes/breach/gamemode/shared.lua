@@ -189,18 +189,4 @@ MsgC( Color(0,255,0),"-----------------Animation Base is ready!-----------------
 MsgC( Color(0,255,0),"#\n" )
 MsgC( Color(0,255,0),"# Skipped files: " .. skipped.."\n")
 
-MsgC( Color(0,255,0),"---------------Loading Map Config----------------\n" )
-if file.Exists( MAP_CONFIG_PATH .. "/" .. game.GetMap() .. ".lua", "LUA" ) then
-	local relpath = "mapconfigs/" .. game.GetMap() .. ".lua"
-	if SERVER then
-		AddCSLuaFile( relpath )
-	end
-	include( relpath )
-	MsgC( Color(0,255,0), "# Loading config for map " .. game.GetMap().."\n" )
-	MAP_LOADED = true
-else
-	MsgC( Color(0,255,0), "----------------Loading Complete-----------------\n" )
-	error( "Unsupported map " .. game.GetMap() .. "!" )
-end
-
 MsgC( Color(0,255,0), "----------------Loading Complete-----------------\n" )

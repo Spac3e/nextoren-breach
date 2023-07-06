@@ -1,6 +1,24 @@
 
 local mply = FindMetaTable( "Player" )
 
+
+function spawn_ents()
+	print("Omaygot! Spawning loot")
+	for k,v in pairs(ENTITY_SPAWN_LIST_SHAKY) do
+	local vv = table.Copy(v.Spawns)
+	local vvv = table.Copy(v.Spawns.pos)
+	local omaygot_ents_spawn = ents.Create( v.Class )
+	if IsValid( omaygot_ents_spawn ) then
+		omaygot_ents_spawn:Spawn()
+		omaygot_ents_spawn:SetPos(vv or table.Random(vvv))
+		if v.Spawns.ang then omaygot_ents_spawn:SetAngles(v.Spawns.ang)
+        end
+      end
+    end
+end
+
+concommand.Add("loot", spawn_ents)
+
 function mply:CompleteAchievement(achivname, ply)
 	net.Start("Completeachievement_serverside")
 	net.WriteString(achivname)
@@ -183,58 +201,320 @@ function DestroyAll()
 end
 
 function SpawnAllItems()
-	for k, v in pairs( SPAWN_ITEMS ) do
-        local spawns = table.Copy( v.spawns )
-        local dices = {}
+	local wep = ents.Create( "esc_vse" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( Vector(Vector(-8019.227051,-1090.048584,1728.031250)) )
+		WakeEntity( wep )
+end
 
-        local n = 0
-        for _, dice in pairs( v.ents ) do
-            local d = {
-                min = n,
-                max = n + dice[2],
-                ent = dice[1]
-            }
-            
-            table.insert( dices, d )
-            n = n + dice[2]
-        end
+local wep = ents.Create( "object_intercom" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( Vector( -2610.555664, 2270.446777, 320.494934 ) )
+		WakeEntity( wep )
+end
 
-        for i = 1, math.min( v.amount, #spawns ) do
-            local spawn = table.remove( spawns, math.random( 1, #spawns ) )
-            local dice = math.random( 0, n - 1 )
-            local ent
 
-            for _, d in pairs( dices ) do
-                if d.min <= dice and d.max > dice then
-                    ent = d.ent
-                    break
-                end
-            end
+local wep = ents.Create( "bg" )
+if IsValid( wep ) then
+	wep:Spawn()
+	WakeEntity( wep )
+end
+local wep = ents.Create( "obr_call" )
+if IsValid( wep ) then
+	wep:Spawn()
+	WakeEntity( wep )
+end
+local wep = ents.Create( "scp_tree" )
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(9085.486328, -1932.134644, 5.520229) )
+	WakeEntity( wep )
+end
+for k,v in pairs( SPAWN_BREACH_CAMERA ) do
+	local wep = ents.Create( "br_camera" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v.pos )
+		wep:SetAngles(v.ang)
+		WakeEntity( wep )
+	end
+end
+for k,v in pairs( SCP_914_BUTTON ) do
+	local wep = ents.Create( "entity_scp_914" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v )
+		WakeEntity( wep )
+	end
+end
 
-            if ent then
-                local keycard = ents.Create( ent )
-                if IsValid( keycard ) then
-                    keycard:Spawn()
-                    keycard:SetPos( spawn )
-                end
-            end
-        end
-    end
-	if GetConVar("br_allow_vehicle"):GetInt() != 0 then
-	
-		for k, v in ipairs(SPAWN_VEHICLE) do
-			if k > math.Clamp( GetConVar( "br_cars_ammount" ):GetInt(), 0, 12 ) then
+
+for k,v in pairs( SPAWN_TESLA_0 ) do
+	local wep = ents.Create( "test_entity_tesla" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v )
+		WakeEntity( wep )
+	end
+end
+
+for k,v in pairs( SPAWN_LIVETAB_LZ ) do
+	local wep = ents.Create( "livetablz" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v.pos )
+		wep:SetAngles(v.ang)
+		WakeEntity( wep )
+	end
+end
+
+for k,v in pairs( SPAWN_LIVETAB_EZ ) do
+	local wep = ents.Create( "livetab" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v.pos )
+		wep:SetAngles(v.ang)
+		WakeEntity( wep )
+	end
+end
+
+for k,v in pairs( SPAWN_TESLA_90 ) do
+	local wep = ents.Create( "test_entity_tesla" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v )
+		wep:SetAngles( Angle( 0,90,0 ) )
+		WakeEntity( wep )
+	end
+end
+
+for k,v in pairs( SPAWN_GENERATORS ) do
+	local wep = ents.Create( "ent_generator" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v.Pos )
+		wep:SetAngles( v.Ang )
+		WakeEntity( wep )
+	end
+end
+
+
+
+for k, v in pairs( SPAWN_ITEMS ) do
+	local spawns = table.Copy( v.spawns )
+	local dices = {}
+
+	local n = 0
+	for _, dice in pairs( v.ents ) do
+		local d = {
+			min = n,
+			max = n + dice[2],
+			ent = dice[1]
+		}
+		
+		table.insert( dices, d )
+		n = n + dice[2]
+	end
+
+	for i = 1, math.min( v.amount, #spawns ) do
+		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
+		local dice = math.random( 0, n - 1 )
+		local ent
+
+		for _, d in pairs( dices ) do
+			if d.min <= dice and d.max > dice then
+				ent = d.ent
 				break
 			end
-			local car = ents.Create("prop_vehicle_jeep")
-			car:SetModel("models/tdmcars/jeep_wrangler_fnf.mdl")
-			car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
-			car:SetPos( v[1] )
-			car:SetAngles( v[2] )
-			car:Spawn()
-			WakeEntity( car )
+		end
+
+		if ent then
+			local keycard = ents.Create( ent )
+			if IsValid( keycard ) then
+				keycard:Spawn()
+				keycard:SetPos( spawn )
+			end
 		end
 	end
+end
+
+for k, v in pairs( SPAWN_AMMONEW ) do
+	local spawns = table.Copy( v.spawns )
+	//local cards = table.Copy( v.ents )
+	local dices = {}
+
+	local n = 0
+	for _, dice in pairs( v.ents ) do
+		local d = {
+			min = n,
+			max = n + dice[2],
+			ent = dice[1]
+		}
+		
+		table.insert( dices, d )
+		n = n + dice[2]
+	end
+
+	for i = 1, math.min( v.amount, #spawns ) do
+		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
+		local dice = math.random( 0, n - 1 )
+		local ent
+
+		for _, d in pairs( dices ) do
+			if d.min <= dice and d.max > dice then
+				ent = d.ent
+				break
+			end
+		end
+
+		if ent then
+			local keycard = ents.Create( ent )
+			if IsValid( keycard ) then
+				keycard:Spawn()
+				keycard:SetPos( spawn )
+				--keycard:SetKeycardType( ent )
+			end
+		end
+	end
+end
+
+if GetConVar("br_allow_vehicle"):GetInt() != 0 then
+
+	for k, v in ipairs(SPAWN_VEHICLE) do
+		if k > math.Clamp( GetConVar( "br_cars_ammount" ):GetInt(), 0, 12 ) then
+			break
+		end
+		local car = ents.Create("prop_vehicle_jeep")
+		car:SetModel("models/tdmcars/jeep_wrangler_fnf.mdl")
+		car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
+		car:SetPos( v[1] )
+		car:SetAngles( v[2] )
+		car:Spawn()
+		WakeEntity( car )
+	end
+end
+
+for k, v in pairs( SPAWN_WEAPONSTATION ) do
+	local wep = ents.Create( "ent_weaponstation" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v.pos )
+		wep:SetAngles(v.ang)
+		WakeEntity( wep )
+	end
+end
+
+for k, v in pairs( SPAWN_VENDOR ) do
+	local wep = ents.Create( "ent_vendormachine" )
+	if IsValid( wep ) then
+		wep:Spawn()
+		wep:SetPos( v )
+		wep:SetAngles(Angle(0,-90,0))
+		WakeEntity( wep )
+	end
+end
+local wep = ents.Create( "ent_scp_409" )
+--local sp = v.Spawns
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(1148.37109375, -6633.662109375, -2360.96875) )
+	wep:SetAngles( Angle(0,0,0) )
+	WakeEntity( wep )
+end
+
+local wep = ents.Create( "ent_ammocrate" )
+--local sp = v.Spawns
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(7562.3012695313, -4243.8090820313, 17.431785583496) )
+	wep:SetAngles( Angle(0, -90, 0) )
+	WakeEntity( wep )
+end
+
+local wep = ents.Create( "ent_ammocrate" )
+--local sp = v.Spawns
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(9344.3896484375, -3276.6135253906, 16.921831130981) )
+	wep:SetAngles( Angle(0, 0, 0) )
+	WakeEntity( wep )
+end
+
+local wep = ents.Create( "ent_ammocrate" )
+--local sp = v.Spawns
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(246.13401794434, -3920.3305664063, -1233.5209960938) )
+	wep:SetAngles( Angle(0, -90, 0) )
+	WakeEntity( wep )
+end
+
+local wep = ents.Create( "ent_ammocrate" )
+--local sp = v.Spawns
+if IsValid( wep ) then
+	wep:Spawn()
+	wep:SetPos( Vector(156.32833862305, 5842.767578125, 15.887740135193) )
+	wep:SetAngles( Angle(0, 0, 0) )
+	WakeEntity( wep )
+end
+
+for k,v in pairs(SPAWN_WEAPONRY) do
+	local ent = ents.Create("ent_weaponry")
+	if IsValid( ent ) then
+		ent:Spawn()
+		ent:SetPos( v )
+		ent:SetAngles(Angle(0, -90, 0))
+		WakeEntity(ent)
+	end
+end
+	local ent = ents.Create("weapon_special_gaus")
+	if IsValid( ent ) then
+		ent:Spawn()
+		ent:SetPos( Vector(2032.1343994141, 6344.05859375, 61.311496734619) )
+		ent:SetAngles(Angle(0, -90, 0))
+		WakeEntity(ent)
+end
+
+for k, v in pairs( SPAWN_UNIFORMS) do
+	local spawns = table.Copy( v.spawns )
+	local dices = {}
+
+	local n = 0
+	for _, dice in pairs( v.entities ) do
+		local d = {
+			min = n,
+			max = n + dice[2],
+			ent = dice[1]
+		}
+		
+		table.insert( dices, d )
+		n = n + dice[2]
+	end
+
+	for i = 1, math.min( v.amount, #spawns ) do
+		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
+		local dice = math.random( 0, n - 1 )
+		local ent
+
+		for _, d in pairs( dices ) do
+			if d.min <= dice and d.max > dice then
+				ent = d.ent
+				break
+			end
+		end
+
+		if ent then
+			local keycard = ents.Create( ent )
+			if IsValid( keycard ) then
+				keycard:Spawn()
+				keycard:SetPos( spawn )
+				--keycard:SetKeycardType( ent )
+			end
+		end
+	end
+end
 end
 
 net.Receive( "GRUCommander_peac", function()
@@ -307,7 +587,7 @@ function SpawnSupport()
 
 		ntfsinuse[selected.name] = ntfsinuse[selected.name] + 1
 
-		if #ntfspawns == 0 then ntfspawns = table.Copy( SPAWN_GUARD ) end
+		if #ntfspawns == 0 then ntfspawns = table.Copy( SPAWN_NTF ) end
 		local spawn = table.remove( ntfspawns, math.random( #ntfspawns ) )
 		v:SendLua("RunConsoleCommand( 'intro_ntf' )")
 		v:SetupNormal()
@@ -357,7 +637,7 @@ function SpawnSupport()
 
 			chaossinuse[selected.name] = chaossinuse[selected.name] + 1
 
-			if #chaosspawns == 0 then chaosspawns = table.Copy( SPAWN_GUARD ) end
+			if #chaosspawns == 0 then chaosspawns = table.Copy( SPAWN_OUTSIDE ) end
 			local spawn = table.remove( chaosspawns, math.random( #chaosspawns ) )
 			v:SendLua("RunConsoleCommand( 'intro_ci' )")
 			v:SetupNormal()
@@ -407,7 +687,7 @@ function SpawnSupport()
 	
 				grusinuse[selected.name] = grusinuse[selected.name] + 1
 	
-				if #gruspawns == 0 then gruspawns = table.Copy( SPAWN_GUARD ) end
+				if #gruspawns == 0 then gruspawns = table.Copy( SPAWN_OUTSIDE ) end
 				local spawn = table.remove( gruspawns, math.random( #gruspawns ) )
 				v:SendLua("RunConsoleCommand( 'intro_gru' )")
 				if v:GetRoleName() == role.GRU_Commander then
@@ -510,7 +790,7 @@ function SpawnSupport()
 
 			dzsinuse[selected.name] = dzsinuse[selected.name] + 1
 
-			if #dzspawns == 0 then dzspawns = table.Copy( SPAWN_GUARD ) end
+			if #dzspawns == 0 then dzspawns = table.Copy( SPAWN_OUTSIDE ) end
 			local spawn = table.remove( dzspawns, math.random( #dzspawns ) )
 			v:SendLua("RunConsoleCommand( 'intro_dz' )")
 			v:SetupNormal()
@@ -558,7 +838,7 @@ function SpawnSupport()
 
 			fbisinuse[selected.name] = fbisinuse[selected.name] + 1
 
-			if #fbispawns == 0 then fbispawns = table.Copy( SPAWN_GUARD ) end
+			if #fbispawns == 0 then fbispawns = table.Copy( SPAWN_OUTSIDE ) end
 			local spawn = table.remove( fbispawns, math.random( #fbispawns ) )
 			for k, v in pairs( SPAWN_FBI_MONITORS ) do
 				local wep = ents.Create( "onp_monitor" )
@@ -760,7 +1040,27 @@ function BroadcastDetection( ply, tab )
 end
 
 function GM:GetFallDamage( ply, speed )
-	return ( speed / 6 )
+	ply:EmitSound("nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1,2)..".wav")
+	return ( speed / 6.4 )
+end
+
+function GM:EntityTakeDamage(target,dmginfo)
+	if target:IsPlayer() then
+	   target:AddEFlags( -2147483648 )
+	else
+	   target:RemoveEFlags( -2147483648 )
+	end
+end
+
+function GM:PlayerDeathSound(ply)
+	ply:EmitSound( "beams/beamstart5.wav", SNDLVL_NORM, math.random( 70, 126 ) ) -- plays the sound with normal sound levels, and a random pitch between 70 and 126
+	return true -- we don't want the default sound!
+end
+
+function GM:PlayerHurt(victim, attacker)
+    if ( attacker:IsPlayer() ) then
+        victim:ChatPrint("You were attacked by : " .. attacker:Nick())
+    end
 end
 
 function PlayerCount()

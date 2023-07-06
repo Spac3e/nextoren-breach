@@ -612,6 +612,17 @@ SPAWN_OUTSIDE = {
 
 SPAWN_OUTSIDE_CI = SPAWN_OUTSIDE
 
+SPAWN_NTF = {
+	Vector(-3229.714111,4666.943848,2490.770752),
+	Vector(-3230.419922,4747.505859,2490.770752),
+	Vector(-3231.240967,4808.757324,2490.770752),
+	Vector(-3232.419189,4883.780762,2490.770752),
+	Vector(-3233.557861,4956.382813,2490.770752),
+	Vector(-3242.905273,4528.129395,2490.770752),
+	Vector(-3138.894531,4571.693848,2490.800049),
+	Vector(-3125.127686,4682.196289,2490.775635)
+}
+
 SPAWN_SECURITY = {
 	Vector(10280.629883, -1388.191284, 0.756134),
 	Vector(10280.702148, -1449.031128, 0.846970),
@@ -754,32 +765,6 @@ Vector(6093.7470703125, -1599.9235839844, 46.361295700073),
 Vector(958.59564208984, 3079.6997070313, 45.061498641968)
 }
 
-ENTITY_SPAWN_LIST_SHAKY = {
-
-	{
-		Class = "ent_scp_409",
-		Spawns = {
-			Vector(1148.37109375, -6633.662109375, -2360.96875)
-		},
-	},
-	{
-		Class = "ent_weaponry",
-		Spawns = {
-			{pos = Vector(-1467.739258, 2817.387695, -127.442307), ang = Angle(0, -142.582, 0)}
-		}
-	},
-
-	{
-		Class = "ent_ammocrate",
-		Spawns = {
-			{pos = Vector(7562.3012695313, -4243.8090820313, 17.431785583496), ang = Angle(0, -90, 0)},
-			{pos = Vector(9344.3896484375, -3276.6135253906, 16.921831130981), ang = Angle(0, 0, 0)},
-			{pos = Vector(246.13401794434, -3920.3305664063, -1233.5209960938), ang = Angle(0, -90, 0)},
-			{pos = Vector(156.32833862305, 5842.767578125, 15.887740135193), ang = Angle(0, 0, 0)},
-		},
-	}
-
-}
 SPAWN_SCPTREE = Vector(9094.693359,-1932.515625,17.331051)
 
 SPAWN_AMMONEW = {
@@ -3140,7 +3125,7 @@ BUTTONS = {
 		  CLevelGuard = 17,
 		  CLevelMTF = 17,
 		  CLevelSUP = 17,
-		  CLevelO5 = 2
+		  CLevelO5 = 17
 		},
 		custom_access_granted = function(ply, ent)
 			return (ply:GetActiveWeapon():GetClass() == "breach_keycard_7")
@@ -3163,7 +3148,7 @@ BUTTONS = {
 		  CLevelGuard = 17,
 		  CLevelMTF = 17,
 		  CLevelSUP = 17,
-		  CLevelO5 = 2
+		  CLevelO5 = 17
 		},
 		tolerance = 8,
 		custom_access_granted = function(ply, ent)
@@ -3197,7 +3182,7 @@ BUTTONS = {
 		  CLevelSUP = 8
 		},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" )
+			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" )
 		end
 	},	
 	{
@@ -3211,7 +3196,7 @@ BUTTONS = {
 		  CLevelSUP = 8
 		},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" )
+			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" )
 		end
 	},	
 	{
@@ -3225,7 +3210,7 @@ BUTTONS = {
 		  CLevelSUP = 8
 		},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" )
+			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" )
 		end
 	},	
 	{
@@ -3239,7 +3224,7 @@ BUTTONS = {
 		  CLevelSUP = 8
 		},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" )
+			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" )
 		end
 	},
 
@@ -3254,7 +3239,7 @@ BUTTONS = {
 		  CLevelSUP = 7
 		},
 		custom_access_granted = function(ply, ent)
-			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" )
+			return IsValid(ply:GetActiveWeapon()) and ( ply:GetActiveWeapon():GetClass() == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_support" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" )
 		end
 	},
 	{
