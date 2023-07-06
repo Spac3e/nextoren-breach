@@ -33,17 +33,17 @@ function PlayAnnouncerLoud( soundname )
 	net.Broadcast()
 end
 
-net.Receive("NTF_Special_1", function(ply)
+net.Receive("NTF_Special_1", function(ply,caller)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
-	local ply = net.ReadEntity()
-	ply:SetSpecialCD(CurTime() + 80)
 	local find_team = net.ReadUInt(12)
+	caller:SetSpecialCD(CurTime() + 80)
 	timer.Simple( 15, function()
-
+	
+	net.Start("BreachAnnouncer")
+	net.WriteString("nextoren/vo/ntf/camera_found_1.ogg")
+	net.Broadcast()
 	net.Start( "NTF_Special_1" )
-
 	net.WriteUInt( find_team, 12 )
-
 	net.Broadcast()
 	end )
 end)
