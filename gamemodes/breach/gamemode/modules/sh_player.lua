@@ -1150,17 +1150,17 @@ local function DrawNewInventory( notvictim, vtab, ammo )
 					client:SelectWeapon( EQHUD.weps[id]:GetClass() )
 				elseif istable(EQHUD.weps[id]) then
 					if EQHUD.weps[id].ArmorType == "Armor" then
-						net.Start("DropAdditionalArmor", true)
+						net.Start("DropBro", true)
 						net.WriteString(client:GetUsingArmor())
 						net.SendToServer()
 					end
 					if EQHUD.weps[id].ArmorType == "Hat" then
-						net.Start("DropAdditionalArmor", true)
+						net.Start("DropHat", true)
 						net.WriteString(client:GetUsingHelmet())
 						net.SendToServer()
 					end
 					if EQHUD.weps[id].ArmorType == "Bag" then
-						net.Start("DropAdditionalArmor", true)
+						net.Start("DropBag", true)
 						net.WriteString(client:GetUsingBag())
 						net.SendToServer()
 					end

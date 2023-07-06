@@ -1,18 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_cstm_m500/shared.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
---[[
-lua/weapons/cw_kk_ins2_cstm_m500/shared.lua
---]]
 if not CustomizableWeaponry then return end
 
 AddCSLuaFile()
@@ -24,7 +9,6 @@ if CLIENT then
 	SWEP.PrintName = "M500"
 	SWEP.CSMuzzleFlashes = true
 	SWEP.ViewModelMovementScale = 1.15
-	SWEP.InvIcon = Material( "nextoren/gui/icons/weapons/m500.png" )
 
 	SWEP.SelectIcon = surface.GetTextureID("vgui/entities/m500")
 
@@ -176,7 +160,7 @@ SWEP.SpeedDec = 15
 
 SWEP.Slot = 3
 SWEP.SlotPos = 0
-SWEP.NormalHoldType = "shotgun"
+SWEP.NormalHoldType = "ar2"
 SWEP.RunHoldType = "passive"
 SWEP.FireModes = {"pump"}
 SWEP.Base = "cw_kk_ins2_base"
@@ -201,7 +185,7 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.Primary.ClipSize		= 5
 SWEP.Primary.DefaultClip = 0 --	= 0
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			= "Shotgun"
+SWEP.Primary.Ammo			= "AR2"
 
 SWEP.FireDelay = 0.31
 SWEP.FireSound = "CW_KK_INS2_M590_FIRE"
@@ -212,11 +196,11 @@ SWEP.HipSpread = 0.04
 SWEP.AimSpread = 0.01
 SWEP.VelocitySensitivity = 1.4
 SWEP.MaxSpreadInc = 0.02
-SWEP.ClumpSpread = 0.05
+SWEP.ClumpSpread = 0.02
 SWEP.SpreadPerShot = 0.007
 SWEP.SpreadCooldown = 0.85
-SWEP.Shots = 12
-SWEP.Damage = 15
+SWEP.Shots = 10
+SWEP.Damage = 10
 
 SWEP.DeployTime = 0.7
 SWEP.HolsterTime = 0.5

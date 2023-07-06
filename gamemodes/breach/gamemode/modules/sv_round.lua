@@ -75,7 +75,6 @@ function BREACH_Round_System_Start()
 		  end )
 	  
 		  timer.Create( "lc_3_15_s", 885, 1, function(ply)
-			  SetGlobalBool("Evacuation_HUD", true )
 			  SetGlobalBool("Evacuation", true)
 			  BREACH.Evacuation = true
 			  local songevac = "no_music/evacuation_"..math.random(1,6)..".ogg"
@@ -87,6 +86,7 @@ function BREACH_Round_System_Start()
 		  end )
 	  
 		  timer.Create( "lc_2_10_s", 955, 1, function()
+			SetGlobalBool("Evacuation_HUD", true )
 			  for k,v in pairs(player.GetAll()) do
 				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
 			  end

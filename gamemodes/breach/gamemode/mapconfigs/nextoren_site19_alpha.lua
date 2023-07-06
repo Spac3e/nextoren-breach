@@ -3350,10 +3350,10 @@ BUTTONS = {
 		name = "Вертолетная Площадка",
 		pos = Vector(-2173, 6552, 2101.25),
 		access = {
-			CLevelMTF = 3,
+			CLevelMTF = 2,
 			CLevelSUP = 7,
 			CLevelSCI = 0,
-			CLevelGuard = 0,
+			CLevelGuard = 2,
 			CLevel = 4,
 		},
 	},
@@ -3361,7 +3361,7 @@ BUTTONS = {
 		name = "Вертолетная Площадка",
 		pos = Vector(-2727.419921875, 7184.9599609375, 2101.25),
 		access = {
-			CLevelMTF = 3,
+			CLevelMTF = 2,
 			CLevelSUP = 7,
 			CLevelSCI = 0,
 			CLevelGuard = 0,

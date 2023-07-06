@@ -188,6 +188,31 @@ function mply:AddHealth(number)
 	self:SetHealth(math.min(new, max))
 end
 
+net.Receive( "DropBag", function( len, ply )
+    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+        if ply:GetUsingBag() != "" then
+            ply:SetMaxSlots(8)
+            ply:UnUseBag()
+        end
+    end
+end)
+
+net.Receive( "DropBro", function( len, ply )
+    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+        if ply:GetUsingArmor() != "" then
+            ply:UnUseBro()
+        end
+    end
+end)
+
+net.Receive( "DropHat", function( len, ply )
+    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+        if ply:GetUsingHelmet() != "" then
+            ply:UnUseHat()
+        end
+    end
+end)
+
 function mply:UnUseBag()
    	if self:GetUsingBag() == "" then return end
    	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
@@ -206,7 +231,7 @@ function mply:UnUseBag()
 	end
 end
 
-function mply:UnUseBro()
+function mply:Bro()
 	if self:GetUsingArmor() == "" then return end
 	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
 	for i = 1, #tbl_bonemerged do
@@ -446,7 +471,6 @@ function mply:SetSCP0082( hp, speed, spawn )
 	if spawn then
 		self:Spawn()
 	end
-	self:DropAllWeapons( true )
 	self:SetModel("models/player/zombie_classic.mdl")
 	self:SetGTeam(TEAM_SCP)
 	self:SetHealth(hp)
@@ -517,44 +541,44 @@ function mply:SurvivorCleanUp()
     end
 end
 
-function mply:SetAsCiSpy()
+function mply:SelectAsCISpy()
 	local chage = math.random( 1, 3 )
 	local pvtci = BREACH_ROLES.SECURITY.security.roles[1].weapons
-	local oficerci = BREACH_ROLES.SECURITY.roles[3].weapons
-	local specici = BREACH_ROLES.SECURITY.roles[7].weapons
+	local oficerci = BREACH_ROLES.SECURITY.security.roles[3].weapons
+	local specici = BREACH_ROLES.SECURITY.security.roles[7].weapons
 	if chage == 1 then
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,7)
 	self:SetBodygroup(4,1)
 	self:SetBodygroup(5,2)
 	self:SetBodygroup(6,1)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[1].hackerhat)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[1].headgear)
+	--self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].hackerhat, self)
+	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( pvtci ) do
-	self:Give( v ) 
+	self:BreachGive( v ) 
 	end 
 	end)
 	elseif chage == 2 then
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,4)
 	self:SetBodygroup(5,2)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].head)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].headgear)
+	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
+	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( oficerci ) do
-	self:Give( v ) 
+	self:BreachGive( v ) 
 	end 
 	end)
 	elseif chage == 3 then
 	timer.Simple(0.2, function()
 	self:SetBodygroup(3,5)
 	self:SetBodygroup(5,1)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].head)
-	self:Bonemerge(BREACH_ROLES.SECURITY.roles[3].headgear)
+	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
+	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( specici ) do
-	self:Give( v ) 
+	self:BreachGive( v ) 
 	end 
 	end)
 	end
@@ -564,17 +588,9 @@ function mply:ApplyRoleStats( role )
 	self:SurvivorCleanUp()
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
-	if self:GetRoleName() == role.SECURITY_Spy then
-		self:SetAsCiSpy()
-	end
-	timer.Simple(0.1, function()
-	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end 
-	if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end
-	end)
-	timer.Simple(0.2, function()
-	self:StripAmmo()
-    if role.ammo then end
-	end)
+	if role.cispy == true then self:SelectAsCISpy() end
+	timer.Simple(0.1, function() if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end  if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end end)
+	timer.Simple(0.2, function() self:StripAmmo() if role.ammo then end end)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	self:ClearBodyGroups()
@@ -591,7 +607,15 @@ function mply:ApplyRoleStats( role )
 		selfmodel = {role.models}
 		self:SetModel(table.Random(role.models))
 	end
+	if role.maxslots then
+		self:SetMaxSlots(role.maxslots)
+	end
 	self:Namesurvivor()
+	if role.usehead and finalselfmodel != role.fmodels and role.randomizehead != nil and role.randomizehead != true then
+		self:Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
+   elseif finalselfmodel == role.fmodels then 
+	   self:Bonemerge("models/cultist/heads/female/female_head_1.mdl",self)
+   end
     if role.randomizehead and finalselfmodel != role.fmodels and role.randomizehead != nil then
 		 self:Bonemerge("models/cultist/heads/male/male_head_"..math.random(1,210)..".mdl",self)
 	elseif finalselfmodel == role.fmodels then 

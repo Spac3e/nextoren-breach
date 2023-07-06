@@ -1,7 +1,7 @@
 --[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_g17/shared.lua
+Server Name: Breach 2.6.0 [Alpha]
+Server IP:   94.26.255.7:27415
+File Path:   addons/[weapons]_new_weapons/lua/weapons/cw_kk_ins2_g17/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -286,7 +286,7 @@ SWEP.SpreadCooldown = 0.22
 
 SWEP.Shots = 1
 
-SWEP.Damage = 45
+SWEP.Damage = 29
 
 
 

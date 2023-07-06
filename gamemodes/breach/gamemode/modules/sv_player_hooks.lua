@@ -242,11 +242,6 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end
 	end
 	victim:SetRoleName(role.Spectator)
-	local roundstats = {}
-	local deaths = {}
-	if roundstats then
-	roundstats.deaths = roundstats.deaths + 1
-	end
 	local wasteam = victim:GTeam()
 	victim:SetTeam(TEAM_SPEC)
 	victim:SetGTeam(TEAM_SPEC)
@@ -423,10 +418,6 @@ function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
 	return (talker:GetPos():Distance(listener:GetPos()) < 750)
 end
 
-function GM:PlayerDeathSound()
-	return true
-end
-
 hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 	if string.lower( msg ) == "!scp" then
 		if !ply.nscpcmdcheck or ply.nscpcmdcheck < CurTime() then
@@ -530,11 +521,11 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 end
 
 function GM:PlayerCanPickupItem( ply, item )
-	return ply:GTeam() != TEAM_SPEC or ply:GetNClass() == ROLES.ADMIN
+	return ply:GTeam() != TEAM_SPEC
 end
 
 function GM:AllowPlayerPickup( ply, ent )
-return false
+    return false
 end
 
 // usesounds = true,

@@ -286,6 +286,25 @@ function IsValidSteamID( id )
 	return false
 end
 
+function GM:PlayerDeathSound(ply)
+	ply:EmitSound( "beams/beamstart5.wav", SNDLVL_NORM, math.random( 70, 126 ) ) -- plays the sound with normal sound levels, and a random pitch between 70 and 126
+	return true -- we don't want the default sound!
+end
+
+function GM:PlayerHurt(victim, attacker)
+    if ( attacker:IsPlayer() ) then
+        victim:ChatPrint("You were attacked by : " .. attacker:Nick())
+    end
+end
+
+function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
+	if ( hitgroup == HITGROUP_HEAD ) then
+	   dmginfo:ScaleDamage( 2 ) // More damage when we're shot in the head
+	 else
+	   dmginfo:ScaleDamage( 0.50 )  // Less damage when shot anywhere else
+	end
+end
+
 --net.Receive( "RequestGateA", function( len, ply )
 --	RequestOpenGateA(ply)
 --end)
