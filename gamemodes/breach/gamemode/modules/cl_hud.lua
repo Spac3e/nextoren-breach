@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   gamemodes/breach/gamemode/modules/cl_hud.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -893,11 +905,11 @@ function Death_Scene( ply )
 	Dead_Body.Think = function( self )
 	
 		self:NextThink( CurTime() )
-
-		cycle = self:GetCycle()
 	
 		self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.4 ) )
-		
+	
+		cycle = self:GetCycle()
+	
 		return true
 	
 	end
@@ -1403,7 +1415,7 @@ local function BreachVersionIndicator()
 	local widthz = ScrW()
 	local heightz = ScrH()
 
-	draw.SimpleText( clang.bugs, "ScoreboardContent", widthz * 0.5, heightz * 0.95, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	draw.SimpleText( clang.bugs, "ScoreboardContent", widthz * 0.5, heightz * 0.96, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	draw.SimpleText( clang.version_title, "ScoreboardContent", widthz * 0.5, heightz * 0.99, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 	draw.SimpleText( clang.version, "ScoreboardContent", widthz * 0.5, heightz * 0.972, clr1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
@@ -1993,13 +2005,13 @@ net.Receive("NTF_Special_1", function()
     local team = net.ReadUInt( 8 )
 	local client = LocalPlayer()
     halo_team = {} 
-	for _, v in ipairs( player.GetAll() ) do
+    for _, v in ipairs( player.GetAll() ) do
         if v:GTeam() == team then
             table.insert(halo_team, v)
 
 			local bonemerged_tbl = ents.FindByClassAndParent("ent_bonemerged", v)
 
-			if ( bonemerged_tbl ) then
+			if ( bonemerged_tbl && bonemerged_tbl:IsValid() ) then
 
 				for i = 1, #bonemerged_tbl do
 
@@ -2013,10 +2025,10 @@ net.Receive("NTF_Special_1", function()
     timer.Simple(15, function()
         halo_team = false
     end)
-	local outline_clr = gteams.GetColor(team)
+	local outline_clr = Color( 255, 12, 0, 210 )
 	hook.Add( "PreDrawOutlines", "Draw_ntf", function()
 		if client:GTeam() == TEAM_NTF then
-			if ( halo_team != false ) then
+			if ( #halo_team > 0 && halo_team != false ) then
 	
 				outline.Add( halo_team, outline_clr, 0 )
 		
@@ -2938,4 +2950,4 @@ hook.Add("DrawOverlay", "cmds_showup", function()
 			draw.DrawText(helptext, "cmd_showup_font_2", x, y+30, helptext_clr, TEXT_ALIGN_TOP)
 		end
 
-end)]]
+end)--]]

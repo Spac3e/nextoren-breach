@@ -70,9 +70,6 @@ function RegisterSCP( name, model, weapon, static_stats, dynamic_stats, custom_c
 	end
 
 	local rolename = name
-	if !ALLLANGUAGES["english"]["role"][rolename] then
-		error( "No language entry for: "..rolename )
-	end
 
 	local spawn = _G["SPAWN_"..name] || SPAWN_SCP_RANDOM
 	if !static_stats.no_spawn and !dynamic_stats.no_spawn then
@@ -212,7 +209,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	end
 
 	ply:SetGTeam( TEAM_SCP )
-	ply:SetRoleName( role[self.name] )
+	ply:SetRoleName( self.name )
 
 	if !self.basestats.no_model then
 		ply:SetModel( self.model )

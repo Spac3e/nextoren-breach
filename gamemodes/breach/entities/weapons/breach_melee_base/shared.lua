@@ -1,6 +1,6 @@
 --[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
+Server Name: Breach 2.6.0 [Alpha]
+Server IP:   94.26.255.7:27415
 File Path:   gamemodes/breach/entities/weapons/breach_melee_base/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -31,7 +31,7 @@ SWEP.PrimaryAttackDamageWindow = 0.1
 SWEP.PrimaryDamage = 45
 SWEP.SecondaryDamage = 80
 
-SWEP.PrimaryStamina = 2
+SWEP.PrimaryStamina = 5
 SWEP.SecondaryStamina = 10
 SWEP.DamageForce = 2
 
@@ -288,8 +288,6 @@ function SWEP:IndividualThink()
 
             if ( self:isBackstab( ent ) ) then
 
-              if IsValid(ent) and ent:IsPlayer() then self.Owner:CompleteAchievement("backstab") end
-
               dmg = self.PrimaryDamage * math.random( 3, 4 )
 
             else
@@ -376,8 +374,7 @@ function SWEP:PrimaryAttack()
 
   if ( self.Owner:GetStamina() ) then
 
-    self.Owner.Stamina = ( math.Clamp( self.Owner.Stamina - self.PrimaryStamina, 0, 100 ) )
-    self.Owner:SetStamina(self.Owner.Stamina)
+    self.Owner:SetStamina( math.Clamp( self.Owner:GetStamina() - self.PrimaryStamina, 0, 100 ) )
 
   end
 

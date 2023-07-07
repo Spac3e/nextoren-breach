@@ -70,7 +70,7 @@ if ( SERVER ) then
 
     if ( activator != self:GetOwner() ) then return end
 
-    activator.TempValues.UsedTeleporter = false
+    activator.UsedTeleporter = false
 
     self:Remove()
 

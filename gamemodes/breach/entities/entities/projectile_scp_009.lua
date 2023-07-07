@@ -36,7 +36,7 @@ if SERVER then
 
 	function mply:Make009Statue()
 
-		if self.TempValues.Used500 then return end
+		if self.Used500 then return end
 
 		local ragdoll
 		if self:HasWeapon("item_special_document") then

@@ -442,15 +442,15 @@ end
 
 function mply:SurvivorCleanUp()
 	self:ClearBodyGroups()
+	self:SetSkin(0)
 	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self ) || {} if self:GTeam() != TEAM_SCP then for i = 1, #tbl_bonemerged do local bonemerge = tbl_bonemerged[ i ] bonemerge:Remove() end
 	self:StripWeapons()
-	self:SetSkin(0)
 	self:StripAmmo()
 	self:SetNW2Bool("Breach:CanAttach", false)
-	self:SetUsingCloth("")
-	self:SetUsingHelmet("")
-	self:SetUsingArmor("")
 	self:SetUsingBag("")
+	self:SetUsingCloth("")
+	self:SetUsingArmor("")
+	self:SetUsingHelmet("")
     end
 end
 
@@ -522,9 +522,6 @@ function mply:ApplyRoleStats( role )
 		selfmodel = {role.models}
 		self:SetModel(table.Random(role.models))
 	end
-	if role.maxslots then
-		self:SetMaxSlots(role.maxslots)
-	end
 	self:Namesurvivor()
 	if role.usehead and finalselfmodel != role.fmodels and role.randomizehead != nil and role.randomizehead != true then
 		self:Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
@@ -542,6 +539,7 @@ function mply:ApplyRoleStats( role )
 	--if role.damage_modifiers then
 	--	self:ScaleDamage(role.damage_modifiers[hitgroup])
 	--end
+	self:SetSkin(0)
 	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end

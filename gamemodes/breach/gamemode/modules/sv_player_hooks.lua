@@ -171,18 +171,13 @@ function GM:PlayerSetHandsModel( ply, ent )
 	end
 end
 
+util.AddNetworkString("LevelBar")
+
+local stolik = {Suka = 20}
+
 function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	ply:RXSENDNotify("l:your_current_exp "..ply:GetNEXP())
 	ply:SetupHands()
-	if ply:GTeam() != TEAM_SCP or ply:GTeam() != TEAM_SPEC then
-		net.Start("Death_Scene")
-		net.WriteBool(true)
-		net.WriteEntity(ply)
-		net.Send(ply)
-	end
-	if ply:GTeam() == TEAM_SCP then
-		CreateSCPRAG(ply)
-	end
 	ply:AddDeaths(1)
 end
 
@@ -218,16 +213,20 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	    end
 	end
 	victim:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
+	net.Start("Death_Scene")
+	net.WriteBool(true)
+	net.WriteEntity(self)
+	net.Send(victim)
+	net.Start("LevelBar")
+    net.WriteTable(stolik)
+	net.WriteUInt(32, 16)
+	net.Send(victim)
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
 	net.Start( "957Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
-	--net.Start( "Death_Scene" )
-	--net.WriteString("Death_Scene", true)
-	--net.Send( victim )
-
 	victim:SetModelScale( 1 )
 	if attacker != victim and postround == false and attacker:IsPlayer() then
 		if victim:GTeam() == attacker:GTeam() then

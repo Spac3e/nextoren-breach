@@ -3320,13 +3320,13 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			if SERVER then
 
-				if !ply.TempValues.UsedTeleporter then
+				if !ply.UsedTeleporter then
 
 					ply:SetSpecialCD(CurTime() + 3)
 
 					if ply:GetPos():WithinAABox(Vector(-9240.0830078125, -1075.4862060547, 2639.8430175781), Vector(-12292.916015625, 1553.1733398438, 1209.9250488281)) then return end
 
-					ply.TempValues.UsedTeleporter = true
+					ply.UsedTeleporter = true
 
 					if !ply:IsOnGround() then
 						ply:SetSpecialCD(CurTime() + 5)

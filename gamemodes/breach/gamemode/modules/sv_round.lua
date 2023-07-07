@@ -16,24 +16,15 @@ function BREACH_Round_System_Start()
 	BREACH_Round_System_Announcer()
 	for k,v in pairs(ents.FindByClass("func_door")) do
 		v:SetKeyValue( "returndelay", 6 )
-		v:SetKeyValue( "spawnflags", "8192" )
 	  end
-	  
-	  for k,v in pairs(ents.FindByClass("func_door_rotating")) do
+	  	  for k,v in pairs(ents.FindByClass("func_door_rotating")) do
 		v:SetKeyValue( "returndelay", 6 )
-		v:SetKeyValue( "spawnflags", "8192" )
 	  end
 	  for k,v in pairs(ents.FindByClass("prop_dynamic")) do
 		  v:SetKeyValue( "returndelay", 6 )
-		  v:SetKeyValue( "spawnflags", "8192" )
 		end
 		for k,v in pairs(ents.FindByClass("prop_door_rotating")) do
 		  v:SetKeyValue( "returndelay", 6 )
-		  v:SetKeyValue( "spawnflags", "8192" )
-		end
-		for k,v in pairs(ents.FindByClass("prop_door")) do
-		  v:SetKeyValue( "returndelay", 6 )
-		  v:SetKeyValue( "spawnflags", "8192" )
 		end
 		  --timer.Create("RandAnnouncerKrivota", 135, 0, PlayRandomAnnouncer)
 		  timer.Create( "lc_15_s", 180, 1, function()

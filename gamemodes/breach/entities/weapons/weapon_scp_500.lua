@@ -72,14 +72,14 @@ function SWEP:Eat()
 
     self.Owner:ScreenFade(SCREENFADE.IN, Color(0,255,0, 100), 0.5, 0)
     self.Owner:BrTip(0, "[VAULT]", Color(255,0,0,220), "l:you_feel_healthy", color_white )
-    self.Owner.TempValues.Used500 = true
+    self.Owner.Used500 = true
     self.Owner.Infected409 = false
     timer.Remove("SCP409Phase1_"..self.Owner:SteamID64())
     timer.Remove("SCP409Phase2_"..self.Owner:SteamID64())
     timer.Remove("SCP409Phase3_"..self.Owner:SteamID64())
     timer.Remove("SCP1025COLD"..self.Owner:SteamID64())
-    if self.Owner.TempValues.diseaseremember then
-      for i, v in pairs(self.Owner.TempValues.diseaseremember) do
+    if self.Owner.diseaseremember then
+      for i, v in pairs(self.Owner.diseaseremember) do
         if i == "jumppower" then
           self.Owner:SetJumpPower(v)
         elseif i == "staminascale" then
