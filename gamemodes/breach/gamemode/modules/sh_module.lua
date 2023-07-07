@@ -1313,117 +1313,54 @@ end
 local meta = FindMetaTable("Player");
 local ent = FindMetaTable( "Entity" )
 
-function ent:IsLZ()
-
+function meta:IsLZ()
 	local pos = self:GetPos()
-  
 	if ( pos.x > 4600 && pos.y > -7003 && pos.y < -1200 && pos.z < 880 || pos.x > 8550 && pos.y < -440 && pos.y > -7000 || ( pos.x > -1000 && pos.x < 1680 ) && pos.y < -3600 && pos.y > -5800 && pos.z < -1000 ) then
-  
 	  return true
-  
 	end
-  
 	if ( pos.x > 7283 && pos.x < 7680 && pos.y < -1075 && pos.y > -1240 ) then
-  
 	  return true
-  
 	end
-  
 	return false
-  
 end
   
 function ent:Outside()
-
-
-
 	if ( self:GetPos().z > 880 ) then
-  
-  
-  
-	  return true;
-  
-  
-  
+  	  return true;
 	end
-  
-  
-  
-	return false
-  
-  
-  
+  	return false
 end
   
-function ent:Outside()
-
-
-
-	if ( self:GetPos().z > 880 ) then
-  
-  
-  
+function meta:Outside()
+	if ( self:GetPos().z > 880 ) then  
 	  return true;
-  
-  
-  
-	end
-  
-  
-  
+  	end
 	return false
-  
-  
-  
 end
   
-  
-  
-function ent:IsEntrance()
-  
+function meta:IsEntrance()
 	local pos = self:GetPos()
-  
 	if ( pos.x < 1767 && pos.x > -3120 && pos.y > 1944 && pos.y < 6600 && pos.z < 880 ) then
-  
 	  return true
-  
 	end
-  
 	return false
-  
 end
-
-
 
 function meta:IsBlack()
 	for i, v in pairs(ents.FindByClassAndParent("ent_bonemerged", self)) do
-		if IsValid(v) and (v:GetModel():find("balaclava") or v:GetModel():find("head_main_1") ) then
-			if NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(0)] then
-				return true
-			elseif NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(2)] then
-				return true
-			end
+		if IsValid(v) and v:GetModel():find("head_main_1") then
+			return NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(0)]
 		end
 	end
 	return false
 end
   
-  
-  
-  
-  
-function ent:IsHardZone()
-  
+function meta:IsHardZone()
 	local pos = self:GetPos()
-  
 	if ( pos.x < 8320 && pos.x > 1200 && pos.y > -1200 && pos.z < 880 ) then
-  
 	  return true
-  
 	end
-  
 	return false
-  
 end
 
 local blockeddoors_scp = {

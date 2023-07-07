@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/entities/object_intercom.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 AddCSLuaFile();
 
 ENT.Type = "anim"
@@ -110,23 +98,21 @@ end
 
 function ENT:PlaySoundStart()
 
-	--net.Start( "ForcePlaySound" )
+	net.Start( "ForcePlaySound" )
 
-		--net.WriteString( "nextoren/entities/intercom/start.mp3" )
+		net.WriteString( "nextoren/entities/intercom/start.mp3" )
 
-	--net.Broadcast()
-	PlayAnnouncer("nextoren/entities/intercom/start.mp3")
+	net.Broadcast()
 
 end
 
 function ENT:PlaySoundEnd()
 
-	--net.Start( "ForcePlaySound" )
+	net.Start( "ForcePlaySound" )
 
-		--net.WriteString( "nextoren/entities/intercom/stop.mp3" )
+		net.WriteString( "nextoren/entities/intercom/stop.mp3" )
 
-	--net.Broadcast()
-	PlayAnnouncer("nextoren/entities/intercom/stop.mp3")
+	net.Broadcast()
 	/*
 	net.Start( "IntercomStatus" )
 
@@ -553,14 +539,6 @@ if SERVER then
 				if IsValid(intercom) then intercom:SetStatus("") end
 			end)
 		end
-		if actionname == "camera" then
-			ply:SetViewEntity(ents.FindByClass("br_camera")[1])
-
-			ply.CameraLook = true
-
-			net.Start("camera_enter")
-			net.Send(ply)
-		end
 		if actionname == "live" then
 			intercom:SetStatus("Alive")
 			timer.Create("IntercomTimer_ChangeStatus", 5, 1, function()
@@ -591,7 +569,6 @@ if CLIENT then
 					--{ name = "Наблюдение по камерам", func = function() end },
 					--{ name = "Запросы", func = function() end },
 					--{ name = "Состояние комплекса", func = function() end },
-					{ name = "Просмотр камер", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("camera") net.SendToServer() end },
 					{ name = "Живые сущности в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("live") net.SendToServer() end },
 					{ name = "Научный персонал в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("sci") net.SendToServer() end },
 					{ name = "Военный персонал в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("mil") net.SendToServer() end },
@@ -793,7 +770,7 @@ function ENT:Draw()
 		--draw.RoundedBox(0, -120, -102, 80, 115, Color(0, 0, 0, 250))
 		if ( self:GetStatus() == "Transmitting"  ) then
 
-			draw.DrawText(string.Replace("TRANSMITTING...\nCHAT ONLY", "#T", tostring(self:GetWTFTimer())), "LZTextVerySmall", 24, -50, text_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
+			draw.DrawText(string.Replace("TRANSMITTING...", "#T", tostring(self:GetWTFTimer())), "LZTextVerySmall", 24, -50, text_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER);
 
 		elseif ( self:GetStatus() == "Cooldown" ) then
 

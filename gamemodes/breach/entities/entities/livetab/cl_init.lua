@@ -1,15 +1,3 @@
---[[
-Server Name: [RXSEND] Breach 2.6.0
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/entities/livetab/cl_init.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 include('shared.lua')
 
 surface.CreateFont( "LiveTabMainFont", {
@@ -186,7 +174,7 @@ function ENT:Draw()
 
 				draw.SimpleText( "MAIN INFO", "LiveTabMainFont", 0, 2, status, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				draw.SimpleText( "Foundation OS v 1.0", "DermaDefaultBold", 280, -25, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTE )
-				draw.SimpleText( self.SupportChannel || "0", "LiveTabMainFont", 295, 16, channel_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTE )
+				draw.SimpleText( self.SupportChannel, "LiveTabMainFont", 295, 16, channel_clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTE )
 				draw.SimpleText( string.ToMinutesSeconds( cltime ), "LiveTabMainFont", 280, 5, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				draw.SimpleText( "Science Personnel: " .. ( self.Statistics[ TEAM_SCI ] || 0 ) + ( self.Statistics[ TEAM_SPECIAL ] || 0 ), "LiveTabMainFont_small", 0, 60, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 				draw.SimpleText( "Millitary Personnel: " .. ( self.Statistics[ TEAM_GUARD ] || 0 ) + ( self.Statistics[ TEAM_CB ] || 0 ) + ( self.Statistics[ TEAM_OBR ] || 0 ), "LiveTabMainFont_small", 0, 130, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )

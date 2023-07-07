@@ -741,6 +741,20 @@ local ammo_maxs = {
 local cdforuse = 0
 local cdforusetime = 0.2
 
+if SERVER then
+	util.AddNetworkString("tazer_load")
+	net.Receive("tazer_load", function(len, ply)
+		local battery = net.ReadEntity()
+
+		if battery:GetClass():find("battery_") and ply:HasWeapon("item_tazer") and battery:GetOwner() == ply then
+			local charge = battery.Charge
+			local tazer = ply:GetWeapon("item_tazer")
+			tazer:SetClip1(math.min(15, tazer:Clip1()+charge))
+			battery:Remove()
+		end
+	end)
+end
+
 local function DrawNewInventory( notvictim, vtab, ammo )
 
 	local client = LocalPlayer()
@@ -1150,17 +1164,17 @@ local function DrawNewInventory( notvictim, vtab, ammo )
 					client:SelectWeapon( EQHUD.weps[id]:GetClass() )
 				elseif istable(EQHUD.weps[id]) then
 					if EQHUD.weps[id].ArmorType == "Armor" then
-						net.Start("DropBro", true)
+						net.Start("DropAdditionalArmor", true)
 						net.WriteString(client:GetUsingArmor())
 						net.SendToServer()
 					end
 					if EQHUD.weps[id].ArmorType == "Hat" then
-						net.Start("DropHat", true)
+						net.Start("DropAdditionalArmor", true)
 						net.WriteString(client:GetUsingHelmet())
 						net.SendToServer()
 					end
 					if EQHUD.weps[id].ArmorType == "Bag" then
-						net.Start("DropBag", true)
+						net.Start("DropAdditionalArmor", true)
 						net.WriteString(client:GetUsingBag())
 						net.SendToServer()
 					end
@@ -1283,9 +1297,25 @@ local function DrawNewInventory( notvictim, vtab, ammo )
 		inv_butt.DoRightClick = function(self)
 			if notvictim then
 				if IsEntity(EQHUD.weps.Equipable[id]) and EQHUD.weps.Equipable[id]:IsWeapon() then
-					client:DropWeapon(EQHUD.weps.Equipable[id]:GetClass())
-					if !EQHUD.weps.Equipable[id].UnDroppable and EQHUD.weps.Equipable[id].droppable != false then
-						EQHUD.weps.Equipable[id] = nil
+					local function drop()
+						client:DropWeapon(EQHUD.weps.Equipable[id]:GetClass())
+						if !EQHUD.weps.Equipable[id].UnDroppable and EQHUD.weps.Equipable[id].droppable != false then
+							EQHUD.weps.Equipable[id] = nil
+						end
+					end
+					if EQHUD.weps.Equipable[id]:GetClass():find("battery_1") or EQHUD.weps.Equipable[id]:GetClass():find("battery_2") or EQHUD.weps.Equipable[id]:GetClass():find("battery_3") and client:HasWeapon("item_tazer") then
+						local menu = DermaMenu() 
+						menu:AddOption( "Зарядить Электрошокер", function() net.Start("tazer_load") net.WriteEntity(EQHUD.weps.Equipable[id]) net.SendToServer() EQHUD.weps.Equipable[id] = nil end ):SetIcon( "icon16/lightning_add.png" )
+						menu:AddOption( "Выбросить", function() drop() end ) -- The menu will remove itself, we don't have to do anything.
+						menu:Open()
+
+						menu.Paint = function( self, w, h )
+
+						   draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_black, 225 ) )
+
+						end
+					else
+						drop()
 					end
 				else
 					inv_butt.DoClick()

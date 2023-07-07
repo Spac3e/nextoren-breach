@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/entities/obr_call.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 AddCSLuaFile()
 
 ENT.Type = "anim"
@@ -38,7 +26,7 @@ function ENT:Initialize()
   self:SetSolid( SOLID_NONE )
   self:SetActivate( true )
   self:SetCalled( false )
-  self:SetCD( CurTime() + 350 )
+  self:SetCD( CurTime() + 100 )
   self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
   self:SetRenderMode( 1 )
 
@@ -59,7 +47,7 @@ end
 
 function ENT:Use( activator, caller )
 
-  if ( caller:IsPlayer() && caller:GetRoleName() != role.MTF_HOF ) then return end
+  if ( caller:IsPlayer() && caller:GetRoleName() != role.MTF_HOF && caller:GetRoleName() != role.Dispatcher ) then return end
 
   if ( self:GetCD() > CurTime() ) then return end
 
@@ -71,22 +59,10 @@ function ENT:Use( activator, caller )
 
   end
 
-  local count = 0
-
-  for i, v in pairs(player.GetAll()) do
-    if v.GTeam and v:GTeam() == TEAM_SPEC then
-      count = count + 1
-    end
-  end
-
-  count = math.floor(math.min(count*0.7,10))
-
   if ( caller && caller:IsValid() && caller:IsPlayer() && self:GetActivate() && !GetGlobalBool( "NukeTime", false ) ) then
 
     self.Uses = self.Uses + 1
     self:SetCalled( true )
-
-    caller:CompleteAchievement("protocol")
 
     if ( self.Uses >= 3 ) then
 
@@ -102,7 +78,7 @@ function ENT:Use( activator, caller )
 
         if ( SERVER ) then
 
-          OBRSpawn(count)
+          OBRSpawn()
 
           BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/obr_enter.wav" )' )
 
