@@ -236,7 +236,7 @@ end)
 
 net.Receive( "DropCurrentVest", function( len, ply )
 	if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP or ply:GetRoleName() == role.SCP9571 ) and ply:Alive() then
-		if ply.UsingArmor != nil then
+		if ply.GetUsingCloth != nil then
 			ply:UnUseArmor()
 		end
 	end

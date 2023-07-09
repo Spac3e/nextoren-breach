@@ -6,6 +6,55 @@ util.AddNetworkString("camera_exit")
 util.AddNetworkString("FirstPerson")
 util.AddNetworkString("BreachAnnouncerLoud")
 util.AddNetworkString("FirstPerson_Remove")
+util.AddNetworkString("DropAdditionalArmor")
+
+net.Receive("DropAdditionalArmor", function(ply)
+	local suka_snimi = net.ReadString()
+	if suka_snimi == "armor_big_bag" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingBag() != "" then
+				ply:SetMaxSlots(8)
+				ply:UnUseBag()
+			end
+		end
+	end
+	if suka_snimi == "armor_small_bag" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingBag() != "" then
+				ply:SetMaxSlots(8)
+				ply:UnUseBag()
+			end
+		end
+	end
+	if suka_snimi == "armor_light_armor" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingHelmet() != "" then
+				ply:UnUseHat()
+			end
+		end
+	end
+	if suka_snimi == "armor_light_hat" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingArmor() != "" then
+				ply:UnUseBro()
+			end
+		end
+	end
+    if suka_snimi == "armor_heavy_armor" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingArmor() != "" then
+				ply:UnUseBro()
+			end
+		end
+	end
+	if suka_snimi == "armor_heavy_hat" then
+		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
+			if ply:GetUsingHelmet() != "" then
+				ply:UnUseHat()
+			end
+		end
+	end
+end)
 
 function Player:SetBottomMessage( msg )
     net.Start( "SetBottomMessage" )
@@ -227,6 +276,7 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	net.Start( "957Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
+	if victim:GTeam() == TEAM_SCP and victim.basestats.death_sound != "" then PlayAnnouncer(victim.basestats.death_sound) end
 	victim:SetModelScale( 1 )
 	if attacker != victim and postround == false and attacker:IsPlayer() then
 		if victim:GTeam() == attacker:GTeam() then

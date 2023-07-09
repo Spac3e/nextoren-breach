@@ -100,42 +100,11 @@ function mply:TakeHealth(number)
 	self:SetHealth(new)
 end
 
-function mply:AnimatedHeal()
+function mply:AnimatedHeal(number)
 	local health, max = self:Health(), self:GetMaxHealth()
 	local new = health + number
 	self:SetHealth(math.min(new, max))
 end
-
-function mply:AddHealth(number)
-	local health, max = self:Health(), self:GetMaxHealth()
-	local new = health + number
-	self:SetHealth(math.min(new, max))
-end
-
-net.Receive( "DropBag", function( len, ply )
-    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
-        if ply:GetUsingBag() != "" then
-            ply:SetMaxSlots(8)
-            ply:UnUseBag()
-        end
-    end
-end)
-
-net.Receive( "DropBro", function( len, ply )
-    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
-        if ply:GetUsingArmor() != "" then
-            ply:UnUseBro()
-        end
-    end
-end)
-
-net.Receive( "DropHat", function( len, ply )
-    if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
-        if ply:GetUsingHelmet() != "" then
-            ply:UnUseHat()
-        end
-    end
-end)
 
 function mply:UnUseBag()
    	if self:GetUsingBag() == "" then return end
@@ -328,9 +297,6 @@ function mply:DeleteItems()
 			end
 		end
 	end
-end
-
-function mply:ApplyArmor(name)
 end
 
 function mply:UnUseArmor()

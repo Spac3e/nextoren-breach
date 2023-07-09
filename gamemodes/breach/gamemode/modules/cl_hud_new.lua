@@ -3242,8 +3242,9 @@ function CreateInspectPanel(ply)
 	end
 
 	mdl.PaintOver = function(self, w, h)
-		surface.SetDrawColor(color_white)
-		surface.DrawOutlinedRect(0,0,w,h,1)
+		local color = gteams.GetColor(ply:GTeam())
+		surface.SetDrawColor(color,45)
+		surface.DrawOutlinedRect(0,0,w,h,3)
 	end
 
 	local h_y = 155

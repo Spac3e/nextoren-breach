@@ -97,8 +97,8 @@ function SWEP:Heal( target )
 
       BREACH.Players:ChatPrint( self.Owner, true, true, "Лечение завершено. Здоровье " .. target:GetNamesurvivor() .. " восстановлено." )
       BREACH.Players:ChatPrint( target, true, true, "Ваше здоровье было восстановлено благодаря " .. self.Owner:GetNamesurvivor() )
-     -- self.Owner:AddToMVP("heal", math.min(target:GetMaxHealth() - target:Health(), target:GetMaxHealth() * self.PercentHeal))
-      target:AddHealth( target:GetMaxHealth() * self.PercentHeal )
+      self.Owner:AddToMVP("heal", math.min(target:GetMaxHealth() - target:Health(), target:GetMaxHealth() * self.PercentHeal))
+      target:AnimatedHeal( target:GetMaxHealth() * self.PercentHeal )
 
       self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
@@ -129,8 +129,8 @@ function SWEP:Heal( target )
 
       BREACH.Players:ChatPrint( self.Owner, true, true, "l:medkit_heal_ended" )
 
-    --  self.Owner:AddToMVP("heal", math.min(self.Owner:GetMaxHealth() - self.Owner:Health(), self.Owner:GetMaxHealth() * self.PercentHeal))
-    self.Owner:AddHealth( self.Owner:GetMaxHealth() * self.PercentHeal )
+    self.Owner:AddToMVP("heal", math.min(self.Owner:GetMaxHealth() - self.Owner:Health(), self.Owner:GetMaxHealth() * self.PercentHeal))
+    self.Owner:AnimatedHeal( self.Owner:GetMaxHealth() * self.PercentHeal )
     self.Owner:SetNWEntity( "NTF1Entity", NULL )
 
       self.Heal_Left = self.Heal_Left - 1

@@ -1,23 +1,14 @@
-
 local mply = FindMetaTable( "Player" )
 
-
 function spawn_ents()
-	print("Omaygot! Spawning loot")
-	for k,v in pairs(ENTITY_SPAWN_LIST_SHAKY) do
-	local vv = table.Copy(v.Spawns)
-	local vvv = table.Copy(v.Spawns.pos)
-	local omaygot_ents_spawn = ents.Create( v.Class )
-	if IsValid( omaygot_ents_spawn ) then
-		omaygot_ents_spawn:Spawn()
-		omaygot_ents_spawn:SetPos(vv or table.Random(vvv))
-		if v.Spawns.ang then omaygot_ents_spawn:SetAngles(v.Spawns.ang)
-        end
-      end
-    end
 end
 
 concommand.Add("loot", spawn_ents)
+
+function test222()
+end
+
+concommand.Add("test", test222)
 
 function mply:CompleteAchievement(achivname, ply)
 	net.Start("Completeachievement_serverside")
