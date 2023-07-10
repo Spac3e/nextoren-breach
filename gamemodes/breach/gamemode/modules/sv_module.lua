@@ -1062,11 +1062,14 @@ end
 
 function GM:PlayerHurt(victim)
 	if victim:GTeam() == TEAM_SCP or victim:GetRoleName() == role.Spectator then return end
-	if !victim:IsFemale() then
+	if !victim:IsFemale() and !victim:GTeam() == TEAM_GUARD then
 	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
 	end
 	if victim:IsFemale() then
 		victim:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_"..math.random(1,66)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
+	end
+	if !victim:IsFemale() and victim:GTeam() == TEAM_GUARD then
+	    victim:EmitSound( "nextoren/vo/mtf/mtf_hit_"..math.random(1,23)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
 	end
 end
 
@@ -1440,139 +1443,6 @@ function DARK()
     BroadcastLua('render.RedownloadAllLightmaps(true)')
     BroadcastLua('RunConsoleCommand("mat_specular", 0)')
 end
-
-CreateConVar("sv_manualweaponpickup", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Is manual weapon pickup enabled?")
-CreateConVar("sv_manualweaponpickup_aim", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Must the player be aiming at the weapon?")
-CreateConVar("sv_manualweaponpickup_auto", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Holding use key picks up weapons automatically.")
-CreateConVar("sv_manualweaponpickup_autodraw", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Player will automatically draw a given weapon.")
-CreateConVar("sv_manualweaponpickup_weaponlimit", 0, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "How many weapons a player can hold at once.  (0 = No Limit)")
-CreateConVar("sv_manualweaponpickup_weaponlimitswap", 1, {FCVAR_REPLICATED, FCVAR_ARCHIVE}, "Drop current weapon to pick up another if player is holding too many.")
-
-local clr_red = Color( 255, 0, 0 )
-local mply = FindMetaTable'Player'
-
-function mply:Give(classname)
-	local ent = ents.Create(classname)
-	if (!IsValid(ent)) then return end
-	ent:SetPos(self:GetPos())
-	ent.GiveTo = self
-	ent:Spawn()
-	timer.Simple(0.1, function() self:SelectWeapon(classname) end)
-end
-
-function mply:BreachGive(classname)
-	local ent = ents.Create(classname)
-	if (!IsValid(ent)) then return end
-	ent:SetPos(self:GetPos())
-	ent.GiveTo = self
-	ent:Spawn()
-	timer.Simple(0.1, function() self:SelectWeapon(classname) end)
-end
-mply._DropWeapon = mply.DropWeapon
-
-function mply:DropWeapon(weapon)
-	if (IsValid(weapon)) then
-		self:_DropWeapon(weapon)
-		weapon.GiveTo = nil
-	end
-end
-
-local function canCarryWeapon(pl, weapon)
-	local limit = GetConVar("sv_manualweaponpickup_weaponlimit"):GetInt()
-	if (limit != 0 && #pl:GetWeapons() >= limit) then
-		if (GetConVar("sv_manualweaponpickup_weaponlimitswap"):GetBool()) then
-			if (pl.PressedUse) then
-				pl.PressedUse = false
-				pl:DropWeapon(pl:GetActiveWeapon())
-				pl.DrawWeapon = weapon:GetClass()
-				timer.Simple(0.1, function() pl:SelectWeapon(pl.DrawWeapon) end)
-				return true
-			end
-		end
-		return false
-	end
-	return true
-end
-
-hook.Add("PlayerCanPickupWeapon", "ManualWeaponPickup_CanPickup", function(pl, ent, key)
-	if (pl.ManualWeaponPickupSpawn) then
-		if (CurTime() > pl.ManualWeaponPickupSpawn) then
-			if (IsValid(ent.GiveTo)) then
-				if (ent.GiveTo == pl) then
-					return true
-				end
-			end
-			if (GetConVar("sv_manualweaponpickup"):GetBool()) then
-				local tr = pl:GetEyeTrace()
-				local wepent = tr.Entity
-				if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( pl:GetPos() ) <= 6400 ) then
-					local ent_class = wepent:GetClass()
-				if (key == IN_USE) then
-					local trent = pl:GetEyeTrace().Entity
-                    if !pl:HasWeapon(trent:GetClass()) then
-					pl:BrProgressBar("l:progress_wait", 1, "nextoren/gui/icons/hand.png", wepent, false)
-					timer.Simple( 1, function()
-					pl:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
-					pl.PressedUse = true
-					end)
-				  end
-				end
-					if (GetConVar("sv_manualweaponpickup_aim"):GetBool()) then
-						if (pl:GetEyeTrace().Entity == ent) then
-							if (!GetConVar("sv_manualweaponpickup_auto"):GetBool()) then
-								if (pl.PressedUse) then
-									local c = canCarryWeapon(pl, ent)
-									pl.PressedUse = false
-									return c
-								else
-									return false
-								end
-							else
-								return canCarryWeapon(pl, ent)
-							end
-						else
-							return false
-						end
-					else
-						if (!GetConVar("sv_manualweaponpickup_auto"):GetBool()) then
-							if (pl.PressedUse) then
-								pl.PressedUse = false
-								return canCarryWeapon(pl, ent)
-							else
-								return false
-							end
-						else
-							return canCarryWeapon(pl, ent)
-						end
-					end
-				else
-					return false
-				end
-			end
-		end
-	end
-end)
-
-hook.Add("KeyPress", "ManualWeaponPickup_KeyPress", function(pl, key)
-	local tr = pl:GetEyeTrace()
-	local wepent = tr.Entity
-	if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( pl:GetPos() ) <= 6400 ) then
-	if (key == IN_USE) then
-		local trent = pl:GetEyeTrace().Entity
-		if (pl:GetMaxSlots() - pl:GetPrimaryWeaponAmount()) == 0 then pl:RXSENDNotify( "l:inventory_full" ) return end
-		if pl:HasWeapon(trent:GetClass()) then pl:RXSENDNotify( "У Вас уже есть этот предмет." ) return end
-		pl:BrProgressBar("l:progress_wait", 1, "nextoren/gui/icons/hand.png")
-		timer.Simple( 1, function()
-	    pl:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
-		pl.PressedUse = true
-		end)
-	end
-end
-end)
-
-hook.Add("PlayerSpawn", "ManualWeaponPickup_PlayerSpawn", function(pl)
-	pl.ManualWeaponPickupSpawn = CurTime()
-end)
 
 function evacuate(personal, roles_for_evac, give_score)
 	if personal:IsPlayer() == true then

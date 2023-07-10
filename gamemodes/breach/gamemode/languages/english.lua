@@ -1084,7 +1084,8 @@ english.abilities_name_cotskpsycho = "Last chance"
 english.abilities_cotskpsycho = "Regain your health, boost yourself and then die after 30 seconds."
 english.abilities_name_sport = "Run"
 english.abilities_sport = "Change running speed"
-
+english.abilities_name_chaosdemo = "Claymore"
+english.abilities_chaosmine = "Set up Claymore mine."
 --ROLEMENU
 english.f2_name = "Name:"
 english.f2_objectives = "Objectives:"

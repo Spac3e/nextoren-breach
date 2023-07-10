@@ -85,7 +85,6 @@ end
 
 net.Receive("NTF_Special_1", function(ply,caller)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
-	local find_team = net.ReadUInt(12)
 	caller:SetSpecialCD(CurTime() + 80)
 	timer.Simple( 15, function()
 	
@@ -93,7 +92,7 @@ net.Receive("NTF_Special_1", function(ply,caller)
 	net.WriteString("nextoren/vo/ntf/camera_found_1.ogg")
 	net.Broadcast()
 	net.Start( "NTF_Special_1" )
-	net.WriteUInt( find_team, 12 )
+	net.WriteUInt( 8, 12 )
 	net.Broadcast()
 	end )
 end)
@@ -487,22 +486,26 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 	end
 end )
 
-hook.Add( "SetupPlayerVisibility", "CCTVPVS", function( ply, viewentity )
-	local wep = ply:GetActiveWeapon()
-	if IsValid( wep ) and wep:GetClass() == "item_cameraview" then
-		if wep:GetEnabled() and IsValid( CCTV[wep:GetCAM()].ent ) then
-			AddOriginToPVS( CCTV[wep:GetCAM()].pos )// + Vector( 0, 0, -10 ) )
-		end
-	end
-end )
+local mply = FindMetaTable('Player')
+
+function mply:Give(className, bNoAmmo) local weapon self.WeaponGive = true weapon = self:ixGive(className, bNoAmmo) self.WeaponGive = nil return weapon end
+
+function mply:BreachGive(className, bNoAmmo) local weapon self.WeaponGive = true weapon = self:ixGive(className, bNoAmmo) timer.Simple(0, function() self:SelectWeapon(className) end) self.WeaponGive = nil return weapon end
 
 function GM:PlayerCanPickupWeapon( ply, wep )
-	if ply:GTeam() == TEAM_SCP and ply:GetRoleName() != role.SCP9571 then
+	local data = {}
+		data.start = ply:GetShootPos()
+		data.endpos = data.start + ply:GetAimVector() * 96
+		data.filter = ply
+	local trace = util.TraceLine(data)
+
+	if ply:GTeam() == TEAM_SCP then
 		if wep.ISSCP then
 			return true
 		end
 		return false
 	end
+
 	if ply:GTeam() != TEAM_SPEC then
 		if wep.teams then
 			local canuse = false
@@ -512,35 +515,32 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 				end
 			end
 
-			if canuse == false and ply:GetRoleName() != role.SCP9571 then
+			if canuse == false then
 				return false
 			end
 		end
-		for k,v in pairs(ply:GetWeapons()) do
-			if v:GetClass() == wep:GetClass() then
-				return false
-			end
+    end
+
+	if string.Left( wep:GetClass(), 3 ) == "cw_" then
+		for k, v in pairs( ply:GetWeapons() ) do
+			if string.Left( v:GetClass(), 3 ) == "cw_" then return false end
 		end
-		if string.Left( wep:GetClass(), 3 ) == "cw_" then
-			for k, v in pairs( ply:GetWeapons() ) do
-				if string.Left( v:GetClass(), 3 ) == "cw_" then return false end
-			end
-		end
-		if table.Count( ply:GetWeapons() ) >= 8 then
-			return false
-		end
-		ply.gettingammo = wep.SavedAmmo
-		return true
-	else
-		if ply:GetRoleName() == role.ADMIN then
-			if wep:GetClass() == "br_holster" then return true end
-			if wep:GetClass() == "weapon_physgun" then return true end
-			if wep:GetClass() == "gmod_tool" then return true end
-			if wep:GetClass() == "br_entity_remover" then return true end
-			if wep:GetClass() == "br_tool_teleporter" then return true end
-		end
+	end
+
+	if table.Count( ply:GetWeapons() ) >= 8 then
 		return false
 	end
+
+	ply.gettingammo = wep.SavedAmmo
+
+	if (trace.Entity == wep and ply:KeyDown(IN_USE)) then
+		ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
+        ply:Give(trace.Entity:GetClass())
+		ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
+		trace.Entity:Remove()
+		end)
+	end
+	return ply.WeaponGive
 end
 
 function GM:PlayerCanPickupItem( ply, item )

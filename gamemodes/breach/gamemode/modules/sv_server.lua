@@ -139,6 +139,16 @@ net.Receive("Change_player_settings", function(id, int)
 	net.ReadUInt(int, 32)
 end)
 
+net.Receive("catch_breath", function(ply)
+	if ply:GTeam() == TEAM_SCP or ply:GTeam() == TEAM_SPEC then return end
+	if !ply:IsFemale() then
+		ply:EmitSound("nextoren/charactersounds/breathing/breath0.wav")
+	end
+	if ply:IsFemale() then
+		ply:EmitSound("nextoren/charactersounds/breathing/breathing_female.wav")
+	end
+end)
+
 net.Receive("SendPrefixData", function(data)
 	net.ReadString(prefix)
 	net.ReadBool(enabled)
