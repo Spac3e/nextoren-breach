@@ -488,9 +488,34 @@ end )
 
 local mply = FindMetaTable('Player')
 
-function mply:Give(className, bNoAmmo) local weapon self.WeaponGive = true weapon = self:ixGive(className, bNoAmmo) self.WeaponGive = nil return weapon end
+do
+	mply.BrGive = mply.BrGive or mply.Give
 
-function mply:BreachGive(className, bNoAmmo) local weapon self.WeaponGive = true weapon = self:ixGive(className, bNoAmmo) timer.Simple(0, function() self:SelectWeapon(className) end) self.WeaponGive = nil return weapon end
+	function mply:Give(className, bNoAmmo)
+		local weapon
+
+		self.BrWeaponGive = true
+			weapon = self:BrGive(className, bNoAmmo)
+		self.BrWeaponGive = nil
+
+		return weapon
+	end
+end
+
+do
+	mply.BreachGive = mply.BreachGive or mply.Give
+
+	function mply:BreachGive(className, bNoAmmo)
+		local weapon
+
+		self.BreachWeaponGive = true
+			weapon = self:BreachGive(className, bNoAmmo)
+			timer.Simple(0.1, function() self:SelectWeapon(className) end)
+		self.BreachWeaponGive = nil
+
+		return weapon
+	end
+end
 
 function GM:PlayerCanPickupWeapon( ply, wep )
 	local data = {}
@@ -540,7 +565,7 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 		trace.Entity:Remove()
 		end)
 	end
-	return ply.WeaponGive
+	return ply.BrWeaponGive
 end
 
 function GM:PlayerCanPickupItem( ply, item )
