@@ -926,15 +926,7 @@ function MODULE:CreateEffects( Ent, Index, Bullet, Mode )
 			util.Effect( "hab_physbullet_effects", effectdata )
 		end
 	end
-
-	--if LocalPlayer():SteamID() == "STEAM_0:0:18725400" then
-		--print("effects created on ent "..Bullet.tr.Entity:GetClass()..", hitbox: "..Bullet.tr.HitGroup)
-	--end
-
 	if Ent == LocalPlayer() then
-		--if LocalPlayer():SteamID() == "STEAM_0:0:18725400" then
-			--print("ent == localplayer")
-		--end
 		Bullet.Dir = Bullet.FlightDirection
 		Bullet.Src = Ent:EyePos()
 		hook.Run("PhysBulletHit", Ent, Bullet, Mode)

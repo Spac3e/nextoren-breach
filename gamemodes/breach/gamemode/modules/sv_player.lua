@@ -465,13 +465,13 @@ function mply:SelectAsCISpy()
 	end
 end
 
-function mply:ApplyRoleStats( role )
+function mply:ApplyRoleStats(role)
 	self:SurvivorCleanUp()
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
 	if role.cispy == true then self:SelectAsCISpy() end
 	timer.Simple(0.1, function() if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end end)
-	timer.Simple(0.2, function() self:StripAmmo() if role.ammo then end end)
+	timer.Simple(0.2, function() self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)	end end end)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	self:ClearBodyGroups()
@@ -777,7 +777,7 @@ function mply:AddExp(amount, msg)
 	if self.GetNEXP and self.SetNEXP then
 		self:SetNEXP( self:GetNEXP() + amount )
 		if msg != nil and self:GTeam() == TEAM_SPEC then
-			self:BrTip( 0, "[VAULT]", Color(255,0,0, 210), " Вы получили " .. amount .. " Опыта, Текущий опыт: " .. self:GetNEXP(), color_white )
+			--self:BrTip( 0, "[VAULT]", Color(255,0,0, 210), " Вы получили " .. amount .. " Опыта, Текущий опыт: " .. self:GetNEXP(), color_white )
 		end
 		self:SetPData( "breach_exp", self:GetExp() )
 	else

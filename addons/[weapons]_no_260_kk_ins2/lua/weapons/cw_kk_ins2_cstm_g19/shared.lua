@@ -317,7 +317,7 @@ SWEP.FireSoundSuppressed = "CW_KK_INS2_CSTM_G19_FIRE_SUPPRESSED"
 
 
 
-SWEP.FireDelay = 60/285
+SWEP.FireDelay = 60/360
 
 SWEP.Recoil = 1.1
 

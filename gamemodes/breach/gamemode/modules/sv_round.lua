@@ -6,26 +6,8 @@ MAP_LOADED = MAP_LOADED or false
 util.AddNetworkString("bettersendlua")
 
 function BREACH_Round_System_Start()
-    for k,v in pairs(player.GetAll()) do
-		if v:GTeam() == TEAM_GUARD then
-			v:SendLua("RunConsoleCommand( 'Nextoren_MTF_Intro' )")
-		end
-	end
-
    BREACH_Round_System_Doors_Work()
-	BREACH_Round_System_Announcer()
-	for k,v in pairs(ents.FindByClass("func_door")) do
-		v:SetKeyValue( "returndelay", 6 )
-	  end
-	  	  for k,v in pairs(ents.FindByClass("func_door_rotating")) do
-		v:SetKeyValue( "returndelay", 6 )
-	  end
-	  for k,v in pairs(ents.FindByClass("prop_dynamic")) do
-		  v:SetKeyValue( "returndelay", 6 )
-		end
-		for k,v in pairs(ents.FindByClass("prop_door_rotating")) do
-		  v:SetKeyValue( "returndelay", 6 )
-		end
+   BREACH_Round_System_Announcer()
 		  --timer.Create("RandAnnouncerKrivota", 135, 0, PlayRandomAnnouncer)
 		  timer.Create( "lc_15_s", 180, 1, function()
 			  for k,v in pairs(player.GetAll()) do
@@ -145,13 +127,13 @@ function BREACH_Round_System_Start()
   
 	  timer.Create( "spawnsupport_12_11", 360, 1, function()
 	  
-		  SpawnSupport()
+		SupportSpawn()
 	  
 	  end )
 	  
 	  timer.Create( "spawnsupport_9_8", 540, 1, function()
 	  
-		  SpawnSupport()
+		SupportSpawn()
 	  
 	  end )
 	  
@@ -162,7 +144,7 @@ function BREACH_Round_System_Start()
 		  local heli = ents.Create( "heli" )
 		  heli:Spawn()
 	  
-		  local btr = ents.Create( "btr" )
+		  local btr = ents.Create( "apc" )
 		  btr:Spawn()
 	  
 		  local portal = ents.Create( "portal" )

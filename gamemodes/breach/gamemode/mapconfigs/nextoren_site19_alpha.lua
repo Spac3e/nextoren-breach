@@ -3796,6 +3796,28 @@ BUTTONS = {
 	},
 
 	{
+		name = "Дверь Red Pencil",
+		pos = Vector(8752,-1548,-4),
+		access = {
+			CLevelMTF = 0,
+			CLevelSUP = 0,
+			CLevelSCI = 4,
+			CLevelGuard = 0,
+			CLevel = 5,
+		}
+	},
+	{
+		name = "Дверь Red Pencil 2",
+		pos = Vector(8750,-1164,31),
+		access = {
+			CLevelMTF = 0,
+			CLevelSUP = 0,
+			CLevelSCI = 4,
+			CLevelGuard = 0,
+			CLevel = 5,
+		}
+	},
+	{
 		name = "Лифт SCP-409",
 		pos = Vector(2291, -6589, -2348),
 		access = {

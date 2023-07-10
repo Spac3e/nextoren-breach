@@ -5,10 +5,15 @@ end
 
 concommand.Add("loot", spawn_ents)
 
-function test222()
+function test1()
+	SetGlobalInt("EnoughPlayersCountDownStart", 11)
+	SetGlobalBool("EnoughPlayersCountDown", true)
 end
-
-concommand.Add("test", test222)
+concommand.Add("test", test1)
+function test2()
+	SetGlobalBool("EnoughPlayersCountDown", false)
+end
+concommand.Add("test2", test2)
 
 function mply:CompleteAchievement(achivname, ply)
 	net.Start("Completeachievement_serverside")
@@ -44,16 +49,6 @@ preparing = false
 postround = false
 roundcount = 0
 MAPBUTTONS = table.Copy(BUTTONS)
-
-function GM:PlayerSpray( ply )
-	if ply:GTeam() == TEAM_SPEC then
-		return true
-	end
-	if ply:GetPos():WithinAABox( POCKETD_MINS, POCKETD_MAXS ) then
-		ply:PrintMessage( HUD_PRINTCENTER, "You can't use spray in Pocket Dimension" )
-		return true
-	end
-end
 
 function GetActivePlayers()
 	local tab = {}
@@ -520,7 +515,17 @@ function reset_sup_lim()
     sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
 end
 
-function SpawnSupport()
+function mply:support_freeze(ply)
+	ply:Freeze(true)
+	ply.cantopeninventory = true
+end
+
+net.Receive("ProceedUnfreezeSUP", function(ply)
+	ply:Freeze(false)
+	ply.cantopeninventory = true
+end)
+
+function SupportSpawn()
 
 	local players = {}
 
@@ -584,6 +589,7 @@ function SpawnSupport()
 		v:SetupNormal()
 		v:ApplyRoleStats( selected )
 		v:SetPos( spawn )
+		v:support_freeze()
 		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
 
 		print( "Assigning "..v:Nick().." to role: "..selected.name.." [NTF]" )
@@ -1044,15 +1050,26 @@ function GM:EntityTakeDamage(target,dmginfo)
 end
 
 function GM:PlayerDeathSound(ply)
-	ply:EmitSound( "beams/beamstart5.wav", SNDLVL_NORM, math.random( 70, 126 ) ) -- plays the sound with normal sound levels, and a random pitch between 70 and 126
-	return true -- we don't want the default sound!
+	if ply:GTeam() == TEAM_SCP or ply:GetRoleName() == role.Spectator then return end
+	if !ply:IsFemale() then
+	    ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/death_"..math.random(1,58)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
+	end
+	if ply:IsFemale() then
+		ply:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/death_"..math.random(1,75)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
+	end
+	return true
 end
 
-function GM:PlayerHurt(victim, attacker)
-    if ( attacker:IsPlayer() ) then
-        victim:ChatPrint("You were attacked by : " .. attacker:Nick())
-    end
+function GM:PlayerHurt(victim)
+	if victim:GTeam() == TEAM_SCP or victim:GetRoleName() == role.Spectator then return end
+	if !victim:IsFemale() then
+	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
+	end
+	if victim:IsFemale() then
+		victim:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_"..math.random(1,66)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
+	end
 end
+
 
 function PlayerCount()
 	return #player.GetAll()
@@ -1556,3 +1573,26 @@ end)
 hook.Add("PlayerSpawn", "ManualWeaponPickup_PlayerSpawn", function(pl)
 	pl.ManualWeaponPickupSpawn = CurTime()
 end)
+
+function evacuate(personal, roles_for_evac, give_score)
+	if personal:IsPlayer() == true then
+	if personal:Alive() == false then return end
+	if personal:GTeam() != TEAM_SPEC then
+		if personal:GTeam() == roles_for_evac then
+			local exptoget = give_score
+			net.Start("OnEscaped")
+			net.Send(personal)
+			personal:AddFrags(5)
+			personal:AddExp(exptoget, true)
+			personal:GodEnable()
+			personal:Freeze(true)
+			personal.canblink = false
+			personal.isescaping = true
+			personal:Freeze(false)
+			personal:GodDisable()
+			personal:SetSpectator()
+			personal.isescaping = false
+		end
+	end
+	end
+end

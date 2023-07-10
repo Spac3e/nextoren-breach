@@ -501,11 +501,9 @@ hook.Add("HUDPaint", "DrawBoxInfoOnRagdoll", function()
 
 end)
 
+
 net.Receive("NTF_Intro", function()
-	--surface.PlaySound( "no_music/factions_spawn/ntfspawntheme2.wav" )
-
 	NTFStart()
-
 	timer.Simple(1, function()
 
 		ntf_helicopter = ents.CreateClientside("base_gmodentity")
@@ -524,9 +522,7 @@ net.Receive("NTF_Intro", function()
 			if IsValid(ntf_helicopter) then
 				ntf_helicopter:Remove()
 			end
-
 			--PlayAnnouncer( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )
-			
 		end)
 
 		timer.Simple(4, function()

@@ -290,9 +290,9 @@ SWEP.Damage = 29
 
 
 
-SWEP.FireDelay = 0.25
+SWEP.FireDelay = 60/200
 
-SWEP.FirstDeployTime = 1.3
+SWEP.FirstDeployTime = 2.3
 
 
 

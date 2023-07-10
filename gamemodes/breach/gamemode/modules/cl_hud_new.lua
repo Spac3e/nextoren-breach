@@ -3564,14 +3564,8 @@ function HelicopterStart()
 	StopMusic()
 
 	timer.Simple( 1.5, function()
-
-		if ( client && client:IsValid() && client:GTeam() == TEAM_NTF ) then
-
-			PlayMusic( "sound/no_music/factions_spawn/ntf_intro.ogg", 1 )
-
-		end
-
-	end )
+		PlayMusic( "sound/no_music/factions_spawn/ntf_intro.ogg", 1 )
+	end)
 
 	local CutSceneWindow = vgui.Create( "DPanel" )
 	CutSceneWindow:SetText( "" )
@@ -3641,16 +3635,12 @@ function HelicopterStart()
 
 			timer.Simple( 25, function()
 
-				if ( client:GTeam() == TEAM_NTF ) then
-
 					FadeMusic( 10 )
 					timer.Simple( 12, function()
 
 						client.NoMusic = nil
 
 					end )
-
-				end
 
 			end )
 

@@ -97,6 +97,7 @@ util.AddNetworkString("Completeachievement_serverside")
 util.AddNetworkString("Cult_SpecialistAbility")
 util.AddNetworkString("GRU_CommanderAbility")
 -- Utils
+util.AddNetworkString("ThirdPersonCutscene")
 util.AddNetworkString("ThirdPersonCutscene2")
 util.AddNetworkString("SendPrefixData")
 util.AddNetworkString("Player_FullyLoadMenu")
@@ -109,9 +110,6 @@ net.Receive("Load_player_data", function()
 end)
 
 net.Receive("111roq", function()
-end)
-
-net.Receive("ProceedUnfreezeSUP", function()
 end)
 
 net.Receive("Change_player_settings_id", function(id, bool)

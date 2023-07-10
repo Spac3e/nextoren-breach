@@ -7,6 +7,7 @@ util.AddNetworkString("FirstPerson")
 util.AddNetworkString("BreachAnnouncerLoud")
 util.AddNetworkString("FirstPerson_Remove")
 util.AddNetworkString("DropAdditionalArmor")
+util.AddNetworkString("NTF_Intro")
 
 net.Receive("DropAdditionalArmor", function(ply)
 	local suka_snimi = net.ReadString()
@@ -496,32 +497,12 @@ hook.Add( "SetupPlayerVisibility", "CCTVPVS", function( ply, viewentity )
 end )
 
 function GM:PlayerCanPickupWeapon( ply, wep )
-	//if ply.lastwcheck == nil then ply.lastwcheck = 0 end
-	//if ply.lastwcheck > CurTime() then return end
-	//ply.lastwcheck = CurTime() + 0.5
-	-- if wep.IDK != nil then
-	-- 	for k,v in pairs(ply:GetWeapons()) do
-	-- 		if wep.Slot == v.Slot then return false end
-	-- 	end
-	-- end
-
 	if ply:GTeam() == TEAM_SCP and ply:GetRoleName() != role.SCP9571 then
 		if wep.ISSCP then
 			return true
 		end
-
 		return false
-		/*if not wep.ISSCP then
-			return false
-		else
-			if wep.ISSCP == true then
-				return true
-			else
-				return false
-			end
-		end*/
 	end
-
 	if ply:GTeam() != TEAM_SPEC then
 		if wep.teams then
 			local canuse = false
@@ -535,26 +516,20 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 				return false
 			end
 		end
-
 		for k,v in pairs(ply:GetWeapons()) do
 			if v:GetClass() == wep:GetClass() then
 				return false
 			end
 		end
-
 		if string.Left( wep:GetClass(), 3 ) == "cw_" then
 			for k, v in pairs( ply:GetWeapons() ) do
-				//if ( string.starts( v:GetClass(), "cw_" ) and string.starts( wep:GetClass(), "cw_" )) then return false end
 				if string.Left( v:GetClass(), 3 ) == "cw_" then return false end
 			end
 		end
-
 		if table.Count( ply:GetWeapons() ) >= 8 then
 			return false
 		end
-
 		ply.gettingammo = wep.SavedAmmo
-
 		return true
 	else
 		if ply:GetRoleName() == role.ADMIN then
@@ -564,7 +539,6 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 			if wep:GetClass() == "br_entity_remover" then return true end
 			if wep:GetClass() == "br_tool_teleporter" then return true end
 		end
-
 		return false
 	end
 end

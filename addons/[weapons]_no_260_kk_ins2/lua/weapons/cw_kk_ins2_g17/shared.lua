@@ -270,7 +270,7 @@ SWEP.FireSoundSuppressed = "CW_KK_INS2_M9_FIRE_SUPPRESSED"
 
 
 
-SWEP.Recoil = 1.50
+SWEP.Recoil = 1.2
 
 SWEP.HipSpread = 0.034
 
@@ -286,14 +286,13 @@ SWEP.SpreadCooldown = 0.22
 
 SWEP.Shots = 1
 
-SWEP.Damage = 29
+SWEP.Damage = 17
 
 
 
-SWEP.FireDelay = 0.36
+SWEP.FireDelay = 60/200
 
 SWEP.FirstDeployTime = 2.3
-
 
 
 SWEP.DeployTime = 0.4

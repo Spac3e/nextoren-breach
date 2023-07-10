@@ -195,7 +195,9 @@ local function httpErr()
 end
 
 local function downloadForUlibUpdateCheck()
+	timer.Simple(1, function()
 	http.Fetch( "http://google.com", httpCheck, httpErr )
+	end)
 end
 
 if ULib.AUTOMATIC_UPDATE_CHECKS then

@@ -9,7 +9,7 @@ ROUNDS = {
 		init = function()
 			SpawnAllItems()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SpawnSupport()
+				SupportSpawn()
 			end )
 end,
 		roundstart = function()

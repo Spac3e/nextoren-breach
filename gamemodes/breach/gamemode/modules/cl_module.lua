@@ -61,6 +61,7 @@ function ClientSpawnHelicopter()
 				timer.Simple( 20, function()
 					if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
 						PickGenericSong()
+						helicopter:Remove()
 					end
 				end )
 			end
@@ -4210,18 +4211,10 @@ function Nextoren_MTF_Intro()
 	StopMusic()
 
 	timer.Simple( 9, function()
-
-		if ( client:GTeam() == TEAM_GUARD ) then
-
-			PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
-
-		end
-
-	end )
+		PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
+	end)
 
 	surface.PlaySound( "nextoren/round_sounds/intercom/franklinlost.wav" )
-
-	local name, current_team = client:GetNamesurvivor(), client:GTeam()
 
 	local blackscreen = vgui.Create( "DPanel" )
 	blackscreen:SetSize( ScrW(), ScrH() )
@@ -4229,7 +4222,7 @@ function Nextoren_MTF_Intro()
 	blackscreen.CreationTime = SysTime()
 	blackscreen.Paint = function( self, w, h )
 
-		if ( name != client:GetNamesurvivor() || current_team != client:Team() ) then
+		if ( !client:Alive()) then
 
 			client.NoDesc = nil
 			timer.Remove( "IntroStart" )
@@ -4266,7 +4259,13 @@ function Nextoren_MTF_Intro()
 			end
 		end
 		hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
-		DrawNewRoleDesc( client.Role_Desc )
+		BREACH.Round.GeneratorsActivated = false
+
+		timer.Simple(2, function()
+			util.ScreenShake( Vector(0, 0, 0), 35, 15, 3, 150 )
+			surface.PlaySound("nextoren/others/horror/horror_14.ogg")
+			DrawNewRoleDesc()
+		end)
 
 		client.Role_Name = nil
 		client.Role_Desc = nil
@@ -4373,65 +4372,9 @@ function Nextoren_MTF_Intro()
 		end
 
 	end )
-
 end
+
 concommand.Add("Nextoren_MTF_Intro", Nextoren_MTF_Intro)
-
-local mtf_icon = Material("nextoren/gui/roles_icon/mtf.png")
-function MOGStart()
-
-	local client = LocalPlayer()
-
-	client.NoMusic = true
-
-	StopMusic()
-	PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
-
-	timer.Simple(20, function()
-		IntroSound()
-	end)
-	timer.Simple(24.5, function()
-
-		util.ScreenShake( Vector(0, 0, 0), 35, 15, 3, 150 )
-		surface.PlaySound("nextoren/others/horror/horror_14.ogg")
-
-		local CutSceneWindow = vgui.Create( "DPanel" )
-
-		CutSceneWindow:SetSize(ScrW(), ScrH())
-		CutSceneWindow.DrawTime = SysTime() + 1
-		CutSceneWindow.DrawLerp = 0
-		CutSceneWindow.Paint = function(self, w, h)
-			draw.RoundedBox(0,0,0,w,h,color_black)
-			if CutSceneWindow.DrawTime <= SysTime() then
-				CutSceneWindow.DrawLerp = math.Approach(CutSceneWindow.DrawLerp, 1, FrameTime())
-				surface.SetMaterial(mtf_icon)
-				surface.SetDrawColor(Color(255,255,255,CutSceneWindow.DrawLerp*255))
-				surface.DrawTexturedRect(w / 2 - 128, h / 2 - 128, 256, 256)
-			end
-
-		end
-		CutSceneWindow:SetAlpha(0)
-		CutSceneWindow:AlphaTo(255,0.7,0,function()
-			BREACH.Round.GeneratorsActivated = false
-			timer.Simple(8, function()
-				CutSceneWindow:AlphaTo(0,2,0,function()
-					CutSceneWindow:Remove()
-				end)
-				DrawNewRoleDesc()
-				hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
-				LocalPlayer().cantopeninventory = nil
-				for i, v in pairs(LocalPlayer():GetWeapons()) do
-					if !v:GetClass():find("nade") and v:GetClass():StartWith("cw_") then
-						LocalPlayer().DoWeaponSwitch = v
-						break
-					end
-				end
-			end)
-		end)
-
-	end)
-end
-concommand.Add("intro_start_mog", MOGStart)
 
 net.Receive("bettersendlua", function()
 	local code = net.ReadString()
