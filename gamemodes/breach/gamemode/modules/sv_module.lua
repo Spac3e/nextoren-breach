@@ -520,9 +520,11 @@ function mply:support_freeze(ply)
 	ply.cantopeninventory = true
 end
 
-net.Receive("ProceedUnfreezeSUP", function(ply)
+net.Receive("ProceedUnfreezeSUP", function(len, ply)
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
 	ply:Freeze(false)
 	ply.cantopeninventory = true
+	end
 end)
 
 function SupportSpawn()

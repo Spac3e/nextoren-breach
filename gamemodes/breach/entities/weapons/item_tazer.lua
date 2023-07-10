@@ -35,7 +35,7 @@ SWEP.AdminSpawnable	= false
 SWEP.droppable				= true
 
 SWEP.Primary.ClipSize		= 1000
-SWEP.Primary.DefaultClip	= 0
+SWEP.Primary.DefaultClip	= 5
 SWEP.Primary.Ammo			=  "none"
 SWEP.Primary.Automatic		= false
 

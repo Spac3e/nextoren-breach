@@ -185,13 +185,27 @@ function ObjectSCP:SetCallback( cb, post )
 	end
 end
 
+function ObjectSCP:SurvivorCleanUp()
+	self:ClearBodyGroups()
+	self:SetSkin(0)
+	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self ) || {} if self:GTeam() != TEAM_SCP then for i = 1, #tbl_bonemerged do local bonemerge = tbl_bonemerged[ i ] bonemerge:Remove() end
+	self:StripWeapons()
+	self:StripAmmo()
+	self:SetNW2Bool("Breach:CanAttach", false)
+	self:SetUsingBag("")
+	self:SetUsingCloth("")
+	self:SetUsingArmor("")
+	self:SetUsingHelmet("")
+    end
+end
+
 function ObjectSCP:SetupPlayer( ply, ... )
 	if self.callback then
 		if self.callback( ply, self.basestats, ... ) then
 			return
 		end
 	end
-
+	ply:SurvivorCleanUp()
 	ply:UnSpectate()
 	ply:GodDisable()
 	if !self.basestats.no_strip then
@@ -225,14 +239,11 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetCrouchedWalkSpeed( self.basestats.crouch_speed or 0.6 )
 	ply:SetJumpPower( self.basestats.jump_power or 200 )
 
-	if !self.basestats.no_swep then
 		local wep = ply:Give( self.swep )
-		ply:SelectWeapon( self.swep )
-
+		timer.Simple(0.1, function() ply:SelectWeapon(self.swep) end)
 		if IsValid( wep ) then
 			wep.ShouldFreezePlayer = self.basestats.prep_freeze == true
 		end
-	end
 
 	ply:SetArmor( 0 )
 

@@ -503,18 +503,10 @@ do
 end
 
 do
-	mply.BreachGive = mply.BreachGive or mply.Give
-
-	function mply:BreachGive(className, bNoAmmo)
-		local weapon
-
-		self.BreachWeaponGive = true
-			weapon = self:BreachGive(className, bNoAmmo)
-			timer.Simple(0.1, function() self:SelectWeapon(className) end)
-		self.BreachWeaponGive = nil
-
-		return weapon
-	end
+function mply:BreachGive(classname)
+	self:Give(classname)
+    timer.Simple(0.1, function() self:SelectWeapon(classname) end)
+end
 end
 
 function GM:PlayerCanPickupWeapon( ply, wep )
@@ -523,13 +515,6 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 		data.endpos = data.start + ply:GetAimVector() * 96
 		data.filter = ply
 	local trace = util.TraceLine(data)
-
-	if ply:GTeam() == TEAM_SCP then
-		if wep.ISSCP then
-			return true
-		end
-		return false
-	end
 
 	if ply:GTeam() != TEAM_SPEC then
 		if wep.teams then
@@ -558,7 +543,7 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 
 	ply.gettingammo = wep.SavedAmmo
 
-	if (trace.Entity == wep and ply:KeyDown(IN_USE)) then
+	if (trace.Entity == wep and ply:KeyDown(IN_USE)) and ply:GTeam() != TEAM_SCP then
 		ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
         ply:Give(trace.Entity:GetClass())
 		ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )

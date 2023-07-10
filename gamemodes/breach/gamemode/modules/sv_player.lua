@@ -57,7 +57,7 @@ function mply:Namesurvivor(ply,body)
 end
 
 function mply:ClearBodyGroups(ply, ent)
-	for k, v in pairs(self:GetBodyGroups()) do
+	for _, v in pairs(self:GetBodyGroups()) do
 		self:SetBodygroup(v.id, 0)
 	end
 end
@@ -429,14 +429,15 @@ function mply:SelectAsCISpy()
 	timer.Simple(0.1, function()
 	self:SetBodygroup(3,7)
 	self:SetBodygroup(4,1)
-	self:SetBodygroup(5,2)
-	self:SetBodygroup(6,1)
 	self:Bonemerge("models/cultist/heads/male/male_head_"..math.random(1,210)..".mdl",self)
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( pvtci ) do
-	self:BreachGive( v ) 
-	end 
+	self:Give( v ) 
+	self:Give( "breach_keycard_security_1" ) 
+	self:Give( "item_tazer" ) 
+	self:StripAmmo()
+	if self:GetWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end	end 
 	end)
 	elseif chage == 2 then
 	timer.Simple(0.1, function()
@@ -448,8 +449,10 @@ function mply:SelectAsCISpy()
 	end)
 	self:StripWeapons()
 	for k, v in pairs( oficerci ) do
-	self:BreachGive( v ) 
-	end 
+	self:Give( "breach_keycard_security_2" ) 
+	self:Give( "item_tazer" ) 
+	self:StripAmmo()
+	if self:GetWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end	end 
 	end)
 	elseif chage == 3 then
 	timer.Simple(0.1, function()
@@ -459,7 +462,11 @@ function mply:SelectAsCISpy()
 	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( specici ) do
-	self:BreachGive( v ) 
+	self:Give( v ) 
+	self:Give( "item_tazer" ) 
+	self:Give( "breach_keycard_security_2" ) 
+	self:StripAmmo()
+	if self:GetWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end
 	end 
 	end)
 	end
@@ -471,10 +478,9 @@ function mply:ApplyRoleStats(role)
 	self:SetGTeam( role.team )
 	if role.cispy == true then self:SelectAsCISpy() end
 	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
-	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)	end end
+	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true) if self:GetWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end end  end
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
-	self:ClearBodyGroups()
 	if role.models and role.fmodels then
 		selfmodel = {role.fmodels, role.models}
 		finalselfmodel = selfmodel[math.random(1, #selfmodel)]
