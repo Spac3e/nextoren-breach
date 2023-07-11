@@ -150,8 +150,8 @@ function ENT:Use( activator, caller )
     if GetGlobalBool("Evacuation", false) then return end
     if preparing then return end
     if postround then return end
-    if !timer.Exists("EvacuationWarhead") then return end
-    if !timer.Exists("Evacuation") then return end
+    if timer.Exists("EvacuationWarhead") then return end
+    if timer.Exists("Evacuation") then return end
     if activator:GetActiveWeapon() and activator:GetActiveWeapon():GetClass() != "ritual_paper" then
       activator:RXSENDNotify("l:quran_needed")
       return
@@ -160,8 +160,8 @@ function ENT:Use( activator, caller )
       if GetGlobalBool("Evacuation", false) then return end
 	  if preparing then return end
 	  if postround then return end
-	  if !timer.Exists("EvacuationWarhead") then return end
-	  if !timer.Exists("Evacuation") then return end
+	  if timer.Exists("EvacuationWarhead") then return end
+	  if timer.Exists("Evacuation") then return end
       self:SetEnabled(true)
       activator:SetNWEntity("NTF1Entity", NULL)
 

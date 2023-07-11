@@ -110,11 +110,17 @@ net.Receive("Load_player_data", function()
 end)
 
 net.Receive("111roq", function()
+	net.ReadFloat()
 end)
 
-net.Receive("Change_player_settings_id", function(id, bool)
+net.Receive("Change_player_settings", function(id, int)
 	net.ReadUInt(12)
-	net.ReadBool(bool)
+	net.ReadBool()
+end)
+
+net.Receive("Change_player_settings_id", function(id, bool, int)
+	net.ReadUInt(12)
+	net.ReadUInt(32)
 end)
 
 local banned_sounds = {
@@ -134,12 +140,7 @@ function GM:EntityEmitSound( s_table )
 	if ( banned_sounds[ s_table.SoundName ] ) then return false end
 end
 
-net.Receive("Change_player_settings", function(id, int)
-	net.ReadUInt(id, 12)
-	net.ReadUInt(int, 32)
-end)
-
-net.Receive("catch_breath", function(ply)
+net.Receive("catch_breath", function()
 	if ply:GTeam() == TEAM_SCP or ply:GTeam() == TEAM_SPEC then return end
 	if !ply:IsFemale() then
 		ply:EmitSound("nextoren/charactersounds/breathing/breath0.wav")
@@ -247,14 +248,6 @@ net.Receive( "DropCurrentVest", function( len, ply )
 		if ply.GetUsingCloth != nil then
 			ply:UnUseArmor()
 		end
-	end
-end)
-
-net.Receive( "RequestEscorting", function( len, ply )
-	if ply:GTeam() == TEAM_GUARD then
-		CheckEscortMTF(ply)
-	elseif ply:GTeam() == TEAM_CHAOS then
-		CheckEscortChaos(ply)
 	end
 end)
 

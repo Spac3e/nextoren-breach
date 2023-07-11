@@ -933,11 +933,36 @@ function StartSceneClientSide( ply )
 	local handsid = CI:LookupAttachment('anim_attachment_RH')
 	local hands = CI:GetAttachment( handsid )
 
-	timer.Simple( 2, function()
+	timer.Simple( 0.1, function()
+
+		util.ScreenShake( vector_origin, 200, 100, 10, 355);
+
+		LocalPlayer():ScreenFade(SCREENFADE.IN, color_white, 1, 1.2)
+
+		LocalPlayer():EmitSound( "nextoren/others/bell.ogg" )
+
+		--LocalPlayer():EmitSound( "nextoren/others/ending.ogg" )
+	
+	end )
+
+	timer.Simple( 1, function()
+
+	LocalPlayer():EmitSound( "nextoren/others/ending.ogg" )
+	
+	end )
+
+	timer.Simple( 5, function()
 
 		CI:EmitSound( "nextoren/vo/chaos/class_d_alternate_ending.ogg" )
 
 	end )
+
+	timer.Simple( 9, function()
+		LocalPlayer():ScreenFade(SCREENFADE.IN, color_white, 1, 1.2)
+		LocalPlayer():EmitSound( "nextoren/others/bell.ogg" )
+	end )
+
+
 	CI.AutomaticFrameAdvance = true
 
 
@@ -1065,7 +1090,7 @@ function StartSceneClientSide( ply )
 	Weapon3:Spawn()
 
 
-    timer.Simple( 8, function()
+    timer.Simple( 11, function()
 
         Weapon2:Remove()
         Weapon3:Remove()

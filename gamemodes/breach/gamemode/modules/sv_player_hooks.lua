@@ -87,12 +87,13 @@ net.Receive("NTF_Special_1", function(ply,caller)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
 	caller:SetSpecialCD(CurTime() + 80)
 	timer.Simple( 15, function()
+	local nigger = net.ReadUInt()
 	
 	net.Start("BreachAnnouncer")
 	net.WriteString("nextoren/vo/ntf/camera_found_1.ogg")
 	net.Broadcast()
 	net.Start( "NTF_Special_1" )
-	net.WriteUInt( 8, 12 )
+	net.WriteUInt( nigger, 8 )
 	net.Broadcast()
 	end )
 end)
@@ -525,21 +526,11 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 				end
 			end
 
-			if canuse == false then
+			if canuse == true then
 				return false
 			end
 		end
     end
-
-	if string.Left( wep:GetClass(), 3 ) == "cw_" then
-		for k, v in pairs( ply:GetWeapons() ) do
-			if string.Left( v:GetClass(), 3 ) == "cw_" then return false end
-		end
-	end
-
-	if table.Count( ply:GetWeapons() ) >= 8 then
-		return false
-	end
 
 	ply.gettingammo = wep.SavedAmmo
 

@@ -266,7 +266,7 @@ if ( SERVER ) then
           for _, bnmrg in ipairs(survivor:LookupBonemerges()) do
             if bnmrg:GetModel():find("male_head") or bnmrg:GetModel():find("balaclava") then
               local copytext = bnmrg:GetSubMaterial(0)
-              local bnmrg_new = bnmrg_new || {}
+              local bnmrg_new
               if tab.bonemerge != true then
                 bnmrg_new = Bonemerge(tab.bonemerge, survivor)
               else

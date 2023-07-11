@@ -4239,7 +4239,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 		elseif ply:HaveSpecialAb(role.SECURITY_Spy) then
 
-			ply:SetSpecialCD( CurTime() + 40 )
+			ply:SetSpecialCD( CurTime() + 30 )
 
 			if CLIENT then return end
 

@@ -744,18 +744,8 @@ function RoundTypeUpdate()
 end
 
 function RoundRestart()
-	if !MAP_LOADED then
-		error( "Map config is not loaded!" )
-	end
-	print( debug.traceback() )  
 	print("round: starting")
 	CleanUp()
-	print("round: map cleaned")
-	if GetConVar("br_firstround_debug"):GetInt() > 0 and rounds == -1 then
-		rounds = 0
-		RoundRestart()
-		return
-	end
 	if GetConVar("br_rounds"):GetInt() > 0 then
 		if rounds == GetConVar("br_rounds"):GetInt() then
 			RestartGame()
@@ -765,7 +755,6 @@ function RoundRestart()
 		rounds = 0
 	end	
 	CleanUpPlayers()
-	print("round: players cleaned")
 	preparing = true
 	postround = false
 	activeRound = nil
@@ -774,16 +763,13 @@ function RoundRestart()
 	SetupCollide()
 	SetupAdmins( player.GetAll() )
 	activeRound.setup()
-	print( "round: setup end" )	
 	net.Start("UpdateRoundType")
 		net.WriteString(activeRound.name)
 	net.Broadcast()	
 	activeRound.init()	
 	BREACH_Round_System_Start()
-	print( "round: int end / preparation start" )	
 	gamestarted = true
 	BroadcastLua('gamestarted = true')
-	print("round: gamestarted")
 	net.Start("PrepStart")
 		net.WriteInt(GetPrepTime(), 8)
 	net.Broadcast()
@@ -923,132 +909,15 @@ function CheckEscape()
 end
 timer.Create("CheckEscape", 1, 0, CheckEscape)
 
-function CheckEscortMTF(pl)
-	if pl.nextescheck != nil then
-		if pl.nextescheck > CurTime() then
-			pl:PrintMessage(HUD_PRINTTALK, "Wait " .. math.Round(pl.nextescheck - CurTime()) .. " seconds.")
-			return
-		end
-	end
-	pl.nextescheck = CurTime() + 3
-	if pl:GTeam() != TEAM_GUARD then return end
-	local foundpl = nil
-	local foundrs = {}
-	for k,v in pairs(ents.FindInSphere(POS_ESCORT, 350)) do
-		if v:IsPlayer() then
-			if pl == v then
-				foundpl = v
-			elseif v:GTeam() == TEAM_SCI and v:Alive() then
-				table.ForceInsert(foundrs, v)
-			end
-		end
-	end
-	if not IsValid(foundpl) then return end
-	rsstr = ""
-	for i,v in ipairs(foundrs) do
-		if i == 1 then
-			rsstr = v:Nick()
-		elseif i == #foundrs then
-			rsstr = rsstr .. " and " .. v:Nick()
-		else
-			rsstr = rsstr .. ", " .. v:Nick()
-		end
-	end
-	if #foundrs == 0 then return end
-	pl:AddFrags(#foundrs * 3)
-	pl:AddExp((#foundrs * 425), true)
-	local rtime = timer.TimeLeft("RoundTime")
-	local exptoget = 700
-	if rtime != nil then
-		exptoget = GetConVar("br_time_round"):GetInt() - (CurTime() - rtime)
-		exptoget = exptoget * 2.25
-		exptoget = math.Round(math.Clamp(exptoget, 700, 10000))
-	end
-	for k,v in ipairs(foundrs) do
-		roundstats.rescaped = roundstats.rescaped + 1
-		v:SetSpectator()
-		v:AddFrags(10)
-		v:AddExp(exptoget, true)
-		v:PrintMessage(HUD_PRINTTALK, "You've been escorted by " .. pl:Nick())
-		net.Start("OnEscaped")
-			net.WriteInt(3,4)
-		net.Send(v)
-		WinCheck()
-	end
-	pl:PrintMessage(HUD_PRINTTALK, "You've successfully escorted: " .. rsstr)
-end
-
-function CheckEscortChaos(pl)
-	if pl.nextescheck != nil then
-		if pl.nextescheck > CurTime() then
-			pl:PrintMessage(HUD_PRINTTALK, "Wait " .. math.Round(pl.nextescheck - CurTime()) .. " seconds.")
-			return
-		end
-	end
-	pl.nextescheck = CurTime() + 3
-	if pl:GTeam() != TEAM_CHAOS then return end
-	local foundpl = nil
-	local foundds = {}
-	for k,v in pairs(ents.FindInSphere(POS_ESCORT_CI or POS_ESCORT, 350)) do
-		if v:IsPlayer() then
-			if pl == v then
-				foundpl = v
-			elseif v:GTeam() == TEAM_CLASSD and v:Alive() then
-				table.ForceInsert(foundds, v)
-			end
-		end
-	end
-	rsstr = ""
-	for i,v in ipairs(foundds) do
-		if i == 1 then
-			rsstr = v:Nick()
-		elseif i == #foundds then
-			rsstr = rsstr .. " and " .. v:Nick()
-		else
-			rsstr = rsstr .. ", " .. v:Nick()
-		end
-	end
-	if #foundds == 0 then return end
-	pl:AddFrags(#foundds * 3)
-	pl:AddExp((#foundds * 500), true)
-	local rtime = timer.TimeLeft("RoundTime")
-	local exptoget = 800
-	if rtime != nil then
-		exptoget = GetConVar("br_time_round"):GetInt() - (CurTime() - rtime)
-		exptoget = exptoget * 2.5
-		exptoget = math.Round(math.Clamp(exptoget, 800, 10000))
-	end
-	for k,v in ipairs(foundds) do
-		roundstats.dcaptured = roundstats.dcaptured + 1
-		v:SetSpectator()
-		v:AddFrags(10)
-		v:AddExp(exptoget, true)
-		v:PrintMessage(HUD_PRINTTALK, "You've been captured by " .. pl:Nick())
-		net.Start("OnEscaped")
-			net.WriteInt(3,4)
-		net.Send(v)
-		WinCheck()
-	end
-	pl:PrintMessage(HUD_PRINTTALK, "You've successfully captured: " .. rsstr)
-end
-
 function WinCheck()
 	if postround then return end
 	if !activeRound then return end
 	activeRound.endcheck()
 	if roundEnd > 0 and roundEnd < CurTime() then
 		roundEnd = 0
-	--	endround = true
-	--	why = "game ran out of time limit"
 		print( "Something went wrong! Error code: 100" )
 		print( debug.traceback() )
 	end
-	/*if #GetActivePlayers() < 2 then 
-		endround = true
-		why = " there are not enough players"
-		gamestarted = false
-		BroadcastLua( "gamestarted = false" )
-	end*/
 	if endround then
 		print("Ending round because " .. why)
 		PrintMessage(HUD_PRINTCONSOLE, "Ending round because " .. why)
@@ -1068,7 +937,6 @@ function WinCheck()
 		activeRound.postround()	
 		GiveExp()
 		endround = false
-		--print( debug.traceback() )  
 		hook.Run( "BreachPostround" )
 		timer.Create("PostTime", GetPostTime(), 1, function()
 			RoundRestart()

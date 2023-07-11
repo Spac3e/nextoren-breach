@@ -10,8 +10,8 @@ function test1()
 	SetGlobalBool("EnoughPlayersCountDown", true)
 end
 concommand.Add("test", test1)
-function test2()
-	SetGlobalBool("EnoughPlayersCountDown", false)
+function test2(ply)
+	ply:SetNWBool("RXSEND_ONFIRE", true)
 end
 concommand.Add("test2", test2)
 

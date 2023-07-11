@@ -1310,10 +1310,10 @@ local pl = ply:GetTable()
 	return false
 end
 
-local meta = FindMetaTable("Player");
+local mply = FindMetaTable("Player");
 local ent = FindMetaTable( "Entity" )
 
-function meta:IsLZ()
+function mply:IsLZ()
 	local pos = self:GetPos()
 	if ( pos.x > 4600 && pos.y > -7003 && pos.y < -1200 && pos.z < 880 || pos.x > 8550 && pos.y < -440 && pos.y > -7000 || ( pos.x > -1000 && pos.x < 1680 ) && pos.y < -3600 && pos.y > -5800 && pos.z < -1000 ) then
 	  return true
@@ -1324,6 +1324,17 @@ function meta:IsLZ()
 	return false
 end
   
+function ent:IsLZ()
+	local pos = self:GetPos()
+	if ( pos.x > 4600 && pos.y > -7003 && pos.y < -1200 && pos.z < 880 || pos.x > 8550 && pos.y < -440 && pos.y > -7000 || ( pos.x > -1000 && pos.x < 1680 ) && pos.y < -3600 && pos.y > -5800 && pos.z < -1000 ) then
+	  return true
+	end
+	if ( pos.x > 7283 && pos.x < 7680 && pos.y < -1075 && pos.y > -1240 ) then
+	  return true
+	end
+	return false
+end
+
 function ent:Outside()
 	if ( self:GetPos().z > 880 ) then
   	  return true;
@@ -1331,14 +1342,14 @@ function ent:Outside()
   	return false
 end
   
-function meta:Outside()
+function mply:Outside()
 	if ( self:GetPos().z > 880 ) then  
 	  return true;
   	end
 	return false
 end
   
-function meta:IsEntrance()
+function mply:IsEntrance()
 	local pos = self:GetPos()
 	if ( pos.x < 1767 && pos.x > -3120 && pos.y > 1944 && pos.y < 6600 && pos.z < 880 ) then
 	  return true
@@ -1346,7 +1357,15 @@ function meta:IsEntrance()
 	return false
 end
 
-function meta:IsBlack()
+function ent:IsEntrance()
+	local pos = self:GetPos()
+	if ( pos.x < 1767 && pos.x > -3120 && pos.y > 1944 && pos.y < 6600 && pos.z < 880 ) then
+	  return true
+	end
+	return false
+end
+
+function mply:IsBlack()
 	for i, v in pairs(ents.FindByClassAndParent("ent_bonemerged", self)) do
 		if IsValid(v) and v:GetModel():find("head_main_1") then
 			return NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(0)]
@@ -1355,7 +1374,15 @@ function meta:IsBlack()
 	return false
 end
   
-function meta:IsHardZone()
+function mply:IsHardZone()
+	local pos = self:GetPos()
+	if ( pos.x < 8320 && pos.x > 1200 && pos.y > -1200 && pos.z < 880 ) then
+	  return true
+	end
+	return false
+end
+
+function ent:IsHardZone()
 	local pos = self:GetPos()
 	if ( pos.x < 8320 && pos.x > 1200 && pos.y > -1200 && pos.z < 880 ) then
 	  return true
