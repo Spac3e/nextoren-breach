@@ -75,25 +75,21 @@ function PlayAnnouncer( soundname )
 	net.Broadcast()
 end
 
-function PlayAnnouncerLoud( soundname )
-	net.Start("ClientStopMusic")
-	net.Broadcast()
-    net.Start( "BreachAnnouncerLoud" )
+function Player:BroadcastPlayMusic( soundname, vsrf_flot )
+    net.Start( "ClientPlayMusic" )
+	    net.WriteFloat( vsrf_flot )
         net.WriteString( soundname )
 	net.Broadcast()
 end
 
 net.Receive("NTF_Special_1", function(ply,caller)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
+	local nigger_gay_receive = net.ReadUInt(13)
 	caller:SetSpecialCD(CurTime() + 80)
 	timer.Simple( 15, function()
-	local nigger = net.ReadUInt()
-	
-	net.Start("BreachAnnouncer")
-	net.WriteString("nextoren/vo/ntf/camera_found_1.ogg")
-	net.Broadcast()
+	PlayAnnouncer("nextoren/vo/ntf/camera_found_1.ogg")
 	net.Start( "NTF_Special_1" )
-	net.WriteUInt( nigger, 8 )
+	net.WriteUInt( nigger_gay_receive, 8 )
 	net.Broadcast()
 	end )
 end)
@@ -105,6 +101,7 @@ function IsPremium( ply, silent )
 	if GetConVar("br_premium_url"):GetString() == "" or GetConVar("br_premium_url"):GetString() == "none" then return end
 	http.Fetch( GetConVar("br_premium_url"):GetString(), function( body, size, headers, code )
 		if ( body == nil ) then return end
+
 		local ID = string.find( tostring(body), "<ID64>"..ply:SteamID64().."</ID64>" )
 			if ID != nil then
 				ply.Premium = true

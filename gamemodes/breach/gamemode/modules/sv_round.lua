@@ -50,8 +50,8 @@ function BREACH_Round_System_Start()
 		  timer.Create( "lc_3_15_s", 885, 1, function(ply)
 			  SetGlobalBool("Evacuation", true)
 			  BREACH.Evacuation = true
-			  local songevac = "no_music/evacuation_"..math.random(1,6)..".ogg"
-			  PlayAnnouncerLoud(songevac)
+			  local songevac = "sound/no_music/evacuation_"..math.random(1,6)..".ogg"
+			  BroadcastPlayMusic(songevac, 0)
 			  for k,v in pairs(player.GetAll()) do
 				  v:RXSENDNotify("l:evac_start_leave_immediately")
 			  end
@@ -63,7 +63,7 @@ function BREACH_Round_System_Start()
 			  for k,v in pairs(player.GetAll()) do
 				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
 			  end
-			  PlayAnnouncerLoud( "nextoren/round_sounds/main_decont/final_nuke.mp3" )
+			  BroadcastPlayMusic("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
 		  end )
 	  
 		  LockKPPDoors()

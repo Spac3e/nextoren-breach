@@ -10,8 +10,10 @@ function test1()
 	SetGlobalBool("EnoughPlayersCountDown", true)
 end
 concommand.Add("test", test1)
+
 function test2(ply)
-	ply:SetNWBool("RXSEND_ONFIRE", true)
+	--ply:SetNWBool("RXSEND_ONFIRE", true)
+	BREACH_Round_System_Start()
 end
 concommand.Add("test2", test2)
 
@@ -1052,7 +1054,7 @@ function GM:EntityTakeDamage(target,dmginfo)
 end
 
 function GM:PlayerDeathSound(ply)
-	if ply:GTeam() == TEAM_SCP or ply:GetRoleName() == role.Spectator then return end
+	if ply:GTeam() == TEAM_SCP then return true end
 	if !ply:IsFemale() then
 	    ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/death_"..math.random(1,58)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
 	end
