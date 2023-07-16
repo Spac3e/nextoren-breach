@@ -507,8 +507,8 @@ russian.looting_started = "Вы начали обыскивать тело, эт
 russian.looting_end = "Обыск тела был завершен!"
 russian.looted_ammo_pt1 = "Вы подобрали"
 russian.looted_ammo_pt2 = "патроны"
-russian.sport_run = "Включен спортивный бег"
-russian.default_run = "Включен обычный бег"
+russian.sport_run = "Вы перешли на спортивный бег"
+russian.default_run = "Вы перешли на обычный бег"
 russian.cant_change_run = "Невозможно сменить скорость"
 
 --TEAMS
@@ -859,7 +859,7 @@ russian.menu_more_than_a_week = "Более недели"
 russian.menu_unmute = "Разблокировка (Чат)"
 russian.menu_unban = "Разблокировка (Бан)"
 russian.menu_discount = "(скидка"
-russian.menu_seller = "По поводу доната\nShaky#8698" --барыга
+russian.menu_seller = "По поводу доната\n_spac3_" --барыга
 russian.precaching_resources = "Предзагрузка контента..."
 russian.menu_play = "Играть"
 russian.menu_resume = "Продолжить"

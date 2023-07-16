@@ -357,17 +357,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 170,
 		max_speed = 170,
 	} )
-	RegisterSCP( "SCP173", "models/cultist/scp/173.mdl", "weapon_scp_173", {
-		jump_power = 200,
-		no_ragdoll = true,
-	}, {
-		base_health = 3000,
-		max_health = 3000,
-		base_speed = 400,
-		run_speed = 400,
-		max_speed = 400,
-	} )
-
 	RegisterSCP( "SCP457", "models/cultist/scp/scp_457.mdl", "weapon_scp_457", {
 		jump_power = 200,
 		//no_draw = true,

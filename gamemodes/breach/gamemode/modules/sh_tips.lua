@@ -7,7 +7,7 @@ if CLIENT then
   })
   local UpdateDelay = 0
 
-  net.Receive( "Shaky_TipSend", function()
+  net.Receive( "Breach_TipSend", function()
 
     local icontype = net.ReadUInt( 2 )
     local str1 = net.ReadString()
@@ -125,10 +125,10 @@ if CLIENT then
 
   end
 else
-  util.AddNetworkString("Shaky_TipSend")
+  util.AddNetworkString("Breach_TipSend")
   local mply = FindMetaTable("Player")
   function mply:BrTip(icontype, str1, col1, str2, col2)
-    net.Start("Shaky_TipSend", true)
+    net.Start("Breach_TipSend", true)
       net.WriteUInt(icontype, 2)
       net.WriteString(str1)
       net.WriteColor(col1)

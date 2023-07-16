@@ -533,13 +533,13 @@ function BREACH_GM:UpdateAnimation( player, velocity, maxSeqGroundSpeed )
 
     if ( player == LocalPlayer() ) then
 
-      if ( Shaky_LEGS.legEnt && Shaky_LEGS.legEnt:IsValid() ) then
+      if ( BREACH_LEGS.legEnt && BREACH_LEGS.legEnt:IsValid() ) then
 
-        Shaky_LEGS:LegsWork( player, maxSeqGroundSpeed )
+        BREACH_LEGS:LegsWork( player, maxSeqGroundSpeed )
 
       else
 
-        Shaky_LEGS:CreateLegs()
+        BREACH_LEGS:CreateLegs()
 
       end
 

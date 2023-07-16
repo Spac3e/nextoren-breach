@@ -76,7 +76,7 @@ function ENT:Use(ply)
 				self:Remove()
 
 				net.Start("ForcePlaySound")
-				net.WriteString("shaky_backpack/backpack_puton.ogg")
+				net.WriteString("nextoren/backpack_puton.ogg")
 				net.Send(ply)
 			end)
 			

@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/gamemode/languages/english.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 english = {}
 
 english.LangName = "English"
@@ -962,7 +950,7 @@ english.menu_more_than_a_week = "More than a week"
 english.menu_unmute = "Unmute (Chat)"
 english.menu_unban = "Unban"
 english.menu_discount = "(discount"
-english.menu_seller = "Donate seller\nShaky#8698" --барыга
+english.menu_seller = "Donate seller\n_spac3_" --seller
 english.precaching_resources = "Precaching resources..."
 english.menu_play = "Play"
 english.menu_resume = "Resume"

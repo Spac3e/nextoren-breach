@@ -1,18 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_cstm_galil_ace/shared.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
---[[
-lua/weapons/cw_kk_ins2_cstm_galil_ace/shared.lua
---]]
 if not CustomizableWeaponry then return end
 
 AddCSLuaFile()
@@ -216,12 +201,12 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 
 SWEP.AdminOnly			= true
 
-SWEP.Primary.ClipSize		= 35
-SWEP.Primary.DefaultClip = 0 --	= 0
+SWEP.Primary.ClipSize		= 35000
+SWEP.Primary.DefaultClip = 10000 --	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "SMG1"
 
-SWEP.FireDelay = 60/700
+SWEP.FireDelay = 35/700
 SWEP.FireSound = "CW_KK_INS2_GALIL_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_GALIL_FIRE_SUPPRESSED"
 SWEP.Recoil = 1.2

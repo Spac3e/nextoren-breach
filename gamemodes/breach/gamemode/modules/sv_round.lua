@@ -6,6 +6,21 @@ MAP_LOADED = MAP_LOADED or false
 util.AddNetworkString("bettersendlua")
 
 function BREACH_Round_System_Start()
+	for k,v in pairs(ents.FindByClass("prop_door_rotating")) do
+		v:AddEFlags(8192)
+		v:SetKeyValue("returndelay", "5")
+		v:SetKeyValue("wait", "1")
+	end
+	for k,v in pairs(ents.FindByClass("func_door_rotating")) do
+		v:AddEFlags(8192)
+		v:SetKeyValue("returndelay", "5")
+		v:SetKeyValue("wait", "1")
+	end
+	for k,v in pairs(ents.FindByClass("func_door")) do
+		v:AddEFlags(8192)
+		v:SetKeyValue("returndelay", "5")
+		v:SetKeyValue("wait", "1")
+	end
    BREACH_Round_System_Doors_Work()
    BREACH_Round_System_Announcer()
 		  --timer.Create("RandAnnouncerKrivota", 135, 0, PlayRandomAnnouncer)
@@ -967,9 +982,6 @@ timer.Create("EXPTimer", 180, 0, function()
 end)
 
 function SetupCollide()
-	for k,v in pairs(player.GetAll()) do
-		if v:GetRoleName() == role.Spectator or v:GetMoveType() == MOVETYPE_NOCLIP or v:GetMoveType() == MOVETYPE_OBSERVER then return end
-	end
 	local vply = player.GetAll()
 	local fent = ents.GetAll()
 	for k, v in pairs( fent ) do

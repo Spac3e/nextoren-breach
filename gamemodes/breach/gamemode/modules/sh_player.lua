@@ -25,8 +25,7 @@ function mply:IsPremium()
 	if self:IsSuperAdmin() then return true end
 	if self:IsAdmin() then return true end
 	if self:GetUserGroup() == "premium" then return true end
-	if self:GetNWBool("Shaky_IsPremium") then return true end
-
+	if self:GetNWBool("Breach_IsPremium") then return true end
 	return false
 end
 
@@ -3510,13 +3509,17 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			if ( target && target:IsValid() && target:IsPlayer() && target:Health() > 0 && (target:GetRoleName() == "CI Spy" or target:GTeam() == TEAM_CLASSD ) ) then
 
-				if target:GetModel() == "models/cultist/humans/chaos/chaos.mdl" or target:GetModel() == "models/cultist/humans/chaos/fat/chaos_fat.mdl" then 
+				if target:GetModel() == "models/cultist/humans/chaos/chaos.mdl" or target:GetModel() == "models/cultist/humans/chaos/fat/chaos_fat.mdl" then
+					if SERVER then 
 					ply:RXSENDNotify("l:cicommander_conscripted_already")
+					end
 					return 
 				end
 
 				if target:GetUsingCloth() != "" or (target:GetRoleName() == role.ClassD_Hitman and !target:GetModel():find("class_d")) then
+					if SERVER then
 					ply:RXSENDNotify("l:cicommander_need_to_take_off_smth")
+					end
 				end
 
 				local count = 0
@@ -3532,15 +3535,16 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				end
 
 				if ( ( count + 1 ) >= target:GetMaxSlots() ) then
-
+					if SERVER then 
 					ply:RXSENDNotify("l:cicommander_no_slots")
+					end
 
 					return
 
 				end
 
 				if SERVER then
-					ply:BrProgressBar("l:giving_uniform", 8, "nextoren/gui/special_abilities/ability_placeholder.png")
+					ply:BrProgressBar("l:giving_uniform", 8, "nextoren/gui/special_abilities/special_chaos_commander.png")
 				end
 
 				old_target = target
@@ -3577,9 +3581,9 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 						end
 
 						if ( ( count + 1 ) >= target:GetMaxSlots() ) then
-
+							if SERVER then 
 							ply:RXSENDNotify("l:cicommander_no_slots")
-
+							end
 							return
 
 						end
@@ -3595,7 +3599,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 								target:SetBodygroup( 2, 1 )
 								
-								local hitgroup_head = target.ScaleDamage["HITGROUP_HEAD"]
+								--local hitgroup_head = target.ScaleDamage["HITGROUP_HEAD"]
 								target.ScaleDamage = {
 
 									["HITGROUP_HEAD"] = hitgroup_head,
@@ -3615,7 +3619,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 							    target:SetModel("models/cultist/humans/chaos/fat/chaos_fat.mdl")
 
-								local hitgroup_head = target.ScaleDamage["HITGROUP_HEAD"]
+								--local hitgroup_head = target.ScaleDamage["HITGROUP_HEAD"]
 
 								target.ScaleDamage = {
 
@@ -3713,7 +3717,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			claymore:SetOwner(ply)
 			claymore:Spawn()
 			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
-			ply:SetSpecialCD(CurTime() + 4)
+			ply:SetSpecialCD(CurTime() + 3)
 		elseif ply:HaveSpecialAb(role.MTF_Engi) then
 
 			if ply:GetSpecialMax() <= 0 then return end

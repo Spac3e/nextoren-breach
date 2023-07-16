@@ -86,15 +86,22 @@ function GM:PlayerSpray()
    return self:IsSuperAdmin()
 end
 
-local ScaleDamage = ScaleDamage || {}
-function ScaleDamage()
-	ScaleDamage()
-end
-
 function mply:AddToAchievementPoint()
 end
 
 function mply:LevelBar()
+end
+
+function GetAlivePlayers()
+	local plys = {}
+	for k,v in pairs(player.GetAll()) do
+		if v:GTeam() != TEAM_SPEC then
+			if v:Alive() then
+				table.ForceInsert(plys, v)
+			end
+		end
+	end
+	return plys
 end
 
 function mply:TakeHealth(number)
@@ -483,10 +490,9 @@ function mply:ApplyRoleStats(role)
 	if role.hackerhat then
 		self:Bonemerge(role.hackerhat, self)
 	end
-	--if role.damage_modifiers then
-	--	self:ScaleDamage(role.damage_modifiers[hitgroup])
-	--end
-	self:SetSkin(0)
+	if role.damage_modifiers then
+		
+	end
 	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
@@ -514,9 +520,10 @@ function mply:ApplyRoleStats(role)
     end
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
-	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 100 * 1) end
-	if role.runspeed then self:SetRunSpeed(210 * role.runspeed or 210 * 1) end
-	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 190 * 1) end
+	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 200) end
+	if role.runspeed then self:SetRunSpeed(231 * role.runspeed or 200) end
+	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
+	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
 	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
 	if role.bodygroup2 then self:SetBodygroup(2, role.bodygroup2)end
@@ -528,7 +535,7 @@ function mply:ApplyRoleStats(role)
 	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
 	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
 	if role.maxslots then self:SetMaxSlots(role.maxslots) end
-	if self:GTeam() == TEAM_CLASSD then self:SetSkin(math.random(1,7)) end 
+	if self:GTeam() == TEAM_CLASSD and self:IsPremium() then self:SetBodygroup(0,math.random(0,4)) end
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)

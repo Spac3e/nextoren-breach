@@ -28,7 +28,7 @@ local vgui = vgui;
 local util = util
 local net = net
 local player = player
-
+	
 local heliModel = Model( "models/comradealex/mgs5/hp-48/hp-48test.mdl" )
 local light_origin = Vector( 14883.383789, 13000.545898, -15814.162109 )
 local helicopter_angle = Angle( 0, -90, 0 )
@@ -1523,13 +1523,13 @@ net.Receive( "NightvisionOn", function()
 
 end )
 
-timer.Create("ADVERT_NABOR_", 300, 0, function()
+--timer.Create("ADVERT_NABOR_", 300, 0, function()
 
 	--[[if LocalPlayer().GTeam and LocalPlayer():GTeam() == TEAM_SPEC then
-		chat.AddText(Color(0,0,255), "[VAULT] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку, https://forms.gle/fFc8dDgutUompCU38")
+		chat.AddText(Color(0,0,255), "[VAULT] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку")
 	end]]
 
-end)
+--end)
 
 local view_punch_angle = Angle( -30, 0, 0 )
 local dust_vector = Vector( -712.862427, 6677.729492, 2225.919189 )
@@ -3402,7 +3402,7 @@ function CreateEmoteMenu()
 
 			if input.IsKeyDown(_G[key]) then
 
-				LocalPlayer():ConCommand("br_emote "..i)
+				LocalPlayer():ConCommand("act "..i)
 
 				EMOTECOOLMENU:Remove()
 
@@ -3428,6 +3428,24 @@ function CreateEmoteMenu()
 	end
 
 end
+
+
+hook.Add("PlayerButtonDown", "emote_menu", function(ply, butt)
+
+	local pl = LocalPlayer()
+
+	if !pl:IsSuperAdmin() then return end
+	if pl:GTeam() == TEAM_SPEC then return end
+	if pl:GTeam() == TEAM_SCP then return end
+
+	if butt == KEY_Z and IsFirstTimePredicted() then
+
+		CreateEmoteMenu()
+
+	end
+
+
+end)
 
 BREACH.QuickChatPhrases = {
 	{name = "l:quickchat_request_id", phrase = "Покажи ID карту!", military_only = true},

@@ -7,7 +7,7 @@ ROUNDS = {
 			disableNTF = false
 		end,
 		init = function()
-			SpawnAllItems()
+			BREACH_Round_Spawn_Loot()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
 				SupportSpawn()
 			end )

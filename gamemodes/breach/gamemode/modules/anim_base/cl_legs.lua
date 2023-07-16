@@ -1,21 +1,21 @@
-Shaky_LEGS = Shaky_LEGS || {}
+BREACH_LEGS = BREACH_LEGS || {}
 
-Shaky_LEGS.legEnt = Shaky_LEGS.legEnt || nil
-Shaky_LEGS.playBackRate = 1
-Shaky_LEGS.sequence = nil
-Shaky_LEGS.velocity = 0
-Shaky_LEGS.oldWeapon = nil
-Shaky_LEGS.breathScale = 0.5
-Shaky_LEGS.nextBreath = 0
-Shaky_LEGS.renderAngle = nil
-Shaky_LEGS.biaisAngle = nil
-Shaky_LEGS.radAngle = nil
-Shaky_LEGS.renderPos = nil
-Shaky_LEGS.renderColor = { }
-Shaky_LEGS.clipVector = vector_up * -1
-Shaky_LEGS.forwardOffset = -20
-Shaky_LEGS.nextMatSet = CurTime( )
-Shaky_LEGS.lastCharName = Shaky_LEGS.lastCharName || 0
+BREACH_LEGS.legEnt = BREACH_LEGS.legEnt || nil
+BREACH_LEGS.playBackRate = 1
+BREACH_LEGS.sequence = nil
+BREACH_LEGS.velocity = 0
+BREACH_LEGS.oldWeapon = nil
+BREACH_LEGS.breathScale = 0.5
+BREACH_LEGS.nextBreath = 0
+BREACH_LEGS.renderAngle = nil
+BREACH_LEGS.biaisAngle = nil
+BREACH_LEGS.radAngle = nil
+BREACH_LEGS.renderPos = nil
+BREACH_LEGS.renderColor = { }
+BREACH_LEGS.clipVector = vector_up * -1
+BREACH_LEGS.forwardOffset = -20
+BREACH_LEGS.nextMatSet = CurTime( )
+BREACH_LEGS.lastCharName = BREACH_LEGS.lastCharName || 0
 
 local hiddenBones = {
 
@@ -73,13 +73,13 @@ local META = FindMetaTable( "Player" )
 
 function META:ShouldDrawLegs()
 
-  return Shaky_LEGS.legEnt && Shaky_LEGS.legEnt:IsValid() && self:Alive()
+  return BREACH_LEGS.legEnt && BREACH_LEGS.legEnt:IsValid() && self:Alive()
   && !self:InVehicle() && self:GetViewEntity() == self
   && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && GetConVar("breach_config_draw_legs"):GetBool()
 
 end
 
-function Shaky_LEGS:CreateLegs()
+function BREACH_LEGS:CreateLegs()
 
   local ply = LocalPlayer()
 
@@ -113,7 +113,7 @@ local up_vector = Vector( 1, 1, 1 )
 local stay_vector = vector_origin
 local vector_manipulate = Vector( -10, -10, 0 )
 
-function Shaky_LEGS:PlayerWeaponChanged( ply, weapon )
+function BREACH_LEGS:PlayerWeaponChanged( ply, weapon )
 
   if ( self.legEnt && self.legEnt:IsValid() ) then
 
@@ -143,7 +143,7 @@ function Shaky_LEGS:PlayerWeaponChanged( ply, weapon )
 
 end
 
---function Shaky_LEGS:UpdateAnimation( ply, velocity, speed )
+--function BREACH_LEGS:UpdateAnimation( ply, velocity, speed )
 
   --[[if ( ply == LocalPlayer() ) then
 
@@ -160,7 +160,7 @@ end
   end]]
 
 --end
---hook.Add( "UpdateAnimation", "Legs_UpdateAnimation", Shaky_LEGS.UpdateAnimation )
+--hook.Add( "UpdateAnimation", "Legs_UpdateAnimation", BREACH_LEGS.UpdateAnimation )
 
 function ClientBoneMerge( ent, model )
 
@@ -189,7 +189,7 @@ function ClientBoneMerge( ent, model )
 
 end
 
-function Shaky_LEGS:LegsWork( ply, speed )
+function BREACH_LEGS:LegsWork( ply, speed )
 
   if ( !ply:ShouldDrawLegs() ) then return end
 
@@ -378,14 +378,14 @@ local mathrad = math.rad
 local mathcos = math.cos
 local mathsin = math.sin
 
-function Shaky_LEGS:RenderScreenspaceEffects()
+function BREACH_LEGS:RenderScreenspaceEffects()
 
   local ply = LocalPlayer()
   local plytable = ply:GetTable()
   if ( !ply:IsSolid() || ( ply:GTeam() == team_index_scp && !plytable.IsZombie && !allowedscp[ply:GetRoleName()] ) ) then return end
 
 
-  local self = Shaky_LEGS
+  local self = BREACH_LEGS
 
   cam.Start3D( EyePos(), EyeAngles() )
 
@@ -462,4 +462,4 @@ function Shaky_LEGS:RenderScreenspaceEffects()
   cam.End3D()
 
 end
-hook.Add( "PostDrawOpaqueRenderables", "Legs_ScreenSpaceEffects", Shaky_LEGS.RenderScreenspaceEffects )
+hook.Add( "PostDrawOpaqueRenderables", "Legs_ScreenSpaceEffects", BREACH_LEGS.RenderScreenspaceEffects )

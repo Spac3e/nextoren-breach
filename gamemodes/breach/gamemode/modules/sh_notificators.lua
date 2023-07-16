@@ -94,7 +94,7 @@ if CLIENT then
 				end
 			end
 	
-			chat.AddText(Color(0, 230, 0), "[VAULT] ", Color(255, 255, 255), unpack(message))
+			chat.AddText(Color(200, 35, 190), "[VAULT] ", Color(255, 255, 255), unpack(message))
 	end)
 	
 	net.Receive("BreachWarningFromServer", function()
@@ -123,7 +123,7 @@ if CLIENT then
 					msg[k] = BREACH.TranslateString(v)
 				end
 			end
-			chat.AddText(Color(0, 230, 0), "[VAULT] ", Color(255, 255, 255), unpack(msg))
+			chat.AddText(Color(200, 35, 190), "[VAULT] ", Color(255, 255, 255), unpack(msg))
 	end
 	
 	function RXSENDWarning(message)

@@ -1553,7 +1553,7 @@ function ulx.expiredate( ply )
 		return
 	end
 
-	local ExpireDate = tonumber(ply:GetPData("shaky_premium_dietime", tostring(os.time() + 1)))
+	local ExpireDate = tonumber(ply:GetPData("premium_dietime", tostring(os.time() + 1)))
 
 	local str = string.NiceTime(ExpireDate - os.time())
 

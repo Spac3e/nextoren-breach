@@ -210,15 +210,15 @@ SWEP.WMAng = Vector(-10, -1, 180)
 SWEP.Spawnable			= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 
-SWEP.Primary.ClipSize		= 200
-SWEP.Primary.DefaultClip = 0 --	= 0
+SWEP.Primary.ClipSize		= 99999
+SWEP.Primary.DefaultClip = 99999 --	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "AR2"
 
-SWEP.FireDelay = 60/800
+SWEP.FireDelay = 0.05
 SWEP.FireSound = "CW_KK_INS2_M60_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_M60_FIRE_SUPPRESSED"
-SWEP.Recoil = 0.9975
+SWEP.Recoil = 0.3
 
 SWEP.HipSpread = 0.045
 SWEP.AimSpread = 0.0027

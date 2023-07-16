@@ -1962,7 +1962,7 @@ BREACH_ROLES.NTF = {
 			 ["tasks"] = "l:tasks_ntf",
 			 ["usehead"] = true, ["randomizehead"] = true, ["randomizeface"] = true,
 			 ["headgear"] = "models/cultist/humans/ntf/head_gear/ntf_special_head.mdl",
-			 --["ability"] = {"l:abilities_name_ntfspec", 90, "l:abilities_ntfspec", "nextoren/gui/special_abilities/special_ntf_specialist.png", false},
+			 ["ability"] = {"l:abilities_name_ntfspec", 90, "l:abilities_ntfspec", "nextoren/gui/special_abilities/special_ntf_specialist.png", false},
 			 ["bodygroup0"] = 1,
 			 ["bodygroup1"] = 2,
 			 ["bodygroup2"] = 3,
@@ -2620,11 +2620,11 @@ BREACH_ROLES.DZ = {
 		roles = {
 			{["name"] = role.DZ_Grunt, 
 			 ["team"] = TEAM_DZ,
-			 ["weapons"] = {"br_holster", "item_radio", "cw_kk_ins2_m4a1", "item_adrenaline", "item_medkit_3"},
+			 ["weapons"] = {"br_holster", "item_radio", "cw_kk_ins2_cstm_galil_ace", "item_adrenaline", "item_medkit_3"},
 			 ["tasks"] = "l:tasks_sh",
 			 ["bodygroup0"] = 1,
 			 ["keycard"] = "support",
-			 ["ammo"] = {{"cw_kk_ins2_m4a1", 315}},
+			 ["ammo"] = {{"cw_kk_ins2_cstm_galil_ace", 415}},
 			 ["health"] = 145,
 			 ["armor"] = 0,
 			 ["walkspeed"] = 0.86,
@@ -3134,20 +3134,7 @@ BREACH_ROLES.SCP = {
 			 ["models"] = {"models/cultist/scp/scp_973/scp_973.mdl"},
 			 ["showmodel"] = "models/cultist/scp/scp_973/scp_973.mdl",
 			 ["level"] = 0
-		    },
-		    {["name"] = "SCP-173", 
-			 ["team"] = TEAM_SCP,
-			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
-			 ["health"] = 3400,
-			 ["armor"] = 0,
-			 ["walkspeed"] = 1,
-			 ["runspeed"] = 1,
-			 ["jumppower"] = 1,
-			 ["models"] = {"models/cultist/scp/173.mdl"},
-			 ["showmodel"] = "models/cultist/scp/173.mdl",
-			 ["level"] = 0
-		    },
-		    
+		    },	    
 		    {["name"] = "SCP-2012", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",
@@ -3160,7 +3147,6 @@ BREACH_ROLES.SCP = {
 			 ["showmodel"] = "models/shaky/scp/scp2012/scp_2012.mdl",
 			 ["level"] = 0
 		    },
-		    
 		    {["name"] = "SCP-811", 
 			 ["team"] = TEAM_SCP,
 			 ["tasks"] = "l:tasks_kill_everyone_except_sh",

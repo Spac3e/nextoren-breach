@@ -144,13 +144,14 @@ function GM:EntityEmitSound( s_table )
 	if ( banned_sounds[ s_table.SoundName ] ) then return false end
 end
 
-net.Receive("catch_breath", function()
-	if ply:GTeam() == TEAM_SCP or ply:GTeam() == TEAM_SPEC then return end
-	if !ply:IsFemale() then
-		ply:EmitSound("nextoren/charactersounds/breathing/breath0.wav")
-	end
+local mply = FindMetaTable'Player'
+
+net.Receive("catch_breath", function(len, ply)
+	if !ply:IsValid() then return end
 	if ply:IsFemale() then
 		ply:EmitSound("nextoren/charactersounds/breathing/breathing_female.wav")
+	else
+		ply:EmitSound("nextoren/charactersounds/breathing/breath0.wav")
 	end
 end)
 
@@ -160,9 +161,6 @@ net.Receive("SendPrefixData", function(data)
 	net.ReadString(color)
 	net.ReadBool(rainbow)
 end)
-
-function LogTeamChangeFromBreach()
-end
 
 net.Receive( "DropWeapon", function( len, ply )
 	local class = net.ReadString()

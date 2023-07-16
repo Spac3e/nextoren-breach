@@ -57,6 +57,10 @@ net.Receive("DropAdditionalArmor", function(ply)
 	end
 end)
 
+function IsPremium(ply)
+	return ply:IsPremium()
+end
+
 function Player:SetBottomMessage( msg )
     net.Start( "SetBottomMessage" )
         net.WriteString( msg )
@@ -94,55 +98,6 @@ net.Receive("NTF_Special_1", function(ply,caller)
 	end )
 end)
 
-function IsPremium( ply, silent )
-	ply:SetNPremium( false )
-	ply.Premium = false
-	if CheckULXPremium( ply, silent ) == true then return end
-	if GetConVar("br_premium_url"):GetString() == "" or GetConVar("br_premium_url"):GetString() == "none" then return end
-	http.Fetch( GetConVar("br_premium_url"):GetString(), function( body, size, headers, code )
-		if ( body == nil ) then return end
-
-		local ID = string.find( tostring(body), "<ID64>"..ply:SteamID64().."</ID64>" )
-			if ID != nil then
-				ply.Premium = true
-				ply:SetNPremium( true )
-				if GetConVar("br_premium_display"):GetString() != "" and GetConVar("br_premium_display"):GetString() != "none" and !silent then
-					print("Premium member "..ply:GetName().." has joined")
-					PrintMessage(HUD_PRINTCENTER, string.format(GetConVar("br_premium_display"):GetString(), ply:GetName()))
-				end
-			end
-	end,
-	function( error )
-		print("HTTP ERROR")
-		print(error)
-	end )
-end
-
-function CheckULXPremium( ply, silent )
-	if GetConVar("br_ulx_premiumgroup_name"):GetString() == "" or GetConVar("br_ulx_premiumgroup_name"):GetString() == "none" then return end
-	if !ply.CheckGroup then
-		print( "To use br_ulx_premiumgroup_name you have to install ULX!" )
-		return
-	end
-	local pgroups = string.Split( GetConVar("br_ulx_premiumgroup_name"):GetString(), "," )
-	local ispremium
-	for k,v in pairs( pgroups ) do
-		if ply:CheckGroup( v ) then
-			ispremium = true
-			break
-		end
-	end
-	if ispremium then
-		ply.Premium = true
-		ply:SetNPremium( true )
-		if GetConVar("br_premium_display"):GetString() != "" and GetConVar("br_premium_display"):GetString() != "none" and !silent then
-			print("Premium member "..ply:GetName().." has joined")
-			PrintMessage(HUD_PRINTCENTER, string.format(GetConVar("br_premium_display"):GetString(), ply:GetName()))
-		end
-		return true
-	end
-end
-
 function CheckStart()
 	MINPLAYERS = GetConVar("br_min_players"):GetInt()
 	if gamestarted == false and #GetActivePlayers() >= 10 then
@@ -162,7 +117,6 @@ function GM:PlayerInitialSpawn( ply )
 	ply.Active = false
 	ply.freshspawn = true
 	ply.isblinking = false
-	ply.Premium = false
 	if timer.Exists( "RoundTime" ) == true then
 		net.Start("UpdateTime")
 			net.WriteString(tostring(timer.TimeLeft( "RoundTime" )))
@@ -170,7 +124,6 @@ function GM:PlayerInitialSpawn( ply )
 	end
 	player_manager.SetPlayerClass( ply, "class_breach" )
 	player_manager.RunClass( ply, "SetupDataTables" )
-	IsPremium(ply)
 	ply:SetActive( false )
 	if ply:IsBot() then
 		ply:SetNWBool("Player_IsPlaying", true)
@@ -507,7 +460,7 @@ function mply:BreachGive(classname)
 end
 end
 
-function GM:PlayerCanPickupWeapon( ply, wep )
+function GM:PlayerCanPickupWeapon(ply, wep)
 	local data = {}
 		data.start = ply:GetShootPos()
 		data.endpos = data.start + ply:GetAimVector() * 96
@@ -523,16 +476,15 @@ function GM:PlayerCanPickupWeapon( ply, wep )
 				end
 			end
 
-			if canuse == true then
+			if canuse == false then
 				return false
 			end
 		end
     end
-
-	ply.gettingammo = wep.SavedAmmo
-
-	if (trace.Entity == wep and ply:KeyDown(IN_USE)) and ply:GTeam() != TEAM_SCP then
-		ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
+  
+   	ply.gettingammo = wep.SavedAmmo
+	if (trace.Entity == wep and ply:KeyDown(IN_USE)) then if (ply:GetMaxSlots() - ply:GetPrimaryWeaponAmount()) == 0 then return end if ply:HasWeapon(trace.Entity:GetClass()) then return end
+        ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
         ply:Give(trace.Entity:GetClass())
 		ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
 		trace.Entity:Remove()
