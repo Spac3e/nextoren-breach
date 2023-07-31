@@ -1098,10 +1098,10 @@ function GetPrepTime()
 end
 
 function GetRoundTime()
-	if GetGlobalBool("BigRound", false) then
-		return 840--1020
-	end
-	return 720--GetConVar("br_time_round"):GetInt()
+    if #GetActivePlayers() < 29 then 
+        return 720--1020
+    end
+    return 1020--GetConVar("br_time_round"):GetInt()
 end
 
 function GetPostTime()
