@@ -453,6 +453,14 @@ function mply:SelectAsCISpy()
 	end
 end
 
+function GetRoleResists(role)
+	if role.damage_modifiers then
+		return role.damage_modifiers.HITGROUP_HEAD
+	else
+		return nil
+	end
+end
+
 function mply:ApplyRoleStats(role)
 	self:SurvivorCleanUp()
 	self:SetRoleName( role.name )
@@ -491,23 +499,21 @@ function mply:ApplyRoleStats(role)
 		self:Bonemerge(role.hackerhat, self)
 	end
     if role.damage_modifiers then
-        --print(role.damage_modifiers.HITGROUP_HEAD)
         hook.Add("ScalePlayerDamage", "MRD_OnPlayerDamaged", function(ply, hitgroup, dmginfo)
-            --local chance = math.random( 1, MRD["Random"] ) --It is a simply random count.
         if ply:IsPlayer() then
         if hitgroup == HITGROUP_HEAD then
-            dmginfo:ScaleDamage( 1 / role.damage_modifiers.HITGROUP_HEAD )
+            dmginfo:ScaleDamage( 1 * role.damage_modifiers.HITGROUP_HEAD + 1)
         elseif hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_GEAR then
-            dmginfo:ScaleDamage( 1 / role.damage_modifiers.HITGROUP_CHEST )
+            dmginfo:ScaleDamage( 1 * role.damage_modifiers.HITGROUP_CHEST + 1)
         elseif hitgroup == HITGROUP_STOMACH then
-            dmginfo:ScaleDamage( 1 / role.damage_modifiers.HITGROUP_STOMACH )
+            dmginfo:ScaleDamage( 1 * role.damage_modifiers.HITGROUP_STOMACH + 1)
         elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
-            dmginfo:ScaleDamage( 1 / role.damage_modifiers.HITGROUP_RIGHTARM )
+            dmginfo:ScaleDamage( 1 * role.damage_modifiers.HITGROUP_RIGHTARM + 1)
         elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
-            dmginfo:ScaleDamage( 1 / role.damage_modifiers.HITGROUP_RIGHTLEG )
+            dmginfo:ScaleDamage( 1 * role.damage_modifiers.HITGROUP_RIGHTLEG +1 )
         end
         end
-        print(1 / role.damage_modifiers.HITGROUP_RIGHTLEG)
+        print(1 * role.damage_modifiers.HITGROUP_HEAD)
         end)
     end
 	if role.skin then self:SetSkin(role.skin) end
