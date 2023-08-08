@@ -73,16 +73,7 @@ function ENT:Use(ply)
 				if !IsValid(self) or !self.ArmorModel then return end
 				ply.VestBonemerge = Bonemerge(self.ArmorModel, ply)
 
-				ply.BodyResist = self.MaxHitsArmor
-
-					local local_resist_class = self.MaxHitsArmor
-					hook.Add("ScalePlayerDamage", "MRD_OnPlayerDamaged", function(ply, hitgroup, dmginfo)
-					if ply:IsPlayer() then
-						if hitgroup == HITGROUP_GEAR then
-							dmginfo:ScaleDamage( local_resist_class )
-						end
-					end
-					end)
+				ply.BodyResist = self.MaxHitsHelmet
 	
 				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:put_on_vest", Color(255, 255, 255))
 		
