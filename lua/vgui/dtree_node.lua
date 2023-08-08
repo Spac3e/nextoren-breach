@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dtree_node.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {}
 
@@ -230,13 +242,10 @@ function PANEL:DoChildrenOrder()
 
 	if ( !IsValid( self.ChildNodes ) ) then return end
 
-	local children = self.ChildNodes:GetChildren()
-	local last = #children
-
-	for i = 1, (last - 1) do
-		children[i]:SetLastChild( false )
+	local last = table.Count( self.ChildNodes:GetChildren() )
+	for k, Child in pairs( self.ChildNodes:GetChildren() ) do
+		Child:SetLastChild( k == last )
 	end
-	children[last]:SetLastChild( true )
 
 end
 
@@ -521,7 +530,8 @@ function PANEL:PopulateChildren()
 
 	if ( !IsValid( self.ChildNodes ) ) then return end
 
-	for k, v in ipairs( self.ChildNodes:GetChildren() ) do
+	for k, v in pairs( self.ChildNodes:GetChildren() ) do
+
 		timer.Simple( k * 0.1, function()
 
 			if ( IsValid( v ) ) then
@@ -675,7 +685,7 @@ function PANEL:Copy()
 
 	if ( self.ChildNodes ) then
 
-		for k, v in ipairs( self.ChildNodes:GetChildren() ) do
+		for k, v in pairs( self.ChildNodes:GetChildren() ) do
 
 			local childcopy = v:Copy()
 			copy:InsertNode( childcopy )

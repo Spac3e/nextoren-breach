@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dadjustablemodelpanel.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {}
 
@@ -13,7 +25,6 @@ end
 
 function PANEL:OnMousePressed( mousecode )
 
-	self:SetCursor( "none" )
 	self:MouseCapture( true )
 	self.Capturing = true
 	self.MouseKey = mousecode
@@ -66,21 +77,6 @@ function PANEL:CaptureMouse()
 
 end
 
-local function IsKeyBindDown( cmd )
-
-	-- Yes, this is how engine does it for input.LookupBinding
-	for keyCode = 1, BUTTON_CODE_LAST do
-
-		if ( input.LookupKeyBinding( keyCode ) == cmd and input.IsKeyDown( keyCode ) ) then
-			return true
-		end
-
-	end
-
-	return false
-
-end
-
 function PANEL:FirstPersonControls()
 
 	local x, y = self:CaptureMouse()
@@ -102,33 +98,16 @@ function PANEL:FirstPersonControls()
 
 	-- Look around
 	self.aLookAngle = self.aLookAngle + Angle( y, x, 0 )
-	self.aLookAngle.p = math.Clamp( self.aLookAngle.p, -90, 90 )
 
 	local Movement = vector_origin
 
-	if ( IsKeyBindDown( "+forward" ) or input.IsKeyDown( KEY_UP ) ) then
-		Movement = Movement + self.aLookAngle:Forward()
-	end
-
-	if ( IsKeyBindDown( "+back" ) or input.IsKeyDown( KEY_DOWN ) ) then
-		Movement = Movement - self.aLookAngle:Forward()
-	end
-
-	if ( IsKeyBindDown( "+moveleft" ) or input.IsKeyDown( KEY_LEFT ) ) then
-		Movement = Movement - self.aLookAngle:Right()
-	end
-
-	if ( IsKeyBindDown( "+moveright" ) or input.IsKeyDown( KEY_RIGHT ) ) then
-		Movement = Movement + self.aLookAngle:Right()
-	end
-
-	if ( IsKeyBindDown( "+jump" ) or input.IsKeyDown( KEY_SPACE ) ) then
-		Movement = Movement + vector_up
-	end
-
-	if ( IsKeyBindDown( "+duck" ) or input.IsKeyDown( KEY_LCONTROL ) ) then
-		Movement = Movement - vector_up
-	end
+	-- TODO: Use actual key bindings, not hardcoded keys.
+	if ( input.IsKeyDown( KEY_W ) || input.IsKeyDown( KEY_UP ) ) then Movement = Movement + self.aLookAngle:Forward() end
+	if ( input.IsKeyDown( KEY_S ) || input.IsKeyDown( KEY_DOWN ) ) then Movement = Movement - self.aLookAngle:Forward() end
+	if ( input.IsKeyDown( KEY_A ) || input.IsKeyDown( KEY_LEFT ) ) then Movement = Movement - self.aLookAngle:Right() end
+	if ( input.IsKeyDown( KEY_D ) || input.IsKeyDown( KEY_RIGHT ) ) then Movement = Movement + self.aLookAngle:Right() end
+	if ( input.IsKeyDown( KEY_SPACE ) ) then Movement = Movement + self.aLookAngle:Up() end
+	if ( input.IsKeyDown( KEY_LCONTROL ) ) then Movement = Movement - self.aLookAngle:Up() end
 
 	local speed = 0.5
 	if ( input.IsShiftDown() ) then speed = 4.0 end
@@ -146,7 +125,6 @@ end
 
 function PANEL:OnMouseReleased( mousecode )
 
-	self:SetCursor( "arrow" )
 	self:MouseCapture( false )
 	self.Capturing = false
 

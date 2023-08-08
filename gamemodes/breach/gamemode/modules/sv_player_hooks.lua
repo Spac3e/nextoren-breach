@@ -263,13 +263,6 @@ function HaveRadio(pl1, pl2)
 			local r1 = pl1:GetWeapon("item_radio")
 			local r2 = pl2:GetWeapon("item_radio")
 			if !IsValid(r1) or !IsValid(r2) then return false end
-			/*
-			print(pl1:Nick() .. " - " .. pl2:Nick())
-			print(r1.Enabled)
-			print(r1.Channel)
-			print(r2.Enabled)
-			print(r2.Channel)
-			*/
 			if r1.Enabled == true then
 				if r2.Enabled == true then
 					if r1.Channel == r2.Channel then
@@ -304,24 +297,11 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 		end
 	end
 
-	if talker:GTeam() == TEAM_SCP and talker:GetRoleName() != role.SCP9571 then
-		local omit = false
-
-		if talker:GetRoleName() == role.SCP939 then
-			local wep = talker:GetWeapon("weapon_scp_939")
-			if IsValid( wep ) then
-				if wep.Channel == "ALL" then
-					omit = true
-				end
-			end
-		end
-
-		if !omit and GetConVar( "br_allow_scptovoicechat" ):GetInt() == 0 then
-			if listener:GTeam() != TEAM_SCP then
-				return false
-			end
-		end
+	if talker:GTeam() == TEAM_SCP and talker:GTeam() == TEAM_SCP then
+		return true 
 	end
+	
+
 	if talker:GTeam() == TEAM_SPEC then
 		if listener:GTeam() == TEAM_SPEC then
 			return true
@@ -563,16 +543,16 @@ function GM:PlayerUse( ply, ent, key )
 		ply.lastuse = CurTime() + 1
 
 		if v.access != nil then
-			if OMEGADoors then
-				return true
-			end
-
 			if v.levelOverride and v.levelOverride( ply ) then
 				return true
 			end
 
 			local hui = ply:GetActiveWeapon():GetClass() or {}
 			local wep = string.sub( hui, 1, 14 ) or {}
+			if hui == "" then
+				ply:SetBottomMessage("l:keycard_needed")
+				return false
+			end
 			if hui == "breach_keycard_7" then
 				if v.access.CLevelO5 != nil then
 				if ((ply:GetActiveWeapon().CLevels.CLevelO5) >= (v.access.CLevelO5)) then

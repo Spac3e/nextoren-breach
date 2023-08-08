@@ -196,10 +196,9 @@ end
 
 local function downloadForUlibUpdateCheck()
 	timer.Simple(1, function()
-	http.Fetch( "http://google.com", httpCheck, httpErr )
+	http.Fetch( "http://google.com", httpCheck, httpErr)
 	end)
 end
-
 if ULib.AUTOMATIC_UPDATE_CHECKS then
 	hook.Add( "Initialize", "ULibPluginUpdateChecker", downloadForUlibUpdateCheck )
 	timer.Create( "ULibPluginUpdateChecker", 9, 10, downloadForUlibUpdateCheck )

@@ -3,17 +3,17 @@ ROUNDS = {
 		name = "Containment Breach",
 		setup = function()
 			BUTTONS = table.Copy(BUTTONS)
-			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
+			BREACH.SetupPlayers( BREACH.GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
 		init = function()
-			BREACH_Round_Spawn_Loot()
+			BREACH.Round_Spawn_Loot()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
 				SupportSpawn()
 			end )
 end,
 		roundstart = function()
-			BREACH_Round_Open_Dblock()
+			BREACH.Round_Open_Dblock()
 		end,
 		postround = function()
 			local plys = GetActivePlayers()
@@ -68,7 +68,7 @@ end,
 		name = "MTF vs CI Deathmatch",
 		setup = function()
 			BUTTONS = table.Copy(BUTTONS)
-			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
+			BREACH.SetupPlayers( BREACH.GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
 		init = function()

@@ -5,132 +5,7 @@ roundEnd = roundEnd or 0
 MAP_LOADED = MAP_LOADED or false
 util.AddNetworkString("bettersendlua")
 
-function BREACH_Round_System_Start_mini()
-
-   	BREACH_Round_System_Doors_Work()
-	timer.Create( "lz_5", 120, 1, function()
-		for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:decont_5min", Color(255, 255, 255))
-		end
-		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_5_min.ogg" )
-	end)
-
-    timer.Create( "cz_10", 180, 1, function()
-		for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_10min", Color(255, 255, 255))
-		end
-		PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_10_b.mp3" )
-	end)
-	  
-	timer.Create( "lz_1", 360, 1, function()
-		for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:decont_1min", Color(255, 255, 255))
-		end
-		BREACH.Decontamination = true
-		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_1_min.ogg" )
-		PlayAnnouncer("no_music/light_zone/light_zone_decontamination.ogg")
-	end)
-	  
-	timer.Create( "lz_30", 382, 1, function()
-		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_countdown.ogg" )
-	end)
-	  
-	timer.Create( "lz_0", 420, 1, function()
-		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_ending.ogg" )
-	end)
-	  
-	timer.Create( "cz_5", 480, 1, function()
-		for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
-		end
-		PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
-	end)
-	  
-	timer.Create( "cz_4", 540, 1, function(ply)
-		SetGlobalBool("Evacuation", true)
-		BREACH.Evacuation = true
-		local songevac = "no_music/evacuation_"..math.random(1,6)..".ogg"
-		PlayAnnouncerLoud(songevac)
-		for k,v in pairs(player.GetAll()) do
-			v:RXSENDNotify("l:evac_start_leave_immediately")
-		end
-		PlayAnnouncer( "nextoren/round_sounds/intercom/start_evac.ogg" )
-	end)
-	  
-	timer.Create( "cz_pizda", 610, 1, function()
-		SetGlobalBool("Evacuation_HUD", true )
-		for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
-		end
-		BroadcastPlayMusic("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
-	end)
-	  
-	LockKPPDoors()
-
-	timer.Create( "cz_15_sv_scp_open_door", 180, 1, function()
-		OpenSCPDoors()
-		UnlockKPPDoors()
-	end)
-	  
-	timer.Create( "lz_30_2", 390, 1, function()
-		  SPAWN_ALARM_1 = {Vector(9634.434570,-626.971497,196.748062)}
-		  SPAWN_ALARM_2 = {Vector(8159.033691,-1593.655762,206.421295)}
-		  SPAWN_ALARM_3 = {Vector(7455.475586,-1095.210327,94.144287)}
-		  SPAWN_ALARM_4 = {Vector(6881.367188,-1601.432983,159.702118)}
-		  SPAWN_ALARM_5 = {Vector(4764.329102,-2223.142334,168.979858)}
-		  for k,v in pairs(SPAWN_ALARM_1) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_2) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_3) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_4) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_5) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-	end)
-	  
-	  
-  
-	timer.Create( "spawnsupport_9", 240, 1, function()
-	  
-		SupportSpawn()
-	  
-	end)
-
-end
-
-function BREACH_Round_System_Start()
+function BREACH.Round_System_Start()
 	for k,v in pairs(ents.FindByClass("prop_door_rotating")) do
 		v:AddEFlags(8192)
 		v:SetKeyValue("returndelay", "5")
@@ -146,8 +21,8 @@ function BREACH_Round_System_Start()
 		v:SetKeyValue("returndelay", "5")
 		v:SetKeyValue("wait", "1")
 	end
-   BREACH_Round_System_Doors_Work()
-   BREACH_Round_System_Announcer()
+   BREACH.Round_System_Doors_Work()
+   BREACH.Round_System_Announcer()
 		  --timer.Create("RandAnnouncerKrivota", 135, 0, PlayRandomAnnouncer)
 		  timer.Create( "lc_15_s", 180, 1, function()
 			  for k,v in pairs(player.GetAll()) do
@@ -575,7 +450,7 @@ end
   end
 
 
-function BREACH_Round_System_Stop()
+function BREACH.Round_System_Stop()
 	timer.Remove( "lc_15_sv_scp_open_door" )
 	timer.Remove( "lc_2_10_s_sv" )
 	timer.Remove( "lc_11_open_kpp_15_s" )
@@ -595,11 +470,11 @@ function BREACH_Round_System_Stop()
 	timer.Remove( "lc_2_10_s" )
 end
 
-function BREACH_Round_System_Announcer()
+function BREACH.Round_System_Announcer()
 
 end
 
-function BREACH_Round_System_Doors_Work()
+function BREACH.Round_System_Doors_Work()
 	timer.Create( "mog_door_open", 80, 1, function()
 	  
 		for k,ball in pairs(ents.FindInSphere((Vector(-1065, 5475, 50)), 50)) do
@@ -768,7 +643,7 @@ end)
 	end )
 end
 
-function BREACH_Round_Open_Dblock()
+function BREACH.Round_Open_Dblock()
 
 	for k,box in pairs(ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) )) do
           if IsValid(box) then
@@ -794,7 +669,7 @@ function RestartGame()
 end
 
 function CleanUp()
-	BREACH_Round_System_Stop()
+	BREACH.Round_System_Stop()
 	timer.Remove("PreparingTime")
 	timer.Remove("RoundTime")
 	timer.Remove("PostTime")
@@ -899,11 +774,6 @@ function RoundRestart()
 	postround = false
 	activeRound = nil
 	if #GetActivePlayers() < 10 then WinCheck() end
-	if #GetActivePlayers() > 29 then 
-        BREACH_Round_System_Start()
-    elseif #GetActivePlayers() <= 29 then
-        BREACH_Round_System_Start_mini()
-    end
 	RoundTypeUpdate()
 	SetupCollide()
 	SetupAdmins( player.GetAll() )
@@ -912,7 +782,7 @@ function RoundRestart()
 		net.WriteString(activeRound.name)
 	net.Broadcast()	
 	activeRound.init()	
-	BREACH_Round_System_Start()
+	BREACH.Round_System_Start()
 	gamestarted = true
 	BroadcastLua('gamestarted = true')
 	net.Start("PrepStart")

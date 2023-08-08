@@ -326,50 +326,6 @@ net.Receive( "DropCurWeapon", function( len, ply )
 	end
 end )
 
-/*function dofloor(num, yes)
-	if yes then
-		return math.floor(num)
-	end
-	return num
-end*/
-
-/*function GetRoleTable(all)
-	local classds = 0
-	local mtfs = 0
-	local researchers = 0
-	local scps = 0
-	if all < 8 then
-		scps = 1
-		all = all - 1
-	elseif all > 7 and all < 16 then
-		scps = 2
-		all = all - 2
-	elseif all > 15 then
-		scps = 3
-		all = all - 3
-	end
-	//mtfs = math.Round(all * 0.299)
-	local mtfmul = 0.33
-	if all > 12 then
-		mtfmul = 0.3
-	elseif all > 22 then
-		mtfmul = 0.28
-	end
-	mtfs = math.Round(all * mtfmul)
-	all = all - mtfs
-	researchers = math.floor(all * 0.42)
-	all = all - researchers
-	classds = all
-	//print(scps .. "," .. mtfs .. "," .. classds .. "," .. researchers .. "," .. chaosinsurgency)
-	/*
-	print("scps: " .. scps)
-	print("mtfs: " .. mtfs)
-	print("classds: " .. classds)
-	print("researchers: " .. researchers)
-	print("chaosinsurgency: " .. chaosinsurgency)
-	*/
-	/*return {scps, mtfs, classds, researchers}
-end*/
 
 function GetRoleTableCustom(all, scps, p_mtf, p_res)
 	local classds = 0

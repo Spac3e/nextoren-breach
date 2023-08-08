@@ -240,11 +240,11 @@ local function preFire(self)
 			local rand = math.random(1,2)
 			self.NotWorthy[self.Owner:SteamID64()] = rand == 1
 			if self.NotWorthy[self.Owner:SteamID64()] and self.Owner:GTeam() != TEAM_DZ then
-				self.Owner:SetBottomMessage("Looks like you're not worthy.")
+				self.Owner:setBottomMessage("Looks like you're not worthy.")
 				self.Owner:SetNWBool("cw_scp_122", false)
 				return true
 			else
-				self.Owner:SetBottomMessage("You're worthy enough to use this weapon.")
+				self.Owner:setBottomMessage("You're worthy enough to use this weapon.")
 				self.Owner:SetNWBool("cw_scp_122", true)
 			end
 		end

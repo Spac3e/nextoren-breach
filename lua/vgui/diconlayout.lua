@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/diconlayout.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {}
 
@@ -41,7 +53,8 @@ function PANEL:LayoutIcons_TOP()
 	local RowHeight = 0
 	local MaxWidth = self:GetWide() - self.m_iBorder
 
-	for k, v in ipairs( self:GetChildren() ) do
+	local chld = self:GetChildren()
+	for k, v in pairs( chld ) do
 
 		if ( !v:IsVisible() ) then continue end
 
@@ -75,7 +88,8 @@ function PANEL:LayoutIcons_LEFT()
 	local RowWidth = 0
 	local MaxHeight = self:GetTall() - self.m_iBorder
 
-	for k, v in ipairs( self:GetChildren() ) do
+	local chld = self:GetChildren()
+	for k, v in pairs( chld ) do
 
 		if ( !v:IsVisible() ) then continue end
 
@@ -171,7 +185,7 @@ end
 
 function PANEL:CopyContents( from )
 
-	for k, v in ipairs( from:GetChildren() ) do
+	for k, v in pairs( from:GetChildren() ) do
 
 		v:Copy():SetParent( self )
 

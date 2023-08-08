@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dlistview.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {}
 
@@ -138,7 +150,7 @@ function PANEL:FixColumnsLayout()
 
 	local AllWidth = 0
 	for k, Column in pairs( self.Columns ) do
-		AllWidth = AllWidth + math.ceil( Column:GetWide() )
+		AllWidth = AllWidth + Column:GetWide()
 	end
 
 	local ChangeRequired = self.pnlCanvas:GetWide() - AllWidth
@@ -147,7 +159,7 @@ function PANEL:FixColumnsLayout()
 
 	for k, Column in pairs( self.Columns ) do
 
-		local TargetWidth = math.ceil( Column:GetWide() ) + ChangePerColumn
+		local TargetWidth = Column:GetWide() + ChangePerColumn
 		Remainder = Remainder + ( TargetWidth - Column:SetWidth( TargetWidth ) )
 
 	end
@@ -163,12 +175,12 @@ function PANEL:FixColumnsLayout()
 
 			Remainder = math.Approach( Remainder, 0, PerPanel )
 
-			local TargetWidth = math.ceil( Column:GetWide() ) + PerPanel
+			local TargetWidth = Column:GetWide() + PerPanel
 			Remainder = Remainder + ( TargetWidth - Column:SetWidth( TargetWidth ) )
 
 			if ( Remainder == 0 ) then break end
 
-			TotalMaxWidth = TotalMaxWidth + math.ceil( Column:GetMaxWidth() )
+			TotalMaxWidth = TotalMaxWidth + Column:GetMaxWidth()
 
 		end
 
@@ -184,9 +196,9 @@ function PANEL:FixColumnsLayout()
 	for k, Column in pairs( self.Columns ) do
 
 		Column.x = x
-		x = x + math.ceil( Column:GetWide() )
+		x = x + Column:GetWide()
 
-		Column:SetTall( math.ceil( self:GetHeaderHeight() ) )
+		Column:SetTall( self:GetHeaderHeight() )
 		Column:SetVisible( !self:GetHideHeaders() )
 
 	end

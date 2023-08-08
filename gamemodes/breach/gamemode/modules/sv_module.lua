@@ -210,7 +210,7 @@ end
 
 concommand.Add("132",Create_Items)
 
-function BREACH_Round_Spawn_Loot()
+function BREACH.Round_Spawn_Loot()
 	-- Entities
 	for _, entity in ipairs(ENTITY_SPAWN_LIST) do
         local class = entity.Class
@@ -764,9 +764,11 @@ function BroadcastDetection( ply, tab )
 	net.Send( transmit )
 end
 
-function GM:GetFallDamage(player, velocity)
+function GM:GetFallDamage(player,speed)
 	player:EmitSound("nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1,2)..".wav")
-	return math.max((velocity - 464) * 0.4, 0)
+	--return math.max((velocity - 464) * 0.4, 0)
+	local dmg = (speed / 8)
+	return dmg
 end
 
 function GM:EntityTakeDamage(target,entity,dmgInfo,lastHitGroup,role)
@@ -775,12 +777,46 @@ function GM:EntityTakeDamage(target,entity,dmgInfo,lastHitGroup,role)
 	else
 	   target:RemoveEFlags( -2147483648 )
 	end
-	local a = 1
-	if lastHitGroup == HITGROUP_HEAD then
-		a = 2
-		dmgInfo:ScaleDamage(2)
+end
+
+function GetRoleResists(role)
+	if role.damage_modifiers then
+		return role.damage_modifiers.HITGROUP_HEAD
+	else
+		return nil
 	end
-	return a
+end
+
+function GM:ScalePlayerDamage(ply, hitgroup, dmg, role)
+	local multiply = 0.6
+	if ply:GetRoleResists() then
+		if hitgroup == HITGROUP_HEAD then
+			print("NMIGGGG")
+			multiply = 1
+		elseif hitgroup == HITGROUP_CHEST then
+			multiply = 0.6
+		elseif hitgroup == HITGROUP_STOMACH then
+			multiply = 0.5
+		elseif hitgroup == HITGROUP_RIGHTARM or hitgroup == HITGROUP_LEFTARM then
+			multiply = 0.5
+		end
+	else
+		if hitgroup == HITGROUP_HEAD then
+			multiply = 10
+		elseif hitgroup == HITGROUP_CHEST then
+			multiply = 1.15
+		elseif hitgroup == HITGROUP_STOMACH then
+			multiply = 0.9
+		elseif hitgroup == HITGROUP_RIGHTARM or hitgroup == HITGROUP_LEFTARM then
+			multiply = 0.9
+		elseif hitgroup == HITGROUP_RIGHTLEG or hitgroup == HITGROUP_LEFTLEG then
+			--ply:SlowDown()
+		end
+	end
+	if ply:GTeam() == TEAM_SCP then
+		multiply = 0.4
+	end
+	dmg:ScaleDamage(multiply)
 end
 
 function GM:PlayerDeathSound(ply)
@@ -795,16 +831,17 @@ function GM:PlayerDeathSound(ply)
 end
 
 function GM:PlayerHurt(victim)
-	if victim:GTeam() == TEAM_SCP or victim:GetRoleName() == role.Spectator then return end
-	if !victim:IsFemale() and !victim:GTeam() == TEAM_GUARD then
+	if !victim:IsFemale() and victim:GTeam() != TEAM_GUARD then
 	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
-	end
+else
 	if victim:IsFemale() then
 		victim:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_"..math.random(1,66)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
-	end
+else
 	if !victim:IsFemale() and victim:GTeam() == TEAM_GUARD then
 	    victim:EmitSound( "nextoren/vo/mtf/mtf_hit_"..math.random(1,23)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
-	end
+        end
+      end
+    end
 end
 
 

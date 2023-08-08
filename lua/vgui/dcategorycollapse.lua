@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dcategorycollapse.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {
 
@@ -121,7 +133,8 @@ end
 
 function PANEL:UnselectAll()
 
-	for k, v in ipairs( self:GetChildren() ) do
+	local children = self:GetChildren()
+	for k, v in pairs( children ) do
 
 		if ( v.SetSelected ) then
 			v:SetSelected( false )
@@ -133,7 +146,8 @@ end
 
 function PANEL:UpdateAltLines()
 
-	for k, v in ipairs( self:GetChildren() ) do
+	local children = self:GetChildren()
+	for k, v in pairs( children ) do
 		v.AltLine = k % 2 != 1
 	end
 
@@ -286,7 +300,7 @@ function PANEL:AnimSlide( anim, delta, data )
 			-- We are not using self.Contents and our designated height is less
 			-- than the header size, something is clearly wrong, try to rectify
 			self.OldHeight = 0
-			for id, pnl in ipairs( self:GetChildren() ) do
+			for id, pnl in pairs( self:GetChildren() ) do
 				self.OldHeight = self.OldHeight + pnl:GetTall()
 			end
 		end

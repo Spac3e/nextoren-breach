@@ -657,7 +657,6 @@ function Radio_RandomizeChannels()
 		tab.chan = Ranchannel
 	end
 end
-concommand.Add("Radio_RandomizeChannels", Radio_RandomizeChannels)
 
 function Radio_GetChannel(team, rolename)
 	for _, tab in pairs(Radio_RandChannelList) do
@@ -1098,10 +1097,10 @@ function GetPrepTime()
 end
 
 function GetRoundTime()
-    if #GetActivePlayers() < 29 then 
-        return 720--1020
-    end
-    return 1020--GetConVar("br_time_round"):GetInt()
+	if GetGlobalBool("BigRound", false) then
+		return 840--1020
+	end
+	return 720--GetConVar("br_time_round"):GetInt()
 end
 
 function GetPostTime()

@@ -215,10 +215,10 @@ SWEP.Primary.DefaultClip = 0 --	= 0
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "AR2"
 
-SWEP.FireDelay = 60/800
+SWEP.FireDelay = 0.09
 SWEP.FireSound = "CW_KK_INS2_M60_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_M60_FIRE_SUPPRESSED"
-SWEP.Recoil = 0.9975
+SWEP.Recoil = 1.1975
 
 SWEP.HipSpread = 0.045
 SWEP.AimSpread = 0.0027

@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dcolorpalette.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 local PANEL = {}
 
@@ -110,7 +122,7 @@ function PANEL:NetworkColorChange()
 		if ( !IsValid( pnl ) || pnl == self ) then continue end
 		if ( pnl:GetNumRows() != self:GetNumRows() || pnl:GetCookieName() != self:GetCookieName() ) then continue end
 		local tab = {}
-		for id, p in ipairs( self:GetChildren() ) do
+		for id, p in pairs( self:GetChildren() ) do
 			tab[ p:GetID() ] = p:GetColor()
 		end
 		pnl:SetColorButtons( tab )
@@ -152,7 +164,7 @@ function PANEL:PaintOver( w, h )
 	surface.SetDrawColor( 0, 0, 0, 200 )
 
 	local childW = 0
-	for id, child in ipairs( self:GetChildren() ) do
+	for id, child in pairs( self:GetChildren() ) do
 		if ( childW + child:GetWide() > w ) then break end
 		childW = childW + child:GetWide()
 	end
@@ -182,7 +194,7 @@ function PANEL:SetButtonSize( val )
 
 	self.m_buttonsize = math.floor( val )
 
-	for k, v in ipairs( self:GetChildren() ) do
+	for k, v in pairs( self:GetChildren() ) do
 		v:SetSize( self:GetButtonSize(), self:GetButtonSize() )
 	end
 

@@ -1,7 +1,18 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   lua/vgui/dtooltip.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 
 --
 -- The delay before a tooltip appears
--- Can be overridden with PANEL:SetTooltipDelay
 --
 local tooltip_delay = CreateClientConVar( "tooltip_delay", "0.5", true, false )
 
@@ -81,7 +92,7 @@ function PANEL:PositionTooltip()
 
 	y = y - 50
 
-	y = math.min( y, ly - h - 10 )
+	y = math.min( y, ly - h * 1.5 )
 	if ( y < 2 ) then y = 2 end
 
 	-- Fixes being able to be drawn off screen
@@ -99,16 +110,15 @@ end
 function PANEL:OpenForPanel( panel )
 
 	self.TargetPanel = panel
-	self.OpenDelay = isnumber( panel.numTooltipDelay ) and panel.numTooltipDelay or tooltip_delay:GetFloat()
 	self:PositionTooltip()
 
 	-- Use the parent panel's skin
 	self:SetSkin( panel:GetSkin().Name )
 
-	if ( self.OpenDelay > 0 ) then
+	if ( tooltip_delay:GetFloat() > 0 ) then
 
 		self:SetVisible( false )
-		timer.Simple( self.OpenDelay, function()
+		timer.Simple( tooltip_delay:GetFloat(), function()
 
 			if ( !IsValid( self ) ) then return end
 			if ( !IsValid( panel ) ) then return end
