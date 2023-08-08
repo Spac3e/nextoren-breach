@@ -73,6 +73,15 @@ function ENT:Use(ply)
 				ply.HelmetBonemerge = Bonemerge(self.ArmorModel, ply)
 
 				ply.HeadResist = self.MaxHitsHelmet
+					print(self.MaxHitsHelmet)
+					local local_resist_class = self.MaxHitsHelmet
+					hook.Add("ScalePlayerDamage", "MRD_OnPlayerDamaged", function(ply, hitgroup, dmginfo)
+					if ply:IsPlayer() then
+						if hitgroup == HITGROUP_HEAD then
+							dmginfo:ScaleDamage( local_resist_class )
+						end
+					end
+					end)
 	
 				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:put_on_helmet", Color(255, 255, 255))
 		
