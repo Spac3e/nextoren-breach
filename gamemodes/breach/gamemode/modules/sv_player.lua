@@ -413,6 +413,8 @@ function mply:SurvivorCleanUp()
 	self:SetUsingCloth("")
 	self:SetUsingArmor("")
 	self:SetUsingHelmet("")
+	self:SetStamina(100)
+
     end
 end
 
@@ -539,7 +541,7 @@ function mply:ApplyRoleStats(role)
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 200) end
-	if role.runspeed then self:SetRunSpeed(231 * role.runspeed or 200) end
+	if role.runspeed then self:SetRunSpeed(231 * role.runspeed) end
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
 	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end

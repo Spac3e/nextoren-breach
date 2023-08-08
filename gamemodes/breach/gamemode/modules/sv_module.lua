@@ -779,7 +779,7 @@ function GM:EntityTakeDamage(target,entity,dmgInfo,lastHitGroup,role)
 	end
 end
 
-function GetRoleResists(role)
+function mply:GetRoleResists(role)
 	if role.damage_modifiers then
 		return role.damage_modifiers.HITGROUP_HEAD
 	else
