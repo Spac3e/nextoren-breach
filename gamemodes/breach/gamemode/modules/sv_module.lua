@@ -818,7 +818,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
         elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
            dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
         end
-        elseif
+        else if
         dmginfo:IsDamageType(DMG_BULLET) then
             dmginfo:ScaleDamage(0.4)
         end
