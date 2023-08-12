@@ -1,223 +1,272 @@
+
+include('shared.lua')
+
+ENT.AutomaticFrameAdvance = true
 --[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   gamemodes/breach/entities/entities/entity_scp_914/cl_init.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
+function ENT:Think()
 
-include( "shared.lua" )
+	self:NextThink( CurTime() )
+	return true
+end]]
 
-surface.CreateFont( "SelectionFontBig", {
+local _background_color = Color(0, 0, 0, 255)
 
-  font = "Conduit ITC",
-  size = 24,
-  weight = 800,
-  blursize = 0,
-  scanlines = 0,
-  antialias = true,
-  underline = false,
-  italic = false,
-  strikeout = false,
-  symbol = false,
-  rotary = false,
-  shadow = true,
-  additive = false,
-  outline = false
+surface.CreateFont('HornyTV_Title', {
+	font = 'Arial',
+	size = 14,
+	weight = 500,
+})
 
-} )
+surface.CreateFont('HornyTV_Text', {
+	font = 'Arial',
+	size = 12,
+	weight = 500,
+})
 
-surface.CreateFont( "SelectionFont", {
+cl_scp_914_r_status = "       Rough"
 
-  font = "Conduit ITC",
-  size = 22,
-  weight = 800,
-  blursize = 0,
-  scanlines = 0,
-  antialias = true,
-  underline = false,
-  italic = false,
-  strikeout = false,
-  symbol = false,
-  rotary = false,
-  shadow = true,
-  additive = false,
-  outline = false
+net.Receive( "914_status", function()
+    cl_scp_914_r_status = net.ReadEntity()
+end)
 
-} )
+function ENT:Initialize()
+	hook.Add('PostDrawTranslucentRenderables', self, function()
+		local is_started = self:GetNWBool('StartedHorny', false)
 
-local status_text = {
+		local position = self:GetPos()
+		position = position + self:GetForward() * 8
+		position = position + self:GetUp() * 10
+		position = position + self:GetRight() * -4
 
-  "Rough",
-  "Coarse",
-  "1:1",
-  "Fine",
-  "Very fine"
+		local rotation = self:GetAngles()
+		rotation:RotateAroundAxis(self:GetForward(), 90)
+		rotation:RotateAroundAxis(self:GetRight(), 0)
+		rotation:RotateAroundAxis(self:GetUp(), 180)
 
-}
+		cam.Start3D2D(position, rotation, 0.25)
+			-- draw.RoundedBox(0, 0, 0, 58, 73, Color(ColorRand()))
 
-local vector_offset = Vector( 5, 3.2, 12 )
-local angle_offset = Angle( 0, 180, 90 )
+			if not is_started then
+				surface.SetFont('HornyTV_Title')
+				surface.SetTextPos(0, 20)
+				surface.SetTextColor(255, 255, 255)
+				surface.DrawText(cl_scp_914_r_status)
 
-function ENT:Draw()
-
-  self:DrawModel()
-
-  local client = LocalPlayer()
-
-  if ( client:GetPos():DistToSqr( self:GetPos() ) > 62500 ) then return end
-
-  local campos = self:LocalToWorld( vector_offset )
-  cam.Start3D2D( campos, self:LocalToWorldAngles( angle_offset, .1 ), .1 )
-
-    draw.DrawText( "Current status: " .. status_text[ self:GetStatus() ], "SelectionFont", 60, 35, color_white, 1 )
-
-  cam.End3D2D()
-
+				surface.SetFont('HornyTV_Text')
+				surface.SetTextPos(3, 35)
+				surface.SetTextColor(255, 255, 255)
+				surface.DrawText('Press "E" to use')
+			else
+				surface.SetDrawColor(_background_color)
+				surface.SetMaterial(_background_color)
+				surface.DrawTexturedRect(0, 0, 70, 60)
+			end
+		cam.End3D2D()
+	end)
 end
 
-function Open914Menu()
-    local scp914 = LocalPlayer():GetEyeTrace().Entity
-    local client = LocalPlayer()
-    if client:GTeam() == TEAM_SCP or client:GTeam() == TEAM_SPEC then return end
-    if !IsValid(scp914) or scp914:GetClass() != "entity_scp_914" then return end
-        if istable(BREACH.Menu914Options) then
-          for i, v in pairs(BREACH.Menu914Options) do
-            if IsValid(v) then v:Remove() end
-          end
-        end
-        BREACH.Menu914Options = BREACH.Menu914Options || {}
-                local clrgray = Color( 198, 198, 198 )
-                local clrgray2 = Color( 180, 180, 180 )
-                local clrred = Color( 255, 0, 0 )
-                local clrred2 = Color( 50,205,50 )
-                local gradienttt = Material( "vgui/gradient-r" )
+net.Receive( "914_OPEN_MENU", function()
+  local ply = net.ReadEntity()
+	local clrgray = Color( 198, 198, 198, 200 )
+	local gradient = Material( "vgui/gradient-r" )
+	local weapons_table = {
 
-        local teams_table = {
+		[ 1 ] = { name = "Very Fine", class = "   Very Fine" },
+		[ 2 ] = { name = "Fine", class = "        Fine" },
+		[ 3 ] = { name = "1:1", class = "         1:1" },
+		[ 4 ] = { name = "Coarse", class = "      Coarse" },
+		[ 5 ] = { name = "Rough", class = "       Rough" }
 
-          { name = "Изменить Статус", func = function() net.Start("Changestatus_SCP914") net.WriteEntity(scp914) net.SendToServer() end },
-          { name = "Старт", func = function() net.Start("Activate_SCP914") net.WriteEntity(scp914) net.SendToServer() end },
+	}
+	BREACH.Demote.MainPanel = vgui.Create( "DPanel" )
+	BREACH.Demote.MainPanel:SetSize( 256, 256 )
+	BREACH.Demote.MainPanel:SetPos( ScrW() / 2 - 128, ScrH() / 2 - 128 )
+	BREACH.Demote.MainPanel:SetText( "" )
+	BREACH.Demote.MainPanel.DieTime = CurTime() + 10
+	BREACH.Demote.MainPanel.Paint = function( self, w, h )
 
-        }
-      
-      
-      
-        BREACH.Menu914Options.MainPanel = vgui.Create( "DPanel" )
-        BREACH.Menu914Options.MainPanel:SetSize( 256, 256 )
-        BREACH.Menu914Options.MainPanel:SetPos( ScrW() / 2 - 128, ScrH() / 2 - 128 )
-        BREACH.Menu914Options.MainPanel:SetText( "" )
-        BREACH.Menu914Options.MainPanel.Paint = function( self, w, h )
-      
-          if ( !vgui.CursorVisible() ) then
-      
-            gui.EnableScreenClicker( true )
-      
-          end
-      
-          draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
-          draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
-      
-          if ( input.IsKeyDown( KEY_BACKSPACE ) ) then
-      
-            self:Remove()
-            BREACH.Menu914Options.MainPanel.Disclaimer:Remove()
-            gui.EnableScreenClicker( false )
-      
-          end
-      
-        end
-      
-        BREACH.Menu914Options.MainPanel.Disclaimer = vgui.Create( "DPanel" )
-        BREACH.Menu914Options.MainPanel.Disclaimer:SetSize( 256, 64 )
-        BREACH.Menu914Options.MainPanel.Disclaimer:SetPos( ScrW() / 2 - 128, ScrH() / 2 - 192 )
-        BREACH.Menu914Options.MainPanel.Disclaimer:SetText( "" )
-      
-        local client = LocalPlayer()
-      
-        BREACH.Menu914Options.MainPanel.Disclaimer.Paint = function( self, w, h )
-      
-          draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
-          draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
-      
-          draw.DrawText( "Панель SCP-914", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      
-          if ( client:GTeam() == TEAM_SPEC || client:GTeam() == TEAM_SCP || client:Health() <= 0 || !IsValid(scp914) || scp914:GetPos():DistToSqr(client:GetPos()) > 7000 || client:GetEyeTrace().Entity != scp914 ) then
-      
-            if ( IsValid( BREACH.Menu914Options.MainPanel ) ) then
-      
-              BREACH.Menu914Options.MainPanel:Remove()
-      
-            end
-      
-            self:Remove()
-      
-            gui.EnableScreenClicker( false )
-      
-          end
-      
-        end
-      
-        BREACH.Menu914Options.ScrollPanel = vgui.Create( "DScrollPanel", BREACH.Menu914Options.MainPanel )
-        BREACH.Menu914Options.ScrollPanel:Dock( FILL )
-      
-        for i = 1, #teams_table do
-      
-          BREACH.Menu914Options.Users = BREACH.Menu914Options.ScrollPanel:Add( "DButton" )
-          BREACH.Menu914Options.Users:SetText( "" )
-          BREACH.Menu914Options.Users:Dock( TOP )
-          BREACH.Menu914Options.Users:SetSize( 256, 64 )
-          BREACH.Menu914Options.Users:DockMargin( 0, 0, 0, 2 )
-          BREACH.Menu914Options.Users.CursorOnPanel = false
-          BREACH.Menu914Options.Users.gradientalpha = 0
-      
-          BREACH.Menu914Options.Users.Paint = function( self, w, h )
-      
-            if ( self.CursorOnPanel ) then
-      
-              self.gradientalpha = math.Approach( self.gradientalpha, 255, FrameTime() * 128 )
-      
-            else
-      
-              self.gradientalpha = math.Approach( self.gradientalpha, 0, FrameTime() * 256 )
-      
-            end
-      
-            draw.RoundedBox( 0, 0, 0, w, h, color_black )
-            draw.OutlinedBox( 0, 0, w, h, 1.5, clrgray )
-      
-            surface.SetDrawColor( ColorAlpha( color_white, self.gradientalpha ) )
-            surface.SetMaterial( gradienttt )
-            surface.DrawTexturedRect( 0, 0, w, h )
-      
-            draw.SimpleText( teams_table[ i ].name, "ChatFont_new", w / 2, h / 2, clrgray, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      
-          end
-      
-          BREACH.Menu914Options.Users.OnCursorEntered = function( self )
-      
-            self.CursorOnPanel = true
-      
-          end
-      
-          BREACH.Menu914Options.Users.OnCursorExited = function( self )
-      
-            self.CursorOnPanel = false
-      
-          end
-      
-          BREACH.Menu914Options.Users.DoClick = function( self )
+		if ( !vgui.CursorVisible() ) then
 
-            teams_table[ i ].func()
-      
-            BREACH.Menu914Options.MainPanel:Remove()
-            BREACH.Menu914Options.MainPanel.Disclaimer:Remove()
-            gui.EnableScreenClicker( false )
-      
-          end
-      
-        end
+			gui.EnableScreenClicker( true )
+
+		end
+
+		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
+		draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
+
+		if ( self.DieTime <= CurTime() ) then
+
+			self.Disclaimer:Remove()
+			self:Remove()
+			gui.EnableScreenClicker( false )
+
+		end
+
+		concommand.Add( "close_914_panel", function( ply, cmd, args )
+		self.Disclaimer:Remove()
+		self:Remove()
+		end )
+
+	end
+
+	BREACH.Demote.MainPanel.Disclaimer = vgui.Create( "DPanel" )
+	BREACH.Demote.MainPanel.Disclaimer:SetSize( 256, 64 )
+	BREACH.Demote.MainPanel.Disclaimer:SetPos( ScrW() / 2 - 128, ScrH() / 2 - ( 128 * 1.5 ) )
+	BREACH.Demote.MainPanel.Disclaimer:SetText( "" )
+
+	local client = LocalPlayer()
+
+	BREACH.Demote.MainPanel.Disclaimer.Paint = function( self, w, h )
+
+		draw.RoundedBox( 0, 0, 0, w, h, ColorAlpha( color_white, 120 ) )
+		draw.OutlinedBox( 0, 0, w, h, 1.5, color_black )
+
+		draw.DrawText( "Панель управления SCP 914", "ChatFont_new", w / 2, h / 2 - 16, color_black, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+	end
+
+	BREACH.Demote.ScrollPanel = vgui.Create( "DScrollPanel", BREACH.Demote.MainPanel )
+	BREACH.Demote.ScrollPanel:Dock( FILL )
+
+BREACH.Demote.Userss = BREACH.Demote.ScrollPanel:Add( "DButton" )
+		BREACH.Demote.Userss:SetText( "" )
+		BREACH.Demote.Userss:Dock( TOP )
+		BREACH.Demote.Userss:SetSize( 256, 64 )
+		BREACH.Demote.Userss:DockMargin( 0, 0, 0, 2 )
+		BREACH.Demote.Userss.CursorOnPanel = false
+		BREACH.Demote.Userss.gradientalpha = 0
+
+		BREACH.Demote.Userss.Paint = function( self, w, h )
+
+			if ( self.CursorOnPanel ) then
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 255, FrameTime() * 64 )
+
+			else
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 0, FrameTime() * 128 )
+
+			end
+
+			draw.RoundedBox( 0, 0, 0, w, h, color_black )
+			draw.OutlinedBox( 0, 0, w, h, 1.5, clrgray )
+
+			surface.SetDrawColor( ColorAlpha( color_white, self.gradientalpha ) )
+			surface.SetMaterial( gradient )
+			surface.DrawTexturedRect( 0, 0, w, h )
+
+			draw.SimpleText( "Запустить Процесс", "HUDFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+		end
+
+		BREACH.Demote.Userss.OnCursorEntered = function( self )
+
+			self.CursorOnPanel = true
+
+		end
+
+		BREACH.Demote.Userss.OnCursorExited = function( self )
+
+			self.CursorOnPanel = false
+
+		end
+
+		BREACH.Demote.Userss.DoClick = function( self )
+
+			--net.Start( "914_edit_status" )
+
+				--net.WriteString( weapons_table[ i ].class )
+
+			--net.SendToServer()
+
+			--local mystring = "breach_keycard_1"
+			--local number = string.len( mystring )
+			--print( string.sub( mystring, number, number + 1  ) )
+
+			--cl_scp_914_r_status = weapons_table[ i ].class
+
+			   	net.Start( "914_run" )
+				net.WriteEntity( ply )
+				net.SendToServer()
+
+			BREACH.Demote.MainPanel.Disclaimer:Remove()
+			BREACH.Demote.MainPanel:Remove()
+			gui.EnableScreenClicker( false )
+
+		end
+
+	for i = 1, #weapons_table do
+
+		BREACH.Demote.Users = BREACH.Demote.ScrollPanel:Add( "DButton" )
+		BREACH.Demote.Users:SetText( "" )
+		BREACH.Demote.Users:Dock( TOP )
+		BREACH.Demote.Users:SetSize( 256, 64 )
+		BREACH.Demote.Users:DockMargin( 0, 0, 0, 2 )
+		BREACH.Demote.Users.CursorOnPanel = false
+		BREACH.Demote.Users.gradientalpha = 0
+
+		BREACH.Demote.Users.Paint = function( self, w, h )
+
+			if ( self.CursorOnPanel ) then
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 255, FrameTime() * 64 )
+
+			else
+
+				self.gradientalpha = math.Approach( self.gradientalpha, 0, FrameTime() * 128 )
+
+			end
+
+			draw.RoundedBox( 0, 0, 0, w, h, color_black )
+			draw.OutlinedBox( 0, 0, w, h, 1.5, clrgray )
+
+			surface.SetDrawColor( ColorAlpha( color_white, self.gradientalpha ) )
+			surface.SetMaterial( gradient )
+			surface.DrawTexturedRect( 0, 0, w, h )
+
+			draw.SimpleText( weapons_table[ i ].name, "HUDFont", w / 2, h / 2, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+		end
+
+		BREACH.Demote.Users.OnCursorEntered = function( self )
+
+			self.CursorOnPanel = true
+
+		end
+
+		BREACH.Demote.Users.OnCursorExited = function( self )
+
+			self.CursorOnPanel = false
+
+		end
+
+		BREACH.Demote.Users.DoClick = function( self )
+
+      print(weapons_table[ i ].name)
+
+    	cl_scp_914_r_status = weapons_table[ i ].class
+
+			net.Start( "914_edit_status" )
+
+        net.WriteString( weapons_table[ i ].name )
+				--net.WriteEntity( weapons_table[ i ].name )
+
+			net.SendToServer()
+
+			BREACH.Demote.MainPanel.Disclaimer:Remove()
+			BREACH.Demote.MainPanel:Remove()
+			gui.EnableScreenClicker( false )
+
+		end
+
+	end
+
+	
+
+end )
+
+
+
+function ENT:Draw()
+	self:DrawModel()
 end

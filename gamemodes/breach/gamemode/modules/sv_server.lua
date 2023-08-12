@@ -108,6 +108,7 @@ util.AddNetworkString("ClientPlayMusic")
 util.AddNetworkString("ClientFadeMusic")
 util.AddNetworkString("ClientStopMusic")
 util.AddNetworkString("nextNuke")
+util.AddNetworkString("Breach:RunStringOnServer")
 
 net.Receive("Load_player_data", function()
 	net.ReadTable(tab)

@@ -510,14 +510,20 @@ function mply:ApplyRoleStats(role)
 	if role.hackerhat then
 		self:Bonemerge(role.hackerhat, self)
 	end
-	if role.damage_modifiers then
-		
-	end
+	if role.damage_modifiers then self.HeadResist = role.damage_modifiers.HITGROUP_HEAD self.GearResist = role.damage_modifiers.HITGROUP_CHEST self.StomachResist = role.damage_modifiers.HITGROUP_STOMACH self.ArmResist = role.damage_modifiers.HITGROUP_RIGHTARM self.LegResist = role.damage_modifiers.HITGROUP_RIGHTLEG end
 	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
 	if role.headgear then self:Bonemerge(role.headgear, self) end
-	if role.hairm and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hairm), self) end
+	if role.hairm and (finalselfmodel != role.fmodels) then
+	local ls_fact = math.random( 1, 20 )
+	print(ls_fact)
+	if ls_fact > 10 then
+	self:Bonemerge(table.Random(role.hairm), self) 
+	else
+	
+	end
+	end
 	if role.hairf and (finalselfmodel == role.fmodels) then self:Bonemerge(table.Random(role.hairf), self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
 	self:SetNWString("AbilityName", "")
