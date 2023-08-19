@@ -206,10 +206,10 @@ function mply:Bonemerge(model, ply)
     ent:AddEffects( EF_BONEMERGE )
     ent:AddEffects( EF_BONEMERGE_FASTCULL )
     ent:AddEffects( EF_PARENT_ANIMATES )
-    if ( !ent.BoneMergedEnts ) then
-        ent.BoneMergedEnts = {}
-    end
-    ent.BoneMergedEnts[ #ent.BoneMergedEnts + 1 ] = ent
+	if ( !ply.BoneMergedEnts ) then
+		ply.BoneMergedEnts = {}
+	end
+    ply.BoneMergedEnts[ #ply.BoneMergedEnts + 1 ] = ply.ent -- вот это чекни, я не уверен в том что оно правильно работать будет
 	return ent
 end
 
