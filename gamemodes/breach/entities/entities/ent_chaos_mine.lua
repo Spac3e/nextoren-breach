@@ -111,7 +111,7 @@ if ( SERVER ) then
 
   function ENT:Explode( pos )
 
-    self:EmitSound( "nextoren/others/explosions/explosion_"..math.random(1,10)..".wav" )
+    self:EmitSound( "misc.explosion" )
 
     for i = 1, #self.Explode_Effects do
 
@@ -152,7 +152,7 @@ if ( SERVER ) then
 
       local ent = sensor_ents[ i ]
 
-      if ( ent:IsPlayer() && ent:GTeam() != TEAM_CHAOS && ent:GTeam() != TEAM_SPEC && ent:GetMoveType() != MOVETYPE_NOCLIP && ent:IsLineOfSightClear( self ) && ent:IsSolid() ) then
+      if ( ent:IsPlayer() && ent:GTeam() != TEAM_CHAOS && ent:IsLineOfSightClear( self ) && ent:IsSolid() ) then
 
         self:SetActive( false )
         self:SetTriggered( true )

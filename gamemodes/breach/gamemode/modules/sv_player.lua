@@ -497,7 +497,7 @@ function mply:ApplyRoleStats(role)
 		self:SetModel(table.Random(role.models))
 	end
 	self:Namesurvivor()
-	if role.usehead and finalselfmodel != role.fmodels and role.randomizehead != nil and role.randomizehead != true then
+	if role.usehead and finalselfmodel != role.fmodels and role.randomizehead != true then
 		self:Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
    elseif finalselfmodel == role.fmodels then 
 	   self:Bonemerge("models/cultist/heads/female/female_head_1.mdl",self)
@@ -514,17 +514,9 @@ function mply:ApplyRoleStats(role)
 	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
-	if role.headgear then self:Bonemerge(role.headgear, self) end
-	if role.hairm and (finalselfmodel != role.fmodels) then
-	local ls_fact = math.random( 1, 20 )
-	print(ls_fact)
-	if ls_fact > 10 then
-	self:Bonemerge(table.Random(role.hairm), self) 
-	else
-	
-	end
-	end
+	if role.hairm and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hairm), self) end
 	if role.hairf and (finalselfmodel == role.fmodels) then self:Bonemerge(table.Random(role.hairf), self) end
+	if role.headgear then self:Bonemerge(role.headgear, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
 	self:SetNWString("AbilityName", "")
 	self.AbilityTAB = nil
@@ -547,7 +539,7 @@ function mply:ApplyRoleStats(role)
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
 	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 200) end
-	if role.runspeed then self:SetRunSpeed(231 * role.runspeed) end
+	if role.runspeed then self:SetRunSpeed(195 * role.runspeed or 200) end
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
 	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end

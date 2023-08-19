@@ -3714,7 +3714,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 			local claymore = ents.Create("ent_chaos_mine")
 			claymore:SetPos(DASUKADAIMNEEGO.HitPos)
-			claymore:SetOwner(ply)
+			claymore:SetOwner(ply)  
 			claymore:Spawn()
 			ply:SetSpecialMax(ply:GetSpecialMax() - 1)
 			ply:SetSpecialCD(CurTime() + 3)

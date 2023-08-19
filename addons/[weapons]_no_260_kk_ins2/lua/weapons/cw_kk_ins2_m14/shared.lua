@@ -10,9 +10,6 @@ File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_m14/shared.l
                                      /____/                                 /____/_____/                                  
 --]]
 
---[[
-lua/weapons/cw_kk_ins2_m14/shared.lua
---]]
 if not CustomizableWeaponry then return end
 
 AddCSLuaFile()
@@ -26,10 +23,10 @@ SWEP.magType = "brMag"
 if CLIENT then
 	SWEP.DrawCrosshair = false
 	SWEP.PrintName = "M14 EBR"
+	SWEP.InvIcon = Material( "nextoren/gui/icons/weapons/m14_2.png" )
+
 	SWEP.CSMuzzleFlashes = true
 	SWEP.ViewModelMovementScale = 1.15
-
-	SWEP.SelectIcon = surface.GetTextureID("vgui/entities/m14")
 
 	SWEP.Shell = "KK_INS2_762x51"
 	SWEP.ShellDelay = 0.03
@@ -135,8 +132,8 @@ end
 
 SWEP.StockBGs = {main = 0, foldable = 0, vss = 0}
 
-SWEP.MuzzleEffect = "muzzleflash_m14_1p_core"
-SWEP.MuzzleEffectWorld = "muzzleflash_m14_3rd"
+SWEP.MuzzleEffect = "muzzleflash_smg_npc"
+SWEP.MuzzleEffectWorld = "muzzleflash_smg_npc"
 
 SWEP.Attachments = {
 	{header = "Sight", offset = {400, -500}, atts = {"kk_ins2_kobra", "kk_ins2_eotech", "kk_ins2_aimpoint", "kk_ins2_elcan", "kk_ins2_po4", "kk_ins2_scope_m40", "kk_ins2_cstm_cmore", "kk_ins2_cstm_barska", "kk_ins2_cstm_microt1", "kk_ins2_cstm_eotechxps", "kk_ins2_cstm_compm4s", "kk_ins2_cstm_acog"}},
@@ -144,9 +141,9 @@ SWEP.Attachments = {
 	{header = "Under", offset = {-500, 0}, atts = {"kk_ins2_bipod", "kk_ins2_vertgrip"}},
 	{header = "Lasers", offset = {125, 300}, atts = {"kk_ins2_lam", "kk_ins2_flashlight", "kk_ins2_anpeq15"}},
 	{header = "More Sight", offset = {1000, -50}, atts = {"kk_ins2_magnifier"}, dependencies = CustomizableWeaponry_KK.ins2.magnifierDependencies},
-	{header = "Stock", offset = {-200, 600}, atts = {"bg_vss_foldable_stock"}},
+	//{header = "Stock", offset = {-200, 600}, atts = {"bg_vss_foldable_stock"}},
 	["+use"] = {header = "Sight Contract", offset = {400, -50}, atts = {"kk_ins2_sights_cstm"}},
-	----["+reload"] = {header = "Ammo", offset = {900, 500}, atts = {"am_magnum", "am_matchgrade"}}
+	--["+reload"] = {header = "Ammo", offset = {900, 500}, atts = {"am_magnum", "am_matchgrade"}}
 }
 
 SWEP.Animations = {
@@ -231,7 +228,7 @@ SWEP.Slot = 3
 SWEP.SlotPos = 0
 SWEP.NormalHoldType = "ar2"
 SWEP.RunHoldType = "passive"
-SWEP.FireModes = {"semi"}
+SWEP.FireModes = {"auto", "semi"}
 SWEP.Base = "cw_kk_ins2_base"
 SWEP.Category = "CW 2.0 KK INS2"
 
@@ -240,7 +237,7 @@ SWEP.Contact		= ""
 SWEP.Purpose		= ""
 SWEP.Instructions	= ""
 
-SWEP.ViewModelFOV	= 80
+SWEP.ViewModelFOV	= 70
 SWEP.ViewModelFlip	= false
 SWEP.ViewModel		= "models/weapons/v_m14.mdl"
 SWEP.WorldModel		= "models/weapons/w_cw_kk_ins2_m14_2.mdl"
@@ -253,14 +250,14 @@ SWEP.Spawnable			= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 
 SWEP.Primary.ClipSize		= 20
-SWEP.Primary.DefaultClip = 0 --	= 0
-SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			= "AR2"
+SWEP.Primary.DefaultClip	= 0
+SWEP.Primary.Automatic		= true
+SWEP.Primary.Ammo			= "SMG1"
 
-SWEP.FireDelay = 0.4
+SWEP.FireDelay = 60/725
 SWEP.FireSound = "CW_KK_INS2_M14_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_M14_FIRE_SUPPRESSED"
-SWEP.Recoil = 3
+SWEP.Recoil = 1.6
 
 SWEP.HipSpread = 0.055
 SWEP.AimSpread = 0.002
@@ -269,7 +266,7 @@ SWEP.MaxSpreadInc = 0.07
 SWEP.SpreadPerShot = 0.01
 SWEP.SpreadCooldown = 0.12
 SWEP.Shots = 1
-SWEP.Damage = 97
+SWEP.Damage = 64
 
 SWEP.FirstDeployTime = 1.5
 SWEP.DeployTime = 0.7
@@ -308,7 +305,7 @@ if CLIENT then
 	local origWM = "models/weapons/w_cw_kk_ins2_m14_2.mdl"
 
 	CustomizableWeaponry_KK.ins2.welementThink:add("cw_kk_ins2_m14", function(wep, welement)
-		if wep.ActiveAttachments[att] then
+		if att and att.name and wep.ActiveAttachments[att.name] then
 			if welement:GetModel() != activeWM then
 				welement:SetModel(activeWM)
 			end
@@ -319,5 +316,3 @@ if CLIENT then
 		end
 	end)
 end
-
-

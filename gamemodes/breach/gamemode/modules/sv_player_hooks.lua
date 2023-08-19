@@ -431,12 +431,11 @@ do
 
 		return weapon
 	end
-end
-
-do
-function mply:BreachGive(classname)
+   
+	function mply:BreachGive(classname)
 	self:Give(classname)
-    timer.Simple(0.1, function() self:SelectWeapon(classname) end)
+    timer.Simple(0.1, function() self:SelectWeapon(classname)
+	end)
 end
 end
 
@@ -449,7 +448,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 
 	if ply:GTeam() != TEAM_SPEC then
 		if wep.teams then
-			local canuse = false
+			local canuse = true
 			for k,v in pairs(wep.teams) do
 				if v == ply:GTeam() then
 					canuse = true
@@ -462,7 +461,6 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		end
     end
   
-   	ply.gettingammo = wep.SavedAmmo
 	if (trace.Entity == wep and ply:KeyDown(IN_USE)) then if (ply:GetMaxSlots() - ply:GetPrimaryWeaponAmount()) == 0 then return end if ply:HasWeapon(trace.Entity:GetClass()) then return end
         ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
         ply:Give(trace.Entity:GetClass())

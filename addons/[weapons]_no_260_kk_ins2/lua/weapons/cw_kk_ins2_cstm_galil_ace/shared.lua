@@ -224,16 +224,16 @@ SWEP.Primary.Ammo			= "SMG1"
 SWEP.FireDelay = 60/700
 SWEP.FireSound = "CW_KK_INS2_GALIL_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_GALIL_FIRE_SUPPRESSED"
-SWEP.Recoil = 1.2
+SWEP.Recoil = 1.2525
 
-SWEP.HipSpread = 0.043
-SWEP.AimSpread = 0.005
-SWEP.VelocitySensitivity = 1.6
-SWEP.MaxSpreadInc = 0.05
+SWEP.HipSpread = 0.045
+SWEP.AimSpread = 0.0027
+SWEP.VelocitySensitivity = 1.8
+SWEP.MaxSpreadInc = 0.04
 SWEP.SpreadPerShot = 0.007
 SWEP.SpreadCooldown = 0.13
 SWEP.Shots = 1
-SWEP.Damage = 67
+SWEP.Damage = 27
 
 SWEP.FirstDeployTime = 2.6
 SWEP.DeployTime = 0.7
