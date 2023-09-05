@@ -195,6 +195,10 @@ function GM:PlayerNoClip( ply, desiredState )
 	if ply:GTeam() == TEAM_SPEC and desiredState == true then return true end
 end
 
+local scpdeadsounds = {
+    ["SCP049"] = "fug",
+}
+
 function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	victim:StripAmmo()
 	victim:SetUsingBag("")
@@ -227,7 +231,8 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	net.Start( "957Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
-	if victim:GTeam() == TEAM_SCP and victim.basestats.death_sound != "" then PlayAnnouncer(victim.basestats.death_sound) end
+	local scpded = scpdeadsounds[victim:GetRoleName()]
+	if victim:GTeam() == TEAM_SCP and scpded != "" then timer.Simple(4, function() PlayAnnouncer(scpded) end) end
 	victim:SetModelScale( 1 )
 	if attacker != victim and postround == false and attacker:IsPlayer() then
 		if victim:GTeam() == attacker:GTeam() then

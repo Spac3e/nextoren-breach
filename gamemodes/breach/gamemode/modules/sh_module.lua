@@ -35,6 +35,25 @@ end
 function GM:Think()
 end
 
+hook.Add("SetupMove", "SCP_DOWN_SPEED", function( ply, mv, cmd )
+
+	if ply:GTeam() == TEAM_SCP then
+
+		local speedmultiply = math.min(1, ply:GetNWInt("Speed_Multiply", 1))
+
+		if speedmultiply < 1 then
+
+			local speed = ply:GetRunSpeed() * speedmultiply
+
+			mv:SetMaxSpeed( speed )
+			mv:SetMaxClientSpeed( speed )
+
+		end
+
+	end
+
+end)
+
 function BREACH.TranslateString(str)
 	if SERVER then return str end --серверу все равно не надо ничего переводить
 
@@ -47,11 +66,14 @@ function BREACH.TranslateString(str)
 			end
 
 			if v:find("l:") then
-				local phrase = string.Explode(":", v)[2]
+				local explosion = string.Explode("l:", v)
+				local before = explosion[1] or "" --SOMEINSANETEXTBEFOREPHRASEl:massfucktest
+				local phrase = explosion[2]
+
 				if ALLLANGUAGES[langtouse][phrase] then
-					tab[k] = ALLLANGUAGES[langtouse][phrase]
+					tab[k] = before..ALLLANGUAGES[langtouse][phrase]
 				else
-					tab[k] = ALLLANGUAGES["russian"][phrase] or "recursive phrase not found "..phrase --fallback
+					tab[k] = before..ALLLANGUAGES["russian"][phrase] or before.."recursive phrase not found "..phrase --fallback
 				end
 			end
 		end
@@ -83,12 +105,15 @@ function BREACH.TranslateString(str)
 		return string.Replace(str, "dont_translate:", "")
 	end
 	if str:find("l:") then
-		local phrase = string.Explode(":", str)[2]
+		local explosion = string.Explode("l:", str)
+		local before = explosion[1] or "" --SOMEINSANETEXTBEFOREPHRASEl:massfucktest
+		local phrase = explosion[2]
+
 		if ALLLANGUAGES[langtouse][phrase] then
-			str = ALLLANGUAGES[langtouse][phrase]
+			str = before..ALLLANGUAGES[langtouse][phrase]
 			return str
 		else
-			return ALLLANGUAGES["russian"][phrase] or "phrase not found "..phrase --fallback
+			return before..ALLLANGUAGES["russian"][phrase] or before.."phrase not found "..phrase --fallback
 		end
 
 		return str
@@ -115,9 +140,9 @@ function PickHeadModel(steamid64, isfemale)
 	if model == "models/cultist/heads/male/male_head_213.mdl" then
 		model = "models/cultist/heads/male/male_head_1.mdl"
 	end
-	--[[if steamid64 == "76561199064971307" then
+	if steamid64 == "76561199064971307" then
 		model = "models/cultist/heads/male/male_head_165.mdl"
-	end]]
+	end
 	if isfemale then
 		model = "models/cultist/heads/female/female_head_"..math.random(1, 52)..".mdl"
 	end
@@ -126,9 +151,9 @@ end
 
 function PickFaceSkin(black, steamid64, isfemale)
 	if !isfemale then
-		--[[if steamid64 == "76561199064971307" then
+		if steamid64 == "76561199064971307" then
 			return "models/cultist/heads/male/black/male_face_black_281"
-		end]]
+		end
 		if !black then
 			return "models/cultist/heads/male/male_face_"..math.random(1, 1567)
 		else
@@ -144,11 +169,9 @@ function PickFaceSkin(black, steamid64, isfemale)
 end
 
 CORRUPTED_HEADS = {
-
 	[ "models/cultist/heads/male/male_head_2.mdl" ] = true,
 	[ "models/cultist/heads/male/male_head_3.mdl" ] = true,
 	[ "models/cultist/heads/male/male_head_6.mdl" ] = true
-
 }
 
 RXSEND_SEXY_CHEMISTS = {
@@ -160,14 +183,11 @@ RXSEND_SEXY_CHEMISTS = {
 	["76561198056740424"] = true, -- Строптивец
 }
 
-RXSEND_YOUTUBERS = {
+VAULT_YOUTUBERS = { -- Жесткие тюбики
 	["76561198889301217"] = "https://www.youtube.com/channel/UCHG-qnA4i270X2_KpPLeHXw",
-	--[[
-	["76561198149690951"] = "https://www.youtube.com/channel/UC9yUyRBcyQtel8e6YwlH2gA", -- fedorwhat
-	["76561198129197811"] = "https://www.youtube.com/channel/UCSvwoZAFt8YWXlEoojvwpOA", -- TrololoKrab
 	["76561199112412418"] = "https://www.youtube.com/@quinwise9214", -- quinwise
 	["76561198030081688"] = "https://www.youtube.com/channel/UCnDtpUcUDiJ2KoZ7p3Nehlg", -- narkis
-	["76561198385923312"] = "https://www.youtube.com/channel/UCmmyGXrAMiA_vD0w5t4F08g", -- kowka]]
+	["76561198385923312"] = "https://www.youtube.com/channel/UCmmyGXrAMiA_vD0w5t4F08g", -- kowka
 }
 
 function util.PaintDown(start, effname, ignore) --From TTT
@@ -209,8 +229,6 @@ function util.StartBleeding(ent, dmg, t)
    timer.Create("bleed" .. ent:EntIndex(), delay, times, function() DoBleed(ent) end)
 end
 
-
-
 function GM:GrabEarAnimation(ply)
 	return false
 end
@@ -243,7 +261,7 @@ function SteamID64IsNOTeam(steamid64)
 end
 
 function mply:IsNOTeam()
-	return false--NextOren_Team_SteamIDs[self:SteamID64()]
+	return NextOren_Team_SteamIDs[self:SteamID64()]
 end
 
 TEAM_SCP = 1
@@ -649,19 +667,25 @@ Radio_RandChannelList = Radio_RandChannelList || {
 
 
 }
+
 function Radio_RandomizeChannels()
+
 	for _, tab in pairs(Radio_RandChannelList) do
 		local num1 = tostring(math.random(100, 999))
 		local num2 = tostring(math.random(1, 9))
+
 		local Ranchannel = tonumber(num1.."."..num2)
+
 		tab.chan = Ranchannel
 	end
+
 end
 
 function Radio_GetChannel(team, rolename)
 	for _, tab in pairs(Radio_RandChannelList) do
 		if ( table.HasValue(tab.teams, team) and !table.HasValue(tab.blockedroles, rolename) ) or table.HasValue(tab.allowedroles, rolename) then return tab.chan end
 	end
+	
 	return 100.1
 end
 
@@ -829,8 +853,8 @@ hook.Add("CreateMove", "ToggleDuck", function(cmd)
 	local ply = LocalPlayer()
 
 	if induck then
-		LocalPlayer():SetDuckSpeed(0.05)
-		LocalPlayer():SetUnDuckSpeed(0.05)
+		LocalPlayer():SetDuckSpeed(0.1)
+		LocalPlayer():SetUnDuckSpeed(0.1)
 		cmd:AddKey(IN_DUCK)
 	else
 		cmd:RemoveKey(IN_DUCK)
@@ -1304,84 +1328,72 @@ local pl = ply:GetTable()
 	return false
 end
 
-local mply = FindMetaTable("Player");
+local meta = FindMetaTable("Player");
 local ent = FindMetaTable( "Entity" )
 
-function mply:IsLZ()
+function ent:IsLZ()
 	local pos = self:GetPos()
+  
 	if ( pos.x > 4600 && pos.y > -7003 && pos.y < -1200 && pos.z < 880 || pos.x > 8550 && pos.y < -440 && pos.y > -7000 || ( pos.x > -1000 && pos.x < 1680 ) && pos.y < -3600 && pos.y > -5800 && pos.z < -1000 ) then
 	  return true
 	end
+  
 	if ( pos.x > 7283 && pos.x < 7680 && pos.y < -1075 && pos.y > -1240 ) then
 	  return true
 	end
+  
 	return false
 end
   
-function ent:IsLZ()
-	local pos = self:GetPos()
-	if ( pos.x > 4600 && pos.y > -7003 && pos.y < -1200 && pos.z < 880 || pos.x > 8550 && pos.y < -440 && pos.y > -7000 || ( pos.x > -1000 && pos.x < 1680 ) && pos.y < -3600 && pos.y > -5800 && pos.z < -1000 ) then
-	  return true
+function ent:Outside()
+	if ( self:GetPos().z > 880 ) then
+	  return true;
 	end
-	if ( pos.x > 7283 && pos.x < 7680 && pos.y < -1075 && pos.y > -1240 ) then
-	  return true
-	end
-	return false
-end
 
+	return false
+
+end
+  
 function ent:Outside()
 	if ( self:GetPos().z > 880 ) then
   	  return true;
-	end
-  	return false
-end
-  
-function mply:Outside()
-	if ( self:GetPos().z > 880 ) then  
-	  return true;
   	end
-	return false
+ 
+	return false 
 end
   
-function mply:IsEntrance()
-	local pos = self:GetPos()
-	if ( pos.x < 1767 && pos.x > -3120 && pos.y > 1944 && pos.y < 6600 && pos.z < 880 ) then
-	  return true
-	end
-	return false
-end
-
 function ent:IsEntrance()
-	local pos = self:GetPos()
+  	local pos = self:GetPos()
+  
 	if ( pos.x < 1767 && pos.x > -3120 && pos.y > 1944 && pos.y < 6600 && pos.z < 880 ) then
 	  return true
 	end
+  
 	return false
+  
 end
 
-function mply:IsBlack()
+function meta:IsBlack()
 	for i, v in pairs(ents.FindByClassAndParent("ent_bonemerged", self)) do
-		if IsValid(v) and v:GetModel():find("head_main_1") then
-			return NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(0)]
+		if IsValid(v) and (v:GetModel():find("balaclava") or v:GetModel():find("head_main_1") ) then
+			if NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(0)] then
+				return true
+			elseif NextOren_HEADS_BLACKHEADS[v:GetSubMaterial(2)] then
+				return true
+			end
 		end
 	end
 	return false
 end
   
-function mply:IsHardZone()
-	local pos = self:GetPos()
-	if ( pos.x < 8320 && pos.x > 1200 && pos.y > -1200 && pos.z < 880 ) then
-	  return true
-	end
-	return false
-end
-
 function ent:IsHardZone()
 	local pos = self:GetPos()
+
 	if ( pos.x < 8320 && pos.x > 1200 && pos.y > -1200 && pos.z < 880 ) then
 	  return true
 	end
-	return false
+	
+  	return false
 end
 
 local blockeddoors_scp = {

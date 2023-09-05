@@ -414,7 +414,6 @@ function mply:SurvivorCleanUp()
 	self:SetUsingArmor("")
 	self:SetUsingHelmet("")
 	self:SetStamina(100)
-
     end
 end
 

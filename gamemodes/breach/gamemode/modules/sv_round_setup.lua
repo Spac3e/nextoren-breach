@@ -11,105 +11,19 @@ function BREACH.GetRoleTable( all )
 
 	local all_start = all
 
-	if all_start < 15 then
+	if all_start < 20 then
 		
-		classd = {['count'] = math.Round(all_start * 0.37), ['roles'] = BREACH.CONFIG.FACTIONS.CLASSD.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.CLASSD.Spawns}
+		classd = {['count'] = math.Round(all_start * 0.37), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
-		security = {['count'] = math.Round(all_start * 0.23), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
+		security = {['count'] = math.Round(all_start * 0.23), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
 		all = all - security['count']
 	
-		medicine = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - medicine['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - technical['count']
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Мед: "..medicine['count'], "Тех.: "..technical['count'])
-		return {classd, security, medicine, technical}
-
-	elseif all_start < 20 then
-
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH.CONFIG.FACTIONS.CLASSD.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.CLASSD.Spawns}
-		all = all - classd['count']
-
-		security = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - security['count']
-	
-		scientist = {['count'] = math.Round(all_start * 0.06), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
+		scientist = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
 		all = all - scientist['count']
-	
-		medicine = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - medicine['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - technical['count']
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Тех.: "..technical['count'])
-		return {classd, security, scientist, medicine, technical}
-
-	elseif all_start < 30 then
-
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH.CONFIG.FACTIONS.CLASSD.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.CLASSD.Spawns}
-		all = all - classd['count']
-
-		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - security['count']
-	
-		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - scientist['count']
-	
-		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - medicine['count']
-	
-		service = {['count'] = math.Round(all_start * 0.04), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - service['count']
-	
-		cancelar = {['count'] = math.Round(all_start * 0.16), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - cancelar['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - technical['count']
-	
-		logist = {['count'] = math.Round(all_start * 0.07), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - logist['count']
-	
-		admin = {['count'] = all, ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Обслуж.: "..service['count'], "Канцеляр.: "..cancelar['count'], "Тех.: "..technical['count'], "Лог.: "..logist['count'], "Админ.: "..admin['count'])
-		return {classd, security, scientist, medicine, service, cancelar, technical, logist, admin}
-
-	else
-
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH.CONFIG.FACTIONS.CLASSD.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.CLASSD.Spawns}
-		all = all - classd['count']
-
-		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - security['count']
-	
-		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - scientist['count']
-	
-		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - medicine['count']
-	
-		service = {['count'] = math.Round(all_start * 0.04), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - service['count']
-	
-		cancelar = {['count'] = math.Round(all_start * 0.16), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - cancelar['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - technical['count']
-	
-		logist = {['count'] = math.Round(all_start * 0.07), ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-		all = all - logist['count']
-	
-		admin = {['count'] = all, ['roles'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Roles[0]['roles'], ['spawns'] = BREACH.CONFIG.FACTIONS.FOUNDATION.Spawns}
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Обслуж.: "..service['count'], "Канцеляр.: "..cancelar['count'], "Тех.: "..technical['count'], "Лог.: "..logist['count'], "Админ.: "..admin['count'])
-		return {classd, security, scientist, medicine, service, cancelar, technical, logist, admin}
-
+		
+		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Научный Персонал: "..scientist['count'])
+		return {classd, security, scientist}
 	end
 end
 
@@ -150,8 +64,8 @@ function BREACH.SetupPlayers( tab )
             if #spawns == 0 then spawns = table.Copy( v['spawns'] ) end
             local spawn = table.remove( spawns, math.random( #spawns ) )
     
-            BREACH.SetupNormal(ply)
-            BREACH.ApplyRole(ply, selected)
+		    ply:SetupNormal()
+            ply:ApplyRoleStats(selected)
             ply:SetPos( spawn )
     
             print( "Спавн "..ply:Nick().." за роль: "..selected['name'] )

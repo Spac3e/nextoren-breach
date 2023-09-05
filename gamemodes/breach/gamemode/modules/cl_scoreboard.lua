@@ -756,7 +756,7 @@ function PANEL:UpdatePlayerData()
 
     self.rank:SetImage( "nextoren_hud/scoreboard/shield.png" )
 
-  elseif RXSEND_YOUTUBERS[ply:SteamID64()] then
+  elseif VAULT_YOUTUBERS[ply:SteamID64()] then
 
     self.rank:SetImage( "icon16/user_red.png" )
 
@@ -942,9 +942,9 @@ function PANEL:DoRightClick()
     draw.DrawText(name, "HUDFont", 30, 2)
   end
 
-  if RXSEND_YOUTUBERS[menu.Player:SteamID64()] then
+  if VAULT_YOUTUBERS[menu.Player:SteamID64()] then
     menu:AddOption( "YouTube Channel", function()
-      gui.OpenURL(RXSEND_YOUTUBERS[menu.Player:SteamID64()])
+      gui.OpenURL(VAULT_YOUTUBERS[menu.Player:SteamID64()])
       surface.PlaySound("buttons/button9.wav")
     end):SetIcon("icon16/user_red.png")
   end
@@ -1009,8 +1009,6 @@ function PANEL:DoRightClick()
 end
 
 vgui.Register( "BrScoreboardPlayerRow", PANEL, "Button" )
-
---include( "row_score.lua" )
 
 local function CompareScore( pa, pb )
 

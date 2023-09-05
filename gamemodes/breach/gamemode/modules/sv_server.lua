@@ -327,20 +327,6 @@ net.Receive( "DropCurWeapon", function( len, ply )
 	end
 end )
 
-
-function GetRoleTableCustom(all, scps, p_mtf, p_res)
-	local classds = 0
-	local mtfs = 0
-	local researchers = 0
-	all = all - scps
-	mtfs = math.Round(all * p_mtf)
-	all = all - mtfs
-	researchers = math.floor(all * p_res)
-	all = all - researchers
-	classds = all
-	return {scps, mtfs, classds, researchers}
-end
-
 cvars.AddChangeCallback( "br_roundrestart", function( convar_name, value_old, value_new )
 	if tonumber( value_new ) == 1 then
 		RoundRestart()

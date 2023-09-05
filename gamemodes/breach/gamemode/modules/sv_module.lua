@@ -909,14 +909,17 @@ function GM:PlayerDeathSound(ply)
 	if ply:GTeam() == TEAM_SCP then return true end
 	if !ply:IsFemale() then
 	    ply:EmitSound( "nextoren/charactersounds/hurtsounds/male/death_"..math.random(1,58)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
+		return true
 	end
 	if ply:IsFemale() then
 		ply:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/death_"..math.random(1,75)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
+		return true
 	end
 	return true
 end
 
 function GM:PlayerHurt(victim)
+	if victim:GTeam() == TEAM_SCP then return end
 	if !victim:IsFemale() and victim:GTeam() != TEAM_GUARD then
 	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
 else
