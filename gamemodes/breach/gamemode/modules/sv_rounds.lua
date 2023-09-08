@@ -3,7 +3,7 @@ ROUNDS = {
 		name = "Containment Breach",
 		setup = function()
 			BUTTONS = table.Copy(BUTTONS)
-			BREACH.SetupPlayers( BREACH.GetRoleTable( #GetActivePlayers() ) )
+			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
 		init = function()
@@ -68,7 +68,7 @@ end,
 		name = "MTF vs CI Deathmatch",
 		setup = function()
 			BUTTONS = table.Copy(BUTTONS)
-			BREACH.SetupPlayers( BREACH.GetRoleTable( #GetActivePlayers() ) )
+			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
 			disableNTF = false
 		end,
 		init = function()

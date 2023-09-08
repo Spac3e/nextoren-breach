@@ -1,4 +1,4 @@
-function BREACH.GetRoleTable( all )
+function GetRoleTable( all )
 	local classd = 0
 	local security = 0 --сб
 	local scientist = 0  --уч
@@ -11,7 +11,7 @@ function BREACH.GetRoleTable( all )
 
 	local all_start = all
 
-	if all_start < 20 then
+	if all_start < 15 then
 		
 		classd = {['count'] = math.Round(all_start * 0.37), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
@@ -19,15 +19,101 @@ function BREACH.GetRoleTable( all )
 		security = {['count'] = math.Round(all_start * 0.23), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
 		all = all - security['count']
 	
-		scientist = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		medicine = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		all = all - medicine['count']
+	
+		technical = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
+		all = all - technical['count']
+	
+		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Мед: "..medicine['count'], "Тех.: "..technical['count'])
+		return {classd, security, medicine, technical}
+
+	elseif all_start < 20 then
+
+		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - classd['count']
+
+		security = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - security['count']
+	
+		scientist = {['count'] = math.Round(all_start * 0.06), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - scientist['count']
-		
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Научный Персонал: "..scientist['count'])
-		return {classd, security, scientist}
+	
+		medicine = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - medicine['count']
+	
+		technical = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - technical['count']
+	
+		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Тех.: "..technical['count'])
+		return {classd, security, scientist, medicine, technical}
+
+	elseif all_start < 30 then
+
+		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - classd['count']
+
+		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - security['count']
+	
+		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - scientist['count']
+	
+		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - medicine['count']
+	
+		service = {['count'] = math.Round(all_start * 0.04), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - service['count']
+	
+		cancelar = {['count'] = math.Round(all_start * 0.16), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - cancelar['count']
+	
+		technical = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - technical['count']
+	
+		logist = {['count'] = math.Round(all_start * 0.07), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - logist['count']
+	
+		admin = {['count'] = all, ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+	
+		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Обслуж.: "..service['count'], "Канцеляр.: "..cancelar['count'], "Тех.: "..technical['count'], "Лог.: "..logist['count'], "Админ.: "..admin['count'])
+		return {classd, security, scientist, medicine, service, cancelar, technical, logist, admin}
+
+	else
+
+		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - classd['count']
+
+		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - security['count']
+	
+		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - scientist['count']
+	
+		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - medicine['count']
+	
+		service = {['count'] = math.Round(all_start * 0.04), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - service['count']
+	
+		cancelar = {['count'] = math.Round(all_start * 0.16), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - cancelar['count']
+	
+		technical = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - technical['count']
+	
+		logist = {['count'] = math.Round(all_start * 0.07), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		all = all - logist['count']
+	
+		admin = {['count'] = all, ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+	
+		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Обслуж.: "..service['count'], "Канцеляр.: "..cancelar['count'], "Тех.: "..technical['count'], "Лог.: "..logist['count'], "Админ.: "..admin['count'])
+		return {classd, security, scientist, medicine, service, cancelar, technical, logist, admin}
+
 	end
 end
 
-function BREACH.SetupPlayers( tab )
+function SetupPlayers( tab )
     local players = player.GetAll()
 
     for _, v in ipairs(tab) do
