@@ -432,6 +432,7 @@ end
 
 net.Receive( "nextNuke", nextNuked );
 
+
 MatBlur = Material("pp/blurscreen");
 
 function DrawDead()

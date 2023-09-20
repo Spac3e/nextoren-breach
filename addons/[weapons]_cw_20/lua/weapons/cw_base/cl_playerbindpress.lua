@@ -226,7 +226,7 @@ function SWEP:attemptToggleInteractionMenu()
 		return nil
 	end
 	
-	if self:canOpenInteractionMenu() and LocalPlayer():GetNW2Bool("Breach:CanAttach", true) then
+	if self:canOpenInteractionMenu() then
 		if self.dt.State ~= CW_CUSTOMIZE then
 			self.CustomizationTab = CustomizableWeaponry.interactionMenu.CUSTOMIZATION_TAB
 			self:setPresetPosition(1, true)

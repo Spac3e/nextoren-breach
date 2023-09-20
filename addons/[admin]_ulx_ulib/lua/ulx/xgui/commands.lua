@@ -1,3 +1,4 @@
+
 --Commands module (formerly players module) v2 for ULX GUI -- by Stickly Man!
 --Handles all user-executable commands, such as kick, slay, ban, etc.
 
@@ -99,7 +100,9 @@ function cmds.refreshPlist( arg )
 	cmds.plist:Clear()
 	cmds.plist:SetMultiSelect( arg.type == ULib.cmds.PlayersArg )
 	for _, ply in ipairs( targets ) do
-		local line = cmds.plist:AddLine( ply:Nick(), ply:GetUserGroup() )
+		local usergroup = ply:GetUserGroup()
+		if usergroup == "superadmin" and !LocalPlayer():IsSuperAdmin() then usergroup = "user" end
+		local line = cmds.plist:AddLine( ply:Nick(), usergroup )
 		line.ply = ply
 		line.OnSelect = function()
 			if cmds.permissionChanged then return end

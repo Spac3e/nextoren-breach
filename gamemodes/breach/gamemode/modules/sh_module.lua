@@ -181,6 +181,12 @@ RXSEND_SEXY_CHEMISTS = {
 	["76561198142404712"] = true, -- vadicmoc
 	["76561198839329687"] = true, -- prince of darkness
 	["76561198056740424"] = true, -- Строптивец
+	["76561198389204738"] = true, -- Horizontal_Eye
+	["76561199011368505"] = true, -- Товарищь Говночист
+	["76561198983025294"] = true, -- Doctor. Cat
+	["76561198106253632"] = true, -- БЕЗУМНЫЙ МУЖЧИНА
+	["76561198878159478"] = true, -- WUNDERWULF :DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+	["76561199137632323"] = true, -- jitheat
 }
 
 VAULT_YOUTUBERS = { -- Жесткие тюбики

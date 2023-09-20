@@ -9,7 +9,19 @@ util.AddNetworkString("FirstPerson_Remove")
 util.AddNetworkString("DropAdditionalArmor")
 util.AddNetworkString("NTF_Intro")
 
-net.Receive("DropAdditionalArmor", function(ply)
+local eblya = {
+	{reason = "Ебливый нига", value = 551},
+	{reason = "Ебливый нига 2", value = 12 + 5}
+}
+
+concommand.Add("suk", function(ply)
+	net.Start("LevelBar")
+    net.WriteTable(eblya)
+	net.WriteUInt(66, 32)
+	net.Send(ply)
+end)
+
+net.Receive("DropAdditionalArmor", function(len,ply)
 	local suka_snimi = net.ReadString()
 	if suka_snimi == "armor_big_bag" then
 		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
@@ -79,7 +91,7 @@ function PlayAnnouncer( soundname )
 	net.Broadcast()
 end
 
-function Player:BroadcastPlayMusic( soundname, vsrf_flot )
+function BroadcastPlayMusic( soundname, vsrf_flot )
     net.Start( "ClientPlayMusic" )
 	    net.WriteFloat( vsrf_flot )
         net.WriteString( soundname )
@@ -88,7 +100,7 @@ end
 
 net.Receive("NTF_Special_1", function(ply,caller)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
-	local nigger_gay_receive = net.ReadUInt(13)
+	local nigger_gay_receive = net.ReadUInt(12)
 	caller:SetSpecialCD(CurTime() + 80)
 	timer.Simple( 15, function()
 	PlayAnnouncer("nextoren/vo/ntf/camera_found_1.ogg")
@@ -222,8 +234,8 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	net.WriteEntity(self)
 	net.Send(victim)
 	net.Start("LevelBar")
-    net.WriteTable(stolik)
-	net.WriteUInt(32, 16)
+    net.WriteTable(eblya)
+	net.WriteUInt(victim:GetExp(), 32)
 	net.Send(victim)
 	net.Start( "Effect" )
 		net.WriteBool( false )
@@ -432,6 +444,9 @@ do
 
 		self.BrWeaponGive = true
 			weapon = self:BrGive(className, bNoAmmo)
+			if weapon.CW20Weapon then
+				--print("fasfafa")
+			end
 		self.BrWeaponGive = nil
 
 		return weapon
@@ -473,6 +488,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		trace.Entity:Remove()
 		end)
 	end
+	
 	return ply.BrWeaponGive
 end
 

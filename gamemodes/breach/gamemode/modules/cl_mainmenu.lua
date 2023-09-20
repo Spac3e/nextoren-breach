@@ -1746,12 +1746,6 @@ BREACH.Options = {
         premium = true,
       },
       {
-        name = "l:menu_weapon_info",
-        cvar = "breach_config_display_weapon_info",
-        type = "bool",
-        premium = true,
-      },
-      {
         name = "l:menu_spawn_female_only",
         cvar = "breach_config_spawn_female_only",
         type = "bool",

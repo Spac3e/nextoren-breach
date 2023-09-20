@@ -305,7 +305,7 @@ if CLIENT then
 	local origWM = "models/weapons/w_cw_kk_ins2_m14_2.mdl"
 
 	CustomizableWeaponry_KK.ins2.welementThink:add("cw_kk_ins2_m14", function(wep, welement)
-		if wep.ActiveAttachments[att.name] then
+		if att and att.name and wep.ActiveAttachments[att.name] then
 			if welement:GetModel() != activeWM then
 				welement:SetModel(activeWM)
 			end

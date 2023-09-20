@@ -263,16 +263,14 @@ function reset_sup_lim()
     sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
 end
 
-function mply:support_freeze(ply)
+function mply:SupportFreeze(ply)
 	ply:Freeze(true)
 	ply.cantopeninventory = true
 end
 
 net.Receive("ProceedUnfreezeSUP", function(len, ply)
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
 	ply:Freeze(false)
-	ply.cantopeninventory = true
-	end
+	ply.cantopeninventory = false
 end)
 
 function SupportSpawn()

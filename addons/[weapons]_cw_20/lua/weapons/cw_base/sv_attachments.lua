@@ -1,9 +1,3 @@
-util.AddNetworkString("CW20_GRENADETYPE")
-util.AddNetworkString("CW20_ATTACH")
-util.AddNetworkString("CW20_DETACH")
-util.AddNetworkString("CW20_DETACHALL")
-util.AddNetworkString("CW20_PRESETSUCCESS")
-util.AddNetworkString("CW20_PRESETDETACH")
 function SWEP:attachSpecificAttachment(attachmentName)
 	-- since we don't know the category, we'll just have to iterate over all attachments, find the one we want, and attach it there
 	for category, data in pairs(self.Attachments) do
@@ -109,11 +103,11 @@ function SWEP:detach(category)
 	
 	self:_detach(category, last)
 	
-	net.Start("CW20_DETACH")
-		net.WriteEntity(self)
-		net.WriteString(category)
-		net.WriteUInt(last, 8)
-	net.Send(self.Owner)
+	umsg.Start("CW20_DETACH", self.Owner)
+		umsg.Entity(self)
+		umsg.String(category)
+		umsg.Short(last)
+	umsg.End()
 	
 	-- call the default reset function (to reset shit like FOV, etc.) 
 	--self:resetPostDetach(foundAtt, att)
@@ -122,9 +116,9 @@ end
 function SWEP:cycle40MMGrenades()
 	CustomizableWeaponry.grenadeTypes.cycleGrenades(self)
 	
-	net.Start("CW20_GRENADETYPE")
-		net.WriteUInt(self.Grenade40MM, 8)
-	net.Send(self.Owner)
+	umsg.Start("CW20_GRENADETYPE", self.Owner)
+		umsg.Short(self.Grenade40MM)
+	umsg.End()
 end
 
 function SWEP:toggleCustomization()
@@ -200,6 +194,10 @@ end
 concommand.Add("cw_cycle40mm", CW20_CycleGrenadeTypes)
 
 local function CW20_Customize(ply, com, args)
+	if not ply.CanAttach then
+		return 
+	end
+	
 	if not CustomizableWeaponry.canOpenInteractionMenu or not CustomizableWeaponry.customizationEnabled then
 		return
 	end

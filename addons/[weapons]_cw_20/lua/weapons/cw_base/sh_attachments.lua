@@ -1,6 +1,14 @@
-function SWEP:canPlayCustomizeSound()
-	return CustomizableWeaponry.playSoundsOnInteract or (CustomizableWeaponry.playSoundsOnModify and self.dt.State == CW_CUSTOMIZE)
-end
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   addons/[weapons]_cw_20/lua/weapons/cw_base/sh_attachments.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
 
 SWEP.AttachSoundDelay = 0
 
@@ -404,21 +412,22 @@ if CLIENT then
 			return
 		end
 		
-		wep:_attach(category, pos)
+		if wep:_attach(category, pos) then
 			if CustomizableWeaponry.playSoundsOnInteract then
 				if CurTime() > wep.AttachSoundDelay then
 					surface.PlaySound("cw/attach.wav")
 					wep.AttachSoundDelay = CurTime() + FrameTime() * 3
+				end
 			end
 		end
 	end
 	
 	usermessage.Hook("CW20_ATTACH", CW20_ATTACH)
 	
-	local function CW20_DETACH()
-		local wep = net.ReadEntity() --um:ReadEntity()
-		local category = net.ReadString() --um:ReadString()
-		local pos = net.ReadUInt(8) --um:ReadShort()
+	local function CW20_DETACH(um)
+		local wep = um:ReadEntity()
+		local category = um:ReadString()
+		local pos = um:ReadShort()
 		
 		local numberCategory = tonumber(category)
 		
@@ -435,14 +444,14 @@ if CLIENT then
 		wep:_detach(category, pos)
 		
 		if CustomizableWeaponry.playSoundsOnInteract then
-			if wep:canPlayCustomizeSound() and CurTime() > wep.AttachSoundDelay then
+			if CurTime() > wep.AttachSoundDelay then
 				surface.PlaySound("cw/detach.wav")
 				wep.AttachSoundDelay = CurTime() + FrameTime() * 3
 			end
 		end
 	end
 	
-	net.Receive("CW20_DETACH", CW20_DETACH)
+	usermessage.Hook("CW20_DETACH", CW20_DETACH)
 	
 	local function CW20_DETACHALL(data)
 		local ply = LocalPlayer()

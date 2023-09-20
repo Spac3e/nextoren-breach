@@ -79,7 +79,7 @@ function GetTableOverride( tab )
 	return tab
 end
 
-function mply:AddToStatistics(ply, ent) -- надо сделать новую exp систему nextoren like, u know?
+function mply:AddToStatistics(reason,value)
 end
 
 function GM:PlayerSpray()
@@ -87,9 +87,6 @@ function GM:PlayerSpray()
 end
 
 function mply:AddToAchievementPoint()
-end
-
-function mply:LevelBar()
 end
 
 function GetAlivePlayers()
@@ -121,58 +118,59 @@ function mply:AnimatedHeal(number)
 end
 
 function mply:UnUseBag()
-   	if self:GetUsingBag() == "" then return end
-   	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
-   	for i = 1, #tbl_bonemerged do
-		local bonemerge = tbl_bonemerged[ i ]
-		print(bonemerge:GetModel())
-		if bonemerge:GetModel() == "models/cultist/backpacks/bonemerge/backpack_big.mdl" or bonemerge:GetModel() == "models/cultist/backpacks/bonemerge/backpack_small.mdl" then
-			bonemerge:Remove()
-		end
-    local item = ents.Create( self:GetUsingBag(self:GetClass()) )
-    if IsValid( item ) then
-        item:Spawn()
-        item:SetPos( self:GetPos() )
-    end
-    self:SetUsingBag("")
-	end
-end
-
-function mply:Bro()
-	if self:GetUsingArmor() == "" then return end
+	if self:GetUsingBag() == "" then return end
 	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
 	for i = 1, #tbl_bonemerged do
-		local bonemerge = tbl_bonemerged[ i ]
-		print(bonemerge:GetModel())
-		if bonemerge:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl" or bonemerge:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" then
-			bonemerge:Remove()
-		end
-	local item = ents.Create( self:GetUsingArmor(self:GetClass()) )
-    if IsValid( item ) then
-        item:Spawn()
-        item:SetPos( self:GetPos() )
-    end
-    self:SetUsingArmor("")
-	end
+	 local bonemerge = tbl_bonemerged[ i ]
+	 print(bonemerge:GetModel())
+	 if bonemerge:GetModel() == "models/cultist/backpacks/bonemerge/backpack_big.mdl" or bonemerge:GetModel() == "models/cultist/backpacks/bonemerge/backpack_small.mdl" then
+		 bonemerge:Remove()
+	 end
+ local item = ents.Create( self:GetUsingBag(self:GetClass()) )
+ if IsValid( item ) then
+	 item:Spawn()
+	 item:SetPos( self:GetPos() )
+ end
+ self:SetUsingBag("")
+ end
+end
+
+function mply:UnUseBro()
+ if self:GetUsingArmor() == "" then return end
+ local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
+ for i = 1, #tbl_bonemerged do
+	 local bonemerge = tbl_bonemerged[ i ]
+	 print(bonemerge:GetModel())
+	 if bonemerge:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl" or bonemerge:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" then
+		 bonemerge:Remove()
+	 end
+ local item = ents.Create( self:GetUsingArmor(self:GetClass()) )
+ if IsValid( item ) then
+	 item:Spawn()
+	 item:SetPos( self:GetPos() )
+ end
+ self:SetUsingArmor("")
+ end
 end
 
 function mply:UnUseHat()
-	if self:GetUsingHelmet() == "" then return end
-	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
-	for i = 1, #tbl_bonemerged do
-		local bonemerge = tbl_bonemerged[ i ]
-		print(bonemerge:GetModel())
-		if bonemerge:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl" or bonemerge:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" then
-			bonemerge:Remove()
-		end
-		local item = ents.Create( self:GetUsingHelmet(self:GetClass()) )
-		if IsValid( item ) then
-			item:Spawn()
-			item:SetPos( self:GetPos() )
-		end
-		self:SetUsingHelmet("")
-	end
+ if self:GetUsingHelmet() == "" then return end
+ local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
+ for i = 1, #tbl_bonemerged do
+	 local bonemerge = tbl_bonemerged[ i ]
+	 print(bonemerge:GetModel())
+	 if bonemerge:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl" or bonemerge:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" then
+		 bonemerge:Remove()
+	 end
+	 local item = ents.Create( self:GetUsingHelmet(self:GetClass()) )
+	 if IsValid( item ) then
+		 item:Spawn()
+		 item:SetPos( self:GetPos() )
+	 end
+	 self:SetUsingHelmet("")
+ end
 end
+
 
 function mply:GhostBoneMerge(ply, ent, model, skin)
     local ent = ents.Create("ent_bonemerged")
@@ -195,22 +193,33 @@ function mply:GhostBoneMerge(ply, ent, model, skin)
 end
 
 function mply:Bonemerge(model, ply)
-    local ent = ents.Create("ent_bonemerged")
-    ent:SetModel(model)
-	ent:Spawn()
-	ent:SetOwner( ply )
-    ent:SetParent( ply )
-	ent:SetLocalPos( vector_origin )
-    ent:SetLocalAngles( angle_zero )
-    ent:SetMoveType( MOVETYPE_NONE )
-    ent:AddEffects( EF_BONEMERGE )
-    ent:AddEffects( EF_BONEMERGE_FASTCULL )
-    ent:AddEffects( EF_PARENT_ANIMATES )
+    local bnmrg = ents.Create("ent_bonemerged")
+	ply.bonemerge_ent = bnmrg
+    bnmrg:SetModel(model)
+	bnmrg:Spawn()
+	bnmrg:SetOwner( ply )
+    bnmrg:SetParent( ply )
+	bnmrg:SetLocalPos( vector_origin )
+    bnmrg:SetLocalAngles( angle_zero )
+    bnmrg:SetMoveType( MOVETYPE_NONE )
+    bnmrg:AddEffects( EF_BONEMERGE )
+    bnmrg:AddEffects( EF_BONEMERGE_FASTCULL )
+    bnmrg:AddEffects( EF_PARENT_ANIMATES )
 	if ( !ply.BoneMergedEnts ) then
 		ply.BoneMergedEnts = {}
 	end
-    ply.BoneMergedEnts[ #ply.BoneMergedEnts + 1 ] = ply.ent -- вот это чекни, я не уверен в том что оно правильно работать будет
-	return ent
+    ply.BoneMergedEnts[ #ply.BoneMergedEnts + 1 ] = ply.bnmrg
+	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
+		ply.HeadEnt = ply.bonemerge_ent
+		if ( ply.Sub_Material ) then
+			local sub_material_id = 0
+			if ( sub_material_corrupted_models[ model ] ) then
+				sub_material_id = 1
+			end
+			ply.bonemerge_ent:SetSubMaterial( sub_material_id, ply.Sub_Material )
+		end
+	end
+	return bnmrg
 end
 
 function Bonemerge(model, ply)
@@ -414,10 +423,11 @@ function mply:SurvivorCleanUp()
 	self:SetUsingArmor("")
 	self:SetUsingHelmet("")
 	self:SetStamina(100)
+	self:Flashlight( false )
     end
 end
 
-function mply:SelectAsCISpy()
+function mply:SetupCISpy()
 	local chage = math.random( 1, 3 )
 	local pvtci = BREACH_ROLES.SECURITY.security.roles[1].weapons
 	local oficerci = BREACH_ROLES.SECURITY.security.roles[3].weapons
@@ -472,14 +482,10 @@ function mply:SelectAsCISpy()
 	end
 end
 
-function mply:ApplyRoleStats(role)
-	self:SurvivorCleanUp()
-	self:SetRoleName( role.name )
-	self:SetGTeam( role.team )
-	if role.cispy == true then self:SelectAsCISpy() end
-	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
-	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)  end end
-	if self:HasWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end 
+function mply:MakeNigger(ply)
+end
+
+function mply:PickupAppearance(role)
 	local selfmodel = {role.models}
 	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
 	if role.models and role.fmodels then
@@ -495,21 +501,16 @@ function mply:ApplyRoleStats(role)
 		selfmodel = {role.models}
 		self:SetModel(table.Random(role.models))
 	end
-	self:Namesurvivor()
-	if role.usehead and finalselfmodel != role.fmodels and role.randomizehead != true then
-		self:Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
-   elseif finalselfmodel == role.fmodels then 
-	   self:Bonemerge("models/cultist/heads/female/female_head_1.mdl",self)
-   end
-    if role.randomizehead and finalselfmodel != role.fmodels and role.randomizehead != nil then
-		 self:Bonemerge("models/cultist/heads/male/male_head_"..math.random(1,210)..".mdl",self)
-	elseif finalselfmodel == role.fmodels then 
-		self:Bonemerge("models/cultist/heads/female/female_head_"..math.random(1,52)..".mdl",self)
-    end
+	if role.usehead then
+		if !self:IsFemale() then
+		self:Bonemerge(PickHeadModel(),self)
+		else
+			self:Bonemerge(PickHeadModel(nil,true),self)
+		end
+	end
 	if role.hackerhat then
 		self:Bonemerge(role.hackerhat, self)
 	end
-	if role.damage_modifiers then self.HeadResist = role.damage_modifiers.HITGROUP_HEAD self.GearResist = role.damage_modifiers.HITGROUP_CHEST self.StomachResist = role.damage_modifiers.HITGROUP_STOMACH self.ArmResist = role.damage_modifiers.HITGROUP_RIGHTARM self.LegResist = role.damage_modifiers.HITGROUP_RIGHTLEG end
 	if role.skin then self:SetSkin(role.skin) end
 	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
 	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
@@ -517,6 +518,21 @@ function mply:ApplyRoleStats(role)
 	if role.hairf and (finalselfmodel == role.fmodels) then self:Bonemerge(table.Random(role.hairf), self) end
 	if role.headgear then self:Bonemerge(role.headgear, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
+	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
+	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
+	if role.bodygroup2 then self:SetBodygroup(2, role.bodygroup2)end
+	if role.bodygroup3 then self:SetBodygroup(3, role.bodygroup3)end
+	if role.bodygroup4 then self:SetBodygroup(4, role.bodygroup4)end
+	if role.bodygroup5 then self:SetBodygroup(5, role.bodygroup5)end
+	if role.bodygroup6 then self:SetBodygroup(6, role.bodygroup6) end
+	if role.bodygroup7 then self:SetBodygroup(7, role.bodygroup7) end
+	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
+	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
+end
+
+function mply:SetRoleStats(role)
+	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
+	if role.damage_modifiers then self.HeadResist = role.damage_modifiers.HITGROUP_HEAD self.GearResist = role.damage_modifiers.HITGROUP_CHEST self.StomachResist = role.damage_modifiers.HITGROUP_STOMACH self.ArmResist = role.damage_modifiers.HITGROUP_RIGHTARM self.LegResist = role.damage_modifiers.HITGROUP_RIGHTLEG end
 	self:SetNWString("AbilityName", "")
 	self.AbilityTAB = nil
 	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
@@ -541,124 +557,28 @@ function mply:ApplyRoleStats(role)
 	if role.runspeed then self:SetRunSpeed(195 * role.runspeed or 200) end
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
 	if role.stamina then self:SetStaminaScale(role.stamina) end
-	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
-	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
-	if role.bodygroup2 then self:SetBodygroup(2, role.bodygroup2)end
-	if role.bodygroup3 then self:SetBodygroup(3, role.bodygroup3)end
-	if role.bodygroup4 then self:SetBodygroup(4, role.bodygroup4)end
-	if role.bodygroup5 then self:SetBodygroup(5, role.bodygroup5)end
-	if role.bodygroup6 then self:SetBodygroup(6, role.bodygroup6) end
-	if role.bodygroup7 then self:SetBodygroup(7, role.bodygroup7) end
-	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
-	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
 	if role.maxslots then self:SetMaxSlots(role.maxslots) end
+	if self:GetRoleName(role.ClassD_Fast) then print("ednfda") end
+end
+
+function mply:ApplyRoleStats(role)
+	self:SurvivorCleanUp()
+	self:SetRoleName( role.name )
+	self:SetGTeam( role.team )
+	self:PickupAppearance(role)
+	self:SetRoleStats(role)
+	if role.cispy then self:SetupCISpy() end
+	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
+	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)  end end
+	
+	if self:HasWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end 
+	self:Namesurvivor()
+    
 	if self:GTeam() == TEAM_CLASSD and self:IsPremium() then self:SetBodygroup(0,math.random(0,4)) end
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)
 	self:SetupHands()
-end
-
-function mply:SetSecurityI1()
-	local thebestone = nil
-	local usechaos = false
-	if math.random(1,6) == 6 then usechaos = true end
-	for k,v in pairs(BREACH_ROLES["security"]["roles"]) do
-		if v.importancelevel == 1 then
-			local skip = false
-			if usechaos == true then
-				if v.team == TEAM_GUARD then
-					skip = true
-				end
-			else
-				if v.team == TEAM_CHAOS then
-					skip = true
-				end
-			end
-			if skip == false then
-				local can = true
-				if v.customcheck != nil then
-					if v.customcheck(self) == false then
-						can = false
-					end
-				end
-				local using = 0
-				for _,pl in pairs(player.GetAll()) do
-					if pl:GetRoleName() == v.name then
-						using = using + 1
-					end
-				end
-				if using >= v.max then can = false end
-				if can == true then
-					if self:GetLevel() >= v.level then
-						if thebestone != nil then
-							if thebestone.sorting < v.sorting then
-								thebestone = v
-							end
-						else
-							thebestone = v
-						end
-					end
-				end
-			end
-		end
-	end
-	if thebestone == nil then
-		thebestone = BREACH_ROLES["security"]["roles"][1]
-	end
-	self:SetupNormal()
-	self:ApplyRoleStats(thebestone)
-end
-
-function mply:SetClassD()
-	self:SetRoleBestFrom("classd")
-end
-
-function mply:SetResearcher()
-	self:SetRoleBestFrom("sci")
-end
-
-function mply:SetRoleBestFrom(role)
-	local thebestone = nil
-	for k,v in pairs(BREACH_ROLES[role]["roles"]) do
-		local can = true
-		if v.customcheck != nil then
-			if v.customcheck(self) == false then
-				can = false
-			end
-		end
-		local using = 0
-		for _,pl in pairs(player.GetAll()) do
-			if pl:GetRoleName() == v.name then
-				using = using + 1
-			end
-		end
-		if using >= v.max then can = false end
-		if can == true then
-			if self:GetLevel() >= v.level then
-				if thebestone != nil then
-					if thebestone.level < v.level then
-						thebestone = v
-					end
-				else
-					thebestone = v
-				end
-			end
-		end
-	end
-	if thebestone == nil then
-		thebestone = BREACH_ROLES.CLASSD[role]["roles"][1]
-	end
-	if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][4] and #player.GetAll() < 4 then
-		thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][3]
-	end
-	if ( GetConVar("br_dclass_keycards"):GetInt() != 0 ) then
-		if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][1] then thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][2] end
-	else
-		if thebestone == BREACH_ROLES.CLASSD["classd"]["roles"][2] then thebestone = BREACH_ROLES.CLASSD["classd"]["roles"][1] end
-	end
-	self:SetupNormal()
-	self:ApplyRoleStats(thebestone)
 end
 
 function mply:IsActivePlayer()

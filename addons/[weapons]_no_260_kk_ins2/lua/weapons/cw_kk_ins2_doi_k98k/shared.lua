@@ -248,8 +248,8 @@ SWEP.FireDelay = 0.3
 SWEP.FireSound = "CW_KK_INS2_DOI_K98_FIRE"
 SWEP.Recoil = 9
 
-SWEP.HipSpread = 0.075
-SWEP.AimSpread = 0.001
+SWEP.HipSpread = 0
+SWEP.AimSpread = 0
 SWEP.VelocitySensitivity = 2.5
 SWEP.MaxSpreadInc = 0.2
 SWEP.SpreadPerShot = 0.01

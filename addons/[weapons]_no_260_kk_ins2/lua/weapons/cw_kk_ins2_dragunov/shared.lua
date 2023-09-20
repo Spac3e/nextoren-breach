@@ -197,7 +197,7 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.Primary.ClipSize		= 15
 SWEP.Primary.DefaultClip = 0 --	= 15
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			= ".30 Carbine"
+SWEP.Primary.Ammo			= "AR2"
 
 SWEP.FireDelay = 0.489
 SWEP.FireSound = "CW_KK_INS2_DRAGUNOV_FIRE"

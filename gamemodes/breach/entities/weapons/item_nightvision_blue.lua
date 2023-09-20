@@ -153,8 +153,8 @@ function SWEP:Reload()
 					self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
 					if ( !banned_models[ self.Owner:GetModel() ] ) then
 
-					Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
-						for _, v in ipairs( ents.FindByClassAndParent( "ent_bonemerged", self.Owner ) ) do
+						Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
+						for _, v in ipairs( self.Owner.BoneMergedEnts ) do
 
 							if ( v && v:IsValid() && v:GetModel():find( "_nvg_" ) ) then
 					
@@ -162,14 +162,13 @@ function SWEP:Reload()
 								local nvg_bonemerge = v
 
 								self.Owner.NVG_Bonemerged = nvg_bonemerge
-								self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
-								
+								--self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
+					
 							end
 					
 						end
 
 					end
-
 
 					net.Start( "NightvisionOn" )
 
@@ -187,12 +186,10 @@ function SWEP:Reload()
 
 			self.Owner:ScreenFade( SCREENFADE.IN, color_black, 0.9, 0 )
 
-			local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self.Owner )
-			for i = 1, #tbl_bonemerged do
-			local bonemerge = tbl_bonemerged[ i ]
-			if bonemerge:GetModel() == "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl" then
-				bonemerge:Remove()
-			end
+			if ( self.Owner.NVG_Bonemerged && self.Owner.NVG_Bonemerged:IsValid() ) then
+
+				self.Owner.NVG_Bonemerged:Remove()
+
 			end
 
 			self.Nightvision_Owner = nil

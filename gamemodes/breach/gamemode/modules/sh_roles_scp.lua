@@ -1118,6 +1118,7 @@ BREACH_ROLES.SECURITY = {
 			{["name"] = role.SECURITY_Spy,
 			 ["team"] = TEAM_CHAOS,
 			 ["weapons"] = {},
+			 ["usehead"] = true, ["randomizehead"] = true, ["randomizeface"] = true,
 			 ["tasks"] = L"l:tasks_escape_from_site19"..",".." l:tasks_help_d",
 			 ["ability"] = {"l:abilities_name_cispy", 20, "l:abilities_cispy", "nextoren/gui/special_abilities/spy_chaos_focus.png", false},
 			 ["stamina"] = 1.5,

@@ -1019,7 +1019,13 @@ do
 
       local velLength = velocity:Length2DSqr()
 
-      if ( velLength > 22500 ) then
+      local run_length = 22500
+
+      if pl:GetRoleName() == SCP062DE then
+        run_length = 15000
+      end
+
+      if ( velLength > run_length ) then
 
         if ( wepIsCW ) then
 

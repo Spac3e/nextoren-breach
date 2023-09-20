@@ -3758,7 +3758,7 @@ BUTTONS = {
 			CLevelSUP = 0,
 			CLevelSCI = 0,
 			CLevelGuard = 1,
-			CLevel = 2,
+			CLevel = 0,
 		}
 	},
 	{

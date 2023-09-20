@@ -188,7 +188,7 @@ if ( CLIENT ) then
 				end
 			end
 	
-		self.Owner:BrProgressBar( "l:hacking_door", 1, "nextoren/gui/icons/hacker_hack.png", ent, false, function()
+		self.Owner:BrProgressBar( "l:hacking_door", time, "nextoren/gui/icons/hacker_hack.png", ent, false, function()
 			self.Owner:EmitSound( "nextoren/others/chaos_radio_open.wav" )
 	
 			self:SendWeaponAnim( ACT_VM_IDLE )

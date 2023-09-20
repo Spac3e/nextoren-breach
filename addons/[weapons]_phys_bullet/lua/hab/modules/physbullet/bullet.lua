@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   addons/[weapons]_phys_bullet/lua/hab/modules/physbullet/bullet.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 local MODULE = hab.Module.PhysBullet
 
 MODULE.EntityCache = MODULE.EntityCache or {}
@@ -357,12 +370,12 @@ local function PhysBulletCalculateBullet( Ent, Index, Bullet ) -- process the bu
 
 		end
 
-		if ( chance > util.SharedRandom( "HAB_PhysBullet_SharedRandom", 0.0, 3.0, ( Bullet.RandomSeed + chance ) ) ) then -- chance to ricochet, calculate ricochet
+		--if ( chance > util.SharedRandom( "HAB_PhysBullet_SharedRandom", 0.0, 3.0, ( Bullet.RandomSeed + chance ) ) ) then -- chance to ricochet, calculate ricochet
 
-			MODULE:PhysBulletRicochet( Ent, Index, Bullet )
-			return false
+			--MODULE:PhysBulletRicochet( Ent, Index, Bullet )
+			--return false
 
-		end
+		--end
 
 		
 		--[[
@@ -417,6 +430,10 @@ end
 hab.hook( "Tick", "HAB_PhysBullet_Tick", function( )
 
 	for _, e in pairs( MODULE.EntityCache ) do
+		if isnumber(e) then
+			table.remove(MODULE.EntityCache, _)
+			continue
+		end
 
 		if e.PhysBulletCache then -- see if the ent has bullets
 
@@ -624,7 +641,7 @@ function ENTITY:FirePhysicalBullets( bulletInfo ) -- fire bullet using data from
 		net.WriteEntity( bulletInfo.IgnoreEntity ) -- write IgnoreEntity
 
 		net.Send( rec ) -- send to viewers
-		
+
 		bulletInfo.Damage = ( ( bulletInfo.Damage != 0 and bulletInfo.Damage ) or AmmoData.plydmg )
 
 		bulletInfo.Force = ( bulletInfo.Force or AmmoData.force )
@@ -632,6 +649,7 @@ function ENTITY:FirePhysicalBullets( bulletInfo ) -- fire bullet using data from
 		bulletInfo.BlastDamage = ( bulletInfo.BlastDamage or AmmoData.BlastDamage )
 		bulletInfo.BlastDamageType = ( bulletInfo.BlastDamageType or AmmoData.BlastDamageType )
 		bulletInfo.BlastDamageRadius = ( bulletInfo.BlastDamageRadius or AmmoData.BlastDamageRadius )
+
 		bulletInfo.WeaponFiring = ( bulletInfo.WeaponFiring or self )
 
 	elseif CLIENT then
@@ -967,6 +985,14 @@ end)
 function MODULE:BulletApplyDamage( Ent, Index, Bullet, Mode ) -- apply damage
 
 	if CLIENT or !Ent or !Index or !Bullet then return end
+
+	if IsValid(Ent) then
+		if !Ent:IsNPC() then
+			if Ent:IsPlayer() and !Ent:IsBot() then
+				return
+			end
+		end
+	end
 
 	local force = Bullet.Force * Bullet.VelocityFraction
 
@@ -1377,6 +1403,10 @@ hab.hook( "PreDrawEffects", "HAB_PhysBullet_PreDrawEffects", function( ) -- spri
 	local eaf = EyeAngles( ):Forward( )
 
 	for _, e in pairs( MODULE.EntityCache ) do
+		if isnumber(e) then
+			table.remove(MODULE.EntityCache, _)
+			continue
+		end
 
 		if !e.PhysBulletCache then continue end
 
@@ -1542,4 +1572,3 @@ hab.hook( "PreDrawEffects", "HAB_PhysBullet_PreDrawEffects", function( ) -- spri
 end )
 
 end
-

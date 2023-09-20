@@ -473,7 +473,7 @@ function Jack.StartVoice(ply)
   --end
 
 
-  if RXSEND_YOUTUBERS[ply:SteamID64()] and ply:GTeam() == TEAM_SPEC then
+  if VAULT_YOUTUBERS[ply:SteamID64()] and ply:GTeam() == TEAM_SPEC then
   	--clr = Color(255,0,0)
   	NameStr = "[YouTuber] "..ply:Nick()
   end
@@ -509,16 +509,16 @@ function Jack.StartVoice(ply)
 	--maintextbar:MoveToFront()
 	--maintextbar:MoveToBack()
 
-	if ( emoticons[ply:GetUserGroup()] or RXSEND_YOUTUBERS[ply:SteamID64()] ) and ply:GTeam() == TEAM_SPEC then
+	if ( emoticons[ply:GetUserGroup()] or VAULT_YOUTUBERS[ply:SteamID64()] ) and ply:GTeam() == TEAM_SPEC then
 
-		if ply:GetUserGroup() != "premium" or ( ply:GetUserGroup() == "premium" and ply:GetNWBool("display_premium_icon", true) ) or RXSEND_YOUTUBERS[ply:SteamID64()] then
+		if ply:GetUserGroup() != "premium" or ( ply:GetUserGroup() == "premium" and ply:GetNWBool("display_premium_icon", true) ) or VAULT_YOUTUBERS[ply:SteamID64()] then
 
 			local icon = vgui.Create("DPanel", NameBar)
 		  icon:SetSize(NameTxt:GetTall()-4,NameTxt:GetTall()-2)
 		  icon:SetPos(40,10)
 		  maintextbar:SetX(maintextbar:GetX() + 18)
 		  local icon_mg = emoticons[ply:GetUserGroup()]
-		  if RXSEND_YOUTUBERS[ply:SteamID64()] then
+		  if VAULT_YOUTUBERS[ply:SteamID64()] then
 		  	icon_mg = Material("icon16/user_red.png")
 		  end
 		  icon.Paint = function(self, w, h)

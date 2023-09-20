@@ -36,8 +36,9 @@ function BREACH.Round_System_Start()
 				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:decont_1min", Color(255, 255, 255))
 			  end
 			  BREACH.Decontamination = true
+			  timer.Remove("RandomAnnouncer")
 			  PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_1_min.ogg" )
-			  PlayAnnouncer("no_music/light_zone/light_zone_decontamination.ogg")
+			  BroadcastPlayMusic("sound/no_music/light_zone/light_zone_decontamination.ogg", 2)
 		  end )
 	  
 		  timer.Create( "lc_11:15_s", 375, 1, function()
@@ -471,7 +472,9 @@ function BREACH.Round_System_Stop()
 end
 
 function BREACH.Round_System_Announcer()
-
+	timer.Create("RandomAnnouncer",math.random(46,53),math.random(5,7), function()
+	PlayAnnouncer("nextoren/round_sounds/intercom/"..math.random(1,19)..".ogg")
+    end)
 end
 
 function BREACH.Round_System_Doors_Work()

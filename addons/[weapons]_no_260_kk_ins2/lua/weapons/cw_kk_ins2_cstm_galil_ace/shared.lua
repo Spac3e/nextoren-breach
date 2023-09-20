@@ -10,9 +10,6 @@ File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_cstm_galil_a
                                      /____/                                 /____/_____/                                  
 --]]
 
---[[
-lua/weapons/cw_kk_ins2_cstm_galil_ace/shared.lua
---]]
 if not CustomizableWeaponry then return end
 
 AddCSLuaFile()
@@ -23,12 +20,13 @@ SWEP.magType = "arMag"
 
 if CLIENT then
 	SWEP.DrawCrosshair = false
-	SWEP.PrintName = "Galil ACE 22.5"
+	SWEP.PrintName = "Galil ACE"
 	SWEP.CSMuzzleFlashes = true
 
 	SWEP.ViewModelMovementScale = 1.15
 
-	--SWEP.SelectIcon = surface.GetTextureID("vgui/inventory/weapon_galil_sar")
+	-- SWEP.SelectIcon = surface.GetTextureID("vgui/inventory/weapon_galil_sar")
+	SWEP.InvIcon = Material( "nextoren/gui/icons/weapons/galil2.png" )
 	SWEP.IconLetter = "b"
 
 	SWEP.Shell = "KK_INS2_556x45"
@@ -56,9 +54,6 @@ if CLIENT then
 		["kk_ins2_cstm_cmore"] = {model = "models/weapons/attachments/v_cw_kk_ins2_cstm_cmore.mdl", bone = "Weapon", pos = Vector(0.059, -4, 2.759), angle = Angle(), size = Vector(1, 1, 1)},
 		["kk_ins2_cstm_barska"] = {model = "models/weapons/attachments/v_cw_kk_ins2_cstm_barska.mdl", bone = "Weapon", pos = Vector(0.059, -2.931, 2.743), angle = Angle(0, -90, 0), size = Vector(1, 1, 1)},
 
-		["kk_counter_fake"] = {model = "models/weapons/stattrack.mdl", bone = "Weapon", pos = Vector(0.6, -6.045, 1.08), angle = Angle(0, -90, 0), size = Vector(0.9, 0.9, 0.9), ignoreKKBGO = true, bodygroups = {1},
-			active = counterExists and !CustomizableWeaponry_KK.HOME
-		},
 	}
 
 	SWEP.AttachmentModelsWM = {
@@ -120,15 +115,15 @@ if CLIENT then
 	SWEP.CustomizationMenuScale = 0.016
 end
 
-SWEP.MuzzleEffect = "muzzleflash_m16_1p_core"
-SWEP.MuzzleEffectWorld = "muzzleflash_m16_3rd"
+SWEP.MuzzleEffect = "muzzleflash_smg_npc"
+SWEP.MuzzleEffectWorld = "muzzleflash_smg_npc"
 
 SWEP.Attachments = {
 	{header = "Sight", offset = {300, -600}, atts = {"kk_ins2_cstm_cmore", "kk_ins2_cstm_barska", /*"kk_ins2_cstm_eotechxps", "kk_ins2_eotech", */"kk_ins2_aimpoint", /*"kk_ins2_cstm_compm4s", "kk_ins2_cstm_acog"*/}},
 	{header = "Barrel", offset = {-200, -600}, atts = {"kk_ins2_suppressor_sec"}},
 	{header = "Under", offset = {-500, -150}, atts = {"kk_ins2_bipod", "kk_ins2_vertgrip"}},
 	{header = "Lasers", offset = {150, -150}, atts = {"kk_ins2_lam", "kk_ins2_flashlight", "kk_ins2_anpeq15"}},
-	{header = "Magazine", offset = {-200, 350}, atts = {"kk_ins2_mag_galil_75"}},
+	--{header = "Magazine", offset = {-200, 350}, atts = {"kk_ins2_mag_galil_75"}},
 	{header = "More Sight", offset = {1100, -150}, atts = {"kk_ins2_magnifier"}, dependencies = CustomizableWeaponry_KK.ins2.magnifierDependencies},
 	--["+reload"] = {header = "Ammo", offset = {1000, 350}, atts = {"am_magnum", "am_matchgrade"}}
 }
@@ -201,7 +196,7 @@ SWEP.Contact		= ""
 SWEP.Purpose		= ""
 SWEP.Instructions	= ""
 
-SWEP.ViewModelFOV	= 80
+SWEP.ViewModelFOV	= 70
 SWEP.ViewModelFlip	= false
 SWEP.ViewModel		= "models/weapons/v_cw_kk_ins2_galil_ace.mdl"
 SWEP.WorldModel		= "models/weapons/w_cw_kk_ins2_galil_ace.mdl"
@@ -217,23 +212,23 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.AdminOnly			= true
 
 SWEP.Primary.ClipSize		= 35
-SWEP.Primary.DefaultClip = 0 --	= 0
+SWEP.Primary.DefaultClip	= 0
 SWEP.Primary.Automatic		= true
-SWEP.Primary.Ammo			= "SMG1"
+SWEP.Primary.Ammo			= "AR2"
 
 SWEP.FireDelay = 60/700
 SWEP.FireSound = "CW_KK_INS2_GALIL_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_GALIL_FIRE_SUPPRESSED"
-SWEP.Recoil = 1.2525
+SWEP.Recoil = 1.2
 
-SWEP.HipSpread = 0.045
-SWEP.AimSpread = 0.0027
-SWEP.VelocitySensitivity = 1.8
-SWEP.MaxSpreadInc = 0.04
+SWEP.HipSpread = 0.043
+SWEP.AimSpread = 0.005
+SWEP.VelocitySensitivity = 1.6
+SWEP.MaxSpreadInc = 0.05
 SWEP.SpreadPerShot = 0.007
 SWEP.SpreadCooldown = 0.13
 SWEP.Shots = 1
-SWEP.Damage = 27
+SWEP.Damage = 38
 
 SWEP.FirstDeployTime = 2.6
 SWEP.DeployTime = 0.7
@@ -265,5 +260,3 @@ if CLIENT then
 		self:setElementActive("kk_ins2_mag_galil_35", !self.ActiveAttachments.kk_ins2_mag_galil_75)
 	end
 end
-
-

@@ -1,4 +1,8 @@
-function GetRoleTable( all )
+function GetRoleTable( all ) -- для бибязан поясняю, больше игроков, больше шанс на роли мусорки чтобы распределилась роль
+	// Если allstart[role] у нас 0 то мы её умножаем на желаемый шанс, число ближе, больше игроков которые могут заспавнится за нее, т.е у могов 0.17 ибо у них максимум 2 солдата
+	// в коротких раундах, но! бывает и 1. у ученых до 4 человек, а у дешек до 6
+	// Как настроить? ебаш шансы вниз/вверх пока не избавишься от челиков наблюдателей, но еще проверь пару раз на всякий (рестартай раунд!!!)
+	// TODO: СЦП Впихнуть
 	local classd = 0
 	local security = 0 --сб
 	local scientist = 0  --уч
@@ -8,25 +12,24 @@ function GetRoleTable( all )
 	local technical = 0  --инж
 	local logist = 0  --логисты
 	local admin = 0  --админы
+	local scp = 0 -- SOSUNOKS
+	local mtf = 0 -- ULTRA SOSUNOKS
 
 	local all_start = all
 
 	if all_start < 15 then
 		
-		classd = {['count'] = math.Round(all_start * 0.37), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.45), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
-		security = {['count'] = math.Round(all_start * 0.23), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
-		all = all - security['count']
-	
-		medicine = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
-		all = all - medicine['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
-		all = all - technical['count']
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Мед: "..medicine['count'], "Тех.: "..technical['count'])
-		return {classd, security, medicine, technical}
+		scientist = {['count'] = math.Round(all_start * 0.27), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		all = all - scientist['count']
+
+		mtf = {['count'] = math.Round(all_start * 0.17), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
+		all = all - mtf['count']
+		
+		print("Класс-Д: "..classd['count'], "Уч: "..scientist['count'], "МОГ: "..mtf['count'])
+		return {classd, scientist, mtf}
 
 	elseif all_start < 20 then
 

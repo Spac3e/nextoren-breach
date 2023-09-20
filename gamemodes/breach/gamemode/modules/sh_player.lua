@@ -4454,7 +4454,7 @@ if SERVER then
 
 			ply:SetSpecialCD( CurTime() + 45 )
 
-			ply:EmitSound("nextoren/vo/special_sci/medic/medic_"..math.random(1,11)..".mp3")
+			if SERVER then ply:EmitSound("nextoren/vo/special_sci/medic/medic_"..math.random(1,11)..".mp3") end
 
 			for _, target in ipairs(ents.FindInSphere(ply:GetPos(), 250)) do
 
@@ -4694,9 +4694,11 @@ if SERVER then
 
 					end
 
+					if SERVER then
 					net.Start("GRU_CommanderAbility", true)
 					    net.WriteString(target:GTeam())
 					net.Send(ply)
+					end
 
 				end)
 
