@@ -4150,6 +4150,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 				ply:BrProgressBar("l:giving_equipment", 8, "nextoren/gui/special_abilities/ability_recruiter.png", target, false, finishcallback)
 			end
 
+
 		elseif ply:HaveSpecialAb(role.Goc_Jag) then
 
 			ply:SetSpecialCD( CurTime() + 75)

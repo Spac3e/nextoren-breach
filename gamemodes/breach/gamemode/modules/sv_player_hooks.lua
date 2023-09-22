@@ -8,6 +8,7 @@ util.AddNetworkString("BreachAnnouncerLoud")
 util.AddNetworkString("FirstPerson_Remove")
 util.AddNetworkString("DropAdditionalArmor")
 util.AddNetworkString("NTF_Intro")
+util.AddNetworkString("Eventmessage")
 
 local eblya = {
 	{reason = "Ебливый нига", value = 551},

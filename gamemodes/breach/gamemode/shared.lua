@@ -1,8 +1,3 @@
-concommand.Add( "player_position", function( ply, cmd, args )
-	chat.AddText( Color( 255, 255, 255 ), "skopiroval v clipboard")
-	SetClipboardText(("Vector(%s)"):format(string.gsub(tostring(ply:GetPos())," ", ",")))
-end )
-
 MODULES_PATH = GM.FolderName .. "/gamemode/modules"
 LANGUAGES_PATH = GM.FolderName .. "/gamemode/languages"
 MAP_CONFIG_PATH = GM.FolderName .. "/gamemode/mapconfigs"
@@ -188,5 +183,3 @@ MsgC( Color(0,255,0),"-----------------Animation Base is ready!-----------------
 
 MsgC( Color(0,255,0),"#\n" )
 MsgC( Color(0,255,0),"# Skipped files: " .. skipped.."\n")
-
-MsgC( Color(0,255,0), "----------------Loading Complete-----------------\n" )

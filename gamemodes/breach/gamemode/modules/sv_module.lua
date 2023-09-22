@@ -37,8 +37,10 @@ function AlphaWarheadBoomEffect()
 	net.Broadcast()
 end
 
-net.Receive("GiveWeaponFromClient", function()
-	net.ReadString()
+net.Receive("GiveWeaponFromClient", function(len,ply)
+	local weapon = net.ReadString()
+	ply:Give(weapon)
+	ply:SelectWeapon(weapon)
 end)
 
 net.Receive("Load_player_data", function()

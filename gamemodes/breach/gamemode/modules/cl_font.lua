@@ -69,6 +69,16 @@ surface.CreateFont("MainMenuFont_russian", {
   
 })
 
+surface.CreateFont("BrSoul20", {
+	font = "brsellyoursoul",
+	size = 16,
+	weight = 500,
+	antialias = true,
+	additive = true
+})
+
+
+
 surface.CreateFont("MainMenuFontmini", {
 
 	font = "Conduit ITC",

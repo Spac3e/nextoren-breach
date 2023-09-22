@@ -1,5 +1,5 @@
-
 local mply = FindMetaTable( "Player" )
+local ment = FindMetaTable( "Entity" )
 
 function mply:AddToMVP()
 end
@@ -11,56 +11,60 @@ end
 function mply:SetOnFire(ply)
 end
 
-local femname = {"Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn","Abigail", "Emily", "Elizabeth", "Mila", "Ella", "Avery", "Sofia", "Camila", "Aria", "Scarlett","Victoria", "Madison", "Luna", "Grace", "Chloe", "Penelope", "Layla", "Riley", "Zoey", "Nora","Lily", "Eleanor", "Hannah", "Lillian", "Addison", "Aubrey", "Ellie", "Stella", "Natalie", "Zoe","Lucy", "Paisley", "Everly", "Anna", "Caroline", "Nova", "Genesis", "Emilia", "Kennedy", "Samantha","Maya", "Willow", "Kinsley", "Naomi", "Aaliyah", "Elena", "Sarah", "Ariana", "Allison", "Gabriella", "Leah", "Hazel", "Violet", "Aurora", "Savannah", "Audrey", "Brooklyn", "Bella", "Claire", "Skylar","Alice", "Madelyn", "Cora", "Ruby", "Eva", "Serenity", "Autumn", "Adeline", "Hailey", "Gianna","Valentina", "Isla", "Eliana", "Quinn", "Nevaeh", "Ivy", "Sadie", "Piper", "Lydia", "Alexa","Josephine", "Emery", "Julia", "Delilah", "Arianna", "Vivian", "Kaylee", "Sophie", "Brielle", "Madeline","Peyton", "Rylee", "Clara", "Hadley", "Melanie", "Mackenzie", "Reagan", "Adalynn", "Liliana", "Aubree","Jade", "Katherine", "Isabelle", "Natalia", "Raelynn", "Maria", "Athena", "Ximena", "Arya", "Leilani","Taylor", "Faith", "Rose", "Kylie", "Alexandra", "Mary", "Margaret", "Lyla", "Ashley", "Amaya","Eliza", "Brianna", "Bailey", "Andrea", "Khloe", "Jasmine", "Melody", "Iris", "Isabel", "Norah","Annabelle", "Valeria", "Emerson", "Adalyn", "Ryleigh", "Eden", "Emersyn", "Anastasia", "Kayla", "Alyssa","Juliana", "Charlie", "Esther", "Ariel", "Cecilia", "Valerie", "Alina", "Molly", "Reese", "Aliyah","Lilly", "Parker", "Finley", "Morgan", "Sydney", "Jordyn", "Eloise", "Trinity", "Daisy", "Kimberly","Lauren", "Genevieve", "Sara","Arabella", "Harmony", "Elise", "Remi", "Teagan", "Alexis", "London", "Sloane", "Laila", "Lucia","Diana", "Juliette", "Sienna", "Elliana", "Londyn", "Ayla", "Callie", "Gracie", "Josie", "Amara","Jocelyn", "Daniela", "Everleigh", "Mya", "Rachel", "Summer", "Alana", "Brooke", "Alaina", "Mckenzie","Catherine", "Amy", "Presley", "Journee", "Rosalie", "Ember", "Brynlee", "Rowan", "Joanna", "Paige","Rebecca", "Ana", "Sawyer", "Mariah", "Nicole", "Brooklynn", "Payton", "Marley", "Fiona", "Georgia","Lila", "Harley", "Adelyn", "Alivia", "Noelle", "Gemma", "Vanessa", "Journey", "Makayla", "Angelina","Adaline", "Catalina", "Alayna", "Julianna", "Leila", "Lola", "Adriana", "June", "Juliet", "Jayla","River", "Tessa", "Lia", "Dakota", "Delaney", "Selena", "Blakely", "Ada", "Camille", "Zara","Malia", "Hope", "Samara", "Vera", "Mckenna", "Briella", "Izabella", "Hayden", "Raegan", "Michelle","Angela", "Ruth", "Freya", "Kamila", "Vivienne", "Aspen", "Olive", "Kendall", "Elaina", "Thea","Kali", "Destiny", "Amiyah", "Evangeline", "Carmen", "Phoenix", "Elsie", "Evie", "Amina", "Giselle","Brynn", "Lilah", "Lucille", "Aniyah", "Charlie", "Harlow", "Lena", "Maci", "Annie", "Mariana","Mikayla", "Danna", "Kira", "Adelaide", "Alison", "Camryn", "Alessandra", "Raelyn", "Nyla", "Addilyn","Dylan", "Keira", "Allyson", "Haven", "Mallory", "Erin", "Lia", "Jazmine", "Miriam", "Evelynn","Anne", "Leslie", "Kaitlyn", "Emely", "Arielle", "Mira", "Briana", "Daphne", "Lilliana", "Myla","Penelope", "Kamryn", "Aubrie", "Jane", "Raelynn", "Talia", "Rylie", "Nina", "Kayleigh", "Luciana","Malia", "Scarlet", "Amanda", "Daniella", "Guadalupe", "Tatum", "Kyla", "Kaelyn", "Miranda", "Alivia","Annalise", "Skyler", "Kelsey", "Haley", "Lana", "Sabrina", "Mikaela","Celeste", "Ariella", "Alani", "Natasha", "Nadia", "Jane", "Bianca", "Katie", "Elisa", "Lacey","Cassandra", "Camilla", "Esmeralda", "Josephine", "Miracle", "Charlee", "Adelynn", "Laura", "Anaya", "Nayeli","Melany", "Sage", "Annabella", "Dayana", "Ariah", "Kenzie", "Stephanie", "Ivanna", "Aubriella", "Sarai","Megan", "Paislee", "Helen", "Blair", "Amirah", "Averie", "Demi", "Willa", "Jayleen", "Phoebe","Elle", "Lorelei", "Joselyn", "Malaysia", "Zuri", "Elsa", "Madisyn", "Anabelle", "Hattie", "Kara","Remington", "Charleigh", "Raven", "Jaelynn", "Sylvia", "Elyse", "Lainey", "Siena", "Braelynn", "Nylah","Lennon", "Lennox", "Renata", "Elisabeth", "Violeta", "Amia", "Armani", "Imani", "Kori", "Milani","Astrid", "Nalani", "Simone", "Rory", "Kiera", "Adelina", "Nola", "Savanna", "Alejandra", "Aitana","Kaia", "Sandra", "Jolie", "Katalina", "Eileen", "Nadia", "Lilianna", "Miah", "Tiana", "Zariah","Marilyn", "Rebekah", "Aurelia", "Zahra", "Haylee", "Amara", "Reyna", "Frankie", "Mabel", "Amayah","Meredith", "Elliot", "Kenna", "Alanna", "Maliyah", "Joelle", "Karter", "Alayah", "Anahi", "Crystal","Zoe", "Kalani", "Kallie", "Marlee", "Erika", "Amani", "Bristol", "Dulce", "Aileen", "Ariyah","Evie", "Dorothy", "Elora", "Joy", "Meghan", "Sutton", "Audrina", "Kyla", "Lilith", "Kadence","Cataleya", "Leona", "Lindsey", "Gloria", "Remy", "Chelsea", "Remi", "Lorelai", "Amelie", "Bethany","Zara", "Marie", "Blaire", "Lauryn", "Anika", "Cameron", "Colette", "Alicia", "April", "Julie","Savannah", "Xiomara", "Blakely", "Karina", "Reina", "Kensley", "Holly", "Rosemary", "Jemma", "Amalia","Kathleen", "Helena", "Hope", "Elisabet", "Marina", "Cassidy", "Briar", "Joyce", "Emelia", "Clarissa","Ezra", "Martha", "Sariah"}
-local femlast = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor","Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson","Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "Hernandez", "King","Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Gonzalez", "Nelson", "Carter","Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins","Stewart", "Sanchez", "Morris", "Rogers", "Reed", "Cook", "Morgan", "Bell", "Murphy", "Bailey","Cooper", "Richardson", "Cox", "Howard", "Ward", "Torres", "Peterson", "Gray", "Ramirez", "James","Watson", "Brooks", "Kelly", "Sanders", "Price", "Bennett", "Wood", "Barnes", "Ross", "Henderson","Coleman", "Jenkins", "Perry", "Powell", "Long", "Patterson", "Hughes", "Flores", "Washington", "Butler","Simmons", "Foster", "Gonzales", "Bryant", "Alexander", "Russell", "Griffin", "Diaz", "Hayes", "Myers","Ford", "Hamilton", "Graham", "Sullivan", "Wallace", "Woods", "Cole", "West", "Jordan", "Owens","Reynolds", "Fisher", "Ellis", "Harrison", "Gibson", "Mcdonald", "Cruz", "Marshall", "Ortiz", "Gomez","Murray", "Freeman", "Wells", "Webb", "Simpson", "Stevens", "Tucker", "Porter", "Hunter", "Hicks","Crawford", "Henry", "Boyd", "Mason", "Morales", "Kennedy", "Warren", "Dixon", "Ramos", "Reyes","Burns", "Gordon", "Shaw", "Holmes", "Rice", "Robertson", "Hunt", "Black", "Daniels", "Palmer","Mills", "Nichols", "Grant", "Knight", "Ferguson", "Rose", "Stone", "Hawkins", "Dunn", "Perkins","Hudson", "Spencer", "Gardner", "Stephens", "Payne", "Pierce", "Berry", "Matthews", "Arnold", "Wagner","Willis", "Ray", "Watkins", "Olson", "Carroll", "Duncan", "Snyder", "Hart", "Cunningham", "Bradley","Lane", "Andrews", "Ruiz", "Harper", "Fox", "Riley", "Armstrong"}
-local malename = {"Aiden", "Alexander", "Andrew", "Anthony", "Austin", "Benjamin", "Blake", "Brayden", "Caleb", "Cameron","Carter", "Charles", "Christopher", "Colton", "Connor", "Daniel", "David", "Dominic", "Dylan", "Elijah","Ethan", "Gabriel", "Gavin", "Henry", "Hunter", "Isaac", "Jack", "Jackson", "Jacob", "James","Jason", "Jayden", "Jeremiah", "John", "Jonathan", "Joseph", "Joshua", "Julian", "Justin", "Kevin","Landon", "Levi", "Liam", "Logan", "Lucas", "Luke", "Mason", "Matthew", "Michael", "Nathan","Nicholas", "Noah", "Oliver", "Oscar", "Owen", "Parker", "Ryan", "Samuel", "Sebastian", "Thomas","Tyler", "William", "Wyatt", "Aaron", "Adam", "Adrian", "Alan", "Albert", "Alex", "Alexandre","Alexis", "Alfred", "Ali", "Allen", "Alvin", "Andre", "Andres", "Angel", "Angelo", "Anthony","Antonio", "Armando", "Arnold", "Arthur", "Arturo", "Asher", "Austin", "Axel", "Barry", "Beau","Ben", "Benjamin", "Bernard", "Bill", "Billy", "Blake", "Bob", "Bobby", "Brad", "Bradley","Brady", "Brandon", "Braylon", "Brendan", "Brenden", "Brendon", "Brett", "Brian", "Bruce", "Bryce","Bryson", "Caleb", "Calvin", "Cameron", "Carl", "Carlos", "Carter", "Casey", "Cedric", "Chad","Charles", "Charlie", "Chase", "Chris", "Christian", "Christopher", "Clarence", "Clark", "Cody", "Colby","Cole", "Colin", "Collin", "Colton", "Conner", "Connor", "Cooper", "Corey", "Craig", "Cristian","Curtis", "Cyril", "Dale", "Dalton", "Damian", "Damien", "Damon", "Dan", "Daniel", "Danny","Dante", "Darius", "Darren", "Daryl", "Dave", "David", "Dean", "Dennis", "Derek", "Derrick","Desmond", "Devon", "Dexter", "Diego", "Dominic", "Don", "Donald", "Donovan", "Douglas", "Drake","Drew", "Duane", "Dustin", "Dwayne", "Dylan", "Eddie", "Edgar", "Edison", "Eduardo", "Edward","Edwin", "Eli", "Elias", "Elijah", "Elliot", "Elliott", "Ellis", "Elmer", "Elton", "Emerson","Emmanuel", "Eric", "Erik", "Ernest", "Eugene", "Evan", "Everett", "Fabian", "Fernando", "Finn", "Floyd", "Francis", "Frank","Franklin", "Fred", "Frederick", "Gabriel", "Garrett", "Gary", "Gavin", "George", "Gerald", "Gilbert","Giovanni", "Glen", "Glenn", "Gordon", "Graham", "Grant", "Gregory", "Guy", "Harold", "Harrison","Harry", "Harvey", "Hayden", "Heath", "Henry", "Herbert", "Herman", "Howard", "Hugh", "Hunter","Ian", "Isaac", "Isaiah", "Ivan", "Jack", "Jackson", "Jacob", "Jaden", "Jake", "James","Jamie", "Jamison", "Jared", "Jason", "Jasper", "Jay", "Jayden", "Jeff", "Jeffery", "Jeffrey","Jeremy", "Jerome", "Jerry", "Jesse", "Jesus", "Jim", "Jimmy", "Joe", "Joel", "John","Johnny", "Jonah", "Jonathan", "Jordan", "Jorge", "Jose", "Joseph", "Joshua", "Josiah", "Juan","Julian", "Julio", "Junior", "Justin", "Kai", "Kaleb", "Karl", "Keith", "Kelly", "Kelvin","Ken", "Kenneth", "Kenny", "Kent", "Kevin", "Kieran", "Kirk", "Kyle", "Lamar", "Lance","Landon", "Larry", "Lawrence", "Lee", "Leo", "Leon", "Leonard", "Leroy", "Leslie", "Levi","Lewis", "Liam", "Lionel", "Logan", "Lonnie", "Lorenzo", "Louis", "Lucas", "Luis", "Luke","Malachi", "Malcolm", "Manuel", "Marc", "Marcus", "Mario", "Mark", "Marshall", "Martin", "Mason","Mathew", "Matt", "Matthew", "Maurice", "Max", "Maxwell", "Mckenzie", "Melvin", "Michael", "Micheal","Mickey", "Miguel", "Mike", "Milton", "Mitchell", "Morgan", "Nathan", "Nathaniel", "Neil", "Nelson","Nicholas", "Nick", "Nicolas", "Noah", "Nolan", "Norman", "Oliver", "Omar", "Orlando", "Oscar","Owen", "Pablo", "Patrick", "Paul", "Pedro", "Perry", "Peter", "Philip", "Phillip", "Preston","Quentin", "Ralph", "Ramiro", "Ramon", "Randall", "Randy", "Ray", "Raymond", "Reece", "Reginald","Rene", "Reuben", "Rex", "Rhett", "Ricardo", "Richard", "Rick", "Ricky", "Riley", "Rob","Robbie", "Robert", "Roberto", "Robin", "Rocky", "Rod", "Rodney", "Rodolfo", "Roger", "Roland","Ron", "Ronald", "Ronnie", "Roosevelt", "Rory", "Ross", "Roy", "Ruben", "Rudy", "Russell","Ryan", "Sam", "Samuel", "Santiago", "Scott", "Sean", "Sebastian", "Seth", "Shane", "Shawn","Sidney", "Silas", "Simon", "Solomon", "Spencer", "Stanley", "Stefan", "Stephen", "Steve", "Steven","Stewart", "Stuart", "Sylvester", "Tanner", "Taylor", "Ted", "Terence", "Terrance", "Terrell", "Terry","Thaddeus", "Theodore", "Thomas", "Tim", "Timothy", "Toby", "Tom", "Tomas", "Tony", "Trace","Tracy", "Travis", "Trent", "Trevor", "Troy", "Tyler", "Tyrone", "Tyson", "Ulysses", "Van","Victor", "Vince", "Vincent", "Virgil", "Wade", "Walker", "Walter", "Warren", "Wayne", "Wesley","Weston", "Wilbur", "Will", "William", "Willie", "Willis", "Winston", "Wyatt", "Xavier", "Yahir","Zachariah", "Zachary", "Zack", "Zane", "Roman", "Cyox", "Suoh", "Uracos", "Shaky", "Saitama"}
+function mply:LevelBar()
+end
+
+local german_names = {}
+local german_lastnames = {}
+local usa_names = {}
+local usa_lastnames = {}
+local gru_names = {"Ivan","Dmitry","Sergey","Alexey","Andrey","Pavel","Varus","Vladimir","Maxim","Evgeniy","Nikolay","Roman","Oleg","Viktor","Sosiska","Igor","Churkha","Mikhail","Sergei","Alexander","Anatoly","Yuri","Boris","Gennady","Konstantin","Andrei","Vitaly","Vladislav","Stanislav","Yaroslav","Sergei","Dmitriy","Anton","Artem","Artur","Timur","Denis","Egor","Fedor","Kirill","Leonid","Nikita","Zhenya","Makumba","Popabava"}
+local gru_lastnames = {"Ivanov","Petrov","Sidorov","Kuznetsov","Smirnov","Popov","Putin","Bitchass","Vasiliev","Kapustin","Sosiskin","Zaitsev","Propka","Golubev","Churkhin","Sokolov","Prigozhin","Morozov","Novikov","Kozlov","Lebedev","Semenov","Egorov","Pavlov","Karpov","Nikitin","Mironov","Fedorov","Frolov","Aleksandrov","Vorobev","Stepanov","Gavrilov","Agafonov","Makarov","Kondratiev","Konovalov","Kuzmin","Ilin","Ponomarev","Melnikov","Bogdanov","Kulikov","Safonov","Zakharov","Aksenov","Golovin","Matveev","Nazarov","Markov","Rozhkov","Gusev","Sergeev","Borisov","Grigoriev","Pozharsky","Korolev","Shapovalov","Tarasov","Igorev","Dmitriev","Prokhorov","Vorontsov","Kolesnikov","Kupriyanov","Suvorov","Kudryavtsev","Zyablikov","Maltsev","Komarov","Solovyov","Vinogradov","Belyakov","Artemov","Mikhailov","Ponomarenko","Gorbatov","Krasnov","Belyaev","Rodionov","Malinin","Sorokin","Kazakov","Gorbachev","Davydov","Frolov","Bogomolov","Malakhov","Zinoviev","Zubkov","Vlasov","Lazarev","Novoselov","Kondratov","Vishnyakov","Tikhonov","Panin","Golosov","Belov","Zubarev","Nesterov","Khokhlov","Popobava"}
+local femname = {"Emma", "Olivia", "Ava", "Isabella", "Sophia", "Mia", "Charlotte", "Amelia", "Harper", "Evelyn","Abigail", "Emily", "Elizabeth", "Mila", "Ella", "Avery", "Sofia", "Camila", "Aria", "Scarlett","Victoria", "Madison", "Luna", "Grace", "Chloe", "Penelope", "Layla", "Riley", "Zoey", "Nora","Lily", "Eleanor", "Hannah", "Lillian", "Addison", "Aubrey", "Ellie", "Stella", "Natalie", "Zoe","Lucy", "Paisley", "Everly", "Anna", "Caroline", "Nova", "Genesis", "Emilia", "Kennedy", "Samantha","Maya", "Willow", "Kinsley", "Naomi", "Aaliyah", "Elena", "Sarah", "Ariana", "Allison", "Gabriella", "Leah", "Hazel", "Violet", "Aurora", "Savannah", "Audrey", "Brooklyn", "Bella", "Claire", "Skylar","Alice", "Madelyn", "Cora", "Ruby", "Eva", "Serenity", "Autumn", "Adeline", "Hailey", "Gianna","Valentina", "Isla", "Eliana", "Quinn", "Nevaeh", "Ivy", "Sadie", "Piper", "Lydia", "Alexa","Josephine", "Emery", "Julia", "Delilah", "Arianna", "Vivian", "Kaylee", "Sophie", "Brielle", "Madeline","Peyton", "Rylee", "Clara", "Hadley", "Melanie", "Mackenzie", "Reagan", "Adalynn", "Liliana", "Aubree","Jade", "Katherine", "Isabelle", "Natalia", "Raelynn", "Maria", "Athena", "Ximena", "Arya", "Leilani","Taylor", "Faith", "Rose", "Kylie", "Alexandra", "Mary", "Margaret", "Lyla", "Ashley", "Amaya","Eliza", "Brianna", "Bailey", "Andrea", "Khloe", "Jasmine", "Melody", "Iris", "Isabel", "Norah","Annabelle", "Valeria", "Emerson", "Adalyn", "Ryleigh", "Eden", "Emersyn", "Anastasia", "Kayla", "Alyssa","Juliana", "Charlie", "Esther", "Ariel", "Cecilia", "Valerie", "Alina", "Molly", "Reese", "Aliyah","Lilly", "Parker", "Finley", "Morgan", "Sydney", "Jordyn", "Eloise", "Trinity", "Daisy", "Kimberly","Lauren", "Genevieve", "Sara","Arabella", "Harmony", "Elise", "Remi", "Teagan", "Alexis", "London", "Sloane", "Laila", "Lucia","Diana", "Juliette", "Sienna", "Elliana", "Londyn", "Ayla", "Callie", "Gracie", "Josie", "Amara","Jocelyn", "Daniela", "Everleigh", "Mya", "Rachel", "Summer", "Tracy", "Alana", "Brooke", "Alaina", "Mckenzie","Catherine", "Amy", "Presley", "Journee", "Rosalie", "Ember", "Brynlee", "Rowan", "Joanna", "Paige","Rebecca", "Ana", "Sawyer", "Mariah", "Nicole", "Brooklynn", "Payton", "Marley", "Fiona", "Georgia","Lila", "Harley", "Adelyn", "Alivia", "Noelle", "Gemma", "Vanessa", "Journey", "Makayla", "Angelina","Adaline", "Catalina", "Alayna", "Julianna", "Leila", "Lola", "Adriana", "June", "Juliet", "Jayla","River", "Tessa", "Lia", "Dakota", "Delaney", "Selena", "Blakely", "Ada", "Camille", "Zara","Malia", "Hope", "Samara", "Vera", "Mckenna", "Briella", "Izabella", "Hayden", "Raegan", "Michelle","Angela", "Ruth", "Freya", "Kamila", "Vivienne", "Aspen", "Olive", "Kendall", "Elaina", "Thea","Kali", "Destiny", "Amiyah", "Evangeline", "Carmen", "Phoenix", "Elsie", "Evie", "Amina", "Giselle","Brynn", "Lilah", "Lucille", "Aniyah", "Charlie", "Harlow", "Lena", "Maci", "Annie", "Mariana","Mikayla", "Danna", "Kira", "Adelaide", "Alison", "Camryn", "Alessandra", "Raelyn", "Nyla", "Addilyn","Dylan", "Keira", "Allyson", "Haven", "Mallory", "Erin", "Lia", "Jazmine", "Miriam", "Evelynn","Anne", "Leslie", "Kaitlyn", "Emely", "Arielle", "Mira", "Briana", "Daphne", "Lilliana", "Myla","Penelope", "Kamryn", "Aubrie", "Jane", "Raelynn", "Talia", "Rylie", "Nina", "Kayleigh", "Luciana","Malia", "Scarlet", "Amanda", "Daniella", "Guadalupe", "Tatum", "Kyla", "Kaelyn", "Miranda", "Alivia","Annalise", "Skyler", "Kelsey", "Haley", "Lana", "Sabrina", "Mikaela","Celeste", "Ariella", "Alani", "Natasha", "Nadia", "Jane", "Bianca", "Katie", "Elisa", "Lacey","Cassandra", "Camilla", "Esmeralda", "Josephine", "Miracle", "Charlee", "Adelynn", "Laura", "Anaya", "Nayeli","Melany", "Sage", "Annabella", "Dayana", "Ariah", "Kenzie", "Stephanie", "Ivanna", "Aubriella", "Sarai","Megan", "Paislee", "Helen", "Blair", "Amirah", "Averie", "Demi", "Willa", "Jayleen", "Phoebe","Elle", "Lorelei", "Joselyn", "Malaysia", "Zuri", "Elsa", "Madisyn", "Anabelle", "Hattie", "Kara","Remington", "Charleigh", "Raven", "Jaelynn", "Sylvia", "Elyse", "Lainey", "Siena", "Braelynn", "Nylah","Lennon", "Lennox", "Renata", "Elisabeth", "Violeta", "Amia", "Armani", "Imani", "Kori", "Milani","Astrid", "Nalani", "Simone", "Rory", "Kiera", "Adelina", "Nola", "Savanna", "Alejandra", "Aitana","Kaia", "Sandra", "Jolie", "Katalina", "Eileen", "Nadia", "Lilianna", "Miah", "Tiana", "Zariah","Marilyn", "Rebekah", "Aurelia", "Zahra", "Haylee", "Amara", "Reyna", "Frankie", "Mabel", "Amayah","Meredith", "Elliot", "Kenna", "Alanna", "Maliyah", "Joelle", "Karter", "Alayah", "Anahi", "Crystal","Zoe", "Kalani", "Kallie", "Marlee", "Erika", "Amani", "Bristol", "Dulce", "Aileen", "Ariyah","Evie", "Dorothy", "Elora", "Joy", "Meghan", "Sutton", "Audrina", "Kyla", "Lilith", "Kadence","Cataleya", "Leona", "Lindsey", "Gloria", "Remy", "Chelsea", "Remi", "Lorelai", "Amelie", "Bethany","Zara", "Marie", "Blaire", "Lauryn", "Anika", "Cameron", "Colette", "Alicia", "April", "Julie","Savannah", "Xiomara", "Blakely", "Karina", "Reina", "Kensley", "Holly", "Rosemary", "Jemma", "Amalia","Kathleen", "Helena", "Hope", "Elisabet", "Marina", "Cassidy", "Briar", "Joyce", "Emelia", "Clarissa","Ezra", "Martha", "Sariah"}
+local femlast = {"Smith", "Johnson", "Jhones", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor","Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson","Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "Hernandez", "King","Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Gonzalez", "Nelson", "Carter","Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins","Stewart", "Sanchez", "Morris", "Rogers", "Reed", "Cook", "Morgan", "Bell", "Murphy", "Bailey","Cooper", "Richardson", "Cox", "Howard", "Ward", "Torres", "Peterson", "Gray", "Ramirez", "James","Watson", "Brooks", "Kelly", "Sanders", "Price", "Bennett", "Wood", "Barnes", "Ross", "Henderson","Coleman", "Jenkins", "Perry", "Powell", "Long", "Patterson", "Hughes", "Flores", "Washington", "Butler","Simmons", "Foster", "Gonzales", "Bryant", "Alexander", "Russell", "Griffin", "Diaz", "Hayes", "Myers","Ford", "Hamilton", "Graham", "Sullivan", "Wallace", "Woods", "Cole", "West", "Jordan", "Owens","Reynolds", "Fisher", "Ellis", "Harrison", "Gibson", "Mcdonald", "Cruz", "Marshall", "Ortiz", "Gomez","Murray", "Freeman", "Wells", "Webb", "Simpson", "Stevens", "Tucker", "Porter", "Hunter", "Hicks","Crawford", "Henry", "Boyd", "Mason", "Morales", "Kennedy", "Warren", "Dixon", "Ramos", "Reyes","Burns", "Gordon", "Shaw", "Holmes", "Rice", "Robertson", "Hunt", "Black", "Daniels", "Palmer","Mills", "Nichols", "Grant", "Knight", "Ferguson", "Rose", "Stone", "Hawkins", "Dunn", "Perkins","Hudson", "Spencer", "Gardner", "Stephens", "Payne", "Pierce", "Berry", "Matthews", "Arnold", "Wagner","Willis", "Ray", "Watkins", "Olson", "Carroll", "Duncan", "Snyder", "Hart", "Cunningham", "Bradley","Lane", "Andrews", "Ruiz", "Harper", "Fox", "Riley", "Armstrong"}
+local malename = {"Aiden", "Alexander", "Andrew", "Anthony", "Austin", "Benjamin", "Blake", "Brayden", "Caleb", "Cameron","Carter", "Charles", "Christopher", "Colton", "Connor", "Daniel", "David", "Dominic", "Dylan", "Elijah","Ethan", "Gabriel", "Gavin", "Henry", "Hunter", "Isaac", "Jack", "Jackson", "Jacob", "James","Jason", "Jayden", "Jeremiah", "John", "Jonathan", "Joseph", "Joshua", "Julian", "Justin", "Kevin","Landon", "Levi", "Liam", "Logan", "Lucas", "Luke", "Mason", "Matthew", "Michael", "Nathan","Nicholas", "Noah", "Oliver", "Oscar", "Owen", "Parker", "Ryan", "Samuel", "Sebastian", "Thomas","Tyler", "William", "Wyatt", "Aaron", "Adam", "Adrian", "Alan", "Albert", "Alex", "Alexandre","Alexis", "Alfred", "Ali", "Allen", "Alvin", "Andre", "Andres", "Angel", "Angelo", "Anthony","Antonio", "Armando", "Arnold", "Arthur", "Arturo", "Asher", "Austin", "Axel", "Barry", "Beau","Ben", "Benjamin", "Bernard", "Bill", "Billy", "Blake", "Bob", "Bobby", "Brad", "Bradley","Brady", "Brandon", "Braylon", "Brendan", "Brenden", "Brendon", "Brett", "Brian", "Bruce", "Bryce","Bryson", "Caleb", "Calvin", "Cameron", "Carl", "Carlos", "Carter", "Casey", "Cedric", "Chad","Charles", "Charlie", "Chase", "Chris", "Christian", "Christopher", "Clarence", "Clark", "Cody", "Colby","Cole", "Colin", "Collin", "Colton", "Conner", "Connor", "Cooper", "Corey", "Craig", "Cristian","Curtis", "Cyril", "Dale", "Dalton", "Damian", "Damien", "Damon", "Dan", "Daniel", "Danny","Dante", "Darius", "Darren", "Daryl", "Dave", "David", "Dean", "Dennis", "Derek", "Derrick","Desmond", "Devon", "Dexter", "Diego", "Dominic", "Don", "Donald", "Donovan", "Douglas", "Drake","Drew", "Duane", "Dustin", "Dwayne", "Dylan", "Eddie", "Edgar", "Edison", "Eduardo", "Edward","Edwin", "Eli", "Elias", "Elijah", "Elliot", "Elliott", "Ellis", "Elmer", "Elton", "Emerson","Emmanuel", "Eric", "Erik", "Ernest", "Eugene", "Evan", "Everett", "Fabian", "Fernando", "Finn", "Floyd", "Francis", "Frank","Franklin", "Fred", "Frederick", "Gabriel", "Garrett", "Gary", "Gavin", "George", "Gerald", "Gilbert","Giovanni", "Glen", "Glenn", "Gordon", "Graham", "Grant", "Gregory", "Guy", "Harold", "Harrison","Harry", "Harvey", "Hayden", "Heath", "Henry", "Herbert", "Herman", "Howard", "Hugh", "Hunter","Ian", "Isaac", "Isaiah", "Ivan", "Jack", "Jackson", "Jacob", "Jaden", "Jake", "James","Jamie", "Jamison", "Jared", "Jason", "Jasper", "Jay", "Jayden", "Jeff", "Jeffery", "Jeffrey","Jeremy", "Jerome", "Jerry", "Jesse", "Jesus", "Jim", "Jimmy", "Joe", "Joel", "John","Johnny", "Jonah", "Jonathan", "Jordan", "Jorge", "Jose", "Joseph", "Joshua", "Josiah", "Juan","Julian", "Julio", "Junior", "Justin", "Kai", "Kaleb", "Karl", "Keith", "Kelly", "Kelvin","Ken", "Kenneth", "Kenny", "Kent", "Kevin", "Kieran", "Kirk", "Kyle", "Lamar", "Lance","Landon", "Larry", "Lawrence", "Lee", "Leo", "Leon", "Leonard", "Leroy", "Leslie", "Levi","Lewis", "Liam", "Lionel", "Logan", "Lonnie", "Lorenzo", "Louis", "Lucas", "Luis", "Luke","Malachi", "Malcolm", "Manuel", "Marc", "Marcus", "Mario", "Mark", "Marshall", "Martin", "Mason","Mathew", "Matt", "Matthew", "Maurice", "Max", "Maxwell", "Mckenzie", "Melvin", "Michael", "Micheal","Mickey", "Miguel", "Mike", "Milton", "Mitchell", "Morgan", "Nathan", "Nathaniel", "Neil", "Nelson","Nicholas", "Nick", "Nicolas", "Noah", "Nolan", "Norman", "Oliver", "Omar", "Orlando", "Oscar","Owen", "Pablo", "Patrick", "Paul", "Pedro", "Perry", "Peter", "Philip", "Phillip", "Preston","Quentin", "Ralph", "Ramiro", "Ramon", "Randall", "Randy", "Ray", "Raymond", "Reece", "Reginald","Rene", "Reuben", "Rex", "Rhett", "Ricardo", "Richard", "Rick", "Ricky", "Riley", "Rob","Robbie", "Robert", "Roberto", "Robin", "Rocky", "Rod", "Rodney", "Rodolfo", "Roger", "Roland","Ron", "Ronald", "Ronnie", "Roosevelt", "Rory", "Ross", "Roy", "Ruben", "Rudy", "Russell","Ryan", "Sam", "Samuel", "Santiago", "Scott", "Sean", "Sebastian", "Seth", "Shane", "Shawn","Sidney", "Silas", "Simon", "Solomon", "Spencer", "Stanley", "Stefan", "Stephen", "Steve", "Steven","Stewart", "Stuart", "Sylvester", "Tanner", "Taylor", "Ted", "Terence", "Terrance", "Terrell", "Terry","Thaddeus", "Theodore", "Thomas", "Tim", "Timothy", "Toby", "Tom", "Tomas", "Tony", "Trace","Travis", "Trent", "Trevor", "Troy", "Tyler", "Tyrone", "Tyson", "Ulysses", "Van","Victor", "Vince", "Vincent", "Virgil", "Wade", "Walker", "Walter", "Warren", "Wayne", "Wesley","Weston", "Wilbur", "Will", "William", "Willie", "Willis", "Winston", "Wyatt", "Xavier", "Yahir","Zachariah", "Zachary", "Zack", "Zane", "Roman", "Cyox", "Suoh", "Uracos", "Shaky", "Saitama"}
 local malelast = {"Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor","Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Thompson", "Garcia", "Martinez", "Robinson","Clark", "Rodriguez", "Lewis", "Lee", "Walker", "Hall", "Allen", "Young", "Hernandez", "King","Wright", "Lopez", "Hill", "Scott", "Green", "Adams", "Baker", "Gonzalez", "Nelson", "Carter","Mitchell", "Perez", "Roberts", "Turner", "Phillips", "Campbell", "Parker", "Evans", "Edwards", "Collins","Stewart", "Sanchez", "Morris", "Rogers", "Reed", "Cook", "Morgan", "Bell", "Murphy", "Bailey","Rivera", "Cooper", "Richardson", "Cox", "Howard", "Ward", "Torres", "Peterson", "Gray", "Ramirez","James", "Watson", "Brooks", "Kelly", "Sanders", "Price", "Bennett", "Wood", "Barnes", "Ross","Henderson", "Coleman", "Jenkins", "Perry", "Powell", "Long", "Patterson", "Hughes", "Flores", "Washington","Butler", "Simmons", "Foster", "Gonzales", "Bryant", "Alexander", "Russell", "Griffin", "Diaz", "Hayes","Myers", "Ford", "Hamilton", "Graham", "Sullivan", "Wallace", "Woods", "Cole", "West", "Jordan","Owens", "Reynolds", "Fisher", "Ellis", "Harrison", "Gibson", "McDonald", "Cruz", "Marshall", "Ortiz","Gomez", "Murray", "Freeman", "Wells", "Webb", "Simpson", "Stevens", "Tucker", "Porter", "Hunter","Hicks", "Crawford", "Henry", "Boyd", "Mason", "Morales", "Kennedy", "Warren", "Dixon", "Ramos","Reyes", "Burns", "Gordon", "Shaw", "Holmes", "Rice", "Robertson", "Hunt", "Black", "Daniels","Palmer", "Mills", "Nichols", "Grant", "Knight", "Ferguson", "Rose", "Stone", "Hawkins", "Dunn","Perkins", "Hudson", "Spencer", "Gardner", "Stephens", "Payne", "Pierce", "Berry", "Matthews", "Arnold","Wagner", "Willis", "Ray", "Watkins", "Olson", "Carroll", "Duncan", "Snyder", "Hart", "Cunningham","Bradley", "Lane", "Andrews", "Ruiz", "Harper", "Fox", "Riley","Armstrong", "Carpenter", "Weaver", "Greene", "Lawrence", "Elliott", "Chavez", "Sims", "Austin", "Peters","Kelley", "Franklin", "Lawson", "Fields", "Gutierrez", "Ryan", "Schmidt", "Carr", "Vasquez", "Castillo","Wheeler", "Chapman", "Oliver", "Montgomery", "Richards", "Williamson", "Johnston", "Banks", "Meyer", "Bishop","McCoy", "Howell", "Alvarez", "Morrison", "Hansen", "Fernandez", "Garza", "Harvey", "Little", "Burton","Stanley", "Nguyen", "George", "Jacobs", "Reid", "Kim", "Fuller", "Lynch", "Dean", "Gilbert","Garrett", "Romero", "Welch", "Larson", "Frazier", "Burke", "Hanson", "Day", "Mendoza", "Moreno","Bowman", "Medina", "Fowler", "Brewer", "Hoffman", "Carlson", "Silva", "Pearson", "Holland", "Douglas","Fleming", "Jensen", "Vargas", "Byrd", "Davidson", "Hopkins", "May", "Terry", "Herrera", "Wade","Soto", "Walters", "Curtis", "Neal", "Caldwell", "Lowe", "Jennings", "Barnett", "Graves", "Jimenez","Horton", "Shelton", "Barrett", "Obrien", "Castro", "Sutton", "Gregory", "McKinney", "Lucas", "Miles","Craig", "Rodriquez", "Chambers", "Holt", "Lambert", "Fletcher", "Watts", "Bates", "Hale", "Rhodes","Pena", "Beck", "Newman", "Haynes", "McDaniel", "Mendez", "Bush", "Vaughn", "Parks", "Dawson","Santiago", "Norris", "Hardy", "Love", "Steele", "Curry", "Powers", "Schultz", "Barker", "Guzman","Page", "Munoz", "Ball", "Keller", "Chandler", "Weber", "Leonard", "Walsh", "Lyons", "Ramsey","Wolfe", "Schneider", "Mullins", "Benson", "Sharp", "Bowen", "Daniel", "Barber", "Cummings", "Hines","Baldwin", "Griffith", "Valdez", "Hubbard", "Salazar", "Reeves", "Warner", "Stevenson", "Burgess", "Santos","Tate", "Cross", "Garner", "Mann", "Mack", "Moss", "Thornton", "Dennis", "McGee", "Farmer","Delgado", "Aguilar", "Vega", "Glover", "Manning", "Cohen", "Harmon", "Rodgers", "Robbins", "Newton","Todd", "Blair", "Higgins","Ingram", "Reese", "Cannon", "Strickland", "Townsend", "Potter", "Goodwin", "Walton", "Rowe", "Hampton","Ortega", "Patton", "Swanson", "Joseph", "Francis", "Goodman", "Maldonado", "Yates", "Becker", "Erickson","Hodges", "Rios", "Conner", "Adkins", "Webster", "Norman", "Malone", "Hammond", "Flowers", "Cobb","Moody", "Quinn", "Blake", "Maxwell", "Pope", "Floyd", "Osborne", "Paul", "McCarthy", "Guerrero","Lindsey", "Estrada", "Sandoval", "Gibbs", "Tyler", "Gross", "Fuentes", "Flynn", "Barrera", "MacDonald","Everett", "Contreras", "Harrington", "Hess", "Henson", "Gallegos", "Hardin", "Blackwell", "Barr", "Livingston","Middleton", "Spears", "Branch", "Blevins", "Chen", "Kerr", "McConnell", "Hatfield", "Harding", "Ashley","Solis", "Herman", "Frost", "Giles", "Blackburn", "William", "Pennington", "Woodward", "Finley", "McIntosh","Koch", "Best", "Solomon", "McCullough", "Dudley", "Nolan", "Blanchard", "Rivas", "Brennan", "Mejia","Kane", "Benton", "Joyce", "Buckley", "Haley", "Valentine", "Maddox", "Russo", "McKnight", "Buck","Moon", "McMillan", "Crosby", "Berg", "Dotson", "Mays", "Roach", "Church", "Chan", "Richmond","Meadows", "Faulkner", "Oneill", "Knapp", "Kline", "Barry", "Ochoa", "Jacobson", "Gay", "Avery","Hendricks", "Horne", "Shepard", "Hebert", "Cherry", "Cardenas", "McIntyre", "Whitney", "Waller", "Holman","Donaldson", "Cantu", "Terrell", "Morin", "Gillespie", "Fuentes", "Tillman", "Sanford", "Bentley", "Peck","Key", "Salas", "Rollins", "Gamble", "Dickson", "Battle", "Santana", "Cabrera", "Cervantes", "Howe","Hinton", "Hurley", "Spence", "Zamora", "Yang", "McNeil", "Suarez", "Case", "Petty", "Gould","McFarland", "Sampson", "Carver", "Bray", "Rosario", "MacDonald", "Stout", "Hester", "Melendez", "Dillon","Farley", "Hopper", "Galloway", "Potts", "Bernard", "Joyner", "Stein", "Aguirre", "Osborn", "Mercer","Bender"}
 
 function mply:Namesurvivor(ply,body)
-	if !self:IsFemale() then
-	  local namesurvivormale = table.Random(malename)
-	  local namesurvivorlastmale = table.Random(malelast)
-	 self:SetNamesurvivor(namesurvivormale.." "..namesurvivorlastmale)
-  elseif
-	self:IsFemale() then
-	  local femnamesurv = table.Random(femname)
-	  local femnamesurvlast = table.Random(femlast)
-	 self:SetNamesurvivor(femnamesurv.." "..femnamesurvlast)
-  end
-  if self:GTeam() == TEAM_SPECIAL then
-	  local namesurvivorlastmale = table.Random(malelast)
-	  local femnamesurvlast = table.Random(femlast)
-	  if self:GetRoleName() == role.SCI_SPECIAL_HEALER then
-		  self:SetNamesurvivor("Matilda".." "..femnamesurvlast)
-	  end
-  if self:GetRoleName() == role.SCI_SPECIAL__SLOWER then
-		  self:SetNamesurvivor("Speedwone".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_DAMAGE then
-		  self:SetNamesurvivor("Kelen".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_VISION then
-		  self:SetNamesurvivor("Hedwig".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_MINE then
-		  self:SetNamesurvivor("Feelon".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_INVISIBLE then
-		  self:SetNamesurvivor("Ruprecht".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_SPEED then
-		  self:SetNamesurvivor("Lomao".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_SHIELD then
-		  self:SetNamesurvivor("Shieldmeh".." "..namesurvivorlastmale)
-	  end
-	  if self:GetRoleName() == role.SCI_SPECIAL_BOOSTER then
-		  self:SetNamesurvivor("Georg".." "..namesurvivorlastmale)
-	  end
-	  if self:GTeam() == TEAM_GRU then
-		self:SetNamesurvivor("Varus".." "..namesurvivorlastmale)
+	local namesurvivormale = table.Random(malename)
+	local namesurvivorlastmale = table.Random(malelast)
+	local femnamesurv = table.Random(femname)
+	local femnamesurvlast = table.Random(femlast)
+	self:SetNamesurvivor(namesurvivormale.." "..namesurvivorlastmale)
+
+	if self:IsFemale() then
+		self:SetNamesurvivor(femnamesurv.." "..femnamesurvlast)
 	end
-  end
+	if self:GetRoleName() == role.SCI_SPECIAL_HEALER then
+		self:SetNamesurvivor("Matilda".." "..femnamesurvlast)
+	end
+    if self:GetRoleName() == role.SCI_SPECIAL__SLOWER then
+		self:SetNamesurvivor("Speedwone".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_DAMAGE then
+		self:SetNamesurvivor("Kelen".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_VISION then
+		self:SetNamesurvivor("Hedwig".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_MINE then
+		self:SetNamesurvivor("Feelon".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_INVISIBLE then
+		self:SetNamesurvivor("Ruprecht".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_SPEED then
+		self:SetNamesurvivor("Lomao".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_SHIELD then
+		self:SetNamesurvivor("Shieldmeh".." "..namesurvivorlastmale)
+	end
+	if self:GetRoleName() == role.SCI_SPECIAL_BOOSTER then
+		self:SetNamesurvivor("Georg".." "..namesurvivorlastmale)
+	end
+	if self:GTeam() == TEAM_GRU then
+		self:SetNamesurvivor(table.Random(gru_names).." "..table.Random(gru_lastnames))
+	end
 end
 
 function mply:ClearBodyGroups(ply, ent)
@@ -172,73 +176,83 @@ function mply:UnUseHat()
 end
 
 
-function mply:GhostBoneMerge(ply, ent, model, skin)
-    local ent = ents.Create("ent_bonemerged")
-    ent:SetModel(model)
-	ent:Spawn()
-	ent:SetOwner( ply )
-    ent:SetParent( ply )
-	ent:SetLocalPos( vector_origin )
-    ent:SetLocalAngles( angle_zero )
-    ent:SetMoveType( MOVETYPE_NONE )
-    ent:AddEffects( EF_BONEMERGE )
-    ent:AddEffects( EF_BONEMERGE_FASTCULL )
-    ent:AddEffects( EF_PARENT_ANIMATES )
-	ent:DrawShadow( true )
-    if ( !ent.BoneMergedEnts ) then
-        ent.BoneMergedEnts = {}
-    end
-    ent.BoneMergedEnts[ #ent.BoneMergedEnts + 1 ] = ent
-	return ent
-end
+function GhostBoneMerge( entity, model, no_draw, skin )
+	local bnmrg = ents.Create("ent_bonemerged")
+	entity.bonemerge_ent = bnmrg
+	entity.bonemerge_ent:SetModel( model )
+	entity.bonemerge_ent:SetSkin( entity:GetSkin() )
+	entity.bonemerge_ent:Spawn()
+	entity.bonemerge_ent:SetParent( entity, 0 )
+	entity.bonemerge_ent:SetLocalPos( vector_origin )
+	entity.bonemerge_ent:SetLocalAngles( angle_zero )
+	entity.bonemerge_ent:AddEffects( EF_BONEMERGE )
+	entity.bonemerge_ent:AddEffects( EF_NOSHADOW )
+	entity.bonemerge_ent:AddEffects( EF_NORECEIVESHADOW )
 
-function mply:Bonemerge(model, ply)
-    local bnmrg = ents.Create("ent_bonemerged")
-	ply.bonemerge_ent = bnmrg
-    bnmrg:SetModel(model)
-	bnmrg:Spawn()
-	bnmrg:SetOwner( ply )
-    bnmrg:SetParent( ply )
-	bnmrg:SetLocalPos( vector_origin )
-    bnmrg:SetLocalAngles( angle_zero )
-    bnmrg:SetMoveType( MOVETYPE_NONE )
-    bnmrg:AddEffects( EF_BONEMERGE )
-    bnmrg:AddEffects( EF_BONEMERGE_FASTCULL )
-    bnmrg:AddEffects( EF_PARENT_ANIMATES )
-	if ( !ply.BoneMergedEnts ) then
-		ply.BoneMergedEnts = {}
+	if ( skin ) then
+		entity.bonemerge_ent:SetSkin( skin )
 	end
-    ply.BoneMergedEnts[ #ply.BoneMergedEnts + 1 ] = ply.bnmrg
+
+	if ( !entity.BoneMergedEnts ) then
+		entity.BoneMergedEnts = {}
+	end
+
+	if ( no_draw ) then
+		entity.no_draw = true
+	end
+
 	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
-		ply.HeadEnt = ply.bonemerge_ent
-		if ( ply.Sub_Material ) then
+		entity.HeadEnt = entity.bonemerge_ent
+		if ( entity.Sub_Material ) then
 			local sub_material_id = 0
 			if ( sub_material_corrupted_models[ model ] ) then
 				sub_material_id = 1
 			end
-			ply.bonemerge_ent:SetSubMaterial( sub_material_id, ply.Sub_Material )
+			entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
 		end
 	end
+
+	if ( no_draw ) then
+		entity.bonemerge_ent.no_draw = no_draw
+	end
+
+	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent
+
 	return bnmrg
 end
 
-function Bonemerge(model, ply)
-    local ent = ents.Create("ent_bonemerged")
-    ent:SetModel(model)
-	ent:Spawn()
-	ent:SetOwner( ply )
-    ent:SetParent( ply )
-	ent:SetLocalPos( vector_origin )
-    ent:SetLocalAngles( angle_zero )
-    ent:SetMoveType( MOVETYPE_NONE )
-    ent:AddEffects( EF_BONEMERGE )
-    ent:AddEffects( EF_BONEMERGE_FASTCULL )
-    ent:AddEffects( EF_PARENT_ANIMATES )
-    if ( !ent.BoneMergedEnts ) then
-        ent.BoneMergedEnts = {}
-    end
-    ent.BoneMergedEnts[ #ent.BoneMergedEnts + 1 ] = ent
-	return ent
+function Bonemerge(model, entity, skin)
+    local bnmrg = ents.Create("ent_bonemerged")
+	entity.bonemerge_ent = bnmrg
+    entity.bonemerge_ent:SetModel(model)
+	entity.bonemerge_ent:Spawn()
+	entity.bonemerge_ent:SetOwner( entity )
+    entity.bonemerge_ent:SetParent( entity )
+	entity.bonemerge_ent:SetLocalPos( vector_origin )
+    entity.bonemerge_ent:SetLocalAngles( angle_zero )
+    entity.bonemerge_ent:SetMoveType( MOVETYPE_NONE )
+    entity.bonemerge_ent:AddEffects( EF_BONEMERGE )
+    entity.bonemerge_ent:AddEffects( EF_BONEMERGE_FASTCULL )
+    entity.bonemerge_ent:AddEffects( EF_PARENT_ANIMATES )
+	if ( skin ) then
+		entity.bonemerge_ent:SetSkin( skin )
+	end
+	if ( !entity.BoneMergedEnts ) then
+		entity.BoneMergedEnts = {}
+	end
+
+	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
+		entity.HeadEnt = entity.bonemerge_ent
+		if ( entity.Sub_Material ) then
+			local sub_material_id = 0
+			if ( sub_material_corrupted_models[ model ] ) then
+				sub_material_id = 1
+			end
+			entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
+		end
+	end
+	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent
+	return bnmrg
 end
 
 function mply:PrintTranslatedMessage( string )
@@ -436,8 +450,8 @@ function mply:SetupCISpy()
 	timer.Simple(0.1, function()
 	self:SetBodygroup(3,7)
 	self:SetBodygroup(4,1)
-	self:Bonemerge("models/cultist/heads/male/male_head_"..math.random(1,210)..".mdl",self)
-	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
+	Bonemerge(PickHeadModel(),self)
+	Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( pvtci ) do
 	self:Give( v ) 
@@ -452,8 +466,8 @@ function mply:SetupCISpy()
 	self:SetBodygroup(3,4)
 	self:SetBodygroup(5,2)
 	timer.Simple(0.1, function()
-	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
-	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
+	Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
+	Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
 	end)
 	self:StripWeapons()
 	for k, v in pairs( oficerci ) do
@@ -468,8 +482,8 @@ function mply:SetupCISpy()
 	timer.Simple(0.1, function()
 	self:SetBodygroup(3,5)
 	self:SetBodygroup(5,1)
-	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
-	self:Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
+	Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
+	Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
 	self:StripWeapons()
 	for k, v in pairs( specici ) do
 	self:Give( v ) 
@@ -503,20 +517,20 @@ function mply:PickupAppearance(role)
 	end
 	if role.usehead then
 		if !self:IsFemale() then
-		self:Bonemerge(PickHeadModel(),self)
+			Bonemerge(PickHeadModel(),self)
 		else
-			self:Bonemerge(PickHeadModel(nil,true),self)
+			Bonemerge(PickHeadModel(nil,true),self)
 		end
 	end
 	if role.hackerhat then
-		self:Bonemerge(role.hackerhat, self)
+		Bonemerge(role.hackerhat, self)
 	end
 	if role.skin then self:SetSkin(role.skin) end
-	if role.head and (finalselfmodel != role.fmodels) then self:Bonemerge(role.head, self) end
-	if role.hair and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hair), self) end
-	if role.hairm and (finalselfmodel != role.fmodels) then self:Bonemerge(table.Random(role.hairm), self) end
-	if role.hairf and (finalselfmodel == role.fmodels) then self:Bonemerge(table.Random(role.hairf), self) end
-	if role.headgear then self:Bonemerge(role.headgear, self) end
+	if role.head and (finalselfmodel != role.fmodels) then if (istable(role.head)) then return Bonemerge(table.Random(role.head), self) end Bonemerge(role.head, self) end
+	if role.hair and (finalselfmodel != role.fmodels) then Bonemerge(table.Random(role.hair), self) end
+	if role.hairm and (finalselfmodel != role.fmodels) then Bonemerge(table.Random(role.hairm), self) end
+	if role.hairf and (finalselfmodel == role.fmodels) then Bonemerge(table.Random(role.hairf), self) end
+	if role.headgear then Bonemerge(role.headgear, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
 	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
@@ -558,7 +572,6 @@ function mply:SetRoleStats(role)
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
 	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.maxslots then self:SetMaxSlots(role.maxslots) end
-	if self:GetRoleName(role.ClassD_Fast) then print("ednfda") end
 end
 
 function mply:ApplyRoleStats(role)
@@ -578,6 +591,7 @@ function mply:ApplyRoleStats(role)
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)
+	if self:GetRoleName() == "Class-D Fast" then self:SetRunSpeed(231) end
 	self:SetupHands()
 end
 
