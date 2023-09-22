@@ -6,168 +6,11 @@ MAP_LOADED = MAP_LOADED or false
 util.AddNetworkString("bettersendlua")
 
 function BREACH.Round_System_Start()
-	for k,v in pairs(ents.FindByClass("prop_door_rotating")) do
-		v:AddEFlags(8192)
-		v:SetKeyValue("returndelay", "5")
-		v:SetKeyValue("wait", "1")
-	end
-	for k,v in pairs(ents.FindByClass("func_door_rotating")) do
-		v:AddEFlags(8192)
-		v:SetKeyValue("returndelay", "5")
-		v:SetKeyValue("wait", "1")
-	end
-	for k,v in pairs(ents.FindByClass("func_door")) do
-		v:AddEFlags(8192)
-		v:SetKeyValue("returndelay", "5")
-		v:SetKeyValue("wait", "1")
-	end
-   BREACH.Round_System_Doors_Work()
-   BREACH.Round_System_Announcer()
-		  --timer.Create("RandAnnouncerKrivota", 135, 0, PlayRandomAnnouncer)
-		  timer.Create( "lc_15_s", 180, 1, function()
-			  for k,v in pairs(player.GetAll()) do
-				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_15min", Color(255, 255, 255))
-			  end
-			  PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_15_b.mp3" )
-		  end)
-	  
-		  timer.Create( "lc_12_s", 360, 1, function()
-			  for k,v in pairs(player.GetAll()) do
-				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:decont_1min", Color(255, 255, 255))
-			  end
-			  BREACH.Decontamination = true
-			  timer.Remove("RandomAnnouncer")
-			  PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_1_min.ogg" )
-			  BroadcastPlayMusic("sound/no_music/light_zone/light_zone_decontamination.ogg", 2)
-		  end )
-	  
-		  timer.Create( "lc_11:15_s", 375, 1, function()
-			  PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_countdown.ogg" )
-		  end )
-	  
-		  timer.Create( "lc_11_s", 420, 1, function()
-			  PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_ending.ogg" )
-		  end )
-	  
-		  timer.Create( "lc_10_s", 480, 1, function()
-			  for k,v in pairs(player.GetAll()) do
-				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_10min", Color(255, 255, 255))
-			  end
-			  PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_10_b.mp3" )
-		  end )
-	  
-		  timer.Create( "lc_5_s", 780, 1, function()
-			  for k,v in pairs(player.GetAll()) do
-				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
-			  end
-			  PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
-		  end )
-	  
-		  timer.Create( "lc_3_15_s", 885, 1, function(ply)
-			  SetGlobalBool("Evacuation", true)
-			  BREACH.Evacuation = true
-			  local songevac = "sound/no_music/evacuation_"..math.random(1,6)..".ogg"
-			  BroadcastPlayMusic(songevac, 0)
-			  for k,v in pairs(player.GetAll()) do
-				  v:RXSENDNotify("l:evac_start_leave_immediately")
-			  end
-			  PlayAnnouncer( "nextoren/round_sounds/intercom/start_evac.ogg" )
-		  end )
-	  
-		  timer.Create( "lc_2_10_s", 955, 1, function()
-			SetGlobalBool("Evacuation_HUD", true )
-			  for k,v in pairs(player.GetAll()) do
-				  v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
-			  end
-			  BroadcastPlayMusic("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
-		  end )
-	  
-		  LockKPPDoors()
-	  
- 
-
-	  timer.Create( "lc_15_sv_scp_open_door", 180, 1, function()
-		  OpenSCPDoors()
-		  UnlockKPPDoors()
-	  end)
-	  
-	  timer.Create( "lc_11_open_kpp_15_siren", 365, 1, function()
-		  SPAWN_ALARM_1 = {Vector(9634.434570,-626.971497,196.748062)}
-		  SPAWN_ALARM_2 = {Vector(8159.033691,-1593.655762,206.421295)}
-		  SPAWN_ALARM_3 = {Vector(7455.475586,-1095.210327,94.144287)}
-		  SPAWN_ALARM_4 = {Vector(6881.367188,-1601.432983,159.702118)}
-		  SPAWN_ALARM_5 = {Vector(4764.329102,-2223.142334,168.979858)}
-		  for k,v in pairs(SPAWN_ALARM_1) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_2) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_3) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_4) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-		  for k,v in pairs(SPAWN_ALARM_5) do
-			  local ent = ents.Create("br_alarm")
-			  if IsValid( ent ) then
-				  ent:Spawn()
-				  ent:SetPos( v )
-				  WakeEntity(ent)
-			  end
-		  end
-	  end)
-	  
-	  
-  
-	  timer.Create( "spawnsupport_12_11", 360, 1, function()
-	  
-		SupportSpawn()
-	  
-	  end )
-	  
-	  timer.Create( "spawnsupport_9_8", 540, 1, function()
-	  
-		SupportSpawn()
-	  
-	  end )
-	  
-	  
-	  
-	  timer.Create( "lc_2_10_s_sv", 955, 1, function()
-	  
-		  local heli = ents.Create( "heli" )
-		  heli:Spawn()
-	  
-		  local btr = ents.Create( "apc" )
-		  btr:Spawn()
-	  
-		  local portal = ents.Create( "portal" )
-		  portal:Spawn()
-	  
-	  end)
-	  
+   LockKPPDoors()  
+   local ent = ents.Create("esc_vse")
+   ent:Create()
+   local ent = ents.Create("entity_goc_nuke")
+   ent:Create()
 end
 
 function UnlockKPPDoors()
@@ -451,200 +294,12 @@ end
   end
 
 
-function BREACH.Round_System_Stop()
-	timer.Remove( "lc_15_sv_scp_open_door" )
-	timer.Remove( "lc_2_10_s_sv" )
-	timer.Remove( "lc_11_open_kpp_15_s" )
-	timer.Remove("lc_11_open_kpp_15_siren")
-	timer.Remove( "lc_11_s_close" )
-	timer.Remove( "spawnsupport_12_11" )
-	timer.Remove( "spawnsupport_9_8" )
-	timer.Remove( "mog_door_open" )
-	timer.Remove( "sb_door_open" )
-	timer.Remove( "lc_15_s" )
-	timer.Remove( "lc_12_s" )
-	timer.Remove( "lc_11:30_s" )
-	timer.Remove( "lc_11_s" )
-	timer.Remove( "lc_10_s" )
-	timer.Remove( "lc_5_s" )
-	timer.Remove( "lc_3_15_s" )
-	timer.Remove( "lc_2_10_s" )
-end
 
-function BREACH.Round_System_Announcer()
-	timer.Create("RandomAnnouncer",math.random(46,53),math.random(5,7), function()
-	PlayAnnouncer("nextoren/round_sounds/intercom/"..math.random(1,19)..".ogg")
-    end)
-end
-
-function BREACH.Round_System_Doors_Work()
-	timer.Create( "mog_door_open", 80, 1, function()
-	  
-		for k,ball in pairs(ents.FindInSphere((Vector(-1065, 5475, 50)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-		for k,ball in pairs(ents.FindInSphere((Vector(-1851, 5388, 76)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-		for k,ball in pairs(ents.FindInSphere((Vector(-2147, 5706, 58)), 50)) do
-		if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
-		end
-		end
-
-end)
-
-	timer.Create( "sb_door_open", 100, 1, function()
-		for k,ball in pairs(ents.FindInSphere((Vector(9871, -1514, 68)), 130)) do
-		  if IsValid(ball) then
-			  sound.Play( "nextoren/others/button_unlocked.wav", Vector(9904, -1515, 65) )
-			  ball:Fire("Unlock")
-		  end
-		end
-	end)
-	timer.Create( "lc_11_open_kpp_15_s", 375, 1, function()
-		for k,ball in pairs(ents.FindInSphere((Vector(6814.729004,-1500.390869,47.581661)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(6940.698730,-1507.052856,48.999638)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(4670.674805,-2282.512939,32.469719)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(4677.037109,-2162.483154,42.032181)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(7433.421875,-1038.272339,45.807270)), 7)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(8222.139648,-1503.899536,46.854462)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(8094.794922,-1505.333618,44.055702)), 5)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(9703.193359,-534.726257,43.113960)), 50)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(9560.303711,-537.061890,42.100170)), 100)) do
-		  if IsValid(ball) then
-			  if ball:GetClass() == "func_door" then ball:Fire("open") end
-			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
-		  end
-		end
-	end )
-	timer.Create( "lc_11_s_close", 420, 1, function()
-		for k,v in pairs(ents.FindByClass("br_alarm")) do
-			v:Remove()
-		end
-		local lzgas = ents.Create( "lz_gas" )
-		lzgas:Spawn()
-		local lzgaz = ents.Create( "lz_gaz" )
-		lzgaz:Spawn()
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(6814.729004,-1500.390869,47.581661)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(6940.698730,-1507.052856,48.999638)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(4670.674805,-2282.512939,32.469719)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(4677.037109,-2162.483154,42.032181)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(7433.421875,-1038.272339,45.807270)), 7)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(8222.139648,-1503.899536,46.854462)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(8094.794922,-1505.333618,44.055702)), 5)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(9703.193359,-534.726257,43.113960)), 50)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	
-		for k,ball in pairs(ents.FindInSphere((Vector(9560.303711,-537.061890,42.100170)), 100)) do
-		  if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
-			  if ball:GetClass() == "func_door" then ball:Fire("close") end
-		  end
-		end
-	end )
-end
+--function BREACH.Round_System_Announcer()
+	--timer.Create("RandomAnnouncer",math.random(46,53),math.random(5,7), function()
+	--PlayAnnouncer("nextoren/round_sounds/intercom/"..math.random(1,19)..".ogg")
+   -- end)
+--end
 
 function BREACH.Round_Open_Dblock()
 
@@ -672,10 +327,23 @@ function RestartGame()
 end
 
 function CleanUp()
-	BREACH.Round_System_Stop()
+	a_1 = false
+	b_1 = false
+	c_1 = false
+	d_1 = false
+	e_1 = false
+	f_1 = false
+	g_1 = false
+	j_1 = false
+	t_1 = false
+	n_1 = false
+	k_1 = false
+	p_1 = false
+	r_1 = false
+	reset_sup_lim()
 	timer.Remove("PreparingTime")
 	timer.Remove("RoundTime")
-	timer.Remove("PostTime")
+	--timer.Remove("PostTime")
 	timer.Remove("GateOpen")
 	timer.Remove("PlayerInfo")
 	timer.Remove("NTFEnterTime")
@@ -793,7 +461,7 @@ function RoundRestart()
 	net.Broadcast()
 	UseAll()
 	DestroyAll()
-	timer.Destroy("PostTime") -----?????
+	--timer.Destroy("PostTime") -----?????
 	hook.Run( "BreachPreround" )
 	timer.Create("PreparingTime", GetPrepTime(), 1, function()
 		for k,v in pairs(player.GetAll()) do
@@ -819,18 +487,18 @@ function RoundRestart()
 			net.Start("SendRoundInfo")
 				net.WriteTable(roundstats)
 			net.Broadcast()		
-			net.Start("PostStart")
-				net.WriteInt(GetPostTime(), 6)
-				net.WriteInt(1, 4)
-			net.Broadcast()	
+			--net.Start("PostStart")
+				--net.WriteInt(GetPostTime(), 6)
+			--	net.WriteInt(1, 4)
+			--net.Broadcast()	
 			print( "data broadcast: good" )
 			roundEnd = 0
 			timer.Destroy("PunishEnd")
 			hook.Run( "BreachPostround" )
-			timer.Create("PostTime", GetPostTime(), 1, function()
+			--timer.Create("PostTime", GetPostTime(), 1, function()
 				print( "restarting round" )
 				RoundRestart()
-			end)		
+			--end)		
 		end)
 	end)
 end
@@ -948,33 +616,33 @@ function WinCheck()
 			net.WriteTable(roundstats)
 		net.Broadcast()
 		
-		net.Start("PostStart")
-			net.WriteInt(GetPostTime(), 6)
-			net.WriteInt(2, 4)
-		net.Broadcast()
+		--net.Start("PostStart")
+			--net.WriteInt(GetPostTime(), 6)
+			--net.WriteInt(2, 4)
+		--net.Broadcast()
 		activeRound.postround()	
 		GiveExp()
 		endround = false
 		hook.Run( "BreachPostround" )
-		timer.Create("PostTime", GetPostTime(), 1, function()
+--		timer.Create("PostTime", GetPostTime(), 1, function()
 			RoundRestart()
-		end)
+--		end)
 	end
 end
 
 function StopRound()
 	timer.Stop("PreparingTime")
 	timer.Stop("RoundTime")
-	timer.Stop("PostTime")
+	--timer.Stop("PostTime")
 	timer.Stop("GateOpen")
 	timer.Stop("PlayerInfo")
 end
 
-timer.Create("WinCheckTimer", 5, 0, function()
-	if postround == false and preparing == false then
-		WinCheck()
-	end
-end)
+--timer.Create("WinCheckTimer", 5, 0, function()
+	--if postround == false and preparing == false then
+		--WinCheck()
+	--end
+--end)
 
 timer.Create("EXPTimer", 180, 0, function()
 	for k,v in pairs(player.GetAll()) do

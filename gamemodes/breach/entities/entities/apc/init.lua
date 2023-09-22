@@ -116,8 +116,8 @@ function ENT:Initialize()
 	  		end
 		end
 		for k,v in pairs(ents.FindInSphere(Vector(2666, 6915, 1576), 400)) do
-		evacuate(v,TEAM_CLASSD,1000)
-		evacuate(v,TEAM_CHAOS,1000)
+		evacuate(v,TEAM_CLASSD,1000,"l:cutscene_evac_by_ci")
+		evacuate(v,TEAM_CHAOS,1000,"l:cutscene_evac_by_ci")
 		end
 	end)
 	timer.Create( "2_phase", 145, 1, function()

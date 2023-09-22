@@ -1311,13 +1311,33 @@ function DARK()
     BroadcastLua('RunConsoleCommand("mat_specular", 0)')
 end
 
-function evacuate(personal, roles_for_evac, give_score)
+function evacuate(personal, roles_for_evac, give_score, desc)
 	if personal:IsPlayer() == true then
 	if personal:Alive() == false then return end
-	if personal:GTeam() != TEAM_SPEC then
-		if personal:GTeam() == roles_for_evac then
+		personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+		if roles_for_evac != "vse" then
+			if personal:GTeam() != TEAM_SPEC then
+				if personal:GTeam() == roles_for_evac then
+					local exptoget = give_score
+					net.Start("OnEscaped")
+					net.WriteString(desc)
+					net.Send(personal)
+					personal:AddFrags(5)
+					personal:AddExp(exptoget, true)
+					personal:GodEnable()
+					personal:Freeze(true)
+					personal.canblink = false
+					personal.isescaping = true
+					personal:Freeze(false)
+					personal:GodDisable()
+					personal:SetSpectator()
+					personal.isescaping = false
+				end
+			end
+		else
 			local exptoget = give_score
 			net.Start("OnEscaped")
+			net.WriteString(desc)
 			net.Send(personal)
 			personal:AddFrags(5)
 			personal:AddExp(exptoget, true)
@@ -1331,5 +1351,370 @@ function evacuate(personal, roles_for_evac, give_score)
 			personal.isescaping = false
 		end
 	end
-	end
 end
+
+hook.Add( "Think", "mini_round_sus", function()
+
+	if timer.Exists("RoundTime") then
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 710 and a_1 == false then
+		timer.Create("RandomAnnouncer",math.random(46,53),math.random(5,7), function()
+		PlayAnnouncer("nextoren/round_sounds/intercom/"..math.random(1,19)..".ogg")
+    	end)
+		for k,ball in pairs(ents.FindInSphere((Vector(-1065, 5475, 50)), 50)) do
+		if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
+		end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(-1851, 5388, 76)), 50)) do
+		if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
+		end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(-2147, 5706, 58)), 50)) do
+		if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("Unlock") end
+		end
+		end
+
+
+		a_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 690 and b_1 == false then
+		for k,ball in pairs(ents.FindInSphere((Vector(9871, -1514, 68)), 130)) do
+		  if IsValid(ball) then
+			  sound.Play( "nextoren/others/button_unlocked.wav", Vector(9904, -1515, 65) )
+			  ball:Fire("Unlock")
+		  end
+		end
+
+		b_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 600 and c_1 == false then
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_10min", Color(255, 255, 255))
+		end
+			PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_10_b.mp3" )
+		c_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 500 and d_1 == false then
+		SupportSpawn()
+		d_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 480 and e_1 == false then
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:decont_1min", Color(255, 255, 255))
+		end
+		timer.Remove("RandomAnnouncer")
+		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_1_min.ogg" )
+		BroadcastPlayMusic("sound/no_music/light_zone/light_zone_decontamination.ogg", 2)
+		OpenSCPDoors()
+		UnlockKPPDoors()
+		e_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 465 and f_1 == false then
+		for k,ball in pairs(ents.FindInSphere((Vector(6880, -1500, 74)), 100)) do
+			if IsValid(ball) then
+				if ball:GetClass() == "func_door" then ball:Fire("open") end
+			end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(4673, -2223, 70)), 100)) do
+			if IsValid(ball) then
+				if ball:GetClass() == "func_door" then ball:Fire("open") end
+			end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(7433,-1039,70)), 100)) do
+			if IsValid(ball) then
+				if ball:GetClass() == "func_door" then ball:Fire("open") end
+			end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(8165, -1518, 67)), 100)) do
+			if IsValid(ball) then
+				if ball:GetClass() == "func_door" then ball:Fire("open") end
+			end
+		end
+
+		for k,ball in pairs(ents.FindInSphere((Vector(9641, -538, 84)), 100)) do
+			if IsValid(ball) then
+				if ball:GetClass() == "func_door" then ball:Fire("open") end
+			end
+		end
+		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_countdown.ogg" )
+		  SPAWN_ALARM_1 = {Vector(9634.434570,-626.971497,196.748062)}
+		  SPAWN_ALARM_2 = {Vector(8159.033691,-1593.655762,206.421295)}
+		  SPAWN_ALARM_3 = {Vector(7455.475586,-1095.210327,94.144287)}
+		  SPAWN_ALARM_4 = {Vector(6881.367188,-1601.432983,159.702118)}
+		  SPAWN_ALARM_5 = {Vector(4764.329102,-2223.142334,168.979858)}
+		  for k,v in pairs(SPAWN_ALARM_1) do
+			  local ent = ents.Create("br_alarm")
+			  if IsValid( ent ) then
+				  ent:Spawn()
+				  ent:SetPos( v )
+				  WakeEntity(ent)
+			  end
+		  end
+		  for k,v in pairs(SPAWN_ALARM_2) do
+			  local ent = ents.Create("br_alarm")
+			  if IsValid( ent ) then
+				  ent:Spawn()
+				  ent:SetPos( v )
+				  WakeEntity(ent)
+			  end
+		  end
+		  for k,v in pairs(SPAWN_ALARM_3) do
+			  local ent = ents.Create("br_alarm")
+			  if IsValid( ent ) then
+				  ent:Spawn()
+				  ent:SetPos( v )
+				  WakeEntity(ent)
+			  end
+		  end
+		  for k,v in pairs(SPAWN_ALARM_4) do
+			  local ent = ents.Create("br_alarm")
+			  if IsValid( ent ) then
+				  ent:Spawn()
+				  ent:SetPos( v )
+				  WakeEntity(ent)
+			  end
+		  end
+		  for k,v in pairs(SPAWN_ALARM_5) do
+			  local ent = ents.Create("br_alarm")
+			  if IsValid( ent ) then
+				  ent:Spawn()
+				  ent:SetPos( v )
+				  WakeEntity(ent)
+			  end
+		  end
+		f_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 650 and g_1 == false then
+		for k,ball in pairs(ents.FindInSphere((Vector(6814.729004,-1500.390869,47.581661)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(6940.698730,-1507.052856,48.999638)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(4670.674805,-2282.512939,32.469719)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(4677.037109,-2162.483154,42.032181)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(7433.421875,-1038.272339,45.807270)), 7)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(8222.139648,-1503.899536,46.854462)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(8094.794922,-1505.333618,44.055702)), 5)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(9703.193359,-534.726257,43.113960)), 50)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(9560.303711,-537.061890,42.100170)), 100)) do
+		  if IsValid(ball) then
+			  if ball:GetClass() == "func_door" then ball:Fire("open") end
+			  if ball:GetClass() == "func_door" then ball:Fire("lock") end
+		  end
+		end
+
+		g_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 420 and j_1 == false then
+		PlayAnnouncer( "nextoren/round_sounds/lhz_decont/decont_ending.ogg" )
+		for k,v in pairs(ents.FindByClass("br_alarm")) do
+			v:Remove()
+		end
+		local lzgas = ents.Create( "lz_gaz" )
+		lzgas:Spawn()
+
+			for k,ball in pairs(ents.FindInSphere((Vector(6880, -1500, 74)), 100)) do
+				if IsValid(ball) then
+					if ball:GetClass() == "func_door" then ball:Fire("close") end
+				end
+			end
+
+			for k,ball in pairs(ents.FindInSphere((Vector(4673, -2223, 70)), 100)) do
+				if IsValid(ball) then
+					if ball:GetClass() == "func_door" then ball:Fire("close") end
+				end
+			end
+
+			for k,ball in pairs(ents.FindInSphere((Vector(7433,-1039,70)), 100)) do
+				if IsValid(ball) then
+					if ball:GetClass() == "func_door" then ball:Fire("close") end
+				end
+			end
+
+			for k,ball in pairs(ents.FindInSphere((Vector(8165, -1518, 67)), 100)) do
+				if IsValid(ball) then
+					if ball:GetClass() == "func_door" then ball:Fire("close") end
+				end
+			end
+
+			for k,ball in pairs(ents.FindInSphere((Vector(9641, -538, 84)), 120)) do
+				if IsValid(ball) then
+					if ball:GetClass() == "func_door" then ball:Fire("close") end
+				end
+			end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(6814.729004,-1500.390869,47.581661)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(6940.698730,-1507.052856,48.999638)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(4670.674805,-2282.512939,32.469719)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(4677.037109,-2162.483154,42.032181)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(7433.421875,-1038.272339,45.807270)), 7)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(8222.139648,-1503.899536,46.854462)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(8094.794922,-1505.333618,44.055702)), 5)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(9703.193359,-534.726257,43.113960)), 50)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+	
+		for k,ball in pairs(ents.FindInSphere((Vector(9560.303711,-537.061890,42.100170)), 100)) do
+		  if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("unlock") end
+			  if ball:GetClass() == "func_door" then ball:Fire("close") end
+		  end
+		end
+
+		j_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 300 and t_1 == false then
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
+		end
+			PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
+		t_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 189 and r_1 == false then
+
+		print("пенис")
+
+		local songevac = "sound/no_music/evacuation_"..math.random(1,6)..".ogg"
+		PlayAnnouncer(songevac)
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start_leave_immediately", Color(255, 0, 0))
+		end
+		PlayAnnouncer( "nextoren/round_sounds/intercom/start_evac.ogg" )
+		SetGlobalBool("Evacuation", true)
+		BREACH.Evacuation = true
+		r_1 = true
+	end
+
+	if math.Round(timer.TimeLeft("RoundTime")) == 120 and k_1 == false then
+
+		local heli = ents.Create( "heli" )
+		heli:Spawn()
+	  
+		local btr = ents.Create( "apc" )
+		btr:Spawn()
+	  
+		local portal = ents.Create( "portal" )
+		portal:Spawn()
+
+		SetGlobalBool("Evacuation_HUD", true )
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
+		end
+		PlayAnnouncer("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
+		k_1 = true
+	end
+
+	end
+
+
+	
+
+
+end )

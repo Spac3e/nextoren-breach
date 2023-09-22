@@ -213,7 +213,13 @@ function ENT:Think()
     SetGlobalBool( "NukeTime", false )
   end
 
-  print(bg_deac_local_time)
+ -- print(bg_deac_local_time)
+
+  --
+
+
+
+  --
 
 end
 

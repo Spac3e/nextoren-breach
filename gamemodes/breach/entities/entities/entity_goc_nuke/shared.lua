@@ -14,6 +14,7 @@ ENT.ExplosionTime = 120
 function ENT:SetupDataTables()
 
   self:NetworkVar( "Bool", 0, "Activated" )
+  self:NetworkVar( "Bool", 0, "DeactivateDo" )
   self:NetworkVar( "Int", 0, "DeactivationTime" )
 
   self:SetDeactivationTime(0)
@@ -35,6 +36,7 @@ BREACH.TimeDecision = {
 	{ sound = "nextoren/sl/Resume60.ogg", time = 60, triggertime = 60 },
 	{ sound = "nextoren/sl/Resume50.ogg", time = 50, triggertime = 50 },
 	{ sound = "nextoren/sl/Resume40.ogg", time = 40, triggertime = 40 },
-	{ sound = "nextoren/sl/Resume30.ogg", time = 30, triggertime = 0 }
+	{ sound = "nextoren/sl/Resume30.ogg", time = 30, triggertime = 0 },
+	{ sound = "nextoren/sl/Resume30.ogg", time = 20, triggertime = 0 }
 
 }

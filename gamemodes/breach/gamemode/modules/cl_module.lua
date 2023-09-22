@@ -3064,10 +3064,8 @@ net.Receive( "UpdateTime", function( len )
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local nri = net.ReadInt(4)
-	shoulddrawescape = nri
-	esctime = CurTime() - timefromround
-	lastescapegot = CurTime() + 20
+	local msg = net.ReadString()
+	CorpsedMessage(BREACH.TranslateString(msg))
 end)
 
 net.Receive( "ForcePlaySound", function( len )
