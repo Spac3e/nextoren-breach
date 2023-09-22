@@ -940,6 +940,13 @@ end
 
 function GM:OnEntityCreated( ent )
 	ent:SetShouldPlayPickupSound( false )
+	if ( ent:GetClass() == "prop_ragdoll" ) then
+		ent:InstallDataTable()
+		ent:NetworkVar( "Int", 0, "VictimHealth" )
+		ent:NetworkVar( "Bool", 0, "IsVictimAlive" )
+	elseif ( ent:GetClass() == "prop_physics" ) then
+		ent.RenderGroup = RENDERGROUP_OPAQUE
+	end
 end
 
 function GetPlayer(nick)

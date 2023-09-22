@@ -335,6 +335,7 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 	else
 		return false
 	end
+	return DrpCanHear[listener][talker] == true, true
 end
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )

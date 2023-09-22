@@ -285,7 +285,7 @@ end )
 
 hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 
-	RegisterSCP( "SCP049", "models/cultist/scp/scp_049.mdl", "weapon_scp_049_redux", {
+	--[[RegisterSCP( "SCP049", "models/cultist/scp/scp_049.mdl", "weapon_scp_049_redux", {
 		jump_power = 0,
 	}, {
 		base_health = 2200,
@@ -294,7 +294,7 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 135,
 		max_speed = 135,
 		death_sound = "",
-	} )
+	} )--]]
 
 	RegisterSCP( "SCP076", "models/cultist/scp/scp_076.mdl", "weapon_scp_076", {
 		jump_power = 0,

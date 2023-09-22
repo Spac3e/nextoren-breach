@@ -539,8 +539,6 @@ function SWEP:GrabVictim( victim )
 					end
 				end)]]
 
-				body.SCP049Victim = true
-				body.SCP049User = victim
 
 				local savename = victim:GetNamesurvivor()
 
