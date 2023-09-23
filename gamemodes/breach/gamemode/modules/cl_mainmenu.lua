@@ -740,13 +740,11 @@ mainmenumusic:Play()
           CreateMainMenuQueryWithHover(L"l:menu_do_precache_or_nah",
             L"l:menu_yes", L"l:menu_precache_hover",
             function()
-              ply:SetNWBool("Player_IsPlaying", true)
               firsttimeshit(true)
             end,
 
             L"l:menu_no", L"l:menu_no_precache_hover",
             function()
-              ply:SetNWBool("Player_IsPlaying", true)
               firsttimeshit(false)
             end
             )

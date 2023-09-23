@@ -113,6 +113,10 @@ util.AddNetworkString("Breach:RunStringOnServer")
 net.Receive("проверкаслуха:БазарНачался", function(len,ply) 
 end)
 
+net.Receive("Player_FullyLoadMenu", function(len,ply)
+	ply:SetNWBool("Player_IsPlaying", true)
+end)
+
 local дистанциябазара = 550 * 550
 local можетслушать = {}
 local этаж = math.floor

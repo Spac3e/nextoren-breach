@@ -295,7 +295,7 @@ net.Receive("ProceedUnfreezeSUP", function(len, ply)
 	ply.cantopeninventory = false
 end)
 
-function SupportSpawn()
+function SpawnSupport()
 
 	local players = {}
 
@@ -357,9 +357,11 @@ function SupportSpawn()
 		local spawn = table.remove( ntfspawns, math.random( #ntfspawns ) )
 		v:SendLua("RunConsoleCommand( 'intro_ntf' )")
 		v:SetupNormal()
+		
 		v:ApplyRoleStats( selected )
 		v:SetPos( spawn )
-		--v:support_freeze()
+		v:support_freeze()
+		v:SendLua("ClientSpawnHelicopter()")
 		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
 
 		print( "Assigning "..v:Nick().." to role: "..selected.name.." [NTF]" )
@@ -938,19 +940,22 @@ function GM:PlayerDeathSound(ply)
 	return true
 end
 
-function GM:PlayerHurt(victim)
+function GM:PlayerHurt(victim, attacker, health, damage)
+	if !((victim.NextPain or 0) < CurTime() and health > 0) then return end
 	if victim:GTeam() == TEAM_SCP then return end
 	if !victim:IsFemale() and victim:GTeam() != TEAM_GUARD then
 	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
 else
 	if victim:IsFemale() then
-		victim:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_"..math.random(1,66)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
+	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/sfemale/hurt_"..math.random(1,66)..".mp3", SNDLVL_NORM, math.random( 70, 126 ) )
 else
 	if !victim:IsFemale() and victim:GTeam() == TEAM_GUARD then
 	    victim:EmitSound( "nextoren/vo/mtf/mtf_hit_"..math.random(1,23)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
         end
       end
     end
+	print(hurt_random)
+	victim.NextPain = CurTime() + math.random(1.55,4.22)
 end
 
 
@@ -1436,7 +1441,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 500 then
-			SupportSpawn()
+			SpawnSupport()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 480 then
@@ -1707,7 +1712,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 		if math.Round(timer.TimeLeft("RoundTime")) == 189 then
 
 			local songevac = "sound/no_music/evacuation_"..math.random(1,6)..".ogg"
-			PlayAnnouncer(songevac)
+			BroadcastPlayMusic(songevac,0)
 			for k,v in pairs(player.GetAll()) do
 				v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start_leave_immediately", Color(255, 0, 0))
 			end

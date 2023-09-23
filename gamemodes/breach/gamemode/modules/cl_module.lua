@@ -70,8 +70,6 @@ function ClientSpawnHelicopter()
 	util.ScreenShake( light_origin, 5, 1, 40, 1024 )
 	HelicopterStart()
 end
-net.Receive( "CreateHelicopterScene", ClientSpawnHelicopter )
-concommand.Add("ClientSpawnHelicopter", ClientSpawnHelicopter)
 
 hook.Add("PlayerStartVoice", "Breach:IntercomVoiceScale", function(ply)
 	if ply:GetNWBool("IntercomTalking", false) then
@@ -3064,8 +3062,10 @@ net.Receive( "UpdateTime", function( len )
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local msg = net.ReadString()
-	CorpsedMessage(BREACH.TranslateString(msg))
+	local nri = net.ReadInt(4)
+	shoulddrawescape = nri
+	esctime = CurTime() - timefromround
+	lastescapegot = CurTime() + 20
 end)
 
 net.Receive( "ForcePlaySound", function( len )

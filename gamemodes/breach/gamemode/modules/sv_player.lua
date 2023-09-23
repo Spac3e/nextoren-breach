@@ -87,7 +87,9 @@ function mply:AddToStatistics(reason,value)
 end
 
 function GM:PlayerSpray()
-   return self:IsSuperAdmin()
+	if !ply:IsSuperAdmin() then
+        return true
+    end
 end
 
 function mply:AddToAchievementPoint()
@@ -234,24 +236,17 @@ function Bonemerge(model, entity, skin)
     entity.bonemerge_ent:AddEffects( EF_BONEMERGE )
     entity.bonemerge_ent:AddEffects( EF_BONEMERGE_FASTCULL )
     entity.bonemerge_ent:AddEffects( EF_PARENT_ANIMATES )
+
 	if ( skin ) then
 		entity.bonemerge_ent:SetSkin( skin )
 	end
+	
 	if ( !entity.BoneMergedEnts ) then
 		entity.BoneMergedEnts = {}
 	end
 
-	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
-		entity.HeadEnt = entity.bonemerge_ent
-		if ( entity.Sub_Material ) then
-			local sub_material_id = 0
-			if ( sub_material_corrupted_models[ model ] ) then
-				sub_material_id = 1
-			end
-			entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
-		end
-	end
 	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent
+
 	return bnmrg
 end
 
@@ -438,6 +433,7 @@ function mply:SurvivorCleanUp()
 	self:SetUsingHelmet("")
 	self:SetStamina(100)
 	self:Flashlight( false )
+	self:SetBoosted(false)
     end
 end
 
@@ -496,40 +492,82 @@ function mply:SetupCISpy()
 	end
 end
 
-function mply:MakeNigger(ply)
-end
-
 function mply:PickupAppearance(role)
-	local selfmodel = {role.models}
-	local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
+	local isblack = math.random(1,3) == 1
+	if role["white"] then isblack = false end
+	local HeadModel = istable(role["head"]) and table.Random(role["head"]) or role["head"]
+
 	if role.models and role.fmodels then
-		selfmodel = {role.fmodels, role.models}
-		finalselfmodel = selfmodel[math.random(1, #selfmodel)]
-		if finalselfmodel == role.fmodels then
-		self:SetModel(table.Random(role.fmodels))
+		local selfmodel
+	
+		if math.random(0, 1) == 0 then
+			selfmodel = role.fmodels
 		else
-		selfmodel = {role.models}
-		self:SetModel(table.Random(role.models))
+			selfmodel = role.models
 		end
+	
+		local finalselfmodel = selfmodel[math.random(1, #selfmodel)]
+	
+		self:SetModel(finalselfmodel)
 	else
-		selfmodel = {role.models}
-		self:SetModel(table.Random(role.models))
-	end
-	if role.usehead then
-		if !self:IsFemale() then
-			Bonemerge(PickHeadModel(),self)
-		else
-			Bonemerge(PickHeadModel(nil,true),self)
+		if role.models then
+			local finalselfmodel = role.models[math.random(1, #role.models)]
+			self:SetModel(finalselfmodel)
+		elseif role.fmodels then
+			local finalselfmodel = role.fmodels[math.random(1, #role.fmodels)]
+			self:SetModel(finalselfmodel)
 		end
 	end
-	if role.hackerhat then
-		Bonemerge(role.hackerhat, self)
+
+	if role.head then Bonemerge(HeadModel,self) end
+
+	if role["usehead"] then
+		if role["randomizehead"] and !self:IsFemale() then
+			Bonemerge(PickHeadModel(self:SteamID64()),self)
+		end
+		if self:IsFemale() then
+			Bonemerge(PickHeadModel(self:SteamID64(),true),self)
+		else
+			Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
+		end
 	end
-	if role.skin then self:SetSkin(role.skin) end
-	if role.head and (finalselfmodel != role.fmodels) then if (istable(role.head)) then return Bonemerge(table.Random(role.head), self) end Bonemerge(role.head, self) end
-	if role.hair and (finalselfmodel != role.fmodels) then Bonemerge(table.Random(role.hair), self) end
-	if role.hairm and (finalselfmodel != role.fmodels) then Bonemerge(table.Random(role.hairm), self) end
-	if role.hairf and (finalselfmodel == role.fmodels) then Bonemerge(table.Random(role.hairf), self) end
+
+	if role["randomizeface"] or role.white != true then
+		for k,v in pairs(self:LookupBonemerges()) do 
+			if CORRUPTED_HEADS[v:GetModel()] then v:SetSubMaterial(1, PickFaceSkin(isblack,self:SteamID64(),false)) end
+			if v:GetModel():find("heads") or v:GetModel():find("balaclavas_new") then
+				if !self:IsFemale() then
+				v:SetSubMaterial(0, PickFaceSkin(isblack,self:SteamID64(),false))
+			elseif
+			  self:IsFemale() then
+				v:SetSubMaterial(0, PickFaceSkin(isblack,self:SteamID64(),true))
+			  end
+			end
+		end
+	end
+	
+	local HairModel = nil
+	if math.random(1, 5) > 1 then
+		if isblack and role["blackhairm"] then
+			HairModel = role["blackhairm"][math.random(1, #role["blackhairm"])]
+		elseif role["hairm"] and !self:IsFemale() then
+			HairModel = role["hairm"][math.random(1, #role["hairm"])]
+		elseif role["hairf"] and self:IsFemale() then
+			HairModel = role["hairf"][math.random(1, #role["hairf"])]
+		end
+	end
+ 
+	if role.hair or role.hairf or role.hairm or role.blackhairm then
+		if HairModel == "" or HairModel == nil then return end
+		Bonemerge(HairModel,self)
+	end
+	
+	if role.skin then
+		self:SetSkin(role.skin) 
+	elseif isblack == true and self:GetModel():find("class_d") then
+		self:SetSkin(1)
+	end
+
 	if role.headgear then Bonemerge(role.headgear, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
@@ -728,11 +766,7 @@ function mply:AddExp(amount, msg)
 		self:SetNEXP(xp - (680 * math.max(1, self:GetNLevel())))
 		self:SaveLevel()
 	end
-
-	print(self:GetNEXP())
-	print(self:GetNLevel())
-	print((680 * math.max(1, self:GetNLevel())))
-
+	
 end
 
 function mply:AddLevel(amount)

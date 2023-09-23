@@ -192,6 +192,13 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	ply:RXSENDNotify("l:your_current_exp "..ply:GetNEXP())
 	ply:SetupHands()
 	ply:AddDeaths(1)
+	ply.force = dmginfo:GetDamageForce() * math.random( 2, 4 )
+	ply.type = dmginfo:GetDamageType()
+
+	print(ply.type)
+	if ( attacker && attacker:IsValid() && attacker:IsPlayer() && attacker:GTeam() == TEAM_SCP ) then
+		ply.type = attacker:GetRoleName()
+	end
 end
 
 function GM:PlayerDeathThink( ply )
@@ -444,12 +451,15 @@ do
 	function mply:Give(className, bNoAmmo)
 		local weapon
 
+		local tr = self:GetEyeTrace()
+		local wepent = tr.Entity
+		local is_cw = wepent.CW20Weapon	
+
 		self.BrWeaponGive = true
-			weapon = self:BrGive(className, bNoAmmo)
-			if weapon.CW20Weapon then
-				--print("fasfafa")
-			end
+			weapon = self:BrGive(className, bNoAmmo) 
 		self.BrWeaponGive = nil
+		
+        if is_cw then weapon:SetClip1(wepent.SavedAmmo) end
 
 		return weapon
 	end
