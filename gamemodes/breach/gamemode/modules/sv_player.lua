@@ -705,93 +705,34 @@ function mply:SaveLevel()
 end
 
 function mply:AddExp(amount, msg)
-	amount = amount * GetConVar("br_expscale"):GetInt()
-	if self.Premium == true then
-		amount = amount * GetConVar("br_premium_mult"):GetFloat()
-	end
+	--amount = amount * GetConVar("br_expscale"):GetInt()
+	--if self.Premium == true then
+		--amount = amount * GetConVar("br_premium_mult"):GetFloat()
+	--end
 	amount = math.Round(amount)
-	if not self.GetNEXP then
-		player_manager.RunClass( self, "SetupDataTables" )
+	--if not self.GetNEXP then
+	--	player_manager.RunClass( self, "SetupDataTables" )
+	--end
+	self:SetNEXP( self:GetNEXP() + amount )
+	self:SetPData( "breach_exp", self:GetExp() )
+
+	local xp = self:GetNEXP()
+	local lvl = self:GetNLevel()
+
+	if self:GetNEXP() < 0 then
+		self:SetNEXP(1)
 	end
-	if self.GetNEXP and self.SetNEXP then
-		self:SetNEXP( self:GetNEXP() + amount )
-		if msg != nil and self:GTeam() == TEAM_SPEC then
-			--self:BrTip( 0, "[VAULT]", Color(255,0,0, 210), " Вы получили " .. amount .. " Опыта, Текущий опыт: " .. self:GetNEXP(), color_white )
-		end
-		self:SetPData( "breach_exp", self:GetExp() )
-	else
-		if self.SetNEXP then
-			self:SetNEXP( 0 )
-		else
-			ErrorNoHalt( "Cannot set the exp, SetNEXP invalid" )
-		end
-		local xp = self:GetNEXP()
-		local lvl = self:GetNLevel()
-		if lvl == 0 then
-			if xp >= 3000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 3000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 1! Congratulations!")
-			end
-		elseif lvl == 1 then
-			if xp >= 5000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 5000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 2! Congratulations!")
-			end
-		elseif lvl == 2 then
-			if xp >= 7500 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 7500)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 3! Congratulations!")
-			end
-		elseif lvl == 3 then
-			if xp >= 11000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 11000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 4! Congratulations!")
-			end
-		elseif lvl == 4 then
-			if xp >= 14000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 14000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level 5! Congratulations!")
-			end
-		elseif lvl == 5 then
-			if xp >= 25000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 25000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level OMNI! Congratulations!")
-			end
-		elseif lvl == 6 then
-			if xp >= 100000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 100000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " is a now a Veteran! Congratulations!")
-			end
-		elseif lvl > 6 then
-			if xp >= 100000 then
-				self:AddLevel(1)
-				self:SetNEXP(xp - 100000)
-				self:SaveLevel()
-				PrintMessage(HUD_PRINTTALK, self:Nick() .. " reached level "..lvl.."! Congratulations!")
-		end
-		self:SetPData( "breach_exp", self:GetExp() )
-	else
-		if self.SetNEXP then
-			self:SetNEXP( 0 )
-		else
-			ErrorNoHalt( "Cannot set the exp, SetNEXP invalid" )
-		end
-      end
-    end
+
+	if xp > (680 * math.max(1, self:GetNLevel())) then
+		self:AddLevel(lvl + 1)
+		self:SetNEXP(xp - (680 * math.max(1, self:GetNLevel())))
+		self:SaveLevel()
+	end
+
+	print(self:GetNEXP())
+	print(self:GetNLevel())
+	print((680 * math.max(1, self:GetNLevel())))
+
 end
 
 function mply:AddLevel(amount)

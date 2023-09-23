@@ -10,7 +10,7 @@ end
 function ENT:Think()
 for k,v in pairs(player.GetAll()) do
 	if CurTime() < auto_lz_gaz_time then return end	
-    if !v:GetRoleName() == role.Spectator then
+    if v:GTeam() != TEAM_SPEC then
 			local entsinbox = ents.FindInBox( Vector( 4424, -8052, -127 ), Vector( 10572, -2956, 1233 ) ) 
 			for k, v in ipairs( entsinbox ) do
 			if ( v:IsPlayer() ) then
