@@ -233,7 +233,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 
 	ply:SetHealth( self.basestats.base_health or 1500 )
 	ply:SetMaxHealth( self.basestats.max_health or 1500 )
-	ply:SetWalkSpeed( self.basestats.base_speed or 200 )
+	ply:SetWalkSpeed( self.basestats.base_speed or 200 ) -- по идее должна быть в районе 100
 	ply:SetRunSpeed( self.basestats.run_speed or 200 )
 	ply:SetMaxSpeed( self.basestats.max_speed or 200 )
 	ply:SetCrouchedWalkSpeed( self.basestats.crouch_speed or 0.6 )
@@ -251,6 +251,8 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:AllowFlashlight( false )
 	ply:SetNoDraw( self.basestats.no_draw == true )
 	ply:SetNoTarget( true )
+
+	if ply:GetRoleName() == SCP062DE then ply:SendLua("SCP062de_Menu()") end
 
 	ply.BaseStats = nil
 	ply.UsingArmor = nil
@@ -348,14 +350,14 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		run_speed = 170,
 		max_speed = 170,
 	} )
-	RegisterSCP( "SCP062DE", "models/cultist/scp/scp_062de.mdl", "cw_kk_ins2_kar62de", {
+	RegisterSCP( "SCP062DE", "models/cultist/scp/scp_062de.mdl", "", {
 		jump_power = 0,
 	}, {
 		base_health = 3200,
 		max_health = 3200,
-		base_speed = 170,
-		run_speed = 170,
-		max_speed = 170,
+		base_speed = 135,
+		run_speed = 135,
+		max_speed = 135,
 	} )
 	RegisterSCP( "SCP457", "models/cultist/scp/scp_457.mdl", "weapon_scp_457", {
 		jump_power = 0,

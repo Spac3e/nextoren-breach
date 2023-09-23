@@ -420,6 +420,46 @@ end
 function mply:SetupAdmin()
 end
 
+function mply:MakeZombie()
+	for i, material in pairs(self:GetMaterials()) do
+		i = i -1
+		if !table.HasValue(BREACH.ZombieTextureMaterials, material) then
+			if string.StartWith(material, "models/all_scp_models/") then
+				local str = string.sub(material, #"models/all_scp_models//")
+				str = "models/all_scp_models/zombies/"..str
+				self:SetSubMaterial(i, str)
+			end
+		else
+			self:SetSubMaterial(i, "!ZombieTexture")
+		end
+	end
+	if !self.BoneMergedEnts then return end
+	for _, bnmrg in pairs(self.BoneMergedEnts) do
+		if !IsValid(bnmrg) then continue end
+		if bnmrg:GetModel():find("male_head_") or bnmrg:GetModel():find("balaclava") then
+			self.FaceTexture = "models/all_scp_models/zombies/shared/heads/head_1_1"
+			if CORRUPTED_HEADS[bnmrg:GetModel()] then
+				bnmrg:SetSubMaterial(1, self.FaceTexture)
+			else
+				bnmrg:SetSubMaterial(0, self.FaceTexture)
+			end
+		else
+			for i, material in pairs(bnmrg:GetMaterials()) do
+				i = i -1
+				if !table.HasValue(BREACH.ZombieTextureMaterials, material) then
+					if string.StartWith(material, "models/all_scp_models/") then
+						local str = string.sub(material, #"models/all_scp_models//")
+						str = "models/all_scp_models/zombies/"..str
+						bnmrg:SetSubMaterial(i, str)
+					end
+				else
+					bnmrg:SetSubMaterial(i, "!ZombieTexture")
+				end
+			end
+		end
+	end
+end
+
 function mply:SurvivorCleanUp()
 	self:ClearBodyGroups()
 	self:SetSkin(0)
@@ -836,3 +876,75 @@ function mply:ToggleAdminMode()
 		self:DrawWorldModel( false ) 
 	end
 end
+
+-- Шедеврокод
+hook.Add( "SetupMove", "StanceSpeed", function( ply, mv, cmd )
+	local velLength = ply:GetVelocity():Length2DSqr()
+
+	if ( mv:KeyReleased( IN_SPEED ) || mv:KeyDown( IN_SPEED ) && velLength < .25 ) then
+		ply.Run_fading = true
+	end
+
+	if ( mv:KeyDown( IN_MOVELEFT ) || mv:KeyDown( IN_MOVERIGHT ) ) then
+		ply.Run_fading = true
+		mv:SetSideSpeed( mv:GetSideSpeed() * .35 )
+	end
+
+	if ( mv:KeyDown( IN_SPEED ) && velLength > .25 || ply.SprintMove && !ply.Run_fading ) then
+
+		if ( ply:IsLeaning() ) then
+			ply:SetNW2Int( "LeanOffset", 0 )
+			ply.OldStatus = nil
+		end
+
+		if ( !ply.SprintMove ) then
+			ply.Run_fading = nil
+			ply.SprintMove = true
+			ply.Sprint_Speed = ply:GetWalkSpeed()
+		end
+
+		ply.Sprint_Speed = math.Approach( ply.Sprint_Speed, ply:GetRunSpeed(), FrameTime() * 128 )
+
+		mv:SetMaxClientSpeed( ply.Sprint_Speed )
+		mv:SetMaxSpeed( ply.Sprint_Speed )
+
+	elseif ( ply.SprintMove && ply.Run_fading ) then
+		local walk_Speed = ply:GetWalkSpeed()
+
+		ply.Sprint_Speed = math.Approach( ply.Sprint_Speed, walk_Speed, FrameTime() * 128 )
+
+		mv:SetMaxClientSpeed( ply.Sprint_Speed )
+		mv:SetMaxSpeed( ply.Sprint_Speed )
+
+		if ( ply.Sprint_Speed == walk_Speed ) then
+			ply.SprintMove = nil
+			ply.Sprint_Speed = nil
+		end
+	end
+
+
+	if ( ply:Crouching() ) then
+		local walk_speed = ply:GetWalkSpeed()
+
+		mv:SetMaxClientSpeed( walk_speed * .5 )
+		mv:SetMaxSpeed( walk_speed * .5 )
+	end
+
+
+	local wep = ply:GetActiveWeapon()
+
+	if ( wep != NULL && wep.CW20Weapon && wep.dt.State == CW_AIMING ) then
+		mv:SetMaxClientSpeed( mv:GetMaxClientSpeed() * .5 )
+		mv:SetMaxSpeed( mv:GetMaxSpeed() * .5 )
+	end
+
+	if ( ply:IsLeaning() ) then
+		mv:SetMaxClientSpeed( mv:GetMaxClientSpeed() * .75 )
+		mv:SetMaxSpeed( mv:GetMaxSpeed() * .75 )
+	end
+
+	if ( ply.SpeedMultiplier ) then
+		mv:SetMaxClientSpeed( mv:GetMaxClientSpeed() * ply.SpeedMultiplier )
+		mv:SetMaxSpeed( mv:GetMaxSpeed() * ply.SpeedMultiplier )
+	end
+end)
