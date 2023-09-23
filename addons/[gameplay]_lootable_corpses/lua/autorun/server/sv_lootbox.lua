@@ -1,37 +1,28 @@
-util.AddNetworkString( "OpenInventory" )
+util.AddNetworkString( "OpenLootMenu" )
 util.AddNetworkString( "ShowEQAgain" )
 util.AddNetworkString( "ParticleAttach" )
 util.AddNetworkString( "LootEnd" )
-
-net.Receive( "ShowEQAgain", function( len, ply )
-	local ent = ply:GetEyeTrace().Entity
-
-	if ( !ent.vtable || !istable( ent.vtable ) || #ent.vtable.Weapons <= 0 ) then
-		if ( ply.MovementLocked ) then
-
-			ply:SetForcedAnimation( false )
-			ply.MovementLocked = nil
-
-			net.Start( "MovementLocked" )
-				net.WriteBool( false )
-			net.Send( ply )
-		end
-
-		return
-		
-	end
-
-	net.Start( "OpenInventory" )
-		net.WriteTable( ent.vtable )
-	net.Send( ply )
-
-end)
+util.AddNetworkString("LC_TakeWep")
 
 net.Receive("LootEnd", function(len, ply)
 	if (ply.ForceAnimSequence) then
 		ply:SetForcedAnimation(false)
 		ply.MovementLocked = nil
 	end
+end)
+
+AddCSLuaFile( "lootable_corpses_config.lua" )
+include( "lootable_corpses_config.lua" )
+
+net.Receive("LC_TakeWep", function(len,ply)
+	local ent = net.ReadEntity()
+	local wep = net.ReadString()
+	print(ply:Name().." Подбирает",wep," Из",ent)
+	ply:Give(wep)
+	local index = table.KeyFromValue(ent.vtable.Weapons, wep)
+    if index then
+        table.remove(ent.vtable.Weapons, index)
+    end
 end)
 
 local clr_red = Color( 255, 0, 0 )
@@ -58,7 +49,7 @@ function PlayerCanPickupWeapon( ply, weap )
 
 
 	if ( !ply:KeyDown( IN_USE ) ) then return false end
-	if ( ply:Team() == TEAM_SCP || ply:Team() == TEAM_SPEC || ply:Health() <= 0 ) then return false end
+	if ( ply:GTeam() == TEAM_SCP || ply:GTeam() == TEAM_SPEC || ply:Health() <= 0 ) then return false end
 	local tr = ply:GetEyeTrace()
 	local wepent = tr.Entity
 
@@ -165,39 +156,15 @@ local zombie_footsteps = {
 local deathclr = Color( 169, 169, 169 )
 
 hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )	
+	local tr = ply:GetEyeTrace()
+	local trent = ply:GetEyeTrace().Entity
 	if ( key != IN_USE && key != IN_RELOAD ) then return end
- 	if ( ply:Team() == TEAM_SPEC || ply:Team() == TEAM_SCP && ply:GetRoleName() != "SCP049" ) then return end
+ 	if ( ply:GTeam() == TEAM_SPEC || ply:GTeam() == TEAM_SCP && ply:GetRoleName() != "SCP049" ) then return end
 
 	if ( key == IN_RELOAD && ply:GetRoleName() == "SCP049" ) then
 		local tr = ply:GetEyeTrace()
 		local self = tr.Entity
 		if ( self:GetClass() != "prop_ragdoll" || self:GetPos():DistToSqr( ply:GetPos() ) > 3025 ) then return end
-
-		if ( ply:GetRoleName() == "SCP049" && self:GetIsVictimAlive() ) then
-			ply:BrProgressBar( "Убийство", 3, killing_sndlist, nil, true, function()
-
-				if ( self:GetIsVictimAlive() ) then
-					timer.Remove( "Death" .. ply:EntIndex() )
-
-					local owner = self:GetOwner()
-
-					owner:SetSpectator()
-					owner:SetDSP( 1 )
-					owner:SetNWEntity( "NTF1Entity", NULL )
-
-					net.Start( "SCP049_PlayerScreenManipulations" )
-						net.WriteUInt( 2, 2 )
-						net.WriteBool( false )
-					net.Send( owner )
-
-					self:SetColor( deathclr )
-					self:SetIsVictimAlive( false )					
-					ply:SetHealth( math.min( ply:Health() + self:GetVictimHealth(), ply:GetMaxHealth() ) )
-				else
-					ply:Tip( 3, "[NextOren Breach]", ColorAlpha( clr_red, 210 ), "Слишком поздно", clr_red )
-				end
-			end)
-		end
 
 	elseif ( key == IN_USE ) then
 
@@ -219,7 +186,7 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 				if ( self:GetIsVictimAlive() ) then
 					local plyowner = self:GetOwner()					
 					timer.Remove( "Death" .. plyowner:EntIndex() )
-					if ( plyowner:Team() == TEAM_SPEC ) then return end
+					if ( plyowner:GTeam() == TEAM_SPEC ) then return end
 					plyowner:SetPos( plyowner:GetPos() + ply:GetAngles():Forward() * 4 )
 
 					self:Remove()
@@ -300,13 +267,13 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 			return
 		end
 
-		if ( ply:Team() == TEAM_SCP ) then return end
+		if ( ply:GTeam() == TEAM_SCP ) then return end
 
 		ply:SetForcedAnimation( "616", 0, nil )
 		ply:SetNWEntity( "NTF1Entity", ply )
 
 
-		ply:BrProgressBar( "Обыскивание", 6, "nextoren/charactersounds/loot_sound.wav", nil, true, function()
+		ply:BrProgressBar("l:looting_body", 6, "nextoren/gui/icons/notifications/breachiconfortips.png", trent, false, function()
 			if ( !self.vtable ) then return end
 
 			if ( table.Count( self.vtable.Weapons ) == 0 ) then
@@ -316,13 +283,14 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 
 			ply.MovementLocked = true
 
-			net.Start( "OpenInventory" )
+			net.Start( "OpenLootMenu" )
 				net.WriteTable( self.vtable )
+				net.WriteTable( self.vtable.Ammo )
 			net.Send( ply )
 
 			ply:SetNWEntity( "NTF1Entity", NULL )
 
-			BREACH.Players:ChatPrint( ply, true, true, "Вы обыскали тело " .. self:GetDeathName() )
+			BREACH.Players:ChatPrint( ply, true, true, "Вы обыскали тело " .. self:GetNWString("SurvivorName") )
 
 		end, true, function()
 
@@ -333,31 +301,17 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 	end
 end)
 
-
-
 local DeathReasons = {
-	[ DMG_BULLET ] = "На теле видны пулевые ранения",
-	[ DMG_SLASH ] = "На теле видны порезы",
-	[ DMG_ACID ] = "На теле видны многочисленные ожоги",
-	[ DMG_FALL ] = "На теле обнаружены многочисленные переломы",
-	[ "SCP173" ] = "У тела свёрнута шея",
-	[ "SCP0492" ] = "На теле обнаружены многочисленные укусы"
+	[8194] = "l:body_bullets", -- Почему то физичная пуля это отдельный вид урона...
+	[DMG_BULLET] = "l:body_bullets",
+	[DMG_SLASH] = "l:body_slashed",
+	[DMG_ACID] = "l:body_acid",
+	[DMG_FALL] = "l:body_fall",
+	[DMG_BURN] = "l:body_burned",
+	[DMG_CRUSH] = "l:body_crushed",
+	["SCP173"] = "У тела свёрнута шея",
+	["SCP0492"]  = "На теле обнаружены многочисленные укусы"
 }
-
-
-
-local function StartPreDeathAnimation( ply, attacker, dmginfo )
-	ply.force = dmginfo:GetDamageForce() * math.random( 2, 4 )
-	ply.type = dmginfo:GetDamageType()
-
-	if ( attacker && attacker:IsValid() && attacker:IsPlayer() && attacker:Team() == TEAM_SCP ) then
-		ply.type = attacker:GetRoleName()
-	end
-end
-
-hook.Add( "DoPlayerDeath", "StartDeathAnimation", StartPreDeathAnimation )
-
-
 
 function CreateUnconsBody( victim )
 	victim:SetNoDraw( true )
@@ -430,7 +384,7 @@ end
 local corpse_mdl = Model( "models/cultist/humans/corpse.mdl" )
 
 function CreateLootBox( ply, inflictor, attacker, knockedout )
-	local team = ply:Team()
+	local team = ply:GTeam()
 	if ( team == TEAM_SPEC ) then return end
 
 	if ( team == TEAM_SCP && ply.DeathAnimation ) then
@@ -607,7 +561,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 
 			for _, v in ipairs( ents.FindInSphere( self:GetPos(), 300 ) ) do
 
-				if ( v:IsPlayer() && v:IsSolid() && v:Team() != TEAM_SCP ) then
+				if ( v:IsPlayer() && v:IsSolid() && v:GTeam() != TEAM_SCP ) then
 					v:IgniteSequence( 4 )
 				end
 			end
@@ -763,12 +717,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 		end
 	end
 
-	if ( ply.type && DeathReasons[ ply.type ] ) then
-		LootBox:SetNWString("DeathReason2", ( DeathReasons[ ply.type ] ))
-	else
-		LootBox:SetNWString( "DeathReason2", "Невозможно определить причину смерти" )
-	end
-
 	if ( knockedout ) then
 		LootBox:SetDeathReason( "Человек находится в бессознательном состоянии." )
 		LootBox.Knockout = true
@@ -799,18 +747,23 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 	LootBox:SetOwner( ply )
 	LootBox.IsInfected = false
 	LootBox:SetCollisionGroup( COLLISION_GROUP_WORLD )
-	LootBox:SetNWString("SurvivorName", ply:GetNamesurvivor())
-	LootBox:SetNWString("DeathReason1", ply:GetNamesurvivor())
-	LootBox:SetNWString("DeathReason2", ply:GetNamesurvivor())
-	LootBox:SetNWInt("DiedWhen", 2)
-
+	if ( ply.type && DeathReasons[ ply.type ] ) then
+		LootBox:SetNWString("DeathReason1", ( DeathReasons[ ply.type ] ))
+	else
+		LootBox:SetNWString( "DeathReason1", "l:body_death_unknown" )
+	end
+	LootBox:SetNWInt("DiedWhen", os.time())
+    if ply:LastHitGroup() == HITGROUP_HEAD then
+		LootBox:SetNWString( "DeathReason2", "l:body_headshot" )
+	end
 	LootBox.vtable = {}
+	LootBox.vtable.Ammo = {}
 	LootBox.vtable.Entity = LootBox
 	LootBox.vtable.Weapons = {}
 	LootBox.vtable.Name = ply:GetNamesurvivor()
 
 	for _, weapon in ipairs( ply:GetWeapons() ) do
-		if ( weapon.droppable != false && !weapon.UnDroppable && ( ply:Team() != TEAM_SCP || ply.AffectedBy049 ) ) then
+		if ( weapon.droppable != false && !weapon.UnDroppable && ( ply:GTeam() != TEAM_SCP || ply.AffectedBy049 ) ) then
 			table.insert( LootBox.vtable.Weapons, weapon:GetClass() )
 		end
 	end
