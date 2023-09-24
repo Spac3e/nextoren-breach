@@ -26,6 +26,19 @@ SCP_DYNAMIC_VARS = {}
 
 local lua_override = false
 
+util.AddNetworkString("SelectSCPClientside")
+util.AddNetworkString("SCPSelect_Menu")
+
+net.Receive("SelectSCPClientside", function(len,ply)
+	local scp = net.ReadString()
+	local scp_obj = GetSCP( scp )
+	if scp_obj then
+		ply:SetupNormal()
+		scp_obj:SetupPlayer( ply )
+		ply:SendLua("if ( IsValid( BREACH.Demote.MainPanel ) ) then BREACH.Demote.MainPanel:Remove() end")
+	end
+end)
+
 function UpdateDynamicVars()
 	print( "Updating SCPs dynamic vars" )
 	if !file.Exists( "breach", "DATA" ) then
@@ -252,7 +265,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetNoDraw( self.basestats.no_draw == true )
 	ply:SetNoTarget( true )
 
-	if ply:GetRoleName() == SCP062DE then ply:SendLua("SCP062de_Menu()") end
+	if ply:IsPremium() then net.Start("SCPSelect_Menu") net.WriteTable(SCPS) net.Send(ply) end
 
 	ply.BaseStats = nil
 	ply.UsingArmor = nil

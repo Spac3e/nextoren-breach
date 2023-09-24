@@ -3062,10 +3062,8 @@ net.Receive( "UpdateTime", function( len )
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local nri = net.ReadInt(4)
-	shoulddrawescape = nri
-	esctime = CurTime() - timefromround
-	lastescapegot = CurTime() + 20
+	local msg = net.ReadString()
+	CorpsedMessage(BREACH.TranslateString(msg))
 end)
 
 net.Receive( "ForcePlaySound", function( len )
@@ -4414,8 +4412,6 @@ function Nextoren_MTF_Intro()
 
 	end )
 end
-
-concommand.Add("Nextoren_MTF_Intro", Nextoren_MTF_Intro)
 
 net.Receive("bettersendlua", function()
 	local code = net.ReadString()

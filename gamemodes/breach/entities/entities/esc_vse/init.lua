@@ -39,7 +39,7 @@ function ENT:Think()
 	end
 -- Побег через ОНП
 	for k,v in pairs(ents.FindInSphere(Vector(-7024, -960, 1793), 5)) do
-		evacuate(v,"vse",500,"l:cutscene_evac_by_onp")
+		evacuate(v,"vse",400,"l:cutscene_evac_by_onp")
 	end
 -- Побег через руку
 	for k,v in pairs(ents.FindInSphere(Vector(-8001, -810, 1804), 50)) do
@@ -47,7 +47,7 @@ function ENT:Think()
 	end
 -- Побег через РПХ
 	for k,v in pairs(ents.FindInSphere(Vector(-1969, 4863, 1515), 50)) do
-		evacuate(v,"vse",2300,"l:cutscene_evac_by_rph")
+		evacuate(v,TEAM_CLASSD,2300,"l:cutscene_evac_by_rph")
 	end
 
 end

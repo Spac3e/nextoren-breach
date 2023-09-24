@@ -9,7 +9,7 @@ ROUNDS = {
 		init = function()
 			BREACH.Round_Spawn_Loot()
 			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SpawnSupport()
+				SupportSpawn()
 			end )
 end,
 		roundstart = function()

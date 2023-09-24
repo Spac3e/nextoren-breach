@@ -295,7 +295,7 @@ net.Receive("ProceedUnfreezeSUP", function(len, ply)
 	ply.cantopeninventory = false
 end)
 
-function SpawnSupport()
+function SupportSpawn()
 
 	local players = {}
 
@@ -1341,17 +1341,39 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 	{reason = desc, value = give_score},
 	}
 	if personal:IsPlayer() == true then
-	if personal:Alive() == false then return end
-		personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
-		if roles_for_evac != "vse" then
-			if personal:GTeam() != TEAM_SPEC then
-				if personal:GTeam() == roles_for_evac then
+		if personal:Alive() != false then
+			if roles_for_evac != "vse" then
+					if personal:GTeam() != TEAM_SPEC then
+						if personal:GTeam() == roles_for_evac then
+							personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+							local exptoget = give_score
+							net.Start("OnEscaped")
+							net.WriteString(desc)
+							net.Send(personal)
+							personal:AddFrags(5)
+							personal:GodEnable()
+							personal:Freeze(true)
+							personal.canblink = false
+							personal.isescaping = true
+							personal:Freeze(false)
+							personal:GodDisable()
+							personal:SetSpectator()
+							personal.isescaping = false
+							net.Start("LevelBar")
+							net.WriteTable(eblya)
+							net.WriteUInt(personal:GetNEXP(), 32)
+							net.Send(personal)
+							personal:AddExp(exptoget)
+						end
+					end
+			else
+				if personal:GTeam() != TEAM_SPEC then
+					personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
 					local exptoget = give_score
 					net.Start("OnEscaped")
 					net.WriteString(desc)
 					net.Send(personal)
 					personal:AddFrags(5)
-					personal:AddExp(exptoget)
 					personal:GodEnable()
 					personal:Freeze(true)
 					personal.canblink = false
@@ -1361,19 +1383,21 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 					personal:SetSpectator()
 					personal.isescaping = false
 					net.Start("LevelBar")
-    				net.WriteTable(eblya)
+					net.WriteTable(eblya)
 					net.WriteUInt(personal:GetNEXP(), 32)
 					net.Send(personal)
+					personal:AddExp(exptoget)
 				end
 			end
 		else
-			if personal:GTeam() != TEAM_SPEC then
+			print("да")
+				eblya = {
+				{reason = "l:cutscene_kia", value = give_score},
+				}
 				local exptoget = give_score
-				net.Start("OnEscaped")
-				net.WriteString(desc)
-				net.Send(personal)
+				--net.Start("OnEscaped")
+				--net.Send(personal)
 				personal:AddFrags(5)
-				personal:AddExp(exptoget)
 				personal:GodEnable()
 				personal:Freeze(true)
 				personal.canblink = false
@@ -1386,9 +1410,70 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 				net.WriteTable(eblya)
 				net.WriteUInt(personal:GetNEXP(), 32)
 				net.Send(personal)
-			end
+				personal:AddExp(exptoget)
 		end
 	end
+end
+
+function OBRSpawn()
+
+	local players = {}
+
+	for k,v in pairs(player.GetAll()) do
+		if v:GTeam() == TEAM_SPEC then
+			table.insert( players, v )
+		end
+	end
+
+	local obrsinuse = {}
+	local obrspawns = table.Copy( SPAWN_OBR )
+	local obrs = {}
+
+	for i = 1, 7 do
+		table.insert( obrs, table.remove( players, math.random( #players ) ) )
+	end
+
+		--table.sort( mtfs, PlayerLevelSorter )
+
+	for i, v in ipairs( obrs ) do
+		local obrroles = table.Copy( BREACH_ROLES.OBR.obr.roles )
+		local selected
+
+		repeat
+			local role = table.remove( obrroles, math.random( #obrroles ) )
+			obrsinuse[role.name] = obrsinuse[role.name] or 0
+
+			if role.max == 0 or obrsinuse[role.name] < role.max then
+				if role.level <= v:GetLevel() then
+					if !role.customcheck or role.customcheck( v ) then
+						selected = role
+						break
+					end
+				end
+			end
+		until #obrroles == 0
+
+		if !selected then
+			ErrorNoHalt( "Something went wrong! Error code: 001" )
+			selected = BREACH_ROLES.OBR.obr.roles[1]
+		end
+
+		obrsinuse[selected.name] = obrsinuse[selected.name] + 1
+
+		if #obrspawns == 0 then obrspawns = table.Copy( SPAWN_OBR ) end
+		local spawn = table.remove( obrspawns, math.random( #obrspawns ) )
+
+		v:SendLua("OBRStart()")
+
+		v:SetupNormal()
+		v:ApplyRoleStats( selected )
+		v:SetPos( spawn )
+
+	end
+
+	--BroadcastLua("OBRStart()")
+
+
 end
 
 local cd = 0
@@ -1441,7 +1526,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 500 then
-			SpawnSupport()
+			SupportSpawn()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 480 then

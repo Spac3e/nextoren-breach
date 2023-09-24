@@ -532,7 +532,11 @@ function mply:SetupCISpy()
 	end
 end
 
-function mply:PickupAppearance(role)
+
+function mply:ApplyRoleStats(role)
+	self:SurvivorCleanUp()
+	self:SetRoleName( role.name )
+	self:SetGTeam( role.team )
 	local isblack = math.random(1,3) == 1
 	if role.white == true then isblack = false end
 	local HeadModel = istable(role["head"]) and table.Random(role["head"]) or role["head"]
@@ -576,7 +580,7 @@ function mply:PickupAppearance(role)
 	if role["randomizeface"] or !role["white"] then
 		for k,v in pairs(self:LookupBonemerges()) do
 			if CORRUPTED_HEADS[v:GetModel()] then v:SetSubMaterial(1, PickFaceSkin(isblack,self:SteamID64(),false)) end
-			if v:GetModel():find("fat_heads") then return end
+			if v:GetModel():find("fat_heads") then continue end
 			if v:GetModel():find("heads") or v:GetModel():find("balaclavas_new") then
 				if !self:IsFemale() then
 				v:SetSubMaterial(0, PickFaceSkin(isblack,self:SteamID64(),false))
@@ -599,8 +603,8 @@ function mply:PickupAppearance(role)
 		end
 	end
  
-	if role.hair or role.hairf or role.hairm or role.blackhairm then
-		if HairModel == "" or HairModel == nil then return end
+    if HairModel then
+		if self:GetRoleName() == "Medic" and !self:IsFemale() then return end
 		Bonemerge(HairModel,self)
 	end
    	
@@ -613,7 +617,6 @@ function mply:PickupAppearance(role)
 	elseif !isblack then
 		self:SetSkin(0)
 	end
-
 
 	if role.headgear then Bonemerge(role.headgear, self) end
 	if role.hackerhat then Bonemerge(role.hackerhat, self) end
@@ -628,10 +631,14 @@ function mply:PickupAppearance(role)
 	if role.bodygroup7 then self:SetBodygroup(7, role.bodygroup7) end
 	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
 	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
-end
 
-function mply:SetRoleStats(role)
-	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
+	if role.cispy then self:SetupCISpy() end
+	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
+	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)  end end
+	
+	if self:HasWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end 
+	self:Namesurvivor()
+    
 	if role.damage_modifiers then self.HeadResist = role.damage_modifiers.HITGROUP_HEAD self.GearResist = role.damage_modifiers.HITGROUP_CHEST self.StomachResist = role.damage_modifiers.HITGROUP_STOMACH self.ArmResist = role.damage_modifiers.HITGROUP_RIGHTARM self.LegResist = role.damage_modifiers.HITGROUP_RIGHTLEG end
 	self:SetNWString("AbilityName", "")
 	self.AbilityTAB = nil
@@ -658,21 +665,7 @@ function mply:SetRoleStats(role)
 	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
 	if role.stamina then self:SetStaminaScale(role.stamina) end
 	if role.maxslots then self:SetMaxSlots(role.maxslots) end
-end
 
-function mply:ApplyRoleStats(role)
-	self:SurvivorCleanUp()
-	self:SetRoleName( role.name )
-	self:SetGTeam( role.team )
-	self:PickupAppearance(role)
-	self:SetRoleStats(role)
-	if role.cispy then self:SetupCISpy() end
-	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
-	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)  end end
-	
-	if self:HasWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end 
-	self:Namesurvivor()
-    
 	if self:GTeam() == TEAM_CLASSD and self:IsPremium() then self:SetBodygroup(0,math.random(0,4)) end
 	self:Flashlight( false )
 	net.Start("RolesSelected")
@@ -805,14 +798,14 @@ function mply:AddExp(amount, msg)
 	local xp = self:GetNEXP()
 	local lvl = self:GetNLevel()
 
-	if self:GetNEXP() < 0 then
-		self:SetNEXP(1)
+	if xp > (680 * math.max(1, self:GetNLevel())) then
+		self:SetNEXP(xp - (680 * math.max(1, self:GetNLevel())))
+		self:SetNLevel( self:GetNLevel() + 1 )
+		self:SetPData( "breach_level", self:GetNLevel() )
 	end
 
-	if xp > (680 * math.max(1, self:GetNLevel())) then
-		self:AddLevel(lvl + 1)
-		self:SetNEXP(xp - (680 * math.max(1, self:GetNLevel())))
-		self:SaveLevel()
+	if self:GetNEXP() < 0 then
+		self:SetNEXP(1)
 	end
 	
 end
@@ -832,6 +825,7 @@ function mply:AddLevel(amount)
 		end
 	end
 end
+
 
 function mply:SurvivorSetRoleName(name)
 	local rl = nil

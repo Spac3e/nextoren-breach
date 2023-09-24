@@ -449,6 +449,24 @@ function RoundRestart()
 		roundEnd = CurTime() + GetRoundTime() + 3
 		hook.Run( "BreachRound" )
 		timer.Create("RoundTime", GetRoundTime(), 1, function()
+			net.Start("New_SHAKYROUNDSTAT") 
+                net.WriteString("l:roundend_alphawarhead")
+                net.WriteFloat(27)
+            net.Broadcast()
+
+			AlphaWarheadBoomEffect()
+				for k,v in pairs(player.GetAll()) do
+				if v:GTeam() != TEAM_SPEC then
+					v:KillSilent()
+				v:SendLua("surface.PlaySound(\"nextoren/ending/nuke.mp3\")")
+				v:ScreenFade( SCREENFADE.OUT, Color( 255, 255, 255, 255 ), 0.6, 4 )
+				v:SendLua("util.ScreenShake( Vector( 0, 0, 0 ), 50, 10, 3, 5000 )")		
+				end
+				end
+			timer.Simple(27, function()
+					RoundRestart()
+				end)
+
 			postround = false
 			postround = true	
 			print( "post init: good" )
@@ -469,7 +487,6 @@ function RoundRestart()
 			hook.Run( "BreachPostround" )
 			--timer.Create("PostTime", GetPostTime(), 1, function()
 				print( "restarting round" )
-				RoundRestart()
 			--end)		
 		end)
 	end)

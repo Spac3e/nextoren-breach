@@ -31,7 +31,7 @@ function ENT:Initialize()
 
 	if ( SERVER ) then
 
-	  timer.Simple( 15, function()
+	  timer.Simple( 10, function()
 
 	    self:SetLoaded( true )
 
@@ -120,12 +120,3 @@ function ENT:Draw()
   end
 
 end
-
-function ENT:Think()
-	SetGlobalBool( "NukeTime", true )
-end
-
-function ENT:OnRemove()
-
-end
-

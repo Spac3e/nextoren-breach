@@ -19,7 +19,7 @@ SWEP.PrimaryAttackDamageWindow = 0.1
 SWEP.PrimaryDamage = 45
 SWEP.SecondaryDamage = 80
 
-SWEP.PrimaryStamina = 5
+SWEP.PrimaryStamina = 2
 SWEP.SecondaryStamina = 10
 SWEP.DamageForce = 2
 
@@ -276,6 +276,8 @@ function SWEP:IndividualThink()
 
             if ( self:isBackstab( ent ) ) then
 
+              if IsValid(ent) and ent:IsPlayer() then self.Owner:CompleteAchievement("backstab") end
+
               dmg = self.PrimaryDamage * math.random( 3, 4 )
 
             else
@@ -292,6 +294,26 @@ function SWEP:IndividualThink()
             damageInfo:SetInflictor( self )
             damageInfo:SetDamageForce( forward * self.DamageForce * forceDir )
             damageInfo:SetDamagePosition( trace.HitPos )
+
+            if ent.DamageModifier then
+              damageInfo:ScaleDamage(ent.DamageModifier)
+            end
+
+            if ent:IsPlayer() and ent:GTeam() == TEAM_SCP and ent:GetRoleName() == SCP096 then
+              if !table.HasValue(ent:GetActiveWeapon().victims, self.Owner) and self.Owner:GTeam() != TEAM_DZ then
+                table.insert( ent:GetActiveWeapon().victims, self.Owner )
+
+                net.Start( "GetVictimsTable" )
+
+                  net.WriteTable( ent:GetActiveWeapon().victims )
+
+                net.Send( ent )
+
+                if !ent:GetActiveWeapon().IsInRage and !ent:GetActiveWeapon().IsCrying then
+                  ent:GetActiveWeapon():StartWatching()
+                end
+              end
+            end
 
             ent:TakeDamageInfo( damageInfo )
 
@@ -362,7 +384,8 @@ function SWEP:PrimaryAttack()
 
   if ( self.Owner:GetStamina() ) then
 
-    self.Owner:SetStamina( math.Clamp( self.Owner:GetStamina() - self.PrimaryStamina, 0, 100 ) )
+    self.Owner.Stamina = ( math.Clamp( self.Owner.Stamina - self.PrimaryStamina, 0, 100 ) )
+    self.Owner:SetStamina(self.Owner.Stamina)
 
   end
 
