@@ -609,6 +609,7 @@ function mply:PickupAppearance(role)
 	end
 
 	if role.headgear then Bonemerge(role.headgear, self) end
+	if role.hackerhat then Bonemerge(role.hackerhat, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
 	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
 	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
