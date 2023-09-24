@@ -534,7 +534,7 @@ end
 
 function mply:PickupAppearance(role)
 	local isblack = math.random(1,3) == 1
-	if role["white"] then isblack = false end
+	if role.white == true then isblack = false end
 	local HeadModel = istable(role["head"]) and table.Random(role["head"]) or role["head"]
 
 	if role.models and role.fmodels then
@@ -562,19 +562,21 @@ function mply:PickupAppearance(role)
 	if role.head then Bonemerge(HeadModel,self) end
 
 	if role["usehead"] then
-		if role["randomizehead"] and !self:IsFemale() then
-			Bonemerge(PickHeadModel(self:SteamID64()),self)
-		end
-		if self:IsFemale() then
-			Bonemerge(PickHeadModel(self:SteamID64(),true),self)
+		if role["randomizehead"] then
+			if !self:IsFemale() then
+				Bonemerge(PickHeadModel(self:SteamID64()), self)
+			elseif self:IsFemale() then
+				Bonemerge(PickHeadModel(self:SteamID64(), true), self)
+			end
 		else
-			Bonemerge("models/cultist/heads/male/male_head_1.mdl",self)
+			Bonemerge("models/cultist/heads/male/male_head_1.mdl", self)
 		end
 	end
 
-	if role["randomizeface"] or role.white != true then
-		for k,v in pairs(self:LookupBonemerges()) do 
+	if role["randomizeface"] or !role["white"] then
+		for k,v in pairs(self:LookupBonemerges()) do
 			if CORRUPTED_HEADS[v:GetModel()] then v:SetSubMaterial(1, PickFaceSkin(isblack,self:SteamID64(),false)) end
+			if v:GetModel():find("fat_heads") then return end
 			if v:GetModel():find("heads") or v:GetModel():find("balaclavas_new") then
 				if !self:IsFemale() then
 				v:SetSubMaterial(0, PickFaceSkin(isblack,self:SteamID64(),false))
@@ -588,7 +590,7 @@ function mply:PickupAppearance(role)
 	
 	local HairModel = nil
 	if math.random(1, 5) > 1 then
-		if isblack and role["blackhairm"] then
+		if isblack and !self:IsFemale() and role["blackhairm"] then
 			HairModel = role["blackhairm"][math.random(1, #role["blackhairm"])]
 		elseif role["hairm"] and !self:IsFemale() then
 			HairModel = role["hairm"][math.random(1, #role["hairm"])]
@@ -601,12 +603,17 @@ function mply:PickupAppearance(role)
 		if HairModel == "" or HairModel == nil then return end
 		Bonemerge(HairModel,self)
 	end
-	
-	if role.skin then
-		self:SetSkin(role.skin) 
-	elseif isblack == true and self:GetModel():find("class_d") then
+   	
+	if isblack and self:GetModel():find("class_d") then
 		self:SetSkin(1)
 	end
+
+	if role.skin then
+		self:SetSkin(role.skin)
+	elseif !isblack then
+		self:SetSkin(0)
+	end
+
 
 	if role.headgear then Bonemerge(role.headgear, self) end
 	if role.hackerhat then Bonemerge(role.hackerhat, self) end
