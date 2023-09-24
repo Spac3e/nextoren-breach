@@ -62,6 +62,8 @@ function ClientSpawnHelicopter()
 					if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
 						PickGenericSong()
 						helicopter:Remove()
+						net.Start("ProceedUnfreezeSUP",true)
+						net.SendToServer()
 					end
 				end )
 			end
@@ -3225,6 +3227,7 @@ net.Receive( "PrepStart", function( len )
 	timefromround = CurTime() + 10
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
 	if LocalPlayer():GTeam() == TEAM_GUARD then
+		Nextoren_MTF_Intro()
 		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
 		LocalPlayer().cantopeninventory = true
 		hook.Add("HUDShouldDraw", "MTF_HIDEHUD", function()

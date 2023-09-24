@@ -307,7 +307,6 @@ function BREACH.Round_Open_Dblock()
 end
 
 function RestartGame()
-	SetGlobalInt("RoundUntilRestart", 10)
 	game.ConsoleCommand("changelevel "..game.GetMap().."\n")
 end
 
@@ -401,17 +400,21 @@ function RoundTypeUpdate()
 	end
 end
 
+function GM:Initialize()
+	SetGlobalInt("RoundUntilRestart", 10)
+end
+
 function RoundRestart()
 	print("round: starting")
 	CleanUp()
-	if GetConVar("br_rounds"):GetInt() > 0 then
-		if rounds == GetConVar("br_rounds"):GetInt() then
-			RestartGame()
+	if GetGlobalInt("RoundUntilRestart") then
+		if GetGlobalInt("RoundUntilRestart", 10) < 1 then
+			--RestartGame()
 		end
-		rounds = rounds + 1
+		SetGlobalInt("RoundUntilRestart", GetGlobalInt("RoundUntilRestart") -1)
 	else
 		rounds = 0
-	end	
+	end
 	CleanUpPlayers()
 	preparing = true
 	postround = false

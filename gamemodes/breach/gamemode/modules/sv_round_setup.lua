@@ -50,34 +50,20 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 
 	elseif all_start < 30 then
 
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.39), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
-		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		security = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
 		all = all - security['count']
 	
-		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		mtf = {['count'] = math.Round(all_start * 0.3), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
+		all = all - mtf['count']
+
+		scientist = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
 		all = all - scientist['count']
 	
-		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-		all = all - medicine['count']
-	
-		service = {['count'] = math.Round(all_start * 0.04), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-		all = all - service['count']
-	
-		cancelar = {['count'] = math.Round(all_start * 0.16), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-		all = all - cancelar['count']
-	
-		technical = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-		all = all - technical['count']
-	
-		logist = {['count'] = math.Round(all_start * 0.07), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-		all = all - logist['count']
-	
-		admin = {['count'] = all, ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
-	
-		print("Класс-Д: "..classd['count'], "СБ: "..security['count'], "Уч: "..scientist['count'], "Мед: "..medicine['count'], "Обслуж.: "..service['count'], "Канцеляр.: "..cancelar['count'], "Тех.: "..technical['count'], "Лог.: "..logist['count'], "Админ.: "..admin['count'])
-		return {classd, security, scientist, medicine, service, cancelar, technical, logist, admin}
+		print("Класс-Д: "..classd['count'],"МОГ: "..mtf['count'], "СБ: "..security['count'], "Уч: "..scientist['count'])
+		return {classd, security, mtf, scientist}
 
 	else
 
@@ -162,4 +148,3 @@ end
 local function PlayerLevelSorter(a, b)
 	if a:GetLevel() > b:GetLevel() then return true end
 end
-

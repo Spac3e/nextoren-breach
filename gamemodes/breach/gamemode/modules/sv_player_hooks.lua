@@ -468,7 +468,8 @@ do
 			weapon = self:BrGive(className, bNoAmmo) 
 		self.BrWeaponGive = nil
 		
-        if is_cw then weapon:SetClip1(wepent.SavedAmmo) end
+		local savedammo = wepent.SavedAmmo or 0
+        if is_cw then weapon:SetClip1(savedammo) end
 
 		return weapon
 	end
