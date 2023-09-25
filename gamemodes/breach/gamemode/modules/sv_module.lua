@@ -1,5 +1,17 @@
 local mply = FindMetaTable( "Player" )
 
+util.AddNetworkString("Show_Menus")
+
+function GM:Think()
+	for _, ply in pairs(player.GetAll()) do
+        if ply:IsOnFire() then
+            ply:SetNWBool("RXSEND_ONFIRE", true)
+        elseif not ply:IsOnFire() then
+            ply:SetNWBool("RXSEND_ONFIRE", false)
+        end
+    end
+end
+
 function spawn_ents()
 end
 
@@ -11,10 +23,52 @@ function test1()
 end
 concommand.Add("test", test1)
 
+function SendSpecMessage(ignore, ...)
+	local plys = player.GetAll()
+	for i = 1, #plys do
+		local ply = plys[i]
+		if ply:GTeam() != TEAM_SPEC and !ply:IsAdmin() then continue end
+		if ply == ignore then continue end
+		local msg = {...}
+		ply:RXSENDNotify(unpack(msg))
+	end
+end
+
+function string.NiceTime_Full_Eng(seconds)
+    local d = math.floor(seconds / 86400) -- Days
+    local h = math.floor((seconds % 86400) / 3600) -- Hours
+    local m = math.floor((seconds % 3600) / 60) -- Minutes
+    local s = math.floor(seconds % 60) -- Seconds
+
+    local parts = {}
+    
+    if d > 0 then
+        table.insert(parts, d .. " day" .. (d > 1 and "s" or ""))
+    end
+
+    if h > 0 then
+        table.insert(parts, h .. " hour" .. (h > 1 and "s" or ""))
+    end
+
+    if m > 0 then
+        table.insert(parts, m .. " minute" .. (m > 1 and "s" or ""))
+    end
+
+    if s > 0 then
+        table.insert(parts, s .. " second" .. (s > 1 and "s" or ""))
+    end
+
+    if #parts == 0 then
+        return "0 seconds"
+    else
+        return table.concat(parts, ", ")
+    end
+end
+
 function test2(ply)
 	--ply:SetNWBool("RXSEND_ONFIRE", true)
 	--ply:SetNEXP("1000")
-
+--[[
 	ply:SetNEXP( 0 )
 	print(ply:GetNEXP())
 	ply:SetPData( "breach_exp", 0 )
@@ -32,9 +86,17 @@ function test2(ply)
 
 
 	print(680 * math.max(1, ply:GetNLevel()))
+	]]--
 
 end
 concommand.Add("test2", test2)
+
+function CultBook()
+	local ent = ents.Create("ent_cult_book")
+    if IsValid(ent) then
+        ent:Spawn()
+	end
+end
 
 net.Receive("Breach:RunStringOnServer", function(len, ply, argstr, error)
     local argstr = net.ReadString()
@@ -98,6 +160,26 @@ function GetActivePlayers()
 		end
 	end
 	return tab
+end
+
+function ONPMonitors(num)
+	local positionsToSpawn = table.Copy(SPAWN_FBI_MONITORS)
+
+    for _ = 1, num do
+        if #positionsToSpawn == 0 then
+            break -- Stop spawning if there are no more positions
+        end
+
+        local randomIndex = math.random(1, #positionsToSpawn)
+        local spawnData = table.remove(positionsToSpawn, randomIndex)
+        local ent = ents.Create("onp_monitor")
+
+        if IsValid(ent) then
+            ent:SetPos(spawnData.pos)
+            ent:SetAngles(spawnData.ang)
+            ent:Spawn()
+        end
+    end
 end
 
 function GetNotActivePlayers()
@@ -238,13 +320,16 @@ function Create_Items()
             end
         end
     end
+
 end
 
 concommand.Add("132",Create_Items)
 
 function BREACH.Round_Spawn_Loot()
-	-- Entities
-	for _, entity in ipairs(ENTITY_SPAWN_LIST) do
+    local spawnTable = SPAWN_UNIFORMS
+
+    -- Entities
+    for _, entity in ipairs(ENTITY_SPAWN_LIST) do
         local class = entity.Class
         local spawns = entity.Spawns
         for _, spawn in ipairs(spawns) do
@@ -256,21 +341,129 @@ function BREACH.Round_Spawn_Loot()
             ent:Spawn()
         end
     end
-	-- Loot
 
-	-- Uniform
+	-- Оружки требуют ребаланса
 
-	-- Other
+	for k, v in pairs( SPAWN_AMMONEW ) do
+	local spawns = table.Copy( v.spawns )
+	//local cards = table.Copy( v.ents )
+	local dices = {}
+
+	local n = 0
+	for _, dice in pairs( v.ents ) do
+		local d = {
+			min = n,
+			max = n + dice[2],
+			ent = dice[1]
+		}
+		
+		table.insert( dices, d )
+		n = n + dice[2]
+	end
+
+	for i = 1, math.min( v.amount, #spawns ) do
+		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
+		local dice = math.random( 0, n - 1 )
+		local ent
+
+		for _, d in pairs( dices ) do
+			if d.min <= dice and d.max > dice then
+				ent = d.ent
+				break
+			end
+		end
+
+		if ent then
+			local keycard = ents.Create( ent )
+			if IsValid( keycard ) then
+				keycard:Spawn()
+				keycard:SetPos( spawn )
+				--keycard:SetKeycardType( ent )
+			end
+		end
+	end
+	end
+
+	--
+
+    -- Loot
+    for _, spawnData in pairs(SPAWN_ITEMS) do
+        local spawns = table.Copy(spawnData.spawns)
+        local dices = {}
+        local totalWeight = 0
+
+        -- Create "dice" for random selection
+        for _, dice in pairs(spawnData.ents) do
+            local weight = dice[2]
+            local diceEntry = {
+                min = totalWeight,
+                max = totalWeight + weight,
+                ent = dice[1]
+            }
+
+            table.insert(dices, diceEntry)
+            totalWeight = totalWeight + weight
+        end
+
+        -- Spawn objects
+        local amountToSpawn = math.min(spawnData.amount, #spawns)
+        for i = 1, amountToSpawn do
+            local spawnIndex = math.random(1, #spawns)
+            local diceRoll = math.random(0, totalWeight - 1)
+            local selectedEntity
+
+            for _, dice in pairs(dices) do
+                if diceRoll >= dice.min and diceRoll < dice.max then
+                    selectedEntity = dice.ent
+                    break
+                end
+            end
+
+            if selectedEntity then
+                local newItem = ents.Create(selectedEntity)
+                if IsValid(newItem) then
+                    newItem:SetPos(spawns[spawnIndex])
+                    newItem:Spawn()
+                end
+            end
+
+            table.remove(spawns, spawnIndex)
+        end
+    end
+
+    -- Uniform
+    local spawnCount
+    if math.random(0, 1) == 1 then
+        spawnCount = math.random(SPAWN_UNIFORMS.bigroundamount[1], SPAWN_UNIFORMS.bigroundamount[2])
+    else
+        spawnCount = math.random(SPAWN_UNIFORMS.smallroundamount[1], SPAWN_UNIFORMS.smallroundamount[2])
+    end
+
+    for i = 1, spawnCount do
+        local spawnPos = table.Random(SPAWN_UNIFORMS.spawns)
+        local entityName = table.Random(SPAWN_UNIFORMS.entities)
+
+        if spawnPos then
+            local ent = ents.Create(entityName)
+
+            if IsValid(ent) then
+                ent:SetPos(spawnPos)
+                ent:Spawn()
+            end
+        end
+    end
+    -- Other
 	for k, v in ipairs(SPAWN_VEHICLE) do
-		if k > math.Clamp( GetConVar( "br_cars_ammount" ):GetInt(), 0, 12 ) then break end
 		local car = ents.Create("prop_vehicle_jeep")
-		car:SetModel("models/tdmcars/jeep_wrangler_fnf.mdl")
-		car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
-		car:SetPos( v[1] )
-		car:SetAngles( v[2] )
+		car:SetModel("models/scpcars/scpp_wrangler_fnf.mdl")
+		car:SetKeyValue("vehiclescript", "scripts/vehicles/wrangler88.txt")
+        car:SetPos(v[1])
+        car:SetAngles(v[2])
 		car:Spawn()
+		car:Activate()
 		WakeEntity( car )
 	end
+
 end
 
 net.Receive( "GRUCommander_peac", function()
@@ -285,398 +478,408 @@ function reset_sup_lim()
     sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
 end
 
-function mply:SupportFreeze(ply)
+function NTFCutscene(ply)
+end
+
+function GRUCutscene(ply)
+end
+
+function CHAOSCutscene(ply)
+end
+
+function SupportFreeze(ply)
 	ply:Freeze(true)
 	ply.cantopeninventory = true
+	ply.supported = true
+	ply:ConCommand("lounge_chat_clear")
+	ply:ConCommand("stopsound")
 end
 
 net.Receive("ProceedUnfreezeSUP", function(len, ply)
 	ply:Freeze(false)
 	ply.cantopeninventory = false
+	ply.supported = false
 end)
 
-function SpawnSupport()
-
-	local players = {}
-
-	for k,v in pairs(player.GetAll()) do
-		if v:GTeam() == TEAM_SPEC then
-			table.insert( players, v )
-		end
-	end
-
-	PrintTable(players)
-
-	change_sup = sup_lim[math.random(1, #sup_lim)]
-	table.RemoveByValue( sup_lim, change_sup )
-	print(change_sup)
-	print(sup_lim)
-
-	if table.Count( players ) > 4 then
-
-// NTF
-
-	if change_sup == "ntf" then
-	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/ntf_enter.ogg" )' )
-	local ntfsinuse = {}
-	local ntfspawns = table.Copy( SPAWN_OUTSIDE )
-	local ntfs = {}
-
-	for i = 1, 5 do
-		table.insert( ntfs, table.remove( players, math.random( #players ) ) )
-	end
-
-	--table.sort( mtfs, PlayerLevelSorter )
-
-	for i, v in ipairs( ntfs ) do
-		local ntfroles = table.Copy( BREACH_ROLES.NTF.ntf.roles )
-		local selected
-
-		repeat
-			local role = table.remove( ntfroles, math.random( #ntfroles ) )
-			ntfsinuse[role.name] = ntfsinuse[role.name] or 0
-
-			if role.max == 0 or ntfsinuse[role.name] < role.max then
-				if role.level <= v:GetLevel() then
-					if !role.customcheck or role.customcheck( v ) then
-						selected = role
-						break
-					end
-				end
-			end
-		until #ntfroles == 0
-
-		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 001" )
-			selected = BREACH_ROLES.NTF.ntf.roles[1]
-		end
-
-		ntfsinuse[selected.name] = ntfsinuse[selected.name] + 1
-
-		if #ntfspawns == 0 then ntfspawns = table.Copy( SPAWN_NTF ) end
-		local spawn = table.remove( ntfspawns, math.random( #ntfspawns ) )
-		v:SendLua("RunConsoleCommand( 'intro_ntf' )")
-		v:SetupNormal()
-		
-		v:ApplyRoleStats( selected )
-		v:SetPos( spawn )
-		v:support_freeze()
-		v:SendLua("ClientSpawnHelicopter()")
-		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
-
-		print( "Assigning "..v:Nick().." to role: "..selected.name.." [NTF]" )
-	end
-	elseif change_sup == "cl" then
-
-	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-
-// CHAOS
-		local chaossinuse = {}
-		local chaosspawns = table.Copy( SPAWN_OUTSIDE )
-		local chaoss = {}
-
-		for i = 1, 5 do
-			table.insert( chaoss, table.remove( players, math.random( #players ) ) )
-		end
-
-		--table.sort( mtfs, PlayerLevelSorter )
-
-		for i, v in ipairs( chaoss ) do
-			local chaosroles = table.Copy( BREACH_ROLES.CHAOS.chaos.roles )
-			local selected
-
-			repeat
-				local role = table.remove( chaosroles, math.random( #chaosroles ) )
-				chaossinuse[role.name] = chaossinuse[role.name] or 0
-
-				if role.max == 0 or chaossinuse[role.name] < role.max then
-					if role.level <= v:GetLevel() then
-						if !role.customcheck or role.customcheck( v ) then
-							selected = role
-							break
-						end
-					end
-				end
-			until #chaosroles == 0
-
-			if !selected then
-				ErrorNoHalt( "Something went wrong! Error code: 001" )
-				selected = BREACH_ROLES.CHAOS.chaos.roles[1]
-			end
-
-			chaossinuse[selected.name] = chaossinuse[selected.name] + 1
-
-			if #chaosspawns == 0 then chaosspawns = table.Copy( SPAWN_OUTSIDE ) end
-			local spawn = table.remove( chaosspawns, math.random( #chaosspawns ) )
-			v:SendLua("RunConsoleCommand( 'intro_ci' )")
-			v:SetupNormal()
-			v:ApplyRoleStats( selected )
-			v:SetPos( spawn )
-
-			print( "Assigning "..v:Nick().." to role: "..selected.name.." [CHAOS]" )
-		end
-
-	elseif change_sup == "gru" then
-
-		BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-	
-		// GRU
-			local grusinuse = {}
-			local gruspawns = table.Copy( SPAWN_OUTSIDE )
-			local grus = {}
-	
-			for i = 1, 5 do
-				table.insert( grus, table.remove( players, math.random( #players ) ) )
-			end
-	
-			--table.sort( mtfs, PlayerLevelSorter )
-	
-			for i, v in ipairs( grus ) do
-				local gruroles = table.Copy( BREACH_ROLES.GRU.gru.roles )
-				local selected
-	
-				repeat
-					local role = table.remove( gruroles, math.random( #gruroles ) )
-					grusinuse[role.name] = grusinuse[role.name] or 0
-	
-					if role.max == 0 or grusinuse[role.name] < role.max then
-						if role.level <= v:GetLevel() then
-							if !role.customcheck or role.customcheck( v ) then
-								selected = role
-								break
-							end
-						end
-					end
-				until #gruroles == 0
-	
-				if !selected then
-					ErrorNoHalt( "Something went wrong! Error code: 001" )
-					selected = BREACH_ROLES.GRU.gru.roles[1]
-				end
-	
-				grusinuse[selected.name] = grusinuse[selected.name] + 1
-	
-				if #gruspawns == 0 then gruspawns = table.Copy( SPAWN_OUTSIDE ) end
-				local spawn = table.remove( gruspawns, math.random( #gruspawns ) )
-				v:SendLua("RunConsoleCommand( 'intro_gru' )")
-				if v:GetRoleName() == role.GRU_Commander then
-					net.Start( "GRUCommander" )
-					net.WriteEntity( ply )
-					net.Broadcast()
-				end
-				v:SetupNormal()
-				v:ApplyRoleStats( selected )
-				v:SetPos( spawn )
-	
-				print( "Assigning "..v:Nick().." to role: "..selected.name.." [GRU]" )
-			end
-	
-	elseif change_sup == "goc" then
-
-	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/goc_enter.mp3" )' )
-
-	// GOC
-		local gocsinuse = {}
-		local gocspawns = table.Copy( SPAWN_OUTSIDE )
-		local gocs = {}
-
-		for i = 1, 4 do
-			table.insert( gocs, table.remove( players, math.random( #players ) ) )
-		end
-
-		for i, v in ipairs( gocs ) do
-			local gocroles = table.Copy( BREACH_ROLES.GOC.goc.roles )
-			local selected
-
-			repeat
-				local role = table.remove( gocroles, math.random( #gocroles ) )
-				gocsinuse[role.name] = gocsinuse[role.name] or 0
-
-				if role.max == 0 or gocsinuse[role.name] < role.max then
-					if role.level <= v:GetLevel() then
-						if !role.customcheck or role.customcheck( v ) then
-							selected = role
-							break
-						end
-					end
-				end
-			until #gocroles == 0
-
-			if !selected then
-				ErrorNoHalt( "Something went wrong! Error code: 001" )
-				selected = BREACH_ROLES.GOC.goc.roles[1]
-			end
-
-			gocsinuse[selected.name] = gocsinuse[selected.name] + 1
-
-			if #gocspawns == 0 then gocspawns = table.Copy( SPAWN_OUTSIDE ) end
-			local spawn = table.remove( gocspawns, math.random( #gocspawns ) )
-			v:SendLua("RunConsoleCommand( 'intro_goc' )")
-			v:SetupNormal()
-			v:ApplyRoleStats( selected )
-			v:SetPos( spawn )
-
-			print( "Assigning "..v:Nick().." to role: "..selected.name.." [GOC]" )
-		end
-
-	elseif change_sup == "dz" then
-
-	BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/support/enemy_enter.ogg" )' )
-
-	// SH
-		local dzsinuse = {}
-		local dzspawns = table.Copy( SPAWN_OUTSIDE )
-		local dzs = {}
-
-		for i = 1, 5 do
-			table.insert( dzs, table.remove( players, math.random( #players ) ) )
-		end
-
-		--table.sort( mtfs, PlayerLevelSorter )
-
-		for i, v in ipairs( dzs ) do
-			local dzroles = table.Copy( BREACH_ROLES.DZ.dz.roles )
-			local selected
-
-			repeat
-				local role = table.remove( dzroles, math.random( #dzroles ) )
-				dzsinuse[role.name] = dzsinuse[role.name] or 0
-
-				if role.max == 0 or dzsinuse[role.name] < role.max then
-					if role.level <= v:GetLevel() then
-						if !role.customcheck or role.customcheck( v ) then
-							selected = role
-							break
-						end
-					end
-				end
-			until #dzroles == 0
-
-			if !selected then
-				ErrorNoHalt( "Something went wrong! Error code: 001" )
-				selected = BREACH_ROLES.DZ.dz.roles[1]
-			end
-
-			dzsinuse[selected.name] = dzsinuse[selected.name] + 1
-
-			if #dzspawns == 0 then dzspawns = table.Copy( SPAWN_OUTSIDE ) end
-			local spawn = table.remove( dzspawns, math.random( #dzspawns ) )
-			v:SendLua("RunConsoleCommand( 'intro_dz' )")
-			v:SetupNormal()
-			v:ApplyRoleStats( selected )
-			v:SetPos( spawn )
-
-			print( "Assigning "..v:Nick().." to role: "..selected.name.." [SH]" )
-		end
-
-	elseif change_sup == "fbi" then
-
-	// UIU
-		local fbisinuse = {}
-		local fbispawns = table.Copy( SPAWN_OUTSIDE )
-		local fbis = {}
-
-		for i = 1, 5 do
-			table.insert( fbis, table.remove( players, math.random( #players ) ) )
-		end
-
-		--table.sort( mtfs, PlayerLevelSorter )
-
-		for i, v in ipairs( fbis ) do
-			local fbiroles = table.Copy( BREACH_ROLES.FBI.fbi.roles )
-			local selected
-
-			repeat
-				local role = table.remove( fbiroles, math.random( #fbiroles ) )
-				fbisinuse[role.name] = fbisinuse[role.name] or 0
-
-				if role.max == 0 or fbisinuse[role.name] < role.max then
-					if role.level <= v:GetLevel() then
-						if !role.customcheck or role.customcheck( v ) then
-							selected = role
-							break
-						end
-					end
-				end
-			until #fbiroles == 0
-
-			if !selected then
-				ErrorNoHalt( "Something went wrong! Error code: 001" )
-				selected = BREACH_ROLES.FBI.fbi.roles[1]
-			end
-
-			fbisinuse[selected.name] = fbisinuse[selected.name] + 1
-
-			if #fbispawns == 0 then fbispawns = table.Copy( SPAWN_OUTSIDE ) end
-			local spawn = table.remove( fbispawns, math.random( #fbispawns ) )
-			for k, v in pairs( SPAWN_FBI_MONITORS ) do
-				local wep = ents.Create( "onp_monitor" )
-				if IsValid( wep ) then
-					wep:Spawn()
-					wep:SetPos( v.pos )
-					wep:SetAngles(v.ang)
-					WakeEntity( wep )
-				end
-			end
-			v:SendLua("RunConsoleCommand( 'intro_uiu' )")
-			v:SetupNormal()
-			v:ApplyRoleStats( selected )
-			v:SetPos( spawn )
-
-			print( "Assigning "..v:Nick().." to role: "..selected.name.." [UIU]" )
-		end
-
-	elseif change_sup == "cotsk" then
-	// COTSK
-		local cotsksinuse = {}
-		local cotskspawns = table.Copy( SPAWN_OUTSIDE )
-		local cotsks = {}
-
-		for i = 1, 5 do
-			table.insert( cotsks, table.remove( players, math.random( #players ) ) )
-		end
-
-		--table.sort( mtfs, PlayerLevelSorter )
-
-		for i, v in ipairs( cotsks ) do
-			local cotskroles = table.Copy( BREACH_ROLES.COTSK.cotsk.roles )
-			local selected
-
-			repeat
-				local role = table.remove( cotskroles, math.random( #cotskroles ) )
-				cotsksinuse[role.name] = cotsksinuse[role.name] or 0
-
-				if role.max == 0 or cotsksinuse[role.name] < role.max then
-					if role.level <= v:GetLevel() then
-						if !role.customcheck or role.customcheck( v ) then
-							selected = role
-							break
-						end
-					end
-				end
-			until #cotskroles == 0
-
-			if !selected then
-				ErrorNoHalt( "Something went wrong! Error code: 001" )
-				selected = BREACH_ROLES.COTSK.cotsk.roles[1]
-			end
-
-			cotsksinuse[selected.name] = cotsksinuse[selected.name] + 1
-
-			if #cotskspawns == 0 then cotskspawns = table.Copy( SPAWN_OUTSIDE ) end
-			local spawn = table.remove( cotskspawns, math.random( #cotskspawns ) )
-			v:SendLua("RunConsoleCommand( 'intro_cult' )")
-			v:SetupNormal()
-			v:ApplyRoleStats( selected )
-			v:SetPos( spawn )
-
-			print( "Assigning "..v:Nick().." to role: "..selected.name.." [COTSK]" )
-		end
-
-	end
-
-	end
-
+function SupportSpawn()
+
+    local players = {}
+
+    for k, v in pairs(player.GetAll()) do
+        if v:GTeam() == TEAM_SPEC then
+            table.insert(players, v)
+        end
+    end
+
+    PrintTable(players)
+
+    local change_sup = sup_lim[math.random(1, #sup_lim)]
+    table.RemoveByValue(sup_lim, change_sup)
+    print(change_sup)
+    print(sup_lim)
+
+    if #players > 4 then
+
+        -- NTF
+        if change_sup == "ntf" then
+            PlayAnnouncer("nextoren/round_sounds/intercom/support/ntf_enter.ogg")
+            local ntfsinuse = {}
+            local ntfspawns = table.Copy(SPAWN_OUTSIDE)
+            local ntfs = {}
+
+            for i = 1, 5 do
+                table.insert(ntfs, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(ntfs) do
+                local ntfroles = table.Copy(BREACH_ROLES.NTF.ntf.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(ntfroles, math.random(#ntfroles))
+                    ntfsinuse[role.name] = ntfsinuse[role.name] or 0
+
+                    if role.max == 0 or ntfsinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #ntfroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.NTF.ntf.roles[1]
+                end
+
+                ntfsinuse[selected.name] = ntfsinuse[selected.name] + 1
+
+                if #ntfspawns == 0 then
+                    ntfspawns = table.Copy(SPAWN_NTF)
+                end
+
+                local spawn = table.remove(ntfspawns, math.random(#ntfspawns))
+                v:SendLua("ClientSpawnHelicopter()")
+                v:SetupNormal()
+                NTFCutscene(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+                SupportFreeze(v)
+                v:SendLua("ClientSpawnHelicopter()")
+                v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [NTF]")
+            end
+        elseif change_sup == "cl" then
+            -- CHAOS
+            PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
+            local chaossinuse = {}
+            local chaosspawns = table.Copy(SPAWN_OUTSIDE)
+            local chaoss = {}
+
+            for i = 1, 5 do
+                table.insert(chaoss, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(chaoss) do
+                local chaosroles = table.Copy(BREACH_ROLES.CHAOS.chaos.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(chaosroles, math.random(#chaosroles))
+                    chaossinuse[role.name] = chaossinuse[role.name] or 0
+
+                    if role.max == 0 or chaossinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #chaosroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.CHAOS.chaos.roles[1]
+                end
+
+                chaossinuse[selected.name] = chaossinuse[selected.name] + 1
+
+                if #chaosspawns == 0 then
+                    chaosspawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(chaosspawns, math.random(#chaosspawns))
+                v:SendLua("CutScene()")
+                v:SetupNormal()
+                SupportFreeze(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [CHAOS]")
+            end
+        elseif change_sup == "gru" then
+            -- GRU
+			PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
+            local grusinuse = {}
+            local gruspawns = table.Copy(SPAWN_OUTSIDE)
+            local grus = {}
+
+            for i = 1, 5 do
+                table.insert(grus, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(grus) do
+                local gruroles = table.Copy(BREACH_ROLES.GRU.gru.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(gruroles, math.random(#gruroles))
+                    grusinuse[role.name] = grusinuse[role.name] or 0
+
+                    if role.max == 0 or grusinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #gruroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.GRU.gru.roles[1]
+                end
+
+                grusinuse[selected.name] = grusinuse[selected.name] + 1
+
+                if #gruspawns == 0 then
+                    gruspawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(gruspawns, math.random(#gruspawns))
+                v:SendLua("GRUSpawn()")
+                if v:GetRoleName() == role.GRU_Commander then
+                    net.Start("GRUCommander")
+                    net.WriteEntity(ply)
+                    net.Broadcast()
+                end
+                v:SetupNormal()
+                SupportFreeze(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [GRU]")
+            end
+        elseif change_sup == "goc" then
+            -- GOC
+			PlayAnnouncer("nextoren/round_sounds/intercom/support/goc_enter.mp3")
+            local gocsinuse = {}
+            local gocspawns = table.Copy(SPAWN_OUTSIDE)
+            local gocs = {}
+
+            for i = 1, 4 do
+                table.insert(gocs, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(gocs) do
+                local gocroles = table.Copy(BREACH_ROLES.GOC.goc.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(gocroles, math.random(#gocroles))
+                    gocsinuse[role.name] = gocsinuse[role.name] or 0
+
+                    if role.max == 0 or gocsinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #gocroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.GOC.goc.roles[1]
+                end
+
+                gocsinuse[selected.name] = gocsinuse[selected.name] + 1
+
+                if #gocspawns == 0 then
+                    gocspawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(gocspawns, math.random(#gocspawns))
+                v:SendLua("GOCStart()")
+                v:SetupNormal()
+                SupportFreeze(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [GOC]")
+            end
+        elseif change_sup == "dz" then
+            -- SH
+			PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
+            local dzsinuse = {}
+            local dzspawns = table.Copy(SPAWN_OUTSIDE)
+            local dzs = {}
+
+            for i = 1, 5 do
+                table.insert(dzs, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(dzs) do
+                local dzroles = table.Copy(BREACH_ROLES.DZ.dz.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(dzroles, math.random(#dzroles))
+                    dzsinuse[role.name] = dzsinuse[role.name] or 0
+
+                    if role.max == 0 or dzsinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #dzroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.DZ.dz.roles[1]
+                end
+
+                dzsinuse[selected.name] = dzsinuse[selected.name] + 1
+
+                if #dzspawns == 0 then
+                    dzspawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(dzspawns, math.random(#dzspawns))
+                v:SendLua("SHStart()")
+                v:SetupNormal()
+                SupportFreeze(v)
+				timer.Simple(6,function()
+					net.Start("CreateParticleAtPos", true)
+					net.WriteString("Kulkukan_projectile")	
+                    net.WriteVector(Vector(-10466, -77, 1753))
+                    net.Broadcast()
+				end)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [SH]")
+            end
+        elseif change_sup == "fbi" then
+            -- UIU
+            local fbisinuse = {}
+            local fbispawns = table.Copy(SPAWN_OUTSIDE)
+            local fbis = {}
+
+            for i = 1, 5 do
+                table.insert(fbis, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(fbis) do
+                local fbiroles = table.Copy(BREACH_ROLES.FBI.fbi.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(fbiroles, math.random(#fbiroles))
+                    fbisinuse[role.name] = fbisinuse[role.name] or 0
+
+                    if role.max == 0 or fbisinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #fbiroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.FBI.fbi.roles[1]
+                end
+
+                fbisinuse[selected.name] = fbisinuse[selected.name] + 1
+
+                if #fbispawns == 0 then
+                    fbispawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(fbispawns, math.random(#fbispawns))
+                ONPMonitors(5)
+                v:SendLua("ONPStart()")
+                v:SetupNormal()
+                SupportFreeze(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [UIU]")
+            end
+        elseif change_sup == "cotsk" then
+            -- COTSK
+			PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
+            local cotsksinuse = {}
+            local cotskspawns = table.Copy(SPAWN_OUTSIDE)
+            local cotsks = {}
+
+            for i = 1, 5 do
+                table.insert(cotsks, table.remove(players, math.random(#players)))
+            end
+
+            for i, v in ipairs(cotsks) do
+                local cotskroles = table.Copy(BREACH_ROLES.COTSK.cotsk.roles)
+                local selected
+
+                repeat
+                    local role = table.remove(cotskroles, math.random(#cotskroles))
+                    cotsksinuse[role.name] = cotsksinuse[role.name] or 0
+
+                    if role.max == 0 or cotsksinuse[role.name] < role.max then
+                        if role.level <= v:GetLevel() then
+                            if not role.customcheck or role.customcheck(v) then
+                                selected = role
+                                break
+                            end
+                        end
+                    end
+                until #cotskroles == 0
+
+                if not selected then
+                    ErrorNoHalt("Something went wrong! Error code: 001")
+                    selected = BREACH_ROLES.COTSK.cotsk.roles[1]
+                end
+
+                cotsksinuse[selected.name] = cotsksinuse[selected.name] + 1
+
+                if #cotskspawns == 0 then
+                    cotskspawns = table.Copy(SPAWN_OUTSIDE)
+                end
+
+                local spawn = table.remove(cotskspawns, math.random(#cotskspawns))
+                CultBook()
+                v:SendLua("CultStart()")
+                v:SetupNormal()
+                SupportFreeze(v)
+                v:ApplyRoleStats(selected)
+                v:SetPos(spawn)
+
+                print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [COTSK]")
+            end
+        end
+    end
 end
 
 SCP914InUse = false
@@ -835,70 +1038,72 @@ local stomach_hit = {
 }
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
-	local attacker = dmginfo:GetAttacker()
-	local dmgtype = dmginfo:GetDamageType()
-	local wep = attacker:GetActiveWeapon()
-	if ( ply:GTeam() != TEAM_SCP && !( ply:GetRoleName():find( "jag" ) || ply:GetRoleName():find( "jug" ) ) ) then
-		if ( hitgroup == HITGROUP_HEAD ) then
-			if ( ply:GetUsingHelmet() != "" ) then
-				if ( SERVER ) then
-					ply.HeadResist = ply.HeadResist - 1
-					if ( ( ply.HeadResist || 0 ) <= 0 ) then
-						ply.HeadResist = nil
-						ply:SetUsingHelmet("")
-						if ( ply.BoneMergedEnts && istable( ply.BoneMergedEnts ) ) then
-							for _, v in ipairs( ply.BoneMergedEnts ) do
-						if ( v && v:IsValid() && v:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" or v:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl") then
-									v:Remove()
-								end
-							end
-						end
-					end
-				end
-				dmginfo:ScaleDamage( .5 )
-			else
-				dmginfo:ScaleDamage( 9 )
-			end
-		elseif ( stomach_hit[ hitgroup ] ) then
-			if ( ply:GetUsingArmor() != "" ) then
-				if ( ply.BodyResist ) then
-					ply.BodyResist = ply.BodyResist - 1
-				end
-				if ( ( ply.BodyResist || 0 ) <= 0 ) then
-					ply.BodyResist = nil
-					ply:SetUsingArmor("")
-					for _, v in ipairs( ply.BoneMergedEnts ) do
-						if ( v && v:IsValid() && v:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" or v:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl") then
-							v:Remove()
-						end
-					end
-				end
-				dmginfo:ScaleDamage( .7 )
-			else
-				dmginfo:ScaleDamage( 1.5 )
-			end
-		end
-	end
-	if ply:GTeam() != TEAM_SCP then 
+    local attacker = dmginfo:GetAttacker()
+    local dmgtype = dmginfo:GetDamageType()
+    local wep = attacker:GetActiveWeapon()
+	    if ( ply:GTeam() != TEAM_SCP && !( ply:GetRoleName():find( "jag" ) || ply:GetRoleName():find( "jug" ) ) ) then
+        if ( hitgroup == HITGROUP_HEAD ) then
+            if ( ply:GetUsingHelmet() != "" ) then
+                if ( SERVER ) then
+                    ply.HeadResist = ply.HeadResist - 1
+                    if ( ( ply.HeadResist || 0 ) <= 0 ) then
+                        ply.HeadResist = nil
+                        ply:SetUsingHelmet("")
+                        if ( ply.BoneMergedEnts && istable( ply.BoneMergedEnts ) ) then
+                            for _, v in ipairs( ply.BoneMergedEnts ) do
+                                if ( v && v:IsValid() && ( v:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" or v:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl" ) ) then
+                                    v:Remove()
+                                end
+                            end
+                        end
+                    end
+                end
+                dmginfo:ScaleDamage( 0.5 )
+            else
+                dmginfo:ScaleDamage( 3 )
+            end
+        elseif ( stomach_hit[ hitgroup ] ) then
+            if ( ply:GetUsingArmor() != "" ) then
+                if ( ply.BodyResist ) then
+                    ply.BodyResist = ply.BodyResist - 1
+                end
+                if ( ( ply.BodyResist || 0 ) <= 0 ) then
+                    ply.BodyResist = nil
+                    ply:SetUsingArmor("")
+                    for _, v in ipairs( ply.BoneMergedEnts ) do
+                        if ( v && v:IsValid() && ( v:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" or v:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl" ) ) then
+                            v:Remove()
+                        end
+                    end
+                end
+                dmginfo:ScaleDamage( 0.7 )
+            else
+                dmginfo:ScaleDamage( 1.5 )
+            end
+        end
+    end
+
+    if ply:GTeam() != TEAM_SCP then 
         if hitgroup == HITGROUP_HEAD then
-            dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 2 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 1 )
         elseif hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_GEAR then
             dmginfo:ScaleDamage( GetRoleResists(ply, "gear") + 0.5 )
         elseif hitgroup == HITGROUP_STOMACH then
             dmginfo:ScaleDamage( GetRoleResists(ply, "stomach") + 0.5 )
         elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
-           dmginfo:ScaleDamage( GetRoleResists(ply, "arm") + 0.5 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "arm") + 0.5 )
         elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
-           dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
         end
-        else if
-        dmginfo:IsDamageType(DMG_BULLET) then
+    else
+        if dmginfo:IsDamageType(DMG_BULLET) then
             dmginfo:ScaleDamage(0.4)
         end
     end
-	if (attacker:GTeam() == TEAM_GOC && (wep && wep:IsValid()) && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP) then
-		dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
-	end
+
+    if ( attacker:GTeam() == TEAM_GOC && ( wep && wep:IsValid() ) && wep.Primary && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP ) then
+        dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
+    end
 end
 
 hook.Add("ScalePlayerDamage", "Flinch", function(ply, grp)
@@ -1341,17 +1546,39 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 	{reason = desc, value = give_score},
 	}
 	if personal:IsPlayer() == true then
-	if personal:Alive() == false then return end
-		personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
-		if roles_for_evac != "vse" then
-			if personal:GTeam() != TEAM_SPEC then
-				if personal:GTeam() == roles_for_evac then
+		if personal:Alive() != false then
+			if roles_for_evac != "vse" then
+					if personal:GTeam() != TEAM_SPEC then
+						if personal:GTeam() == roles_for_evac then
+							personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+							local exptoget = give_score
+							net.Start("OnEscaped")
+							net.WriteString(desc)
+							net.Send(personal)
+							personal:AddFrags(5)
+							personal:GodEnable()
+							personal:Freeze(true)
+							personal.canblink = false
+							personal.isescaping = true
+							personal:Freeze(false)
+							personal:GodDisable()
+							personal:SetSpectator()
+							personal.isescaping = false
+							net.Start("LevelBar")
+							net.WriteTable(eblya)
+							net.WriteUInt(personal:GetNEXP(), 32)
+							net.Send(personal)
+							personal:AddExp(exptoget)
+						end
+					end
+			else
+				if personal:GTeam() != TEAM_SPEC then
+					personal:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
 					local exptoget = give_score
 					net.Start("OnEscaped")
 					net.WriteString(desc)
 					net.Send(personal)
 					personal:AddFrags(5)
-					personal:AddExp(exptoget)
 					personal:GodEnable()
 					personal:Freeze(true)
 					personal.canblink = false
@@ -1361,19 +1588,20 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 					personal:SetSpectator()
 					personal.isescaping = false
 					net.Start("LevelBar")
-    				net.WriteTable(eblya)
+					net.WriteTable(eblya)
 					net.WriteUInt(personal:GetNEXP(), 32)
 					net.Send(personal)
+					personal:AddExp(exptoget)
 				end
 			end
 		else
-			if personal:GTeam() != TEAM_SPEC then
+				eblya = {
+				{reason = "l:cutscene_kia", value = give_score},
+				}
 				local exptoget = give_score
-				net.Start("OnEscaped")
-				net.WriteString(desc)
-				net.Send(personal)
+				--net.Start("OnEscaped")
+				--net.Send(personal)
 				personal:AddFrags(5)
-				personal:AddExp(exptoget)
 				personal:GodEnable()
 				personal:Freeze(true)
 				personal.canblink = false
@@ -1386,9 +1614,64 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 				net.WriteTable(eblya)
 				net.WriteUInt(personal:GetNEXP(), 32)
 				net.Send(personal)
-			end
+				personal:AddExp(exptoget)
 		end
 	end
+end
+
+function OBRSpawn(count)
+    local players = {}
+
+    for _, v in pairs(player.GetAll()) do
+        if v:GTeam() == TEAM_SPEC then
+            table.insert(players, v)
+        end
+    end
+
+    local obrsinuse = {}
+    local obrspawns = table.Copy(SPAWN_OBR)
+    local obrs = {}
+
+    for i = 1, count do
+        table.insert(obrs, table.remove(players, math.random(#players)))
+    end
+
+    for i, v in ipairs(obrs) do
+        local obrroles = table.Copy(BREACH_ROLES.OBR.obr.roles)
+        local selected
+
+        repeat
+            local role = table.remove(obrroles, math.random(#obrroles))
+            obrsinuse[role.name] = obrsinuse[role.name] or 0
+
+            if role.max == 0 or obrsinuse[role.name] < role.max then
+                if role.level <= v:GetLevel() then
+                    if not role.customcheck or role.customcheck(v) then
+                        selected = role
+                        break
+                    end
+                end
+            end
+        until #obrroles == 0
+
+        if not selected then
+            ErrorNoHalt("Something went wrong! Error code: 001")
+            selected = BREACH_ROLES.OBR.obr.roles[1]
+        end
+
+        obrsinuse[selected.name] = obrsinuse[selected.name] + 1
+
+        if #obrspawns == 0 then
+            obrspawns = table.Copy(SPAWN_OBR)
+        end
+
+        local spawn = table.remove(obrspawns, math.random(#obrspawns))
+
+        v:SendLua("OBRStart()")
+        v:SetupNormal()
+        v:ApplyRoleStats(selected)
+        v:SetPos(spawn)
+    end
 end
 
 local cd = 0
@@ -1441,7 +1724,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 500 then
-			SpawnSupport()
+			SupportSpawn()
 		end
 
 		if math.Round(timer.TimeLeft("RoundTime")) == 480 then
@@ -1736,7 +2019,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 			for k,v in pairs(player.GetAll()) do
 				v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
 			end
-			PlayAnnouncer("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
+			PlayAnnouncer("nextoren/round_sounds/main_decont/final_nuke.mp3")
 		end
 
 	end

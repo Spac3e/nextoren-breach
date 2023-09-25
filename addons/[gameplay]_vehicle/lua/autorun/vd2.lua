@@ -359,7 +359,7 @@ end
 
     if ( speed > 250 ) then
 
-      ply:setBottomMessage("You cannot exit a moving vehicle!")
+      ply:SetBottomMessage("You cannot exit a moving vehicle!")
       return false
 
     end
@@ -700,7 +700,7 @@ end
 
     elseif ( IsFirstTimePredicted() && ply:GetVehicle().TurnedOff && !ply:HasWeapon( "item_keys" ) ) then
 
-      ply:setBottomMessage( "У вас нет ключей." )
+      ply:SetBottomMessage( "У вас нет ключей." )
 
     end
 
@@ -717,7 +717,7 @@ end
 
     if ( vehicle:GetClass() == "prop_vehicle_jeep" && vehicle:GetDriver() == player ) then
 
-      player:setBottomMessage( "Нажмите клавишу \"B\" для активации двигателя.")
+      player:SetBottomMessage( "Нажмите клавишу \"B\" для активации двигателя.")
 
     end
 

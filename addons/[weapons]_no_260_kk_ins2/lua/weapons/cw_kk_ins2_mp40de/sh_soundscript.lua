@@ -1,7 +1,7 @@
 --[[
 Server Name: RXSEND Breach
 Server IP:   46.174.50.119:27015
-File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_mp40de/sh_soundscript.lua
+File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_mp40/sh_soundscript.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -11,7 +11,7 @@ File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_mp40de/sh_so
 --]]
 
 --[[
-lua/weapons/cw_kk_ins2_mp40de/sh_soundscript.lua
+lua/weapons/cw_kk_ins2_mp40/sh_soundscript.lua
 --]]
 
 SWEP.Sounds = {

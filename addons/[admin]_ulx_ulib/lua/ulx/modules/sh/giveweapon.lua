@@ -1,6 +1,3 @@
---[[
-addons/ulx_give_weapon/lua/ulx/modules/sh/giveweapon.lua
---]]
 local CATEGORY_NAME = "Vixokii"
 
 

@@ -195,7 +195,6 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	ply.force = dmginfo:GetDamageForce() * math.random( 2, 4 )
 	ply.type = dmginfo:GetDamageType()
 
-	print(ply.type)
 	if ( attacker && attacker:IsValid() && attacker:IsPlayer() && attacker:GTeam() == TEAM_SCP ) then
 		ply.type = attacker:GetRoleName()
 	end
@@ -241,10 +240,20 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	net.WriteBool(true)
 	net.WriteEntity(self)
 	net.Send(victim)
-	net.Start("LevelBar")
-    net.WriteTable(eblya)
-	net.WriteUInt(victim:GetExp(), 32)
-	net.Send(victim)
+	--net.Start("LevelBar")
+    --net.WriteTable(eblya)
+	--net.WriteUInt(victim:GetExp(), 32)
+	--net.Send(victim)
+	local rtime = (timer.TimeLeft("RoundTime"))
+	if rtime != nil then
+	exptoget = 1000
+	exptoget = (CurTime() - rtime)
+	exptoget = exptoget * 0.05
+	--exptoget = math.Round(math.Clamp(exptoget, 1000, 10000))
+	else
+	exptoget = 249
+	end
+	evacuate(victim,"vse",exptoget,"Kia")
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
@@ -266,12 +275,12 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 			BREACH.Players:ChatPrint( victim, true, true, "l:you_have_been_killed " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , " l:teamkill_report_if_rulebreaker")
 		end
 	end
-	victim:SetRoleName(role.Spectator)
+
 	local wasteam = victim:GTeam()
+	victim:SetRoleName(role.Spectator)
 	victim:SetTeam(TEAM_SPEC)
 	victim:SetGTeam(TEAM_SPEC)
 end
-
 
 function GM:PlayerDisconnected( ply )
 	 ply:SetTeam(TEAM_SPEC)
@@ -459,7 +468,8 @@ do
 			weapon = self:BrGive(className, bNoAmmo) 
 		self.BrWeaponGive = nil
 		
-        if is_cw then weapon:SetClip1(wepent.SavedAmmo) end
+		local savedammo = wepent.SavedAmmo or 0
+        if is_cw then weapon:SetClip1(savedammo) end
 
 		return weapon
 	end

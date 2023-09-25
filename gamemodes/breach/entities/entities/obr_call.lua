@@ -10,11 +10,12 @@ function ENT:SetupDataTables()
 
   self:NetworkVar("Bool", 0, "Activate")
   self:NetworkVar("Bool", 1, "Called")
+  self:NetworkVar("Bool", 2, "Hacking")
   self:NetworkVar("Int", 1, "CD")
 
 end
 
-local vec_spawn = Vector( -2847.389404, 2269.2, 320.649048 )
+local vec_spawn = Vector( -2762.389404, 2268.9, 310.649048 )
 local angle_spawn = Angle( 90, -90, 0 )
 
 function ENT:Initialize()
@@ -26,7 +27,7 @@ function ENT:Initialize()
   self:SetSolid( SOLID_NONE )
   self:SetActivate( true )
   self:SetCalled( false )
-  self:SetCD( CurTime() + 100 )
+  self:SetCD( CurTime() + 285 )
   self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
   self:SetRenderMode( 1 )
 
@@ -34,6 +35,7 @@ function ENT:Initialize()
 
   self:SetPos( vec_spawn )
   self:SetAngles( angle_spawn )
+  self:AddEFlags( EFL_FORCE_CHECK_TRANSMIT )
 
   if ( SERVER ) then
 
@@ -47,7 +49,70 @@ end
 
 function ENT:Use( activator, caller )
 
-  if ( caller:IsPlayer() && caller:GetRoleName() != role.MTF_HOF && caller:GetRoleName() != role.Dispatcher ) then return end
+  if caller:GetRoleName() == role.SCI_SpyUSA then
+    if timer.TimeLeft("RoundTime") < 400 then
+      if caller:GetNWInt("CollectedDocument") == 0 then
+        caller:RXSENDNotify("l:spyusa_toolate_for_hacking")
+        return
+      end
+    end
+
+    if timer.TimeLeft("RoundTime") < 300 then
+      if caller:GetNWInt("CollectedDocument") > 0 then
+        caller:RXSENDNotify("l:spyusa_toolate_for_hacking_document")
+        return
+      end
+    end
+
+    for k, v in ipairs(player.GetAll()) do
+      if v:GetRoleName() == role.MTF_HOF and v:Alive() and caller:GetNWInt("CollectedDocument") == 0 then
+        caller:RXSENDNotify("l:spyusa_hofnotdead")
+        return
+      end
+    end
+
+    if caller:GetNWInt("CollectedDocument") == 0 and !self:GetHacking() then
+      caller:BrProgressBar("l:spyusa_hacking", 5, "nextoren/gui/icons/hand.png", target, false, function()
+        self:EmitSound("^nextoren/others/monitor/start_hacking.wav")
+        self:SetHacking(true)
+        PlayAnnouncer("nextoren/entities/intercom/start.mp3")
+        for k, v in ipairs(player.GetAll()) do
+          v:RXSENDNotify("l:spyusa_hacking_notify")
+        end
+        timer.Create("SpyUsaWentInsane", 100, 1, function()
+          if caller:GetRoleName() == role.SCI_SpyUSA then
+            caller:RXSENDNotify("l:spyusa_hacking_successful")
+          end
+          BREACH.PowerfulUIUSupport()
+          self:Remove()
+          self:SetHacking(false)
+          caller.TempValues.FBIHackedTerminal = true
+        end)
+      end)
+    elseif caller:GetNWInt("CollectedDocument") > 0 then
+      self:EmitSound("^nextoren/others/monitor/start_hacking.wav")
+      timer.Remove("SpyUsaWentInsane")
+      caller:RXSENDNotify("l:spyusa_hacking_successful")
+      BREACH.PowerfulUIUSupport(caller)
+      self:Remove()
+      self:SetHacking(false)
+      caller.TempValues.FBIHackedTerminal = true
+    end
+  end
+
+  if caller:GTeam() != TEAM_SPEC and caller:GTeam() != TEAM_SCP and caller:GTeam() != TEAM_USA then
+    if self:GetHacking() then
+      for k, v in ipairs(player.GetAll()) do
+        v:RXSENDNotify("l:spyusa_hacking_stopped")
+      end
+      PlayAnnouncer("sound/nextoren/entities/intercom/stop.mp3")
+
+      self:SetHacking(false)
+      timer.Remove("SpyUsaWentInsane")
+    end
+  end
+
+  if ( caller:IsPlayer() && caller:GetRoleName() != role.MTF_HOF ) then return end
 
   if ( self:GetCD() > CurTime() ) then return end
 
@@ -59,10 +124,22 @@ function ENT:Use( activator, caller )
 
   end
 
+  local count = 0
+
+  for i, v in pairs(player.GetAll()) do
+    if v.GTeam and v:GTeam() == TEAM_SPEC then
+      count = count + 1
+    end
+  end
+
+  count = math.floor(math.min(count*0.7,10))
+
   if ( caller && caller:IsValid() && caller:IsPlayer() && self:GetActivate() && !GetGlobalBool( "NukeTime", false ) ) then
 
     self.Uses = self.Uses + 1
     self:SetCalled( true )
+
+    caller:CompleteAchievement("protocol")
 
     if ( self.Uses >= 3 ) then
 
@@ -78,7 +155,7 @@ function ENT:Use( activator, caller )
 
         if ( SERVER ) then
 
-          OBRSpawn()
+          OBRSpawn(count)
 
           BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/obr_enter.wav" )' )
 
@@ -174,5 +251,70 @@ function ENT:Draw()
     cam.End3D2D()
 
   end
+
+end
+
+function ENT:UpdateTransmitState()
+    return TRANSMIT_ALWAYS
+end
+
+
+if CLIENT then
+local scarletmat = Material("nextoren_hud/faction_icons/fbispec.png")
+local ultravector = Vector(-2847.375000, 2269.187500, 295.625000)
+local shawms = shawms or {}
+
+hook.Add("OnEntityCreated", "OBRCALL_SoftEntityList", function(ent)
+    if ent:GetClass() == "obr_call" then
+      table.insert(shawms, ent)
+    end
+  end)
+
+  hook.Add("EntityRemoved", "OBRCALL_SoftEntityList", function(ent)
+    if ent:GetClass() == "obr_call" then
+      for k, v in pairs(shawms) do
+        if !IsValid(v) then
+          table.remove(shawms, k)
+        end
+      end
+    end
+  end)
+
+hook.Add( "PostDrawTranslucentRenderables", "uiu_spy_draw_mark", function( bDepth, bSkybox )
+  local client = LocalPlayer()
+  for i=1, #shawms do
+    local entity = shawms[i]
+    if !IsValid(entity) then
+      return
+    end
+
+    if client:GetRoleName() != role.SCI_SpyUSA and entity:GetHacking() == false then
+      return
+    end
+  
+    if client:GetNWInt("CollectedDocument") == 0 then
+      for k, v in ipairs(player.GetAll()) do
+        if v:GetRoleName() == role.MTF_HOF then
+          return
+        end
+      end
+    end
+    
+    local capos = entity:GetPos()
+    local ang = client:EyeAngles()
+    ang:RotateAroundAxis( ang:Forward(), 90 )
+    ang:RotateAroundAxis( ang:Right(), 90 )
+    capos = capos + Vector(0,0, -25)
+    local dist = client:GetPos():Distance(ultravector)
+    local size = 140 * (math.Clamp(dist * .005, 1, 30))
+      cam.Start3D2D( capos, ang, 0.1 )
+      cam.IgnoreZ(true)
+        surface.SetDrawColor(ColorAlpha(color_white, 255 - Pulsate(5) * 40))
+        surface.SetMaterial(scarletmat)
+        surface.DrawTexturedRect(-(size/2), -(size/2), size, size);
+      cam.End3D2D()
+      cam.IgnoreZ(false)
+  end
+end)
 
 end

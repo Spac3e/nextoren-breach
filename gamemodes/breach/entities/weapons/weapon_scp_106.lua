@@ -69,7 +69,7 @@ if ( SERVER ) then
 
       if ( protect_counter > 4000 ) then break end
 
-      local random_vector = Vector( math.Rand( -3050, 2 ), math.Rand( -15377, -11665 ), math.Rand( -4800, -4515 ) )
+      local random_vector = Vector( math.Rand( -3679, 2 ), math.Rand( -15377, -11665 ), math.Rand( -4800, -4515 ) )
       random_vector = navmesh.GetNearestNavArea( random_vector )
 
       if random_vector then
@@ -84,7 +84,7 @@ if ( SERVER ) then
 
         if ( !origin ) then
 
-          player:SetPos( random_vector )
+          player:SetPos( Vector(3641.567627, -14785.177734, -2961.093262) )
 
 					if ( !blink_random && player:GTeam() != TEAM_SCP && player.canblink ) then
 

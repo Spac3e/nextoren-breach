@@ -1,5 +1,3 @@
-
-
 local CATEGORY_NAME = "User Management"
 
 local function checkForValidId( calling_ply, id )

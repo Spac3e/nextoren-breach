@@ -174,10 +174,10 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 
 		if ( ply:GetRoleName() == "SCP049" && self:GetIsVictimAlive() ) then
 			if ( self:HasHazmat() ) then
-				ply:Tip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить тело в спец. одежде", Color( 255, 0, 0, 220 ) )
+				ply:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить тело в спец. одежде", Color( 255, 0, 0, 220 ) )
 				return
 			elseif ( self:GetModel():find( "scp_special_scp" ) ) then
-				ply:Tip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить данного человека", Color( 255, 0, 0, 220 ) )
+				ply:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить данного человека", Color( 255, 0, 0, 220 ) )
 				return
 			end
 
@@ -269,15 +269,22 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 
 		if ( ply:GTeam() == TEAM_SCP ) then return end
 
-		ply:SetForcedAnimation( "616", 0, nil )
-		ply:SetNWEntity( "NTF1Entity", ply )
+		--ply:SetForcedAnimation( "616", 0, nil )
+		--ply:SetNWEntity( "NTF1Entity", ply )
 
+		local skibidi_toilet = function()
+			if ( ply && ply:IsValid() ) then
+				ply:SetForcedAnimation( false )
+				print("nerd")
+			end
+		end
 
+		
 		ply:BrProgressBar("l:looting_body", 6, "nextoren/gui/icons/notifications/breachiconfortips.png", trent, false, function()
 			if ( !self.vtable ) then return end
 
 			if ( table.Count( self.vtable.Weapons ) == 0 ) then
-				ply:Tip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы ничего не нашли", clr_red )
+				ply:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы ничего не нашли", clr_red )
 				return
 			end
 
@@ -288,15 +295,12 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 				net.WriteTable( self.vtable.Ammo )
 			net.Send( ply )
 
-			ply:SetNWEntity( "NTF1Entity", NULL )
+			net.Start("LootEnd")
+			net.Send(ply)
+
+			--ply:SetNWEntity( "NTF1Entity", NULL )
 
 			BREACH.Players:ChatPrint( ply, true, true, "Вы обыскали тело " .. self:GetNWString("SurvivorName") )
-
-		end, true, function()
-
-			if ( ply && ply:IsValid() ) then
-				ply:SetForcedAnimation( false )
-			end
 		end)
 	end
 end)
@@ -471,7 +475,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 		for _, v in ipairs( ply.BoneMergedEnts ) do
 
 			if ( v && v:IsValid() && !v:GetInvisible() && ( !ply.Head_Split || v:GetModel() == ply.HeadEnt:GetModel() ) ) then
-				GhostBoneMerge( LootBox, v:GetModel(), v:GetSkin() || false )
+				GhostBoneMerge( LootBox, v:GetModel(), false, v:GetSkin(), ply.HeadEnt:GetSubMaterial( 0 ) || false )
 			end
 		end
 	end

@@ -838,7 +838,7 @@ function InitializeBreachULX()
 		if force then
 			RestartGame()
 		else
-			SetGlobalInt("RoundUntilRestart", 0)
+			SetGlobalInt("Restart", 0)
 		end
 	end
 
@@ -882,7 +882,7 @@ function InitializeBreachULX()
 	adminmode:help( "Toggles admin mode" )
 
 	function ulx.requestntf( ply, silent )
-		SpawnSupport()
+		SupportSpawn()
 		if silent then
 			ulx.fancyLogAdmin( ply, true, "#A spawned support units" )
 		else
@@ -994,32 +994,32 @@ function GiveBoneMerge()
 end
 
 function ulx.strongpower( plyc, plyrs )
-		for _, plyt in pairs(plyrs) do
-			plyt.KACHOKABILITY = true
-			local role = BREACH_ROLES.CLASSD.classd.roles[9]
-			net.Start("SpecialSCIHUD")
-		        net.WriteString(role["ability"][1])
-			    net.WriteUInt(role["ability"][2], 9)
-			    net.WriteString(role["ability"][3])
-			    net.WriteString(role["ability"][4])
-			    net.WriteBool(role["ability"][5])
-		    net.Send(plyt)
-		end
+	for _, plyt in pairs(plyrs) do
+		plyt.KACHOKABILITY = true
+		local role = BREACH_ROLES.CLASSD.classd.roles[9]
+		net.Start("SpecialSCIHUD")
+			net.WriteString(role["ability"][1])
+			net.WriteUInt(role["ability"][2], 9)
+			net.WriteString(role["ability"][3])
+			net.WriteString(role["ability"][4])
+			net.WriteBool(role["ability"][5])
+		net.Send(plyt)
 	end
-	local strongpower = ulx.command( "Breach Admin", "ulx strongpower", ulx.strongpower, "!strongpower" )
-	strongpower:addParam{ type = ULib.cmds.PlayersArg }
-	strongpower:defaultAccess( ULib.ACCESS_SUPERADMIN )
-	strongpower:help( "?" )
+end
+local strongpower = ulx.command( "Breach Admin", "ulx strongpower", ulx.strongpower, "!strongpower" )
+strongpower:addParam{ type = ULib.cmds.PlayersArg }
+strongpower:defaultAccess( ULib.ACCESS_SUPERADMIN )
+strongpower:help( "?" )
 
 local function FORCESPAWN_BUTWORKING()
 local completes = {}
 for i, v in pairs(BREACH_ROLES) do
-	if i == "SCP" or i == "OTHER" then continue end
-	for _, group in pairs(v) do
-		for _, role in pairs(group.roles) do
-			table.insert(completes, role.name)
-		end
+if i == "SCP" or i == "OTHER" then continue end
+for _, group in pairs(v) do
+	for _, role in pairs(group.roles) do
+		table.insert(completes, role.name)
 	end
+end
 end
 
 function ulx.forcespawn( ply, plys, class )

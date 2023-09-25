@@ -810,7 +810,6 @@ function GOCStart()
 
 end
 
-concommand.Add("intro_goc", GOCStart)
 local clr_text = Color( 180, 0, 0, 210 )
 local onp_icon = TeamIcons[ TEAM_USA ].mat
 
@@ -915,7 +914,6 @@ function ONPStart()
 	end
 
 end
-concommand.Add("intro_uiu", ONPStart)
 
 local dz_icon = TeamIcons[ TEAM_DZ ].mat
 
@@ -1030,7 +1028,6 @@ function SHStart()
 	end
 
 end
-concommand.Add("intro_dz", SHStart)
 
 local cult_icon = TeamIcons[ TEAM_COTSK ].mat
 
@@ -1146,7 +1143,6 @@ function CultStart()
 	end
 
 end
-concommand.Add("intro_cult", CultStart)
 
 local ntf_icon = TeamIcons[ TEAM_NTF ].mat
 
@@ -1337,7 +1333,6 @@ function CutScene()
 	end
 
 end
-concommand.Add("intro_ci", CutScene)
 
 local ci_icon = Material( "nextoren/gui/roles_icon/gru.png" )
 local ranktable = {
@@ -1499,7 +1494,6 @@ function GRUSpawn()
 	end
 
 end
-concommand.Add("intro_gru", GRUSpawn)
 
 local function Ending( status )
 
@@ -3736,7 +3730,7 @@ local from40clr, from40mat = Color(0, 255, 255), Material("nextoren/gui/icons/le
 local blinkblack = Color(0, 0, 0)
 local blinkalmostblack = Color(0, 0, 0, 200)
 local blinkmat = Material("nextoren_hud/ico_blink.png")
-local tazermat = Material("nextoren_hud/gui/tazer_ammo.png")
+local tazermat = Material("nextoren_hud/tazer_ammo.png")
 local icoindex = Material("nextoren_hud/ico_index.png")
 local icoindex2 = Material("nextoren_hud/ico_index2.png")
 local eyedropeffectclr = Color(10, 45, 255, 0)
@@ -4956,9 +4950,7 @@ hook.Add("HUDPaint", "CTF_Paint", function()
 end)
 
 net.Receive("Special_outline", function(len)
-
 	local team = net.ReadUInt(16)
 	if team == TEAM_CLASSD then team = TEAM_CHAOS end
 	Show_Spy(team)
-
 end)

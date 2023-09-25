@@ -1,5 +1,3 @@
-
-
 local help = [[
 General User Management Concepts:
 User access is driven by ULib's Ulysses Control List (UCL). This list contains users and groups

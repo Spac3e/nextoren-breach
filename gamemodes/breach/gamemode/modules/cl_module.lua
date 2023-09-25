@@ -50,18 +50,20 @@ function ClientSpawnHelicopter()
   helicopter:SetModel( heliModel )
   helicopter:SetPos( light_origin )
   helicopter:SetAngles( helicopter_angle )
-	timer.Simple( 10, function()
+	timer.Simple( 1, function()
 		local snd = CreateSound( helicopter, "nextoren/others/helicopter/apache_hover.wav" )
 		snd:SetDSP( 17 )
 		snd:Play()
-		timer.Simple( 29, function()
+		timer.Simple( 10, function()
 			if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
 				entcall.StopInventory = false
 				helicopter:StopSound( "nextoren/others/helicopter/apache_hover.wav" )
-				timer.Simple( 20, function()
+				timer.Simple( 2, function()
 					if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
 						PickGenericSong()
 						helicopter:Remove()
+						net.Start("ProceedUnfreezeSUP",true)
+						net.SendToServer()
 					end
 				end )
 			end
@@ -3062,10 +3064,8 @@ net.Receive( "UpdateTime", function( len )
 end)
 
 net.Receive( "OnEscaped", function( len )
-	local nri = net.ReadInt(4)
-	shoulddrawescape = nri
-	esctime = CurTime() - timefromround
-	lastescapegot = CurTime() + 20
+	local msg = net.ReadString()
+	CorpsedMessage(BREACH.TranslateString(msg))
 end)
 
 net.Receive( "ForcePlaySound", function( len )
@@ -3226,21 +3226,14 @@ net.Receive( "PrepStart", function( len )
 	end
 	timefromround = CurTime() + 10
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
-	if LocalPlayer():GTeam() == TEAM_GUARD then
-		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
-		LocalPlayer().cantopeninventory = true
-		hook.Add("HUDShouldDraw", "MTF_HIDEHUD", function()
 			if LocalPlayer():GTeam() == TEAM_GUARD then
-				return false
-			else
-				LocalPlayer().cantopeninventory = nil
-				hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
+				timer.Simple(1, function()
+					Nextoren_MTF_Intro()
+				end)
+				LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
 			end
-		end)
-	end
 	timer.Destroy("IntroStart")
 	timer.Create("IntroStart", 66, 1, function()
-		BREACH.Round.GeneratorsActivated = false
 	end)
 	tab = {
 		["$pp_colour_addr"] = 0,
@@ -4414,8 +4407,6 @@ function Nextoren_MTF_Intro()
 
 	end )
 end
-
-concommand.Add("Nextoren_MTF_Intro", Nextoren_MTF_Intro)
 
 net.Receive("bettersendlua", function()
 	local code = net.ReadString()
