@@ -2,6 +2,16 @@ local mply = FindMetaTable( "Player" )
 
 util.AddNetworkString("Show_Menus")
 
+function GM:Think()
+	for _, ply in pairs(player.GetAll()) do
+        if ply:IsOnFire() then
+            ply:SetNWBool("RXSEND_ONFIRE", true)
+        elseif not ply:IsOnFire() then
+            ply:SetNWBool("RXSEND_ONFIRE", false)
+        end
+    end
+end
+
 function spawn_ents()
 end
 
@@ -314,10 +324,10 @@ end
 concommand.Add("132",Create_Items)
 
 function BREACH.Round_Spawn_Loot()
-	local spawnTable = SPAWN_UNIFORMS
+    local spawnTable = SPAWN_UNIFORMS
 
-	-- Entities
-	for _, entity in ipairs(ENTITY_SPAWN_LIST) do
+    -- Entities
+    for _, entity in ipairs(ENTITY_SPAWN_LIST) do
         local class = entity.Class
         local spawns = entity.Spawns
         for _, spawn in ipairs(spawns) do
@@ -329,13 +339,14 @@ function BREACH.Round_Spawn_Loot()
             ent:Spawn()
         end
     end
-	-- Loot
-	for _, spawnData in pairs(SPAWN_ITEMS) do
+
+    -- Loot
+    for _, spawnData in pairs(SPAWN_ITEMS) do
         local spawns = table.Copy(spawnData.spawns)
         local dices = {}
         local totalWeight = 0
 
-        -- Создаем "кубики" для случайного выбора
+        -- Create "dice" for random selection
         for _, dice in pairs(spawnData.ents) do
             local weight = dice[2]
             local diceEntry = {
@@ -348,7 +359,7 @@ function BREACH.Round_Spawn_Loot()
             totalWeight = totalWeight + weight
         end
 
-        -- Спавним объекты
+        -- Spawn objects
         local amountToSpawn = math.min(spawnData.amount, #spawns)
         for i = 1, amountToSpawn do
             local spawnIndex = math.random(1, #spawns)
@@ -374,13 +385,19 @@ function BREACH.Round_Spawn_Loot()
         end
     end
 
-	-- Uniform
-    for _, spawnPos in pairs(SPAWN_UNIFORMS.spawns) do
-        local amountRange = SPAWN_UNIFORMS[spawnPos.z < 0 and "bigroundamount" or "smallroundamount"]
-        local amount = math.random(amountRange[1], amountRange[2])
+    -- Uniform
+    local spawnCount
+    if math.random(0, 1) == 1 then
+        spawnCount = math.random(SPAWN_UNIFORMS.bigroundamount[1], SPAWN_UNIFORMS.bigroundamount[2])
+    else
+        spawnCount = math.random(SPAWN_UNIFORMS.smallroundamount[1], SPAWN_UNIFORMS.smallroundamount[2])
+    end
 
-        for i = 1, amount do
-            local entityName = table.Random(SPAWN_UNIFORMS.entities)
+    for i = 1, spawnCount do
+        local spawnPos = table.Random(SPAWN_UNIFORMS.spawns)
+        local entityName = table.Random(SPAWN_UNIFORMS.entities)
+
+        if spawnPos then
             local ent = ents.Create(entityName)
 
             if IsValid(ent) then
@@ -389,20 +406,18 @@ function BREACH.Round_Spawn_Loot()
             end
         end
     end
-
-	-- Other
+    -- Other
 	for k, v in ipairs(SPAWN_VEHICLE) do
-		if k > math.Clamp( GetConVar( "br_cars_ammount" ):GetInt(), 0, 12 ) then
-			break
-		end
 		local car = ents.Create("prop_vehicle_jeep")
-		car:SetModel("models/tdmcars/jeep_wrangler_fnf.mdl")
-		car:SetKeyValue("vehiclescript","scripts/vehicles/TDMCars/wrangler_fnf.txt")
-		car:SetPos( v[1] )
-		car:SetAngles( v[2] )
+		car:SetModel("models/scpcars/scpp_wrangler_fnf.mdl")
+		car:SetKeyValue("vehiclescript", "scripts/vehicles/wrangler88.txt")
+        car:SetPos(v[1])
+        car:SetAngles(v[2])
 		car:Spawn()
+		car:Activate()
 		WakeEntity( car )
 	end
+
 end
 
 net.Receive( "GRUCommander_peac", function()
@@ -421,6 +436,9 @@ function NTFCutscene(ply)
 end
 
 function GRUCutscene(ply)
+end
+
+function CHAOSCutscene(ply)
 end
 
 function SupportFreeze(ply)
@@ -974,51 +992,52 @@ local stomach_hit = {
 }
 
 function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
-	local attacker = dmginfo:GetAttacker()
-	local dmgtype = dmginfo:GetDamageType()
-	local wep = attacker:GetActiveWeapon()
-	if ( ply:GTeam() != TEAM_SCP && !( ply:GetRoleName():find( "jag" ) || ply:GetRoleName():find( "jug" ) ) ) then
-		if ( hitgroup == HITGROUP_HEAD ) then
-			if ( ply:GetUsingHelmet() != "" ) then
-				if ( SERVER ) then
-					ply.HeadResist = ply.HeadResist - 1
-					if ( ( ply.HeadResist || 0 ) <= 0 ) then
-						ply.HeadResist = nil
-						ply:SetUsingHelmet("")
-						if ( ply.BoneMergedEnts && istable( ply.BoneMergedEnts ) ) then
-							for _, v in ipairs( ply.BoneMergedEnts ) do
-						if ( v && v:IsValid() && v:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" or v:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl") then
-									v:Remove()
-								end
-							end
-						end
-					end
-				end
-				dmginfo:ScaleDamage( .5 )
-			else
-				dmginfo:ScaleDamage( 9 )
-			end
-		elseif ( stomach_hit[ hitgroup ] ) then
-			if ( ply:GetUsingArmor() != "" ) then
-				if ( ply.BodyResist ) then
-					ply.BodyResist = ply.BodyResist - 1
-				end
-				if ( ( ply.BodyResist || 0 ) <= 0 ) then
-					ply.BodyResist = nil
-					ply:SetUsingArmor("")
-					for _, v in ipairs( ply.BoneMergedEnts ) do
-						if ( v && v:IsValid() && v:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" or v:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl") then
-							v:Remove()
-						end
-					end
-				end
-				dmginfo:ScaleDamage( .7 )
-			else
-				dmginfo:ScaleDamage( 1.5 )
-			end
-		end
-	end
-	if ply:GTeam() != TEAM_SCP then 
+    local attacker = dmginfo:GetAttacker()
+    local dmgtype = dmginfo:GetDamageType()
+    local wep = attacker:GetActiveWeapon()
+	    if ( ply:GTeam() != TEAM_SCP && !( ply:GetRoleName():find( "jag" ) || ply:GetRoleName():find( "jug" ) ) ) then
+        if ( hitgroup == HITGROUP_HEAD ) then
+            if ( ply:GetUsingHelmet() != "" ) then
+                if ( SERVER ) then
+                    ply.HeadResist = ply.HeadResist - 1
+                    if ( ( ply.HeadResist || 0 ) <= 0 ) then
+                        ply.HeadResist = nil
+                        ply:SetUsingHelmet("")
+                        if ( ply.BoneMergedEnts && istable( ply.BoneMergedEnts ) ) then
+                            for _, v in ipairs( ply.BoneMergedEnts ) do
+                                if ( v && v:IsValid() && ( v:GetModel() == "models/cultist/humans/security/head_gear/helmet.mdl" or v:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl" ) ) then
+                                    v:Remove()
+                                end
+                            end
+                        end
+                    end
+                end
+                dmginfo:ScaleDamage( 0.5 )
+            else
+                dmginfo:ScaleDamage( 9 )
+            end
+        elseif ( stomach_hit[ hitgroup ] ) then
+            if ( ply:GetUsingArmor() != "" ) then
+                if ( ply.BodyResist ) then
+                    ply.BodyResist = ply.BodyResist - 1
+                end
+                if ( ( ply.BodyResist || 0 ) <= 0 ) then
+                    ply.BodyResist = nil
+                    ply:SetUsingArmor("")
+                    for _, v in ipairs( ply.BoneMergedEnts ) do
+                        if ( v && v:IsValid() && ( v:GetModel() == "models/cultist/armor_pickable/bone_merge/light_armor.mdl" or v:GetModel() == "models/cultist/armor_pickable/bone_merge/heavy_armor.mdl" ) ) then
+                            v:Remove()
+                        end
+                    end
+                end
+                dmginfo:ScaleDamage( 0.7 )
+            else
+                dmginfo:ScaleDamage( 1.5 )
+            end
+        end
+    end
+
+    if ply:GTeam() != TEAM_SCP then 
         if hitgroup == HITGROUP_HEAD then
             dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 2 )
         elseif hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_GEAR then
@@ -1026,18 +1045,19 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
         elseif hitgroup == HITGROUP_STOMACH then
             dmginfo:ScaleDamage( GetRoleResists(ply, "stomach") + 0.5 )
         elseif hitgroup == HITGROUP_LEFTARM or hitgroup == HITGROUP_RIGHTARM then
-           dmginfo:ScaleDamage( GetRoleResists(ply, "arm") + 0.5 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "arm") + 0.5 )
         elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
-           dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "leg") + 0.5 )
         end
-        else if
-        dmginfo:IsDamageType(DMG_BULLET) then
+    else
+        if dmginfo:IsDamageType(DMG_BULLET) then
             dmginfo:ScaleDamage(0.4)
         end
     end
-	if (attacker:GTeam() == TEAM_GOC && (wep && wep:IsValid()) && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP) then
-		dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
-	end
+
+    if ( attacker:GTeam() == TEAM_GOC && ( wep && wep:IsValid() ) && wep.Primary && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP ) then
+        dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
+    end
 end
 
 hook.Add("ScalePlayerDamage", "Flinch", function(ply, grp)

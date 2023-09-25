@@ -15,7 +15,7 @@ function ENT:SetupDataTables()
 
 end
 
-local vec_spawn = Vector( -2847.389404, 2269.2, 320.649048 )
+local vec_spawn = Vector( -2762.389404, 2268.9, 310.649048 )
 local angle_spawn = Angle( 90, -90, 0 )
 
 function ENT:Initialize()

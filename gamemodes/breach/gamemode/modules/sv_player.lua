@@ -14,6 +14,61 @@ end
 function mply:LevelBar()
 end
 
+function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
+    if sequence == false then
+        self:StopForcedAnimation()
+        return
+    end
+
+    if SERVER then
+        local send_seq
+
+        if isstring(sequence) then
+            send_seq = sequence
+            sequence = self:LookupSequence(sequence)
+        else
+            send_seq = self:GetSequenceName(sequence)
+        end
+
+        self:SetCycle(0)
+        self.ForceAnimSequence = sequence
+
+        local time = endtime
+
+        if endtime == nil then
+            time = self:SequenceDuration(sequence)
+        end
+
+        net.Start("BREACH_SetForcedAnimSync")
+        net.WriteEntity(self)
+        net.WriteString(send_seq)
+        net.Broadcast()
+
+        if isfunction(startcallback) then
+            startcallback()
+        end
+
+        self.StopFAnimCallback = stopcallback
+
+        timer.Create("SeqF" .. self:EntIndex(), time, 1, function()
+            if IsValid(self) then
+                self.ForceAnimSequence = nil
+
+                net.Start("BREACH_EndForcedAnimSync")
+                net.WriteEntity(self)
+                net.Broadcast()
+
+                self.StopFAnimCallback = nil
+
+                if isfunction(finishcallback) then
+                    finishcallback()
+                end
+            end
+        end)
+    end
+end
+
+
 local german_names = {}
 local german_lastnames = {}
 local usa_names = {}
@@ -67,10 +122,10 @@ function mply:Namesurvivor(ply,body)
 	end
 end
 
-function mply:ClearBodyGroups(ply, ent)
-	for _, v in pairs(self:GetBodyGroups()) do
-		self:SetBodygroup(v.id, 0)
-	end
+function mply:ClearBodyGroups()
+    for _, v in pairs(self:GetBodyGroups()) do
+        self:SetBodygroup(v.id, 0)
+    end
 end
 
 function GetTableOverride( tab )
@@ -461,19 +516,26 @@ function mply:MakeZombie()
 end
 
 function mply:SurvivorCleanUp()
-	self:ClearBodyGroups()
-	self:SetSkin(0)
-	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self ) || {} if self:GTeam() != TEAM_SCP then for i = 1, #tbl_bonemerged do local bonemerge = tbl_bonemerged[ i ] bonemerge:Remove() end
-	self:StripWeapons()
-	self:StripAmmo()
-	self:SetNW2Bool("Breach:CanAttach", false)
-	self:SetUsingBag("")
-	self:SetUsingCloth("")
-	self:SetUsingArmor("")
-	self:SetUsingHelmet("")
-	self:SetStamina(100)
-	self:Flashlight( false )
-	self:SetBoosted(false)
+    self:ClearBodyGroups()
+    self:SetSkin(0)
+
+    if self:GTeam() ~= TEAM_SCP then
+        local tbl_bonemerged = ents.FindByClassAndParent("ent_bonemerged", self) or {}
+        for i = 1, #tbl_bonemerged do
+            local bonemerge = tbl_bonemerged[i]
+            bonemerge:Remove()
+        end
+
+        self:StripWeapons()
+        self:StripAmmo()
+        self:SetNW2Bool("Breach:CanAttach", false)
+        self:SetUsingBag("")
+        self:SetUsingCloth("")
+        self:SetUsingArmor("")
+        self:SetUsingHelmet("")
+        self:SetStamina(100)
+        self:Flashlight(false)
+        self:SetBoosted(false)
     end
 end
 
@@ -567,6 +629,7 @@ function mply:ApplyRoleStats(role)
 
 	if role["usehead"] then
 		if role["randomizehead"] then
+			if self:GetRoleName() == "Class-D Bor" then return end
 			if !self:IsFemale() then
 				Bonemerge(PickHeadModel(self:SteamID64()), self)
 			elseif self:IsFemale() then
@@ -612,6 +675,14 @@ function mply:ApplyRoleStats(role)
 		self:SetSkin(1)
 	end
 
+	if isblack and self:GetRoleName() == "Class-D Bor" then
+		for k,v in pairs(self:LookupBonemerges()) do
+			if v:GetModel():find("bor_heads") then
+				v:SetSkin(1)
+			end
+		end
+	end
+
 	if role.skin then
 		self:SetSkin(role.skin)
 	elseif !isblack then
@@ -621,30 +692,60 @@ function mply:ApplyRoleStats(role)
 	if role.headgear then Bonemerge(role.headgear, self) end
 	if role.hackerhat then Bonemerge(role.hackerhat, self) end
 	if role.bodygroups then self:SetBodyGroups( role.bodygroups ) end
-	if role.bodygroup0 then self:SetBodygroup(0, role.bodygroup0)end
-	if role.bodygroup1 then self:SetBodygroup(1, role.bodygroup1)end
-	if role.bodygroup2 then self:SetBodygroup(2, role.bodygroup2)end
-	if role.bodygroup3 then self:SetBodygroup(3, role.bodygroup3)end
-	if role.bodygroup4 then self:SetBodygroup(4, role.bodygroup4)end
-	if role.bodygroup5 then self:SetBodygroup(5, role.bodygroup5)end
-	if role.bodygroup6 then self:SetBodygroup(6, role.bodygroup6) end
-	if role.bodygroup7 then self:SetBodygroup(7, role.bodygroup7) end
-	if role.bodygroup8 then self:SetBodygroup(8, role.bodygroup8) end
-	if role.bodygroup9 then self:SetBodygroup(9, role.bodygroup9) end
 
-	if role.cispy then self:SetupCISpy() end
-	if role.weapons and role.weapons != "" then for k,v in pairs(role.weapons) do self:Give(v) end end if role.keycard and role.keycard != "" then self:Give("breach_keycard_"..role.keycard) end 
-	self:StripAmmo() if role.ammo and role.ammo != "" then for k,v in pairs(role.ammo) do self:GiveAmmo(v[2], self:GetWeapon(v[1]):GetPrimaryAmmoType(), true)  end end
+	for i = 0, 9 do
+        local bodygroupKey = "bodygroup" .. i
+        if role[bodygroupKey] then
+            self:SetBodygroup(i, role[bodygroupKey])
+        end
+    end
 	
-	if self:HasWeapon("item_tazer") then self:GetWeapon("item_tazer"):SetClip1(20) end 
+	if role.cispy then
+		self:SetupCISpy()
+	end
+
+    if role.weapons and role.weapons ~= "" then
+        for _, weapon in pairs(role.weapons) do
+            self:Give(weapon)
+        end
+    end
+
+	if role.keycard and role.keycard != "" then 
+		self:Give("breach_keycard_"..role.keycard)
+	end 
+
+    self:StripAmmo()
+
+    if role.ammo and role.ammo ~= "" then
+        for _, ammo in pairs(role.ammo) do
+            self:GiveAmmo(ammo[2], self:GetWeapon(ammo[1]):GetPrimaryAmmoType(), true)
+        end
+    end
+
+    if self:HasWeapon("item_tazer") then
+        self:GetWeapon("item_tazer"):SetClip1(20)
+    end
+
+	if self:HasWeapon("item_tazer") then
+		self:GetWeapon("item_tazer"):SetClip1(20)
+	end
+
 	self:Namesurvivor()
     
-	if role.damage_modifiers then self.HeadResist = role.damage_modifiers.HITGROUP_HEAD self.GearResist = role.damage_modifiers.HITGROUP_CHEST self.StomachResist = role.damage_modifiers.HITGROUP_STOMACH self.ArmResist = role.damage_modifiers.HITGROUP_RIGHTARM self.LegResist = role.damage_modifiers.HITGROUP_RIGHTLEG end
+	if role.damage_modifiers then
+		self.HeadResist = role.damage_modifiers["HITGROUP_HEAD"]
+		self.GearResist = role.damage_modifiers["HITGROUP_CHEST"]
+		self.StomachResist = role.damage_modifiers["HITGROUP_STOMACH"]
+		self.ArmResist = role.damage_modifiers["HITGROUP_RIGHTARM"]
+		self.LegResist = role.damage_modifiers["HITGROUP_RIGHTLEG"]
+	end
+	
 	self:SetNWString("AbilityName", "")
 	self.AbilityTAB = nil
 	self:SendLua("if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecialButt) then BREACH.Abilities.HumanSpecialButt:Remove() end if BREACH.Abilities and IsValid(BREACH.Abilities.HumanSpecial) then BREACH.Abilities.HumanSpecial:Remove() end")
 	self:SetSpecialMax(0)
 	self:SetSpecialCD(10)
+
 	if role.ability then
         net.Start("SpecialSCIHUD")
         net.WriteString(role["ability"][1])
@@ -655,22 +756,46 @@ function mply:ApplyRoleStats(role)
         net.Send(self)
         self:SetNWString("AbilityName", (role["ability"][1]))
 	end
+
     if role.ability_max then
 	   self:SetSpecialMax( role["ability_max"] )
     end
+
 	self:SetHealth(role.health)
 	self:SetMaxHealth(role.health)
-	if role.walkspeed then self:SetWalkSpeed(100 * role.walkspeed or 200) end
-	if role.runspeed then self:SetRunSpeed(195 * role.runspeed or 200) end
-	if role.jumppower then self:SetJumpPower(190 * role.jumppower or 200) end
-	if role.stamina then self:SetStaminaScale(role.stamina) end
-	if role.maxslots then self:SetMaxSlots(role.maxslots) end
 
-	if self:GTeam() == TEAM_CLASSD and self:IsPremium() then self:SetBodygroup(0,math.random(0,4)) end
+	if role.walkspeed then
+		self:SetWalkSpeed(100 * (role.walkspeed or 1))
+	end
+	
+	if role.runspeed then
+		self:SetRunSpeed(195 * (role.runspeed or 1))
+	end
+	
+	if role.jumppower then
+		self:SetJumpPower(190 * (role.jumppower or 1))
+	end
+	
+	if role.stamina then 
+		self:SetStaminaScale(role.stamina)
+	end
+
+	if role.maxslots then 
+		self:SetMaxSlots(role.maxslots) 
+	end
+
+	if self:GTeam() == TEAM_CLASSD and self:IsPremium() then
+        self:SetBodygroup(0, math.random(0, 4))
+    end
+	
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)
-	if self:GetRoleName() == "Class-D Fast" then self:SetRunSpeed(231) end
+	
+	if self:GetRoleName() == "Class-D Fast" then
+        self:SetRunSpeed(231)
+    end
+
 	self:SetupHands()
 end
 

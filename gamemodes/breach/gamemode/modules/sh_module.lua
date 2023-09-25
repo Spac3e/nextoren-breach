@@ -1011,67 +1011,6 @@ BREACH = BREACH || {}
 
 local mply = FindMetaTable("Player")
 
-function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
-
-	if sequence == false then
-		self:StopForcedAnimation()
-		return
-	end
-	
-	  if SERVER then
-	
-		  local send_seq
-	  
-		if isstring(sequence) then 
-			send_seq = sequence
-			sequence = self:LookupSequence(sequence)
-		else
-			send_seq = self:GetSequenceName(sequence)
-		end
-		  self:SetCycle(0)
-		  self.ForceAnimSequence = sequence
-		  
-		  time = endtime
-		  
-		  if endtime == nil then
-			time = self:SequenceDuration(sequence)
-		  end
-		  
-		  
-		  
-		  net.Start("SHAKY_SetForcedAnimSync")
-		  net.WriteEntity(self)
-		  net.WriteString(send_seq) -- seq cock
-		  net.Broadcast()
-		  
-		  if isfunction(startcallback) then startcallback() end
-		  
-		  self.StopFAnimCallback = stopcallback
-		  
-		  timer.Create("SeqF"..self:EntIndex(), time, 1, function()
-			  if (IsValid(self)) then
-			  
-				self.ForceAnimSequence = nil
-				
-				net.Start("SHAKY_EndForcedAnimSync")
-				net.WriteEntity(self)
-				net.Broadcast()
-				
-				self.StopFAnimCallback = nil
-				
-				if isfunction(finishcallback) then
-					finishcallback()
-				end
-				
-			  end
-			  
-			end)
-		  
-		end
-		
-	end
-
-	
 function mply:StopForcedAnimation()
     if CLIENT then return end
     timer.Remove("SeqF"..self:EntIndex())
@@ -1079,20 +1018,20 @@ function mply:StopForcedAnimation()
     if isfunction(self.StopFAnimCallback) then self.StopFAnimCallback() self.StopFAnimCallback = nil end
     
     self.ForceAnimSequence = nil        
-    net.Start("SHAKY_EndForcedAnimSync")
+    net.Start("BREACH_EndForcedAnimSync")
     net.WriteEntity(self)
     net.Broadcast()
 end
 
 if CLIENT then
-    net.Receive("SHAKY_EndForcedAnimSync", function(len)
+    net.Receive("BREACH_EndForcedAnimSync", function(len)
         local ply = net.ReadEntity()
         if IsValid(ply) then
             ply.ForceAnimSequence = nil
         end
     end)
     
-    net.Receive("SHAKY_SetForcedAnimSync", function(len)
+    net.Receive("BREACH_SetForcedAnimSync", function(len)
         local ply = net.ReadEntity()
 		if !IsValid(ply) then return end
         local sequence = net.ReadString()
