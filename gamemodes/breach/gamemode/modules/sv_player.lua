@@ -233,7 +233,7 @@ function mply:UnUseHat()
 end
 
 
-function GhostBoneMerge( entity, model, no_draw, skin )
+function GhostBoneMerge( entity, model, no_draw, skin, sub_material )
 	local bnmrg = ents.Create("ent_bonemerged")
 	entity.bonemerge_ent = bnmrg
 	entity.bonemerge_ent:SetModel( model )
@@ -249,9 +249,13 @@ function GhostBoneMerge( entity, model, no_draw, skin )
 	if ( skin ) then
 		entity.bonemerge_ent:SetSkin( skin )
 	end
-
+	
 	if ( !entity.BoneMergedEnts ) then
 		entity.BoneMergedEnts = {}
+	end
+	
+	if ( sub_material ) then
+		entity.Sub_Material = sub_material
 	end
 
 	if ( no_draw ) then
@@ -262,7 +266,7 @@ function GhostBoneMerge( entity, model, no_draw, skin )
 		entity.HeadEnt = entity.bonemerge_ent
 		if ( entity.Sub_Material ) then
 			local sub_material_id = 0
-			if ( sub_material_corrupted_models[ model ] ) then
+			if ( CORRUPTED_HEADS[ model ] ) then
 				sub_material_id = 1
 			end
 			entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
@@ -278,7 +282,7 @@ function GhostBoneMerge( entity, model, no_draw, skin )
 	return bnmrg
 end
 
-function Bonemerge(model, entity, skin)
+function Bonemerge(model, entity, skin, sub_material)
     local bnmrg = ents.Create("ent_bonemerged")
 	entity.bonemerge_ent = bnmrg
     entity.bonemerge_ent:SetModel(model)
@@ -296,8 +300,24 @@ function Bonemerge(model, entity, skin)
 		entity.bonemerge_ent:SetSkin( skin )
 	end
 	
+	
+	if ( sub_material ) then
+		entity.Sub_Material = sub_material
+	end
+
 	if ( !entity.BoneMergedEnts ) then
 		entity.BoneMergedEnts = {}
+	end
+
+	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
+		entity.HeadEnt = entity.bonemerge_ent
+		if ( entity.Sub_Material ) then
+			local sub_material_id = 0
+			if ( CORRUPTED_HEADS[ model ] ) then
+				sub_material_id = 1
+			end
+			--entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
+		end
 	end
 
 	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent

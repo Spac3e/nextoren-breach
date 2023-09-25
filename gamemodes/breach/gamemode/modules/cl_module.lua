@@ -3226,22 +3226,14 @@ net.Receive( "PrepStart", function( len )
 	end
 	timefromround = CurTime() + 10
 	RADIO4SOUNDS = table.Copy(RADIO4SOUNDSHC)
-	if LocalPlayer():GTeam() == TEAM_GUARD then
-		Nextoren_MTF_Intro()
-		LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
-		LocalPlayer().cantopeninventory = true
-		hook.Add("HUDShouldDraw", "MTF_HIDEHUD", function()
 			if LocalPlayer():GTeam() == TEAM_GUARD then
-				return false
-			else
-				LocalPlayer().cantopeninventory = nil
-				hook.Remove("HUDShouldDraw", "MTF_HIDEHUD")
+				timer.Simple(1, function()
+					Nextoren_MTF_Intro()
+				end)
+				LocalPlayer():ScreenFade(SCREENFADE.IN, color_black, 1, 5)
 			end
-		end)
-	end
 	timer.Destroy("IntroStart")
 	timer.Create("IntroStart", 66, 1, function()
-		BREACH.Round.GeneratorsActivated = false
 	end)
 	tab = {
 		["$pp_colour_addr"] = 0,

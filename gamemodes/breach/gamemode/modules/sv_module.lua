@@ -1014,7 +1014,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
                 end
                 dmginfo:ScaleDamage( 0.5 )
             else
-                dmginfo:ScaleDamage( 9 )
+                dmginfo:ScaleDamage( 3 )
             end
         elseif ( stomach_hit[ hitgroup ] ) then
             if ( ply:GetUsingArmor() != "" ) then
@@ -1039,7 +1039,7 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
 
     if ply:GTeam() != TEAM_SCP then 
         if hitgroup == HITGROUP_HEAD then
-            dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 2 )
+            dmginfo:ScaleDamage( GetRoleResists(ply, "head") + 1 )
         elseif hitgroup == HITGROUP_CHEST or hitgroup == HITGROUP_GEAR then
             dmginfo:ScaleDamage( GetRoleResists(ply, "gear") + 0.5 )
         elseif hitgroup == HITGROUP_STOMACH then
