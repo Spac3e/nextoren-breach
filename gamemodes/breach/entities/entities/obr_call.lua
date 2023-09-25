@@ -27,7 +27,7 @@ function ENT:Initialize()
   self:SetSolid( SOLID_NONE )
   self:SetActivate( true )
   self:SetCalled( false )
-  self:SetCD( CurTime() + 350 )
+  self:SetCD( CurTime() + 285 )
   self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
   self:SetRenderMode( 1 )
 

@@ -411,12 +411,11 @@ net.Receive( "GRUCommander_peac", function()
 	end
 end )
 
-sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
+sup_lim = {}
 
 function reset_sup_lim()
     sup_lim = {"ntf", "cl", "gru", "goc", "dz", "fbi", "cotsk"}
 end
-
 
 function NTFCutscene(ply)
 end
@@ -1554,65 +1553,59 @@ function evacuate(personal, roles_for_evac, give_score, desc)
 	end
 end
 
-function OBRSpawn()
+function OBRSpawn(count)
+    local players = {}
 
-	local players = {}
+    for _, v in pairs(player.GetAll()) do
+        if v:GTeam() == TEAM_SPEC then
+            table.insert(players, v)
+        end
+    end
 
-	for k,v in pairs(player.GetAll()) do
-		if v:GTeam() == TEAM_SPEC then
-			table.insert( players, v )
-		end
-	end
+    local obrsinuse = {}
+    local obrspawns = table.Copy(SPAWN_OBR)
+    local obrs = {}
 
-	local obrsinuse = {}
-	local obrspawns = table.Copy( SPAWN_OBR )
-	local obrs = {}
+    for i = 1, count do
+        table.insert(obrs, table.remove(players, math.random(#players)))
+    end
 
-	for i = 1, 7 do
-		table.insert( obrs, table.remove( players, math.random( #players ) ) )
-	end
+    for i, v in ipairs(obrs) do
+        local obrroles = table.Copy(BREACH_ROLES.OBR.obr.roles)
+        local selected
 
-		--table.sort( mtfs, PlayerLevelSorter )
+        repeat
+            local role = table.remove(obrroles, math.random(#obrroles))
+            obrsinuse[role.name] = obrsinuse[role.name] or 0
 
-	for i, v in ipairs( obrs ) do
-		local obrroles = table.Copy( BREACH_ROLES.OBR.obr.roles )
-		local selected
+            if role.max == 0 or obrsinuse[role.name] < role.max then
+                if role.level <= v:GetLevel() then
+                    if not role.customcheck or role.customcheck(v) then
+                        selected = role
+                        break
+                    end
+                end
+            end
+        until #obrroles == 0
 
-		repeat
-			local role = table.remove( obrroles, math.random( #obrroles ) )
-			obrsinuse[role.name] = obrsinuse[role.name] or 0
+        if not selected then
+            ErrorNoHalt("Something went wrong! Error code: 001")
+            selected = BREACH_ROLES.OBR.obr.roles[1]
+        end
 
-			if role.max == 0 or obrsinuse[role.name] < role.max then
-				if role.level <= v:GetLevel() then
-					if !role.customcheck or role.customcheck( v ) then
-						selected = role
-						break
-					end
-				end
-			end
-		until #obrroles == 0
+        obrsinuse[selected.name] = obrsinuse[selected.name] + 1
 
-		if !selected then
-			ErrorNoHalt( "Something went wrong! Error code: 001" )
-			selected = BREACH_ROLES.OBR.obr.roles[1]
-		end
+        if #obrspawns == 0 then
+            obrspawns = table.Copy(SPAWN_OBR)
+        end
 
-		obrsinuse[selected.name] = obrsinuse[selected.name] + 1
+        local spawn = table.remove(obrspawns, math.random(#obrspawns))
 
-		if #obrspawns == 0 then obrspawns = table.Copy( SPAWN_OBR ) end
-		local spawn = table.remove( obrspawns, math.random( #obrspawns ) )
-
-		v:SendLua("OBRStart()")
-
-		v:SetupNormal()
-		v:ApplyRoleStats( selected )
-		v:SetPos( spawn )
-
-	end
-
-	--BroadcastLua("OBRStart()")
-
-
+        v:SendLua("OBRStart()")
+        v:SetupNormal()
+        v:ApplyRoleStats(selected)
+        v:SetPos(spawn)
+    end
 end
 
 local cd = 0
@@ -1960,7 +1953,7 @@ hook.Add('Tick', 'mini_sustem_round', function()
 			for k,v in pairs(player.GetAll()) do
 				v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_start", Color(255, 0, 0))
 			end
-			PlayAnnouncer("sound/nextoren/round_sounds/main_decont/final_nuke.mp3", 0)
+			PlayAnnouncer("nextoren/round_sounds/main_decont/final_nuke.mp3")
 		end
 
 	end
