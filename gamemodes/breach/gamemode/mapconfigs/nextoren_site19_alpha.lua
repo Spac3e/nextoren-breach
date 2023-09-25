@@ -4370,6 +4370,12 @@ ENTITY_SPAWN_LIST = {
 		}
 	},
 	{
+		Class = "entity_scp_914",
+		Spawns = {
+			{pos = Vector(0, 0, 0)}
+		}
+	},
+	{
 		Class = "br_camera",
 		Spawns = {
 			{pos = Vector(-2443.875, 2260.5239257813, 90.956695556641), ang = Angle(-0, 37.712993621826, 0)},

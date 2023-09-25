@@ -43,7 +43,7 @@ local NextRandom = 0
 function SWEP:Equip()
 
   self.Owner:SetArmor( 200 )
-  self.Owner:setBottomMessage( "l:scp1033_protect" )
+  self.Owner:SetBottomMessage( "l:scp1033_protect" )
 
 end
 
@@ -55,7 +55,7 @@ function SWEP:Think()
 
   if ( SERVER && self.Owner && self.Owner:IsValid() && self.Owner:Armor() <= 0 ) then
 
-    self.Owner:setBottomMessage( "l:scp1033_depleted" )
+    self.Owner:SetBottomMessage( "l:scp1033_depleted" )
     self:Remove()
 
   end

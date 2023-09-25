@@ -60,7 +60,7 @@ function SWEP:PrimaryAttack()
 			self:Remove()
 
 		    ent:Fire( "Break" );
-		    self.Owner:setBottomMessage( "l:screwdriver_used" )
+		    self.Owner:SetBottomMessage( "l:screwdriver_used" )
 		    self.Owner:StripWeapon("item_screwdriver")
 
 	    end)

@@ -95,14 +95,14 @@ function ENT:Use( caller )
 
     self.NextUse = CurTime() + 1
     self:EmitSound( "nextoren/others/vending_machine_sounds/need_coin.wav" )
-    caller:setBottomMessage( "l:vendor_no_money" )
+    caller:SetBottomMessage( "l:vendor_no_money" )
 
   else
 
     self.NextUse = CurTime() + 1
 
     wep:Remove()
-    caller:setBottomMessage( "l:vendor_bought" )
+    caller:SetBottomMessage( "l:vendor_bought" )
 
     self:CreateSoda( self.DeclareSoda[ wep:GetClass() ] )
     self:EmitSound( "nextoren/others/vending_machine_sounds/coin_insert.wav" )

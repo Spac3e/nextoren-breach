@@ -42,15 +42,15 @@ net.Receive("DropAdditionalArmor", function(len,ply)
 	end
 	if suka_snimi == "armor_light_armor" then
 		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
-			if ply:GetUsingHelmet() != "" then
-				ply:UnUseHat()
+			if ply:GetUsingArmor() != "" then
+				ply:UnUseBro()
 			end
 		end
 	end
 	if suka_snimi == "armor_light_hat" then
 		if ply:GTeam() != TEAM_SPEC and ( ply:GTeam() != TEAM_SCP) and ply:Alive() then
-			if ply:GetUsingArmor() != "" then
-				ply:UnUseBro()
+			if ply:GetUsingHelmet() != "" then
+				ply:UnUseHat()
 			end
 		end
 	end
@@ -69,6 +69,7 @@ net.Receive("DropAdditionalArmor", function(len,ply)
 		end
 	end
 end)
+
 
 function IsPremium(ply)
 	return ply:IsPremium()
@@ -311,47 +312,142 @@ function HaveRadio(pl1, pl2)
 	return false
 end
 
-function GM:PlayerCanHearPlayersVoice( listener, talker )
-	if talker:Alive() == false then return false end
-	if listener:Alive() == false then return false end
+local дистанциябазара = 550 * 550
+local можетслушать = {}
+local этаж = math.floor
+local вставить_в_таблицу = table.insert
+local сетка
+local игрок_к_сетке = {
+    {},
+    {}
+}
 
-	if !talker.GetRoleName then
-		player_manager.SetPlayerClass( talker, "class_breach" )
-		player_manager.RunClass( talker, "SetupDataTables" )
-	end
+local voiceCheckTimeDelay = 0.3
+timer.Create("Брич.СлухБазарилка", voiceCheckTimeDelay, 0, function()
+    local игроки = player.GetHumans()
 
-	if !listener.GetRoleName then
-		player_manager.SetPlayerClass( listener, "class_breach" )
-		player_manager.RunClass( listener, "SetupDataTables" )
-	end
+    игрок_к_сетке[1] = {}
+    игрок_к_сетке[2] = {}
+    сетка = {}
 
-	if talker:GetRoleName() == role.SCP957 or listener:GetRoleName() == role.SCP9571 then
-		if talker:GetRoleName() == role.SCP9571 or listener:GetRoleName() == role.SCP9571 then
-			return true
-		end
-	end
+    local игрокПозиция = {}
+    local глазаПоцизия = {}
 
-	if talker:GTeam() == TEAM_SCP and talker:GTeam() == TEAM_SCP then
-		return true 
-	end
-	
+    for _, игрок in ipairs(игроки) do
+        if not игрок:Alive() then continue end
+        local позиция = игрок:GetPos()
+        игрокПозиция[игрок] = позиция
+        глазаПоцизия[игрок] = игрок:EyePos()
+        local x = этаж(позиция.x / дистанциябазара)
+        local y = этаж(позиция.y / дистанциябазара)
 
-	if talker:GTeam() == TEAM_SPEC then
-		if listener:GTeam() == TEAM_SPEC then
-			return true
-		else
-			return false
-		end
-	end
-	if HaveRadio(listener, talker) == true then
-		return true
-	end
-	if talker:GetPos():Distance(listener:GetPos()) < 750 then
-		return true, true
-	else
-		return false
-	end
-	return можетслушать[listener][talker] == true, true
+        local ряд = сетка[x] or {}
+        local ячейка = ряд[y] or {}
+
+        вставить_в_таблицу(ячейка, игрок)
+        ряд[y] = ячейка
+        сетка[x] = ряд
+
+        игрок_к_сетке[1][игрок] = x
+        игрок_к_сетке[2][игрок] = y
+
+        можетслушать[игрок] = {}
+    end
+
+    for _, игрок1 in ipairs(игроки) do
+        if not игрок1:Alive() then continue end
+        local сеткаХ = игрок_к_сетке[1][игрок1]
+        local сеткаY = игрок_к_сетке[2][игрок1]
+        local игрок1позиция = игрокПозиция[игрок1]
+        local игрок1глазаПозиция = глазаПоцизия[игрок1]
+
+        for i = 0, 3 do
+            local xОффсет = 1 - ((i >= 3) and 1 or 0)
+            local vОффсет = -(i % 3-1)
+            local x = сеткаХ + xОффсет
+            local y = сеткаY + vОффсет
+
+            local ряд = сетка[x]
+            if not ряд then continue end
+
+            local ячейка = ряд[y]
+            if not ячейка then continue end
+
+            for _, игрок2 in ipairs(ячейка) do
+                if not игрок2:Alive() then continue end
+                local можетбазарить =
+                    игрок1позиция:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
+
+                можетслушать[игрок1][игрок2] = можетбазарить
+                можетслушать[игрок2][игрок1] = можетбазарить
+            end
+        end
+    end
+
+    for _, ряд in pairs(сетка) do
+        for _, ячейка in pairs(ряд) do
+            local счёт = #ячейка
+            for i = 1, счёт do
+                local игрок1 = ячейка[i]
+                if not игрок1:Alive() then continue end
+                for j = i + 1, счёт do
+                    local игрок2 = ячейка[j]
+                    if not игрок2:Alive() then continue end
+                    local можетбазарить =
+                        игрокПозиция[игрок1]:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
+
+                    можетслушать[игрок1][игрок2] = можетбазарить
+                    можетслушать[игрок2][игрок1] = можетбазарить
+                end
+            end
+        end
+    end
+end)
+
+hook.Add("PlayerDisconnect", "CanHear", function(ply)
+    можетслушать[ply] = nil
+end)
+
+
+function GM:PlayerCanHearPlayersVoice(listener, talker)
+    if not talker:Alive() or not listener:Alive() then
+        return false
+    end
+
+    if not talker.GetRoleName then
+        player_manager.SetPlayerClass(talker, "class_breach")
+        player_manager.RunClass(talker, "SetupDataTables")
+    end
+
+    if not listener.GetRoleName then
+        player_manager.SetPlayerClass(listener, "class_breach")
+        player_manager.RunClass(listener, "SetupDataTables")
+    end
+
+    local talkerRole = talker:GetRoleName()
+    local listenerRole = listener:GetRoleName()
+
+    if (talkerRole == role.SCP957 and listenerRole == role.SCP9571) or (talkerRole == role.SCP9571 and listenerRole == role.SCP9571) then
+        return true
+    end
+
+    if talker:GTeam() == TEAM_SCP and not listener:GTeam() == TEAM_SCP then
+        return false
+    end
+
+    if talker:GTeam() == TEAM_SPEC then
+        return listener:GTeam() == TEAM_SPEC
+    end
+
+    if HaveRadio(listener, talker) == true then
+        return true
+    end
+
+    if talker:GetPos():Distance(listener:GetPos()) < 750 then
+        return true, true
+    end
+
+    return можетслушать[listener][talker] == true, true
 end
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
@@ -546,158 +642,148 @@ function IsInTolerance( spos, dpos, tolerance )
 	return true
 end
 
-function GM:PlayerUse( ply, ent, key )
-	if ply:GTeam() == TEAM_SPEC and ply:GetRoleName() != role.ADMIN then return false end
-	if ply:GetRoleName() == role.ADMIN then return true end
-	if ply.lastuse == nil then ply.lastuse = 0 end
-	if ply.lastuse > CurTime() then return false end
-	local trent = ply:GetEyeTrace().Entity
-	local valid_to_use_musor = {"nigga.mdl"}
-	-- SCP OPEN UP!
-	local scp_opendelay = 5
-    if (ply:GTeam() == TEAM_SCP) and (trent:GetClass() == "func_button" ) then
-    timer.Simple( 1, function()
-    scp_opendelay = 0
-    if (scp_opendelay == 0) then
-        if trent:GetClass() != "func_button" then
-        else
-            ply:BrProgressBar("Выламываю...", 10, "nextoren/gui/icons/notifications/breachiconfortips.png", trent, false, function()
-                ply:EmitSound( "nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO ) -- Same as below
-                trent:Fire("use")
-            end)
+function GM:PlayerUse(ply, ent, key)
+    if ply:GTeam() == TEAM_SPEC and ply:GetRoleName() ~= role.ADMIN then
+        return false
+    end
+
+    if ply:GetRoleName() == role.ADMIN then
+        return true
+    end
+
+    if not ply.lastuse then
+        ply.lastuse = 0
+    end
+
+    if ply.lastuse > CurTime() then
+        return false
+    end
+
+    local trent = ply:GetEyeTrace().Entity
+	local trmodel = ply:GetEyeTrace().Entity:GetModel()
+
+    local validToUseMusor = {"nigga.mdl"}
+    -- SCP OPEN UP!
+    if ply:GTeam() == TEAM_SCP and trent:GetClass() == "func_button" then
+        local scp_opendelay = 5
+        timer.Simple(1, function()
+            scp_opendelay = 0
+            if scp_opendelay == 0 then
+                if trent:GetClass() ~= "func_button" then
+                    return
+                else
+                    ply:BrProgressBar("Выламываю...", 10, "nextoren/gui/icons/notifications/breachiconfortips.png", trent, false, function()
+                        ply:EmitSound("nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO)
+                        trent:Fire("use")
+                    end)
+                end
+            end
+        end)
+    end
+
+    -- Cleaner Loot
+    if ply:GetRoleName() == role.SCI_Cleaner and ply:KeyDown(KEY_E) and table.HasValue(validToUseMusor, trent:GetModel()) then
+        ply:BrProgressBar("Обыскиваю...", 10, "nextoren/gui/icons/hand.png", ent, false, function()
+            --
+        end)
+    end
+
+    for k, v in pairs(BUTTONS) do
+        if v.pos == ent:GetPos() or v.tolerance then
+            if v.tolerance and not IsInTolerance(v.pos, ent:GetPos(), v.tolerance) then
+                continue
+            end
+
+            ply.lastuse = CurTime() + 1
+
+			if v.locked then
+				ply:SetBottomMessage("l:access_denied")
+                return false
+			end
+
+			if v.evac then
+                return true
+			end
+
+            if v.access ~= nil then
+                if v.levelOverride and v.levelOverride(ply) then
+                    return true
+                end
+
+                local hui = ply:GetActiveWeapon():GetClass() or {}
+                local wep = string.sub(hui, 1, 14) or {}
+
+                if hui == "" then
+                    ply:SetBottomMessage("l:keycard_needed")
+                    return false
+                end
+
+                if hui == "breach_keycard_7" then
+                    if v.access.CLevelO5 ~= nil then
+                        if (ply:GetActiveWeapon().CLevels.CLevelO5 or 0) >= (v.access.CLevelO5 or 0) then
+                            ply:SetBottomMessage("l:access_granted")
+                            return true
+                        end
+                    end
+                end
+
+                if wep == "breach_keycard" then
+                    local keycard = wep
+
+                    if (ply:GetActiveWeapon().CLevels.CLevel or 0) >= (v.access.CLevel or 0) and (v.access.CLevel or 0) ~= 0 then
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                        ply:SetBottomMessage("l:access_granted")
+                        return true
+                    elseif (ply:GetActiveWeapon().CLevels.CLevelSUP or 0) >= (v.access.CLevelSUP or 0) and (v.access.CLevelSUP or 0) ~= 0 then
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                        ply:SetBottomMessage("l:access_granted")
+                        return true
+                    elseif (ply:GetActiveWeapon().CLevels.CLevelSCI or 0) >= (v.access.CLevelSCI or 0) and (v.access.CLevelSCI or 0) ~= 0 then
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                        ply:SetBottomMessage("l:access_granted")
+                        return true
+                    elseif (ply:GetActiveWeapon().CLevels.CLevelMTF or 0) >= (v.access.CLevelMTF or 0) and (v.access.CLevelMTF or 0) ~= 0 then
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                        ply:SetBottomMessage("l:access_granted")
+                        return true
+                    elseif (ply:GetActiveWeapon().CLevels.CLevelGuard or 0) >= (v.access.CLevelGuard or 0) and (v.access.CLevelGuard or 0) ~= 0 then
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                        ply:SetBottomMessage("l:access_granted")
+                        return true
+                    else
+                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+                        ply:SetBottomMessage("l:access_denied")
+                        return false
+                    end
+                else
+                    ply:SetBottomMessage("l:keycard_needed")
+                    return false
+                end
+            end
+
+            if v.canactivate == nil or v.canactivate(ply, ent) then
+                --ply:SetBottomMessage("l:access_denied")
+
+                if v.customaccessmsg then
+                    --ply:SetBottomMessage(v.customaccessmsg)
+                else
+                    --ply:SetBottomMessage("Access Granted")
+                end
+
+                return true
+            else
+                ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+
+                if v.customdenymsg then
+                    --ply:SetBottomMessage(v.customdenymsg)
+                else
+                    --ply:SetBottomMessage("l:access_denied")
+                end
+
+                return false
+            end
         end
     end
-    end)
-    end
-    -- Cleaner Loot
-	if ply:GetRoleName() == role.SCI_Cleaner and ply:KeyDown(KEY_E) and trent:GetModel() == valid_to_use_musor then
-		ply:BrProgressBar("Обыскиваю...", 10, "nextoren/gui/icons/hand.png", ent, false, function()
-		 end)
-       end
-
-		for k, v in pairs( BUTTONS ) do
-			if v.pos == ent:GetPos() or v.tolerance then
-		if v.tolerance and !IsInTolerance( v.pos, ent:GetPos(), v.tolerance ) then
-			continue
-		end
-
-		ply.lastuse = CurTime() + 1
-
-		if v.access != nil then
-			if v.levelOverride and v.levelOverride( ply ) then
-				return true
-			end
-
-			local hui = ply:GetActiveWeapon():GetClass() or {}
-			local wep = string.sub( hui, 1, 14 ) or {}
-			if hui == "" then
-				ply:SetBottomMessage("l:keycard_needed")
-				return false
-			end
-			if hui == "breach_keycard_7" then
-				if v.access.CLevelO5 != nil then
-				if ((ply:GetActiveWeapon().CLevels.CLevelO5) >= (v.access.CLevelO5)) then
-
-					ply:SetBottomMessage("l:access_granted")	
-
-					return true	
-
-				end	
-				end			
-
-			end
-			if wep == "breach_keycard" then
-				--ply:SetBottomMessage(v.access.CLevelSCI)
-				local keycard = wep
-					--ply:SetBottomMessage(v.access.CLevel)
-					if ((ply:GetActiveWeapon().CLevels.CLevel) >= (v.access.CLevel)) and ((v.access.CLevel) != 0) then
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_granted")	
-
-						return true
-						
-
-					elseif ((ply:GetActiveWeapon().CLevels.CLevelSUP) >= (v.access.CLevelSUP)) and ((v.access.CLevelSUP) != 0) then
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_granted")	
-
-						return true
-
-					elseif ((ply:GetActiveWeapon().CLevels.CLevelSCI) >= (v.access.CLevelSCI)) and ((v.access.CLevelSCI) != 0) then
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_granted")	
-
-						return true
-
-					elseif ((ply:GetActiveWeapon().CLevels.CLevelMTF) >= (v.access.CLevelMTF)) and ((v.access.CLevelMTF) != 0) then
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_granted")	
-
-						return true
-
-					elseif ((ply:GetActiveWeapon().CLevels.CLevelGuard) >= (v.access.CLevelGuard)) and ((v.access.CLevelGuard) != 0) then
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_granted")	
-
-						return true
-					else
-						if !v.nosound then
-							ply:EmitSound( "nextoren/weapons/keycard/keycarduse_2.ogg" )
-						end
-
-						ply:SetBottomMessage("l:access_denied")	
-
-						return false
-					end
-			else
-				ply:SetBottomMessage("l:keycard_needed")
-				return false
-			end
-		end
-
-		if v.canactivate == nil or v.canactivate( ply, ent ) then
-			if !v.nosound then
-				ply:EmitSound( "nextoren/weapons/keycard/keycarduse_1.ogg" )
-			end
-
-			if v.customaccessmsg then
-				ply:PrintMessage( HUD_PRINTCENTER, v.customaccessmsg )
-			else
-				--ply:SetBottomMessage("Access Granted")
-
-			end
-
-			return true
-		else
-			if !v.nosound then
-				ply:EmitSound( "nextoren/weapons/keycard/keycarduse_2.ogg" )
-			end
-
-			if v.customdenymsg then
-				ply:SetBottomMessage( v.customdenymsg )
-			else
-				ply:SetBottomMessage("l:access_denied")	
-			end
-
-			return false
-		end
-	end
-end
 end
 
 function GM:CanPlayerSuicide( ply )

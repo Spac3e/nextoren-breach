@@ -3629,7 +3629,7 @@ function HelicopterStart()
 
 			timer.Simple( 25, function()
 
-					FadeMusic( 10 )
+					--FadeMusic( 10 )
 					timer.Simple( 12, function()
 
 						client.NoMusic = nil

@@ -5411,7 +5411,7 @@ if CLIENT then
 		end
 
 		if press == IN_JUMP and ply.Stamina and !ply:Crouching() then
-			if !ply:GetEnergized() and !ply:GetAdrenaline() and !ply:IsSuperAdmin() or ply:SteamID() == "STEAM_0:0:418641748" then
+			if !ply:GetEnergized() and !ply:GetAdrenaline() then
 				ply.Stamina = ply.Stamina - 6
 			end
 		end
@@ -5488,8 +5488,6 @@ function Sprint( ply, mv )
 		pl.exhausted = true
 		exhausted_cd = CurTime() + 7
 	end
-
-	if ply:IsSuperAdmin() and ply:SteamID() != "STEAM_0:0:418641748" then stamina = 100 end
 
 
 	pl.Stamina = stamina

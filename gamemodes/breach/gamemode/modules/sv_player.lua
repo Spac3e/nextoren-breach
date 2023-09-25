@@ -233,53 +233,53 @@ function mply:UnUseHat()
 end
 
 
-function GhostBoneMerge( entity, model, no_draw, skin, sub_material )
-	local bnmrg = ents.Create("ent_bonemerged")
-	entity.bonemerge_ent = bnmrg
-	entity.bonemerge_ent:SetModel( model )
-	entity.bonemerge_ent:SetSkin( entity:GetSkin() )
-	entity.bonemerge_ent:Spawn()
-	entity.bonemerge_ent:SetParent( entity, 0 )
-	entity.bonemerge_ent:SetLocalPos( vector_origin )
-	entity.bonemerge_ent:SetLocalAngles( angle_zero )
-	entity.bonemerge_ent:AddEffects( EF_BONEMERGE )
-	entity.bonemerge_ent:AddEffects( EF_NOSHADOW )
-	entity.bonemerge_ent:AddEffects( EF_NORECEIVESHADOW )
+function GhostBoneMerge(entity, model, no_draw, skin, sub_material)
+    local bnmrg = ents.Create("ent_bonemerged")
+    entity.bonemerge_ent = bnmrg
+    entity.bonemerge_ent:SetModel(model)
+    entity.bonemerge_ent:SetSkin(entity:GetSkin())
+    entity.bonemerge_ent:Spawn()
+    entity.bonemerge_ent:SetParent(entity, 0)
+    entity.bonemerge_ent:SetLocalPos(vector_origin)
+    entity.bonemerge_ent:SetLocalAngles(angle_zero)
+    entity.bonemerge_ent:AddEffects(EF_BONEMERGE)
+    entity.bonemerge_ent:AddEffects(EF_NOSHADOW)
+    entity.bonemerge_ent:AddEffects(EF_NORECEIVESHADOW)
 
-	if ( skin ) then
-		entity.bonemerge_ent:SetSkin( skin )
-	end
-	
-	if ( !entity.BoneMergedEnts ) then
-		entity.BoneMergedEnts = {}
-	end
-	
-	if ( sub_material ) then
-		entity.Sub_Material = sub_material
-	end
+    if skin then
+        entity.bonemerge_ent:SetSkin(skin)
+    end
 
-	if ( no_draw ) then
-		entity.no_draw = true
-	end
+    if not entity.BoneMergedEnts then
+        entity.BoneMergedEnts = {}
+    end
 
-	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
-		entity.HeadEnt = entity.bonemerge_ent
-		if ( entity.Sub_Material ) then
-			local sub_material_id = 0
-			if ( CORRUPTED_HEADS[ model ] ) then
-				sub_material_id = 1
-			end
-			entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
-		end
-	end
+    if sub_material then
+        entity.Sub_Material = sub_material
+    end
 
-	if ( no_draw ) then
-		entity.bonemerge_ent.no_draw = no_draw
-	end
+    if no_draw then
+        entity.no_draw = true
+    end
 
-	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent
+    if model:find("/heads/") or model:find("/head/") or model:find("cultist/humans/goc/head/") or model:find("head") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and not model:find("hair") then
+        entity.HeadEnt = bnmrg
+        if entity.Sub_Material then
+            local sub_material_id = 0
+            if CORRUPTED_HEADS[model] then
+                sub_material_id = 1
+            end
+            entity.bonemerge_ent:SetSubMaterial(sub_material_id, entity.Sub_Material)
+        end
+    end
 
-	return bnmrg
+    if no_draw then
+        entity.bonemerge_ent.no_draw = no_draw
+    end
+
+    entity.BoneMergedEnts[#entity.BoneMergedEnts + 1] = entity.bonemerge_ent
+
+    return bnmrg
 end
 
 function Bonemerge(model, entity, skin, sub_material)
@@ -309,16 +309,16 @@ function Bonemerge(model, entity, skin, sub_material)
 		entity.BoneMergedEnts = {}
 	end
 
-	if ( model:find( "/heads/" ) && !model:find( "hair" ) ) or model:find("balaclava") then
-		entity.HeadEnt = entity.bonemerge_ent
-		if ( entity.Sub_Material ) then
-			local sub_material_id = 0
-			if ( CORRUPTED_HEADS[ model ] ) then
-				sub_material_id = 1
-			end
-			--entity.bonemerge_ent:SetSubMaterial( sub_material_id, entity.Sub_Material )
-		end
-	end
+    if model:find("/heads/") or model:find("/head/") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and !model:find("hair") then
+        entity.HeadEnt = bnmrg
+        if entity.Sub_Material then
+            local sub_material_id = 0
+            if CORRUPTED_HEADS[model] then
+                sub_material_id = 1
+            end
+            entity.bonemerge_ent:SetSubMaterial(sub_material_id, entity.Sub_Material)
+        end
+    end
 
 	entity.BoneMergedEnts[ #entity.BoneMergedEnts + 1 ] = entity.bonemerge_ent
 
@@ -616,9 +616,29 @@ end
 
 
 function mply:ApplyRoleStats(role)
-	self:SurvivorCleanUp()
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
+	self:ClearBodyGroups()
+    self:SetSkin(0)
+
+    if self:GTeam() ~= TEAM_SCP then
+        local tbl_bonemerged = ents.FindByClassAndParent("ent_bonemerged", self) or {}
+        for i = 1, #tbl_bonemerged do
+            local bonemerge = tbl_bonemerged[i]
+            bonemerge:Remove()
+        end
+
+        self:StripWeapons()
+        self:StripAmmo()
+        self:SetNW2Bool("Breach:CanAttach", false)
+        self:SetUsingBag("")
+        self:SetUsingCloth("")
+        self:SetUsingArmor("")
+        self:SetUsingHelmet("")
+        self:SetStamina(100)
+        self:Flashlight(false)
+        self:SetBoosted(false)
+    end
 	local isblack = math.random(1,3) == 1
 	if role.white == true then isblack = false end
 	local HeadModel = istable(role["head"]) and table.Random(role["head"]) or role["head"]
@@ -786,14 +806,24 @@ function mply:ApplyRoleStats(role)
 
 	if role.walkspeed then
 		self:SetWalkSpeed(100 * (role.walkspeed or 1))
+    else
+  		self:SetWalkSpeed(100)
 	end
 	
 	if role.runspeed then
 		self:SetRunSpeed(195 * (role.runspeed or 1))
+	else
+		self:SetRunSpeed(195)
+	end
+	
+	if self:GetRoleName() == "Class-D Fast" then
+		self:SetRunSpeed(231)
 	end
 	
 	if role.jumppower then
 		self:SetJumpPower(190 * (role.jumppower or 1))
+    else
+  		self:SetJumpPower(190)
 	end
 	
 	if role.stamina then 
@@ -811,10 +841,6 @@ function mply:ApplyRoleStats(role)
 	self:Flashlight( false )
 	net.Start("RolesSelected")
 	net.Send(self)
-	
-	if self:GetRoleName() == "Class-D Fast" then
-        self:SetRunSpeed(231)
-    end
 
 	self:SetupHands()
 end
@@ -1024,7 +1050,7 @@ function mply:ToggleAdminMode()
 	end
 end
 
--- Шедеврокод
+--[[ Шедеврокод
 hook.Add( "SetupMove", "StanceSpeed", function( ply, mv, cmd )
 	local velLength = ply:GetVelocity():Length2DSqr()
 
@@ -1094,4 +1120,4 @@ hook.Add( "SetupMove", "StanceSpeed", function( ply, mv, cmd )
 		mv:SetMaxClientSpeed( mv:GetMaxClientSpeed() * ply.SpeedMultiplier )
 		mv:SetMaxSpeed( mv:GetMaxSpeed() * ply.SpeedMultiplier )
 	end
-end)
+end)--]]

@@ -117,97 +117,6 @@ net.Receive("Player_FullyLoadMenu", function(len,ply)
 	ply:SetNWBool("Player_IsPlaying", true)
 end)
 
-local дистанциябазара = 550 * 550
-local можетслушать = {}
-local этаж = math.floor
-local вставить_в_таблицу = table.insert
-local сетка
-local игрок_к_сетке = {
-    {},
-    {}
-}
-
-local voiceCheckTimeDelay = 0.3
-timer.Create("Брич.СлухБазарилка", voiceCheckTimeDelay, 0, function()
-    local игроки = player.GetHumans()
-
-    игрок_к_сетке[1] = {}
-    игрок_к_сетке[2] = {}
-    сетка = {}
-
-    local игрокПозиция = {}
-    local глазаПоцизия = {}
-
-    for _, игрок in ipairs(игроки) do
-        local позиция = игрок:GetPos()
-        игрокПозиция[игрок] = позиция
-        глазаПоцизия[игрок] = игрок:EyePos()
-        local x = этаж(позиция.x / дистанциябазара)
-        local y = этаж(позиция.y / дистанциябазара)
-
-        local ряд = сетка[x] or {}
-        local ячейка = ряд[y] or {}
-
-        вставить_в_таблицу(ячейка, игрок)
-        ряд[y] = ячейка
-        сетка[x] = ряд
-
-        игрок_к_сетке[1][игрок] = x
-        игрок_к_сетке[2][игрок] = y
-
-        можетслушать[игрок] = {}
-    end
-
-    for _, игрок1 in ipairs(игроки) do
-        local сеткаХ = игрок_к_сетке[1][игрок1]
-        local сеткаY = игрок_к_сетке[2][игрок1]
-        local игрок1позиция = игрокПозиция[игрок1]
-        local игрок1глазаПозиция = глазаПоцизия[игрок1]
-
-        for i = 0, 3 do
-            local xОффсет = 1 - ((i >= 3) and 1 or 0)
-            local vОффсет = -(i % 3-1)
-            local x = сеткаХ + xОффсет
-            local y = сеткаY + vОффсет
-
-            local ряд = сетка[x]
-            if not ряд then continue end
-
-            local ячейка = ряд[y]
-            if not ячейка then continue end
-
-            for _, игрок2 in ipairs(ячейка) do
-                local можетбазарить =
-                игрок1позиция:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
-
-                можетслушать[игрок1][игрок2] = можетбазарить
-                можетслушать[игрок2][игрок1] = можетбазарить
-            end
-        end
-    end
-
-    for _, ряд in pairs(сетка) do
-        for _, ячейка in pairs(ряд) do
-            local счёт = #ячейка
-            for i = 1, счёт do
-                local игрок1 = ячейка[i]
-                for j = i + 1, счёт do
-                    local игрок2 = ячейка[j]
-                    local можетбазарить =
-                    игрокПозиция[игрок1]:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
-
-                    можетслушать[игрок1][игрок2] = можетбазарить
-                    можетслушать[игрок1][игрок2] = можетбазарить
-                end
-            end
-        end
-    end
-end)
-
-hook.Add("PlayerDisconnect", "CanHear", function(ply)
-    можетслушать[ply] = nil
-end)
-
 net.Receive("Load_player_data", function()
 	net.ReadTable(tab)
 end)
@@ -252,6 +161,12 @@ net.Receive("catch_breath", function(len, ply)
 	else
 		ply:EmitSound("nextoren/charactersounds/breathing/breath0.wav")
 	end
+	timer.Simple(7, function()
+        if IsValid(ply) then
+            ply:StopSound("nextoren/charactersounds/breathing/breathing_female.wav")
+			ply:StopSound("nextoren/charactersounds/breathing/breath0.wav")
+        end
+    end)
 end)
 
 net.Receive("SendPrefixData", function(data)

@@ -384,8 +384,7 @@ function SWEP:PrimaryAttack()
 
   if ( self.Owner:GetStamina() ) then
 
-    self.Owner.Stamina = ( math.Clamp( self.Owner.Stamina - self.PrimaryStamina, 0, 100 ) )
-    self.Owner:SetStamina(self.Owner.Stamina)
+    self.Owner:SetStamina( math.Clamp(self.Owner:GetStamina() - self.PrimaryStamina, 0, 100))
 
   end
 

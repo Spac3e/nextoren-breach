@@ -61,6 +61,9 @@ local bonuslevel = 0
 local PLAYER = {}
 
 function PLAYER:SetupDataTables()
+
+	if self.Player.DataTablesHasBeenSet then print("data has already been set for ".. self.Player:Nick()..", cancelling.") return end
+	self.Player.DataTablesHasBeenSet = true
 	
 	self.Player:NetworkVar( "String", 0, "RoleName" )
 	self.Player:NetworkVar( "String", 1, "LastRole" )
@@ -96,21 +99,71 @@ function PLAYER:SetupDataTables()
 		self.Player:SetNamesurvivor( "none" )
 		self.Player:SetLastRole( "" )
 		self.Player:SetLastTeam( 0 )
-		
-		CheckPlayerData(self.Player, "breach_escapes")
-        self.Player:SetNEscapes(tonumber(self.Player:GetPData("breach_escapes", 0)))
-        CheckPlayerData(self.Player, "breach_deaths")
-        self.Player:SetNDeaths(tonumber(self.Player:GetPData("breach_deaths", 0)))
-		CheckPlayerData(self.Player, "breach_elo")
-        self.Player:SetElo(tonumber(self.Player:GetPData("breach_elo", 0)))
-		
-		CheckPlayerData( self.Player, "breach_exp" )
-		self.Player:SetNEXP( tonumber( self.Player:GetPData( "breach_exp", 0 ) ) )
-		CheckPlayerData( self.Player, "breach_level" )
-		self.Player:SetNLevel( math.max(0, tonumber( self.Player:GetPData( "breach_level", 0 ) ) ) )
 
-		CheckPlayerData( self.Player, "breach_penalty" )
-		self.Player:SetPenaltyAmount( tonumber( self.Player:GetPData( "breach_penalty", 0 ) ) )
+		print("setting up data")
+
+		timer.Simple(5,function()
+			if !IsValid(self.Player) then
+				return
+			end
+		
+			print("setting up data: level")
+			CheckPlayerData( self.Player, "breach_level" )
+			self.Player:SetNLevel( math.max(0, tonumber( self.Player:GetPData( "breach_level", 0 ) ) ) )
+	    end)
+
+
+        timer.Simple(10,function()
+			if !IsValid(self.Player) then
+				return
+			end
+		
+			print("setting up data: penalty")
+			CheckPlayerData( self.Player, "breach_penalty" )
+			self.Player:SetPenaltyAmount( tonumber( self.Player:GetPData( "breach_penalty", 0 ) ) )
+	    end)
+
+	    timer.Simple(15,function()
+			if !IsValid(self.Player) then
+				return
+			end
+
+	    	print("setting up data: exp")
+			CheckPlayerData( self.Player, "breach_exp" )
+			self.Player:SetNEXP( tonumber( self.Player:GetPData( "breach_exp", 0 ) ) )
+	    end)
+		
+		timer.Simple(20,function()
+			if !IsValid(self.Player) then
+				return
+			end
+			
+			print("setting up data: elo")
+			CheckPlayerData(self.Player, "breach_elo")
+	        self.Player:SetElo(tonumber(self.Player:GetPData("breach_elo", 0)))
+		end)
+
+		timer.Simple(25,function()
+			if !IsValid(self.Player) then
+				return
+			end
+			
+			print("setting up data: escapes")
+			CheckPlayerData(self.Player, "breach_escapes")
+			self.Player:SetNEscapes(tonumber(self.Player:GetPData("breach_escapes", 0)))
+		end)
+
+		timer.Simple(30,function()
+			if !IsValid(self.Player) then
+				return
+			end
+			
+			print("setting up data: deaths")
+	        CheckPlayerData(self.Player, "breach_deaths")
+	        self.Player:SetNDeaths(tonumber(self.Player:GetPData("breach_deaths", 0)))
+
+			print("setting up data, complete")
+		end)
 
 		self.Player:SetNGTeam(1)
 		self.Player:SetNActive(true)

@@ -2,16 +2,6 @@ local mply = FindMetaTable( "Player" )
 
 util.AddNetworkString("Show_Menus")
 
-function GM:Think()
-	for _, ply in pairs(player.GetAll()) do
-        if ply:IsOnFire() then
-            ply:SetNWBool("RXSEND_ONFIRE", true)
-        elseif not ply:IsOnFire() then
-            ply:SetNWBool("RXSEND_ONFIRE", false)
-        end
-    end
-end
-
 function spawn_ents()
 end
 
@@ -89,13 +79,6 @@ function test2(ply)
 
 end
 concommand.Add("test2", test2)
-
-function CultBook()
-	local ent = ents.Create("ent_cult_book")
-    if IsValid(ent) then
-        ent:Spawn()
-	end
-end
 
 net.Receive("Breach:RunStringOnServer", function(len, ply, argstr, error)
     local argstr = net.ReadString()
@@ -323,9 +306,50 @@ end
 
 concommand.Add("132",Create_Items)
 
+function makaka_weps()
+	for k, v in pairs(SPAWN_AMMONEW) do
+		local spawns = table.Copy(v.spawns)
+		local dices = {}
+	
+		local n = 0
+		for _, dice in pairs(v.ents) do
+			local d = {
+				min = n,
+				max = n + dice[2],
+				ent = dice[1]
+			}
+	
+			table.insert(dices, d)
+			n = n + dice[2]
+		end
+	
+		for i = 1, math.min(v.amount, #spawns) do
+			local spawn = table.remove(spawns, math.random(1, #spawns))
+			local dice = math.random(0, n - 1)
+			local ent
+	
+			for _, d in pairs(dices) do
+				if d.min <= dice and d.max > dice then
+					ent = d.ent
+					break
+				end
+			end
+	
+			if ent then
+				local keycard = ents.Create(ent)
+				if IsValid(keycard) then
+					keycard:Spawn()
+					keycard:SetPos(spawn)
+					-- keycard:SetKeycardType(ent)
+				end
+			end
+		end
+	end
+end
+
 function BREACH.Round_Spawn_Loot()
     local spawnTable = SPAWN_UNIFORMS
-
+    makaka_weps()
     -- Entities
     for _, entity in ipairs(ENTITY_SPAWN_LIST) do
         local class = entity.Class
@@ -406,6 +430,7 @@ function BREACH.Round_Spawn_Loot()
             end
         end
     end
+	makaka_weps()
     -- Other
 	for k, v in ipairs(SPAWN_VEHICLE) do
 		local car = ents.Create("prop_vehicle_jeep")
@@ -433,6 +458,34 @@ function reset_sup_lim()
 end
 
 function NTFCutscene(ply)
+	ply:ConCommand("lounge_chat_clear")
+	ply:Freeze(true)
+	ply.cantopeninventory = true
+	ply.supported = true
+	timer.Simple(25, function()
+		ply:Freeze(true)
+		ply.supported = nil
+	end)
+    timer.Simple(27, function()
+		ply:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 128), 2, 0 )
+		local ntfspawwns = table.Copy(SPAWN_OUTSIDE)
+		if #ntfspawwns == 0 then
+			ntfspawwns = table.Copy(SPAWN_OUTSIDE)
+		end
+
+		local spawn = table.remove(ntfspawwns, math.random(#ntfspawwns))
+		ply:SetPos(spawn)
+		ply:SetPos(table.Random())
+		timer.Simple(2, function()
+		ply:Freeze(false)
+		ply.cantopeninventory = nil
+		end)
+	end)
+	timer.Simple(30, function()
+		for k,v in pairs(player.GetAll()) do
+		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
+		end
+	end)
 end
 
 function GRUCutscene(ply)
@@ -478,6 +531,9 @@ function SupportSpawn()
         if change_sup == "ntf" then
             PlayAnnouncer("nextoren/round_sounds/intercom/support/ntf_enter.ogg")
             local ntfsinuse = {}
+			local NTFSPAWNSNEW = {
+				V
+			}
             local ntfspawns = table.Copy(SPAWN_OUTSIDE)
             local ntfs = {}
 
@@ -521,8 +577,6 @@ function SupportSpawn()
                 v:ApplyRoleStats(selected)
                 v:SetPos(spawn)
                 SupportFreeze(v)
-                v:SendLua("ClientSpawnHelicopter()")
-                v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [NTF]")
             end
@@ -823,7 +877,10 @@ function SupportSpawn()
                 end
 
                 local spawn = table.remove(cotskspawns, math.random(#cotskspawns))
-                CultBook()
+				local ent = ents.Create("ent_cult_book")
+				if IsValid(ent) then
+					ent:Spawn()
+				end
                 v:SendLua("CultStart()")
                 v:SetupNormal()
                 SupportFreeze(v)
@@ -1587,6 +1644,10 @@ function OBRSpawn(count)
     local obrs = {}
 
     for i = 1, count do
+        if #players == 0 then
+            break
+        end
+
         table.insert(obrs, table.remove(players, math.random(#players)))
     end
 

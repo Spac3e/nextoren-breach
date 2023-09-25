@@ -45,7 +45,7 @@ function ENT:Use( activator, caller )
 
 				if ( caller:GetAmmoCount( ammo ) >= ( maxs[ ammo ] || 90 ) ) then
 
-					caller:setBottomMessage( "l:ammo_maximum" )
+					caller:SetBottomMessage( "l:ammo_maximum" )
 
 					return
 				end
@@ -56,7 +56,7 @@ function ENT:Use( activator, caller )
 
 			else
 
-				caller:setBottomMessage( "l:ammo_not_suitable" )
+				caller:SetBottomMessage( "l:ammo_not_suitable" )
 			end
 
 		end

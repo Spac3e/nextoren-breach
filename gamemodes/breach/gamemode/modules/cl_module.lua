@@ -51,19 +51,17 @@ function ClientSpawnHelicopter()
   helicopter:SetPos( light_origin )
   helicopter:SetAngles( helicopter_angle )
 	timer.Simple( 10, function()
-		local snd = CreateSound( helicopter, "nextoren/others/helicopter/apache_hover.wav" )
-		snd:SetDSP( 17 )
+		local snd = CreateSound( helicopter, "nextoren/sup_spawn/heli_passenger.mp3" )
+		snd:SetDSP( 16 )
 		snd:Play()
 		timer.Simple( 29, function()
 			if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
 				entcall.StopInventory = false
-				helicopter:StopSound( "nextoren/others/helicopter/apache_hover.wav" )
 				timer.Simple( 20, function()
 					if ( entcall && entcall:IsValid() && entcall:IsPlayer() ) then
+						helicopter:StopSound( "nextoren/sup_spawn/heli_passenger.mp3" )
 						PickGenericSong()
 						helicopter:Remove()
-						net.Start("ProceedUnfreezeSUP",true)
-						net.SendToServer()
 					end
 				end )
 			end
