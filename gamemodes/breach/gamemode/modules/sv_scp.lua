@@ -266,7 +266,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetNoTarget( true )
 
 	if ply:IsPremium() then net.Start("SCPSelect_Menu") net.WriteTable(SCPS) net.Send(ply) end
-
+    if ply:GetRoleName() == "SCP062DE" then ply:SendLua("SCP062de_Menu()") end
 	ply.BaseStats = nil
 	ply.UsingArmor = nil
 
