@@ -58,7 +58,7 @@ end
 function test2(ply)
 	--ply:SetNWBool("RXSEND_ONFIRE", true)
 	--ply:SetNEXP("1000")
-
+--[[
 	ply:SetNEXP( 0 )
 	print(ply:GetNEXP())
 	ply:SetPData( "breach_exp", 0 )
@@ -76,6 +76,7 @@ function test2(ply)
 
 
 	print(680 * math.max(1, ply:GetNLevel()))
+	]]--
 
 end
 concommand.Add("test2", test2)
@@ -302,6 +303,7 @@ function Create_Items()
             end
         end
     end
+
 end
 
 concommand.Add("132",Create_Items)
@@ -363,6 +365,50 @@ function BREACH.Round_Spawn_Loot()
             ent:Spawn()
         end
     end
+
+	-- Оружки требуют ребаланса
+
+	for k, v in pairs( SPAWN_AMMONEW ) do
+	local spawns = table.Copy( v.spawns )
+	//local cards = table.Copy( v.ents )
+	local dices = {}
+
+	local n = 0
+	for _, dice in pairs( v.ents ) do
+		local d = {
+			min = n,
+			max = n + dice[2],
+			ent = dice[1]
+		}
+		
+		table.insert( dices, d )
+		n = n + dice[2]
+	end
+
+	for i = 1, math.min( v.amount, #spawns ) do
+		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
+		local dice = math.random( 0, n - 1 )
+		local ent
+
+		for _, d in pairs( dices ) do
+			if d.min <= dice and d.max > dice then
+				ent = d.ent
+				break
+			end
+		end
+
+		if ent then
+			local keycard = ents.Create( ent )
+			if IsValid( keycard ) then
+				keycard:Spawn()
+				keycard:SetPos( spawn )
+				--keycard:SetKeycardType( ent )
+			end
+		end
+	end
+	end
+
+	--
 
     -- Loot
     for _, spawnData in pairs(SPAWN_ITEMS) do

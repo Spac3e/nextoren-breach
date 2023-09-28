@@ -2644,11 +2644,14 @@ hook.Add('NotifyShouldTransmit', 'BNMRG_NotifyShouldTransmit', function(ent, sho
     end
 end)
 
-
 net.Receive( "TargetsToNTFs", function()
 
     local target = net.ReadTable()
     local team_indx = net.ReadUInt(12)
+    
+	
+	PrintTable(target)
+	print(team_indx)
 
     local clr_to_draw
     local universal_search
