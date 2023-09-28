@@ -63,17 +63,6 @@ function ENT:Fuse(t)
 		if self:IsValid() then
 			local hitPos = self:GetPos()
 			
-			-- trace up to check for impacts
-			traceData.start = hitPos
-			local finishPos = traceData.start + Vector(0, 0, 32)
-			
-			traceData.endpos = finishPos
-			traceData.filter = self
-			
-			local trace = util.TraceLine(traceData)
-			local traceZ = trace.HitPos.z
-			finishPos.z = traceZ
-			
 			self:EmitSound("weapons/flashbang/flashbang_explode2.wav", 85, 100)
 			
 			for key, obj in ipairs(player.GetAll()) do
@@ -81,44 +70,40 @@ function ENT:Fuse(t)
 					local bone = obj:LookupBone("ValveBiped.Bip01_Head1")
 					
 					if bone then
-						local headPos, headAng = obj:GetBonePosition(bone)
-						local objDist = headPos:Distance(finishPos)
+						traceData.filter = obj
 						
-						if objDist <= self.FlashDistance then
-							traceData.filter = obj
+						local headPos, headAng = obj:GetBonePosition(bone)
+						local ourAimVec = self.Owner:GetAimVector()
+						
+						local direction = (hitPos - headPos):GetNormal()
+						local dotToGeneralDirection = ourAimVec:DotProduct(direction)
+						
+						traceData.start = headPos
+						traceData.endpos = traceData.start + direction * self.FlashDistance
+						
+						local trace = util.TraceLine(traceData)
+						local ent = trace.Entity
+						
+						if IsValid(ent) and ent == self then
+							local hitDistance = self.FlashDistance * trace.Fraction
+							local isMaxIntensity = (hitDistance - self.MaxIntensityDistance) < 0
+							local decay = self.FlashDistance - self.MaxIntensityDistance
+							local intensity = 0
 							
-							local ourAimVec = self.Owner:GetAimVector()
-							
-							local direction = (finishPos - headPos):GetNormal()
-							local dotToGeneralDirection = ourAimVec:DotProduct(direction)
-							
-							traceData.start = headPos
-							
-							traceData.endpos = traceData.start + direction * math.min(objDist, self.FlashDistance)
-							
-							local trace = util.TraceLine(traceData)
-							local ent = trace.Entity
-							
-							if not IsValid(ent) or (not ent:IsValid() and not ent:IsWorld()) or ent == self then
-								local isMaxIntensity = (objDist - self.MaxIntensityDistance) < 0
-								local decay = self.FlashDistance - self.MaxIntensityDistance
-								local intensity = 0
-								
-								if isMaxIntensity then
-									intensity = 1
-								else
-									local decayDistance = objDist - self.MaxIntensityDistance
-									intensity = 1 - decayDistance / decay
-								end
-								
-								intensity = math.min((intensity + 0.25) * dotToGeneralDirection, 1)
-								local duration = intensity * self.FlashDuration
-								
-								umsg.Start("CW_FLASHBANGED", obj)
-									umsg.Float(intensity)
-									umsg.Float(duration)
-								umsg.End()
+							if isMaxIntensity then
+								intensity = 1
+							else
+								local decayDistance = hitDistance - self.MaxIntensityDistance
+								intensity = 1 - decayDistance / decay
 							end
+							
+							intensity = math.min((intensity + 0.25) * dotToGeneralDirection, 1)
+							local duration = intensity * self.FlashDuration
+							
+							umsg.Start("CW_FLASHBANGED", obj)
+								umsg.Float(intensity)
+								umsg.Float(duration)
+							umsg.End()
 						end
 					end
 				end

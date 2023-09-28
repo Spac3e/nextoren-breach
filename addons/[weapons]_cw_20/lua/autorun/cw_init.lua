@@ -56,8 +56,6 @@ if SERVER then
 	include("cw/server/cw_hooks.lua")
 	include("cw/server/cw_concommands.lua")
 	include("cw/server/cw_weapondrop.lua")
-	resource.AddWorkshop("349050451")
-	resource.AddWorkshop("657241323")
 end
 
 -- create base folder to store various CW 2.0 related stuff in

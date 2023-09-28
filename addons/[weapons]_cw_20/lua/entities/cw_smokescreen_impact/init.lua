@@ -2,8 +2,6 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-util.AddNetworkString("CW_SMOKESCREEN")
-
 local spd, ent
 
 function ENT:Initialize()
@@ -20,10 +18,7 @@ end
 
 function ENT:CreateParticles()
 	self:EmitSound("weapons/smokegrenade/sg_explode.wav", 100, 100)
-	
-	net.Start("CW_SMOKESCREEN")
-		net.WriteVector(self:GetPos())
-	net.Broadcast()
+	ParticleEffect("cstm_smoke", self:GetPos(), Angle(0, 0, 0), self)
 end
 
 function ENT:Use(activator, caller)

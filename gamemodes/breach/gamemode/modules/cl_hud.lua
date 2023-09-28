@@ -1995,7 +1995,7 @@ net.Receive("NTF_Special_1", function()
 
 			local bonemerged_tbl = ents.FindByClassAndParent("ent_bonemerged", v)
 
-			if ( bonemerged_tbl and IsValid(bonemerged_tbl) ) then
+			if ( bonemerged_tbl && bonemerged_tbl:IsValid() ) then
 
 				for i = 1, #bonemerged_tbl do
 

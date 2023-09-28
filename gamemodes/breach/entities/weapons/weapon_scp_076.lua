@@ -47,6 +47,19 @@ SWEP.AbilityIcons = {
 
   },
 
+  {
+
+    [ "Name" ] = "speed",
+    [ "Description" ] = "Вы ускоряетесь и атакуете значительно быстрее в течении 15 секунд.",
+    [ "Cooldown" ] = 80,
+    [ "CooldownTime" ] = 0,
+    [ "KEY" ] = _G["KEY_R"],
+    [ "Using" ] = false,
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/speed.png",
+    [ "Abillity" ] = nil
+
+  }
+
 }
 
 function SWEP:SetupDataTables()
@@ -159,7 +172,6 @@ function SWEP:Deploy()
       end
     end)
 
-    --[[
     hook.Add( "PlayerButtonDown", "SCP_076_abil", function( ply, butt )
 
       if ( butt == KEY_Q ) then
@@ -222,7 +234,7 @@ function SWEP:Deploy()
 
       end
 
-    end )]]
+    end )
 
   end
 
@@ -250,7 +262,7 @@ function SWEP:Deploy()
   self.IdleDelay = CurTime() + 1.46
   self:PlaySequence( "deploy" )
 
- -- self:EmitSound( "weapons/universal/uni_weapon_draw_02.wav", 75, 80, 1, CHAN_WEAPON )
+  self:EmitSound( "weapons/universal/uni_weapon_draw_02.wav", 75, 80, 1, CHAN_WEAPON )
   timer.Simple(0.55, function() self:EmitSound("weapons/l4d2_kf2_katana/knife_deploy.wav", 75, 80, 1, CHAN_WEAPON ) end)
 
   timer.Simple( 0, function()

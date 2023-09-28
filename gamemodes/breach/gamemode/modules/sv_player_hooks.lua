@@ -100,16 +100,25 @@ function BroadcastPlayMusic( soundname, vsrf_flot )
 	net.Broadcast()
 end
 
-net.Receive("NTF_Special_1", function(ply,caller)
+net.Receive("NTF_Special_1", function(len, ply)
+    local team_id = net.ReadUInt(12)
+
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
-	local nigger_gay_receive = net.ReadUInt(12)
-	caller:SetSpecialCD(CurTime() + 80)
+
+    ntf_scan = {} 
+
+    for _, v in pairs( player.GetAll() ) do
+        table.insert(ntf_scan, v)
+	end
+
+	ply:SetSpecialCD(CurTime() + 65)
 	timer.Simple( 15, function()
 	PlayAnnouncer("nextoren/vo/ntf/camera_found_1.ogg")
-	net.Start( "NTF_Special_1" )
-	net.WriteUInt( nigger_gay_receive, 8 )
+	net.Start("TargetsToNTFs")
+    net.WriteTable(ntf_scan)
+    net.WriteUInt(team_id, 12)
 	net.Broadcast()
-	end )
+	end)
 end)
 
 function CheckStart()
@@ -316,7 +325,7 @@ local дистанциябазара = 550 * 550
 local можетслушать = {}
 local этаж = math.floor
 local вставить_в_таблицу = table.insert
-local сетка
+local сетка = {}
 local игрок_к_сетке = {
     {},
     {}
@@ -326,28 +335,27 @@ local voiceCheckTimeDelay = 0.3
 timer.Create("Брич.СлухБазарилка", voiceCheckTimeDelay, 0, function()
     local игроки = player.GetHumans()
 
-    игрок_к_сетке[1] = {}
-    игрок_к_сетке[2] = {}
-    сетка = {}
-
-    local игрокПозиция = {}
-    local глазаПоцизия = {}
+    for x, ряд in pairs(сетка) do
+        for y, _ in pairs(ряд) do
+            сетка[x][y] = nil
+        end
+    end
+	
+    for игрок, _ in pairs(можетслушать) do
+        можетслушать[игрок] = {}
+    end
 
     for _, игрок in ipairs(игроки) do
         if not игрок:Alive() then continue end
+
         local позиция = игрок:GetPos()
-        игрокПозиция[игрок] = позиция
-        глазаПоцизия[игрок] = игрок:EyePos()
+        local глазаПоцизия = игрок:EyePos()
         local x = этаж(позиция.x / дистанциябазара)
         local y = этаж(позиция.y / дистанциябазара)
 
-        local ряд = сетка[x] or {}
-        local ячейка = ряд[y] or {}
-
-        вставить_в_таблицу(ячейка, игрок)
-        ряд[y] = ячейка
-        сетка[x] = ряд
-
+        сетка[x] = сетка[x] or {}
+        сетка[x][y] = сетка[x][y] or {}
+        вставить_в_таблицу(сетка[x][y], игрок)
         игрок_к_сетке[1][игрок] = x
         игрок_к_сетке[2][игрок] = y
 
@@ -358,12 +366,10 @@ timer.Create("Брич.СлухБазарилка", voiceCheckTimeDelay, 0, func
         if not игрок1:Alive() then continue end
         local сеткаХ = игрок_к_сетке[1][игрок1]
         local сеткаY = игрок_к_сетке[2][игрок1]
-        local игрок1позиция = игрокПозиция[игрок1]
-        local игрок1глазаПозиция = глазаПоцизия[игрок1]
 
         for i = 0, 3 do
             local xОффсет = 1 - ((i >= 3) and 1 or 0)
-            local vОффсет = -(i % 3-1)
+            local vОффсет = -(i % 3 - 1)
             local x = сеткаХ + xОффсет
             local y = сеткаY + vОффсет
 
@@ -375,30 +381,10 @@ timer.Create("Брич.СлухБазарилка", voiceCheckTimeDelay, 0, func
 
             for _, игрок2 in ipairs(ячейка) do
                 if not игрок2:Alive() then continue end
-                local можетбазарить =
-                    игрок1позиция:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
+                local можетбазарить = игрок1:GetPos():DistToSqr(игрок2:GetPos()) < дистанциябазара
 
                 можетслушать[игрок1][игрок2] = можетбазарить
                 можетслушать[игрок2][игрок1] = можетбазарить
-            end
-        end
-    end
-
-    for _, ряд in pairs(сетка) do
-        for _, ячейка in pairs(ряд) do
-            local счёт = #ячейка
-            for i = 1, счёт do
-                local игрок1 = ячейка[i]
-                if not игрок1:Alive() then continue end
-                for j = i + 1, счёт do
-                    local игрок2 = ячейка[j]
-                    if not игрок2:Alive() then continue end
-                    local можетбазарить =
-                        игрокПозиция[игрок1]:DistToSqr(игрокПозиция[игрок2]) < дистанциябазара
-
-                    можетслушать[игрок1][игрок2] = можетбазарить
-                    можетслушать[игрок2][игрок1] = можетбазарить
-                end
             end
         end
     end
@@ -548,66 +534,113 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 	end
 end )
 
-local mply = FindMetaTable('Player')
+
+util.AddNetworkString("dradio_sendMessage")
+
+net.Receive("dradio_sendMessage", function(len,ply)
+	local message = net.ReadString()
+	local freq = net.ReadDouble()
+	local speaker = net.ReadEntity()
+	message = string.sub(message, 3)
+	speaker.frequency = freq
+	if frequency == 0 and speaker == ply then
+		chat.AddText(RADIO.FailMessage)
+	end 
+	if frequency and frequency != 0 and speaker.frequency != 0 and speaker.frequency == frequency then 
+		chat.AddText(Color(175,199,139,255), "[ " .. frequency .. "] ", team.GetColor(speaker:Team()), speaker:Name() .. ": ", Color(255,255,255), message)
+	end
+
+end)
+
+hook.Add("PlayerSay", "RRadioTextChat", function( speaker, text, teamChat )
+	local findA = string.find(text, "!r")
+	local findB = string.find(text, "/r")
+	if findA or findB then 
+		net.Start("dradio_sendMessage")
+		net.WriteString(text)
+		net.WriteFloat(speaker.frequency)
+		net.WriteEntity(speaker)
+		net.Broadcast() 
+		return ""
+	end 
+
+
+end)
+
+
+local mply = FindMetaTable("Player")
 
 do
-	mply.BrGive = mply.BrGive or mply.Give
+    mply.BrGive = mply.BrGive or mply.Give
 
-	function mply:Give(className, bNoAmmo)
-		local weapon
+    function mply:Give(className, bNoAmmo)
+        local weapon
 
-		local tr = self:GetEyeTrace()
-		local wepent = tr.Entity
-		local is_cw = wepent.CW20Weapon	
+        local tr = self:GetEyeTrace()
+        local wepent = tr.Entity
+        local is_cw = wepent.CW20Weapon
 
-		self.BrWeaponGive = true
-			weapon = self:BrGive(className, bNoAmmo) 
-		self.BrWeaponGive = nil
-		
-		local savedammo = wepent.SavedAmmo or 0
-        if is_cw then weapon:SetClip1(savedammo) end
+        self.BrWeaponGive = true
+        weapon = self:BrGive(className, bNoAmmo)
+        self.BrWeaponGive = nil
 
-		return weapon
-	end
-   
-	function mply:BreachGive(classname)
-	self:Give(classname)
-    timer.Simple(0.1, function() self:SelectWeapon(classname)
-	end)
-end
+        local savedammo = wepent.SavedAmmo or 0
+        if is_cw then
+            weapon:SetClip1(savedammo)
+        end
+
+        return weapon
+    end
+
+    function mply:BreachGive(classname)
+        self:Give(classname)
+        timer.Simple(0.1,function()
+			self:SelectWeapon(classname)
+        end)
+    end
 end
 
 function GM:PlayerCanPickupWeapon(ply, wep)
-	local data = {}
-		data.start = ply:GetShootPos()
-		data.endpos = data.start + ply:GetAimVector() * 96
-		data.filter = ply
-	local trace = util.TraceLine(data)
+    local data = {}
+    data.start = ply:GetShootPos()
+    data.endpos = data.start + ply:GetAimVector() * 96
+    data.filter = ply
+    local trace = util.TraceLine(data)
 
-	if ply:GTeam() != TEAM_SPEC then
-		if wep.teams then
-			local canuse = true
-			for k,v in pairs(wep.teams) do
-				if v == ply:GTeam() then
-					canuse = true
-				end
-			end
+    if ply:GTeam() ~= TEAM_SPEC then
+        if wep.teams then
+            local canuse = false
+            for k, v in pairs(wep.teams) do
+                if v == ply:GTeam() then
+                    canuse = true
+                    break 
+                end
+            end
 
-			if canuse == false then
-				return false
-			end
-		end
+            if not canuse then
+                return false
+            end
+        end
     end
-  
-	if (trace.Entity == wep and ply:KeyDown(IN_USE)) then if (ply:GetMaxSlots() - ply:GetPrimaryWeaponAmount()) == 0 then return end if ply:HasWeapon(trace.Entity:GetClass()) then return end
+
+    if trace.Entity == wep and ply:KeyDown(IN_USE) then
+		if ply:GTeam() == TEAM_SCP then return end
+		
+        if (ply:GetMaxSlots() - ply:GetPrimaryWeaponAmount()) == 0 then
+            return false
+        end
+
+        if ply:HasWeapon(trace.Entity:GetClass()) then
+            return false
+        end
+
         ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
-        ply:Give(trace.Entity:GetClass())
-		ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
-		trace.Entity:Remove()
-		end)
-	end
-	
-	return ply.BrWeaponGive
+                ply:Give(trace.Entity:GetClass())
+                ply:EmitSound("nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random(98, 105), 1, CHAN_STATIC)
+                trace.Entity:Remove()
+            end)
+    end
+    return ply.BrWeaponGive
 end
 
 function GM:PlayerCanPickupItem( ply, item )

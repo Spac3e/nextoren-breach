@@ -14,6 +14,16 @@ end
 function mply:LevelBar()
 end
 
+function DamageModifier(ply, modifier, minModifier)
+    if IsValid(ply) and isnumber(modifier) and isnumber(minModifier) then
+        modifier = math.Max(modifier, minModifier)
+        ply.DamageModifier = modifier
+        if SERVER then
+            ply:SetNWFloat("DamageModifier", modifier)
+        end
+    end
+end
+
 function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
     if sequence == false then
         self:StopForcedAnimation()
@@ -309,7 +319,7 @@ function Bonemerge(model, entity, skin, sub_material)
 		entity.BoneMergedEnts = {}
 	end
 
-    if model:find("/heads/") or model:find("/head/") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and !model:find("hair") then
+	if model:find("/heads/") or model:find("/head/") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and !model:find("hair") then
         entity.HeadEnt = bnmrg
         if entity.Sub_Material then
             local sub_material_id = 0
@@ -495,6 +505,29 @@ end
 function mply:SetupAdmin()
 end
 
+function UIUSpy_MakeDocuments()
+    local igroki_s_documentami = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        if ply:GTeam() != TEAM_SCP or ply:GTeam() != TEAM_SPEC or ply:GetRoleName() != "UIU Spy" then -- LOL
+            table.insert(igroki_s_documentami, ply)
+        end
+    end
+
+    if #igroki_s_documentami >= 3 then
+        for i = 1, 3 do
+            local index = math.random(1, #igroki_s_documentami)
+            local target = igroki_s_documentami[index]
+            
+            target:Give("item_special_document")
+			target:RXSENDNotify("Вы являетесь важным сотрудником фонда! При себе вы имеете важные документы которые вы должны эвакуировать и не умереть.")
+			target:SetNWBool("Have_docs", true)
+
+            table.remove(igroki_s_documentami, index)
+        end
+    end
+end
+
 function mply:MakeZombie()
 	for i, material in pairs(self:GetMaterials()) do
 		i = i -1
@@ -560,85 +593,54 @@ function mply:SurvivorCleanUp()
 end
 
 function mply:SetupCISpy()
-	local chage = math.random( 1, 3 )
-	local pvtci = BREACH_ROLES.SECURITY.security.roles[1].weapons
-	local oficerci = BREACH_ROLES.SECURITY.security.roles[3].weapons
-	local specici = BREACH_ROLES.SECURITY.security.roles[7].weapons
-	if chage == 1 then
-	timer.Simple(0.1, function()
-	self:SetBodygroup(3,7)
-	self:SetBodygroup(4,1)
-	Bonemerge(PickHeadModel(),self)
-	Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
-	self:StripWeapons()
-	for k, v in pairs( pvtci ) do
-	self:Give( v ) 
-	self:Give( "breach_keycard_security_1" ) 
-	self:Give( "item_tazer" ) 
-	self:StripAmmo()
-	self:GetWeapon("item_tazer"):SetClip1(20)
-          end
-	end)
-	elseif chage == 2 then
-	timer.Simple(0.1, function()
-	self:SetBodygroup(3,4)
-	self:SetBodygroup(5,2)
-	timer.Simple(0.1, function()
-	Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
-	Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
-	end)
-	self:StripWeapons()
-	for k, v in pairs( oficerci ) do
-	self:Give( v ) 
-	self:Give( "breach_keycard_security_2" ) 
-	self:Give( "item_tazer" ) 
-	self:StripAmmo()
-	self:GetWeapon("item_tazer"):SetClip1(20)
-          end
-	end)
-	elseif chage == 3 then
-	timer.Simple(0.1, function()
-	self:SetBodygroup(3,5)
-	self:SetBodygroup(5,1)
-	Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
-	Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
-	self:StripWeapons()
-	for k, v in pairs( specici ) do
-	self:Give( v ) 
-	self:Give( "item_tazer" ) 
-	self:Give( "breach_keycard_security_2" ) 
-	self:StripAmmo()
-    self:GetWeapon("item_tazer"):SetClip1(20)
-          end
-	end)
-	end
+	local rand = math.random(1, 3)
+	if rand == 1 then
+			self:SetBodygroup(3, 7)
+			self:SetBodygroup(4, 1)
+			self:StripWeapons()
+			Bonemerge(BREACH_ROLES.SECURITY.security.roles[1].headgear, self)
+			for k, v in pairs(BREACH_ROLES.SECURITY.security.roles[1].weapons) do
+				self:Give(v)
+				self:Give("breach_keycard_security_1")
+				self:Give("item_tazer")
+				self:StripAmmo()
+				self:GetWeapon("item_tazer"):SetClip1(20)
+			end
+	elseif rand == 2 then
+		    for k,v in pairs(self:LookupBonemerges()) do v:Remove() end
+			self:SetBodygroup(3, 4)
+			self:SetBodygroup(5, 2)
+				Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].head, self)
+				Bonemerge(BREACH_ROLES.SECURITY.security.roles[3].headgear, self)
+			self:StripWeapons()
+			for k, v in pairs(BREACH_ROLES.SECURITY.security.roles[3].weapons) do
+				self:Give(v)
+				self:Give("breach_keycard_security_2")
+				self:Give("item_tazer")
+				self:StripAmmo()
+				self:GetWeapon("item_tazer"):SetClip1(20)
+			end
+	elseif rand == 3 then 
+		    for k,v in pairs(self:LookupBonemerges()) do v:Remove() end
+			self:SetBodygroup(3, 5)
+			self:SetBodygroup(5, 1)
+			Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].head, self)
+			Bonemerge(BREACH_ROLES.SECURITY.security.roles[7].headgear, self)
+			self:StripWeapons()
+			for k, v in pairs(BREACH_ROLES.SECURITY.security.roles[7].weapons) do
+				self:Give(v)
+				self:Give("item_tazer")
+				self:Give("breach_keycard_security_2")
+				self:StripAmmo()
+				self:GetWeapon("item_tazer"):SetClip1(20)
+		    end
+	  end
 end
-
 
 function mply:ApplyRoleStats(role)
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
-	self:ClearBodyGroups()
-    self:SetSkin(0)
 
-    if self:GTeam() ~= TEAM_SCP then
-        local tbl_bonemerged = ents.FindByClassAndParent("ent_bonemerged", self) or {}
-        for i = 1, #tbl_bonemerged do
-            local bonemerge = tbl_bonemerged[i]
-            bonemerge:Remove()
-        end
-
-        self:StripWeapons()
-        self:StripAmmo()
-        self:SetNW2Bool("Breach:CanAttach", false)
-        self:SetUsingBag("")
-        self:SetUsingCloth("")
-        self:SetUsingArmor("")
-        self:SetUsingHelmet("")
-        self:SetStamina(100)
-        self:Flashlight(false)
-        self:SetBoosted(false)
-    end
 	local isblack = math.random(1,3) == 1
 	if role.white == true then isblack = false end
 	local HeadModel = istable(role["head"]) and table.Random(role["head"]) or role["head"]
@@ -664,6 +666,8 @@ function mply:ApplyRoleStats(role)
 			self:SetModel(finalselfmodel)
 		end
 	end
+
+    self:SurvivorCleanUp()
 
 	if role.head then Bonemerge(HeadModel,self) end
 
@@ -694,7 +698,7 @@ function mply:ApplyRoleStats(role)
 			end
 		end
 	end
-	
+
 	local HairModel = nil
 	if math.random(1, 5) > 1 then
 		if isblack and !self:IsFemale() and role["blackhairm"] then
@@ -843,6 +847,10 @@ function mply:ApplyRoleStats(role)
 	net.Send(self)
 
 	self:SetupHands()
+
+	if self:GetRoleName() == "UIU Spy" and timer.Exists("RoundTime") then
+		UIUSpy_MakeDocuments()
+	end
 end
 
 function mply:IsActivePlayer()
@@ -1050,17 +1058,11 @@ function mply:ToggleAdminMode()
 	end
 end
 
---[[ Шедеврокод
 hook.Add( "SetupMove", "StanceSpeed", function( ply, mv, cmd )
 	local velLength = ply:GetVelocity():Length2DSqr()
 
 	if ( mv:KeyReleased( IN_SPEED ) || mv:KeyDown( IN_SPEED ) && velLength < .25 ) then
 		ply.Run_fading = true
-	end
-
-	if ( mv:KeyDown( IN_MOVELEFT ) || mv:KeyDown( IN_MOVERIGHT ) ) then
-		ply.Run_fading = true
-		mv:SetSideSpeed( mv:GetSideSpeed() * .35 )
 	end
 
 	if ( mv:KeyDown( IN_SPEED ) && velLength > .25 || ply.SprintMove && !ply.Run_fading ) then
@@ -1120,4 +1122,4 @@ hook.Add( "SetupMove", "StanceSpeed", function( ply, mv, cmd )
 		mv:SetMaxClientSpeed( mv:GetMaxClientSpeed() * ply.SpeedMultiplier )
 		mv:SetMaxSpeed( mv:GetMaxSpeed() * ply.SpeedMultiplier )
 	end
-end)--]]
+end)

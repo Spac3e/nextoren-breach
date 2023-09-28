@@ -3,6 +3,8 @@ local mply = FindMetaTable( "Player" )
 util.AddNetworkString("Show_Menus")
 
 function spawn_ents()
+	SetGlobalBool("EnoughPlayersCountDown", true)
+	SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 end
 
 concommand.Add("loot", spawn_ents)
@@ -23,6 +25,31 @@ function SendSpecMessage(ignore, ...)
 		ply:RXSENDNotify(unpack(msg))
 	end
 end
+
+local ea = {
+	Vector(6283.500488, 127.045128, 43.690079),
+	Vector(5961.890137, -192.293152, 79.489441)
+}
+
+function SmartFindInSphere(centers, radius, filter, action)
+	for _, center in pairs(centers) do
+		local entities = ents.FindInSphere(center, radius)
+
+		for _, entity in pairs(entities) do
+			if IsValid(entity) and (not filter or filter(entity)) then
+				action(entity)
+			end
+		end
+	end
+end
+
+concommand.Add("nig", function()
+	SmartFindInSphere(ea, 5, function(sphere)
+		if sphere:GetClass() == "func_door" then
+			sphere:Fire("Use")
+		end
+	end)
+end)
 
 function string.NiceTime_Full_Eng(seconds)
     local d = math.floor(seconds / 86400) -- Days
@@ -58,7 +85,7 @@ end
 function test2(ply)
 	--ply:SetNWBool("RXSEND_ONFIRE", true)
 	--ply:SetNEXP("1000")
---[[
+
 	ply:SetNEXP( 0 )
 	print(ply:GetNEXP())
 	ply:SetPData( "breach_exp", 0 )
@@ -76,7 +103,6 @@ function test2(ply)
 
 
 	print(680 * math.max(1, ply:GetNLevel()))
-	]]--
 
 end
 concommand.Add("test2", test2)
@@ -303,7 +329,6 @@ function Create_Items()
             end
         end
     end
-
 end
 
 concommand.Add("132",Create_Items)
@@ -365,50 +390,6 @@ function BREACH.Round_Spawn_Loot()
             ent:Spawn()
         end
     end
-
-	-- Оружки требуют ребаланса
-
-	for k, v in pairs( SPAWN_AMMONEW ) do
-	local spawns = table.Copy( v.spawns )
-	//local cards = table.Copy( v.ents )
-	local dices = {}
-
-	local n = 0
-	for _, dice in pairs( v.ents ) do
-		local d = {
-			min = n,
-			max = n + dice[2],
-			ent = dice[1]
-		}
-		
-		table.insert( dices, d )
-		n = n + dice[2]
-	end
-
-	for i = 1, math.min( v.amount, #spawns ) do
-		local spawn = table.remove( spawns, math.random( 1, #spawns ) )
-		local dice = math.random( 0, n - 1 )
-		local ent
-
-		for _, d in pairs( dices ) do
-			if d.min <= dice and d.max > dice then
-				ent = d.ent
-				break
-			end
-		end
-
-		if ent then
-			local keycard = ents.Create( ent )
-			if IsValid( keycard ) then
-				keycard:Spawn()
-				keycard:SetPos( spawn )
-				--keycard:SetKeycardType( ent )
-			end
-		end
-	end
-	end
-
-	--
 
     -- Loot
     for _, spawnData in pairs(SPAWN_ITEMS) do
@@ -521,7 +502,6 @@ function NTFCutscene(ply)
 
 		local spawn = table.remove(ntfspawwns, math.random(#ntfspawwns))
 		ply:SetPos(spawn)
-		ply:SetPos(table.Random())
 		timer.Simple(2, function()
 		ply:Freeze(false)
 		ply.cantopeninventory = nil
@@ -546,6 +526,11 @@ function SupportFreeze(ply)
 	ply.supported = true
 	ply:ConCommand("lounge_chat_clear")
 	ply:ConCommand("stopsound")
+end
+
+function CultBook()
+	local ent = ents.Create("ent_cult_book")
+	 ent:Spawn()
 end
 
 net.Receive("ProceedUnfreezeSUP", function(len, ply)
@@ -923,10 +908,9 @@ function SupportSpawn()
                 end
 
                 local spawn = table.remove(cotskspawns, math.random(#cotskspawns))
-				local ent = ents.Create("ent_cult_book")
-				if IsValid(ent) then
-					ent:Spawn()
-				end
+
+                CultBook()
+				
                 v:SendLua("CultStart()")
                 v:SetupNormal()
                 SupportFreeze(v)
@@ -1203,8 +1187,8 @@ function GM:PlayerDeathSound(ply)
 end
 
 function GM:PlayerHurt(victim, attacker, health, damage)
-	if !((victim.NextPain or 0) < CurTime() and health > 0) then return end
 	if victim:GTeam() == TEAM_SCP then return end
+	if !((victim.NextPain or 0) < CurTime() and health > 0) then return end
 	if !victim:IsFemale() and victim:GTeam() != TEAM_GUARD then
 	    victim:EmitSound( "nextoren/charactersounds/hurtsounds/male/hurt_"..math.random(1,39)..".wav", SNDLVL_NORM, math.random( 70, 126 ) )
 else
@@ -1216,7 +1200,6 @@ else
         end
       end
     end
-	print(hurt_random)
 	victim.NextPain = CurTime() + math.random(1.55,4.22)
 end
 

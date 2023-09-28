@@ -466,16 +466,34 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 	LootBox:SetSkin( ply:GetSkin() )
 	LootBox:SetMaterial( ply:GetMaterial() )
 
-	if ( ply.BoneMergedEnts && !( ply.burnttodeath || ply.Death_ByAcid ) ) then
+	-- Fix for deffib
+    LootBox.__Team = ply:GetGTeam()
+	LootBox.Role = ply:GetRoleName()
+	LootBox.__Health = ply:GetMaxHealth()
+	LootBox.Cloth = ply:GetUsingCloth()
+	LootBox.__Name = ply:GetNamesurvivor()
+	LootBox.WalkSpeed = ply:GetWalkSpeed()
+	LootBox.RunSpeed = ply:GetRunSpeed()
+	LootBox.OldSkin = ply.OldSkin
+	LootBox.OldModel = ply.OldModel
+	LootBox.OldBodygroups = ply.OldBodygroups
 
-		if ( ply.HeadEnt && ply.HeadEnt:IsValid() ) then
-			LootBox.Head_SubMaterial = ply.HeadEnt:GetSubMaterial( 0 )
+
+	if ply.BoneMergedEnts and not (ply.burnttodeath or ply.Death_ByAcid) then
+		if ply.HeadEnt and ply.HeadEnt:IsValid() then
+			LootBox.Head_SubMaterial = ply.HeadEnt:GetSubMaterial(0)
 		end
 
-		for _, v in ipairs( ply.BoneMergedEnts ) do
-
-			if ( v && v:IsValid() && !v:GetInvisible() && ( !ply.Head_Split || v:GetModel() == ply.HeadEnt:GetModel() ) ) then
-				GhostBoneMerge( LootBox, v:GetModel(), false, v:GetSkin(), ply.HeadEnt:GetSubMaterial( 0 ) || false )
+		local shittest_fix = {
+			"models/cultist/humans/balaclavas_new/balaclava_full.mdl"
+		}	
+	
+		for _, v in ipairs(ply.BoneMergedEnts) do
+			if v and v:IsValid() and not v:GetInvisible() and (not ply.Head_Split or v:GetModel() == ply.HeadEnt:GetModel()) and !v:GetModel(shittest_fix) then
+				GhostBoneMerge(LootBox, v:GetModel(), false, v:GetSkin(), ply.HeadEnt:GetSubMaterial(0) or {})
+			end
+			if v and v:IsValid() and not v:GetInvisible() and (not ply.Head_Split or v:GetModel() == ply.HeadEnt:GetModel()) and v:GetModel(shittest_fix) then
+				GhostBoneMerge(LootBox, v:GetModel(), false, v:GetSkin(), ply.HeadEnt:GetSubMaterial(1) or {})
 			end
 		end
 	end
