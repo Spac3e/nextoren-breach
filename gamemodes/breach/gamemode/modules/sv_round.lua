@@ -409,7 +409,7 @@ function RoundRestart()
 	CleanUp()
 	if GetGlobalInt("RoundUntilRestart") then
 		if GetGlobalInt("RoundUntilRestart", 10) < 1 then
-			--RestartGame()
+			RestartGame()
 		end
 		SetGlobalInt("RoundUntilRestart", GetGlobalInt("RoundUntilRestart") -1)
 	else
@@ -420,7 +420,9 @@ function RoundRestart()
 	postround = false
 	activeRound = nil
 	if #GetActivePlayers() < 10 then
-	   WinCheck()
+	   --WinCheck()
+	   	SetGlobalBool("EnoughPlayersCountDown", true)
+		SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 	end
 	RoundTypeUpdate()
 	SetupCollide()

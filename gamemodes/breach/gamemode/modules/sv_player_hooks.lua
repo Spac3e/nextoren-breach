@@ -123,16 +123,39 @@ end)
 
 function CheckStart()
 	MINPLAYERS = GetConVar("br_min_players"):GetInt()
-	if gamestarted == false and #GetActivePlayers() >= 10 then
-		RoundRestart()
+	if gamestarted == false and #GetActivePlayers() >= 10 and GetGlobalBool("EnoughPlayersCountDown") == false then
+		--RoundRestart()
+		SetGlobalBool("EnoughPlayersCountDown", true)
+		SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 145)
+		for k,v in pairs(player.GetAll()) do
+			v.MusicPlaying = true
+		end
+		timer.Create( "PreStartRound", 145, 1, function() 
+			SetGlobalBool("EnoughPlayersCountDown", false)
+			if gamestarted == true or #GetActivePlayers() < 10 then return end
+			RoundRestart()
+		end )
+		print("круто")
+	end
+	if gamestarted == true and #GetActivePlayers() < 10 and (GetGlobalBool("EnoughPlayersCountDown") == true) then
+		--RoundRestart()
+		timer.Remove("PreStartRound")
+		print("да")
+		for k,v in pairs(player.GetAll()) do
+			v.MusicPlaying = false
+		end
+		SetGlobalBool("EnoughPlayersCountDown", false)
+		--SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 120)
+		print("круто")
 	end
 	if #GetActivePlayers() == 10 and #GetActivePlayers() == #player.GetAll() then
-		RoundRestart()
+		--RoundRestart()
 	end
 	if gamestarted then
 		BroadcastLua( 'gamestarted = true' )
 	end
 end
+
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetCanZoom( false )

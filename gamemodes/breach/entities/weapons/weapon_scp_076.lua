@@ -21,6 +21,20 @@ SWEP.IdleAng = Angle( -105,-160,-115 )
 SWEP.HoldType         = "katana"
 
 SWEP.AbilityIcons = {
+
+  {
+
+    [ "Name" ] = "Special",
+    [ "Description" ] = "Вы делаете специальную атаку которая убивает всех.",
+    [ "Cooldown" ] = 100,
+    [ "CooldownTime" ] = 0,
+    [ "KEY" ] = _G["KEY_Q"],
+    [ "Using" ] = false,
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/special_attack.png",
+    [ "Abillity" ] = nil
+
+  },
+
   {
 
     [ "Name" ] = "Shuriken",
@@ -29,20 +43,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "RMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp062/shuriken.png",
-    [ "Abillity" ] = nil
-
-  },
-
-  {
-
-    [ "Name" ] = "speed",
-    [ "Description" ] = "Вы ускоряетесь и атакуете значительно быстрее в течении 15 секунд.",
-    [ "Cooldown" ] = 80,
-    [ "CooldownTime" ] = 0,
-    [ "KEY" ] = _G["KEY_R"],
-    [ "Using" ] = false,
-    [ "Icon" ] = "shaky/scp062/speed.png",
+    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/shuriken.png",
     [ "Abillity" ] = nil
 
   },
@@ -58,7 +59,7 @@ SWEP.AbilityIcons = {
     [ "Icon" ] = "nextoren/gui/special_abilities/scp062/speed.png",
     [ "Abillity" ] = nil
 
-  }
+  },
 
 }
 
@@ -262,7 +263,7 @@ function SWEP:Deploy()
   self.IdleDelay = CurTime() + 1.46
   self:PlaySequence( "deploy" )
 
-  self:EmitSound( "weapons/universal/uni_weapon_draw_02.wav", 75, 80, 1, CHAN_WEAPON )
+ -- self:EmitSound( "weapons/universal/uni_weapon_draw_02.wav", 75, 80, 1, CHAN_WEAPON )
   timer.Simple(0.55, function() self:EmitSound("weapons/l4d2_kf2_katana/knife_deploy.wav", 75, 80, 1, CHAN_WEAPON ) end)
 
   timer.Simple( 0, function()
@@ -374,8 +375,8 @@ function SWEP:SecondaryAttack()
 
   if self.Owner.ForceAnimSequence then return end
 
-  self:SetNextSecondaryFire(CurTime() + self.AbilityIcons[1].Cooldown)
-  self.AbilityIcons[1].CooldownTime = CurTime() + self.AbilityIcons[1].Cooldown
+  self:SetNextSecondaryFire(CurTime() + self.AbilityIcons[2].Cooldown)
+  self.AbilityIcons[2].CooldownTime = CurTime() + self.AbilityIcons[2].Cooldown
 
   if SERVER then
     self:SetNoDraw(true)
@@ -405,11 +406,14 @@ end
 
 function SWEP:Reload()
   if self.Owner.ForceAnimSequence then return end
-  if self.AbilityIcons[2].CooldownTime > CurTime() then return end
-    self.AbilityIcons[2].CooldownTime = CurTime() + self.AbilityIcons[2].Cooldown
+  if self.AbilityIcons[3].CooldownTime > CurTime() then return end
+    self.AbilityIcons[3].CooldownTime = CurTime() + self.AbilityIcons[3].Cooldown
+    if self.AbilityIcons[2].CooldownTime < CurTime() + 15 then
+      self.AbilityIcons[2].CooldownTime = CurTime() + 15
+      self:SetNextSecondaryFire(CurTime() + 15)
+    end
     if self.AbilityIcons[1].CooldownTime < CurTime() + 15 then
       self.AbilityIcons[1].CooldownTime = CurTime() + 15
-      self:SetNextSecondaryFire(CurTime() + 15)
     end
     self:AnimationsChange(true)
     self.Owner.rememberspeed = self.Owner:GetWalkSpeed()

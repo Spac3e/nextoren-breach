@@ -248,8 +248,8 @@ function ENT:Use( activator, caller )
 	if CurTime() < delay_open_914 then return end
 	local ply = activator
     net.Start( "914_OPEN_MENU" )
-    net.WriteEntity()
-    net.Broadcast(ply)
+    net.WriteEntity(ply)
+    net.Send(ply)
 	delay_open_914 = CurTime() + 5
 end
  
@@ -266,9 +266,16 @@ end)
 
 
 function fackt_work()
+
 	local entsinbox = ents.FindInBox( Vector( 9553, -4481, 4 ), Vector( 9614, -4606, 125 ) ) 
     for k, v in ipairs( entsinbox ) do
+       -- if v:IsPlayer() and v:GTeam() != TEAM_SPEC and v:GetMoveType("MOVETYPE_NOCLIP") then v:Kill()end
+		evacuate(v,"vse",50,"l:cutscene_evac_by_914")
+		local spawn_item1 = ents.Create( "item_hamburger" )
+		spawn_item1:SetPos( Vector( 9585, -4979, 66 ) )
+		spawn_item1:Spawn()
 		if v:GetClass() != "func_door" and v:GetClass() != "prop_dynamic" then
+			if scp_914_items[v:GetClass()] == nil then return end
 			local hui = v:GetClass()
 			local wep = string.sub( hui, 1, 15 )
 			if table.Count(scp_914_items[hui][scp_914_r_status]) > 1 then
@@ -283,7 +290,6 @@ function fackt_work()
 				end
 			end
 			v:Remove()
-        	v:TakeDamage("5000")
 		end
     end
 end

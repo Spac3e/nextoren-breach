@@ -1492,7 +1492,7 @@ BREACH.Options = {
     settings = {
       {
         name = "SEXY CHEMIST",
-        checkplayer = CHECK_SEXY_CHEMIST,
+        checkplayer = VAULT_SEXY_CHEMIST,
         cvar = "breach_config_sexual_chemist",
         type = "bool",
       },

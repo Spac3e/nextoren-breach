@@ -4954,3 +4954,905 @@ net.Receive("Special_outline", function(len)
 	if team == TEAM_CLASSD then team = TEAM_CHAOS end
 	Show_Spy(team)
 end)
+
+local heliModel = Model( "models/comradealex/mgs5/hp-48/hp-48test.mdl" )
+
+local light_origin = Vector( 14883.383789, 13000.545898, -15814.162109 )
+
+local helicopter_angle = Angle( 0, -90, 0 )
+
+local ntf9 = false
+
+
+
+function sexo()
+
+	local ntf1 = ents.CreateClientside("base_gmodentity")
+
+	local ntf2 = ents.CreateClientside("base_gmodentity")
+
+	local ntf3 = ents.CreateClientside("base_gmodentity")
+
+	local ntf4 = ents.CreateClientside("base_gmodentity")
+
+	local ntf5 = ents.CreateClientside("base_gmodentity")
+
+	local ntf6 = ents.CreateClientside("base_gmodentity")
+
+	local ntf7 = ents.CreateClientside("base_gmodentity")
+
+	local ntf8 = ents.CreateClientside("base_gmodentity")
+
+	ntf9 = ents.CreateClientside("base_gmodentity")
+
+	local dlight = DynamicLight( LocalPlayer():EntIndex() )
+
+
+
+	if ( dlight ) then
+
+
+
+
+
+
+
+		dlight.pos = light_origin
+
+
+
+		dlight.r = 190
+
+
+
+		dlight.g = 0
+
+
+
+		dlight.b = 0
+
+
+
+		dlight.brightness = 3
+
+
+
+		dlight.Size = 900
+
+
+
+		dlight.DieTime = CurTime() + 60
+
+
+
+
+
+	end
+
+
+
+  local helicopter = ents.CreateClientside( "base_gmodentity" )
+
+  helicopter:SetModel( heliModel )
+
+  helicopter:SetPos( light_origin )
+
+  	helicopter:SetColor( Color(255, 255, 255, 255) )
+
+  helicopter:SetAngles( helicopter_angle )
+
+
+
+   LocalPlayer():ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 2, 0.5 )
+
+
+
+  
+
+ 	ntf1:SetPos(Vector(14818.948242, 13020.647461, -15763.650391))
+
+	ntf1:SetAngles(Angle(0, 20, 0))
+
+	ntf1:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf1:SetMoveType(MOVETYPE_NONE)
+
+	ntf1:Spawn()
+
+	ntf1:SetColor( Color(255, 255, 255, 255) )
+
+	ntf1:SetSequence("d1_t03_tenements_look_out_door_idle")
+
+  
+
+     ntf1:SetCycle( 20 )
+
+    ntf1:SetPlaybackRate( 1 )
+
+    ntf1.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf1.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf1.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf2:SetPos(Vector( 14868.463867, 12986.574219, -15764.989258))
+
+	ntf2:SetAngles(Angle(0, 0, 0))
+
+	ntf2:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf2:SetMoveType(MOVETYPE_NONE)
+
+	ntf2:Spawn()
+
+	ntf2:SetColor( Color(255, 255, 255, 255) )
+
+	ntf2:SetSequence("d1_t01_trainride_stand")
+
+     ntf2:SetCycle( 20 )
+
+    ntf2:SetPlaybackRate( 1 )
+
+    ntf2.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf2.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf2.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+
+
+	
+
+ 	ntf3:SetPos(Vector(14893.188477, 13014.721680, -15769.165039))
+
+	ntf3:SetAngles(Angle(0, 90, 0))
+
+	ntf3:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf3:SetMoveType(MOVETYPE_NONE)
+
+	ntf3:Spawn()
+
+	ntf3:SetColor( Color(255, 255, 255, 255) )
+
+	ntf3:SetSequence("d1_t01_breakroom_sit02")
+
+    ntf3:SetCycle( 20 )
+
+    ntf3:SetPlaybackRate( 1 )
+
+    ntf3.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf3.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf3.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	 
+
+	
+
+ 	ntf4:SetPos(Vector(14916.480469, 13012.416992, -15768.997070))
+
+	ntf4:SetAngles(Angle(0, 90, 0))
+
+	ntf4:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf4:SetMoveType(MOVETYPE_NONE)
+
+	ntf4:Spawn()
+
+	ntf4:SetColor( Color(255, 255, 255, 255) )
+
+	ntf4:SetSequence("d1_t01_breakroom_sit01_idle")
+
+    ntf4:SetCycle( 20 )
+
+    ntf4:SetPlaybackRate( 1 )
+
+    ntf4.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf4.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf4.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf5:SetPos(Vector(14939.730469, 13012.394531, -15768.997070))
+
+	ntf5:SetAngles(Angle(0, 90, 0))
+
+	ntf5:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf5:SetMoveType(MOVETYPE_NONE)
+
+	ntf5:Spawn()
+
+	ntf5:SetColor( Color(255, 255, 255, 255) )
+
+	ntf5:SetSequence("d1_t01_breakroom_sit01_idle")
+
+    ntf5:SetCycle( 20 )
+
+    ntf5:SetPlaybackRate( 1 )
+
+    ntf5.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf5.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf5.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf6:SetPos(Vector(14894.333984, 12984.230469, -15767.703125))
+
+	ntf6:SetAngles(Angle(0, -90, 0))
+
+	ntf6:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf6:SetMoveType(MOVETYPE_NONE)
+
+	ntf6:Spawn()
+
+	ntf6:SetColor( Color(255, 255, 255, 255) )
+
+	ntf6:SetSequence("d1_t01_breakroom_sit01_idle")
+
+    ntf6:SetCycle( 20 )
+
+    ntf6:SetPlaybackRate( 1 )
+
+    ntf6.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf6.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf6.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf7:SetPos(Vector(14919.833984, 12984.333008, -15767.703125))
+
+	ntf7:SetAngles(Angle(0, -90, 0))
+
+	ntf7:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf7:SetMoveType(MOVETYPE_NONE)
+
+	ntf7:Spawn()
+
+	ntf7:SetColor( Color(255, 255, 255, 255) )
+
+	ntf7:SetSequence("d1_t01_breakroom_sit02")
+
+    ntf7:SetCycle( 20 )
+
+    ntf7:SetPlaybackRate( 1 )
+
+    ntf7.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf7.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf7.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf8:SetPos(Vector(14941.583984, 12984.250000, -15767.703125))
+
+	ntf8:SetAngles(Angle(0, -90, 0))
+
+	ntf8:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf8:SetMoveType(MOVETYPE_NONE)
+
+	ntf8:Spawn()
+
+	ntf8:SetColor( Color(255, 255, 255, 255) )
+
+	ntf8:SetSequence("d1_t01_breakroom_sit01_idle")
+
+    ntf8:SetCycle( 20 )
+
+    ntf8:SetPlaybackRate( 1 )
+
+    ntf8.AutomaticFrameAdvance = true
+
+
+
+    local cycle = 20
+
+	
+
+    ntf8.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf8.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+	
+
+ 	ntf9:SetPos(Vector( 14960.919922, 13019.261719, -15764.885742))
+
+	ntf9:SetAngles(Angle(0, -160, 0))
+
+	ntf9:SetModel("models/cultist/humans/ntf/ntf.mdl")
+
+	ntf9:SetMoveType(MOVETYPE_NONE)
+
+	ntf9:Spawn()
+
+	ntf9:SetColor( Color(255, 255, 255, 255) )
+
+	ntf9:SetSequence("d1_t01_trainride_stand")
+
+     ntf9:SetCycle( 20 )
+
+    ntf9:SetPlaybackRate( 1 )
+
+    ntf9.AutomaticFrameAdvance = true
+
+
+
+	
+
+    local cycle = 20
+
+	
+
+    ntf9.Think = function( self )
+
+
+
+        self:NextThink( CurTime() )
+
+
+
+        self:SetCycle( math.Approach( cycle, 1, FrameTime() * 0.2 ) )
+
+
+
+        cycle = self:GetCycle()
+
+
+
+        return true
+
+
+
+    end
+
+	ntf9.OnRemove = function( self )
+
+
+
+		if ( self.BoneMergedEnts ) then
+
+
+
+			for _, v in ipairs( self.BoneMergedEnts ) do
+
+
+
+				if ( v && v:IsValid() ) then
+
+
+
+					v:Remove()
+
+				end
+
+			end
+
+		end
+
+
+
+	end
+
+
+
+ntf1:EmitSound( "nextoren/others/helicopter/apache_hover1.ogg", 50, 100, 1, CHAN_AUTO )
+
+
+
+timer.Simple( 6, function()
+
+if IsValid(ntf9) then
+
+ntf8:EmitSound("ntfwchodzi"..math.random(1,6)..".ogg")
+
+end
+
+end)
+
+		
+
+	timer.Simple( 20, function()
+
+	    if IsValid(ntf9) then
+
+helicopter:Remove()
+
+ntf1:Remove()
+
+ntf2:Remove()
+
+ntf3:Remove()
+
+ntf4:Remove()
+
+ntf5:Remove()
+
+ntf6:Remove()
+
+ntf7:Remove()
+
+ntf8:Remove()
+
+ntf9:Remove()
+
+ntf9 = false
+
+end
+
+	end )
+
+	
+
+		  timer.Simple( 18, function()
+
+		      if IsValid(LocalPlayer()) then
+
+		  
+
+		LocalPlayer():EmitSound("bell1.ogg")
+
+			end
+
+		  end)
+
+	  timer.Simple( 19, function()
+
+	  if IsValid(LocalPlayer()) then
+
+  	LocalPlayer():ScreenFade( SCREENFADE.OUT, Color( 0, 0, 0, 255 ), 1, 0.2 )
+
+end
+
+  end)
+
+
+
+    timer.Simple( 20.1, function() 
+
+if IsValid(LocalPlayer()) then
+
+		--LocalPlayer():ConCommand("helikop") 
+
+end
+
+     end )
+
+
+
+
+
+	util.ScreenShake( light_origin, 5, 1, 40, 1024 )
+
+
+
+
+
+
+
+end
+
+concommand.Add("helii", sexo )

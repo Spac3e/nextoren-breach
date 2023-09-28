@@ -174,7 +174,7 @@ CORRUPTED_HEADS = {
 	[ "models/cultist/heads/male/male_head_6.mdl" ] = true
 }
 
-RXSEND_SEXY_CHEMISTS = {
+VAULT_SEXY_CHEMIST = {
 	["76561198439587764"] = true, -- GOOGLENSKY
 	["76561198358765564"] = true, -- Подгузник
 	["76561198309170158"] = true, -- Денис

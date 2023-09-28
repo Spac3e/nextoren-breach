@@ -487,14 +487,15 @@ end
 function NTFCutscene(ply)
 	ply:ConCommand("lounge_chat_clear")
 	ply:Freeze(true)
+	--ply:SetMoveType(MOVETYPE_NONE)
 	ply.cantopeninventory = true
 	ply.supported = true
-	timer.Simple(25, function()
+	timer.Simple(31, function()
 		ply:Freeze(true)
 		ply.supported = nil
 	end)
-    timer.Simple(27, function()
-		ply:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 128), 2, 0 )
+    timer.Simple(34, function()
+		ply:ScreenFade(SCREENFADE.IN, Color(0, 0, 0, 255),2,0.8)
 		local ntfspawwns = table.Copy(SPAWN_OUTSIDE)
 		if #ntfspawwns == 0 then
 			ntfspawwns = table.Copy(SPAWN_OUTSIDE)
@@ -507,10 +508,11 @@ function NTFCutscene(ply)
 		ply.cantopeninventory = nil
 		end)
 	end)
-	timer.Simple(30, function()
+	timer.Simple(36, function()
 		for k,v in pairs(player.GetAll()) do
 		v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
 		end
+		PlayAnnouncer("nextoren/round_sounds/intercom/support/ntf_enter.ogg")
 	end)
 end
 
@@ -539,6 +541,14 @@ net.Receive("ProceedUnfreezeSUP", function(len, ply)
 	ply.supported = false
 end)
 
+ntfcoolspawn = {
+	{vec = Vector(14818.948242, 13020.647461, -15763.650391), ang = Angle(0, 20, 0), seq = "d1_t03_tenements_look_out_door_idle"},
+	{vec = Vector(14868.463867, 12986.574219, -15764.989258), ang = Angle(0, 0, 0), seq = "d1_t01_trainride_stand"},
+	{vec = Vector(14893.188477, 13014.721680, -15769.165039), ang = Angle(0, 90, 0), seq = "d1_t01_breakroom_sit02"},
+	{vec = Vector(14916.480469, 13012.416992, -15768.997070), ang = Angle(0, 90, 0), seq = "d1_t01_breakroom_sit01_idle"},
+	{vec = Vector(14939.730469, 13012.394531, -15768.997070), ang = Angle(0, 90, 0), seq = "d1_t01_breakroom_sit01_idle"}
+}
+
 function SupportSpawn()
 
     local players = {}
@@ -560,12 +570,9 @@ function SupportSpawn()
 
         -- NTF
         if change_sup == "ntf" then
-            PlayAnnouncer("nextoren/round_sounds/intercom/support/ntf_enter.ogg")
             local ntfsinuse = {}
-			local NTFSPAWNSNEW = {
-				V
-			}
-            local ntfspawns = table.Copy(SPAWN_OUTSIDE)
+
+            local ntfspawns = table.Copy(ntfcoolspawn[1])
             local ntfs = {}
 
             for i = 1, 5 do
@@ -598,7 +605,7 @@ function SupportSpawn()
                 ntfsinuse[selected.name] = ntfsinuse[selected.name] + 1
 
                 if #ntfspawns == 0 then
-                    ntfspawns = table.Copy(SPAWN_NTF)
+                    ntfspawns = table.Copy(ntfspawns)
                 end
 
                 local spawn = table.remove(ntfspawns, math.random(#ntfspawns))

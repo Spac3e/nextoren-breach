@@ -1051,7 +1051,7 @@ BREACH_ROLES.SECURITY = {
 		    },
 			{["name"] = role.SECURITY_Sergeant,
 			 ["team"] = TEAM_SECURITY,
-			 ["weapons"] = {"br_holster", "item_radio", "cw_kk_ins2_m45", "weapon_cqc"},
+			 ["weapons"] = {"br_holster", "item_radio", "cw_kk_ins2_m9", "weapon_cqc"},
 			 --["usehead"] = false,
 			 --["head"] = "models/cultist/humans/balaclavas_new/balaclava_half.mdl",
 			 ["usehead"] = true, ["randomizehead"] = true, ["randomizeface"] = true,
