@@ -152,12 +152,11 @@ function GM:HUDPaint()
 
 		else
 
-			if ( !client.MusicPlaying && client:GetActive() ) then
+			--if ( !client.MusicPlaying && client:GetActive() ) then
 
-				client.MusicPlaying = true
-				PlayMusic( "sound/no_music/preparing_game.ogg", 1 )
+				--client.MusicPlaying = true
 
-			end
+			--end
 
 			local time_left = math.Round( GetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 180) - CurTime() )
 

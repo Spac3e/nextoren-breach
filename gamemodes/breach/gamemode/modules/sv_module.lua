@@ -3,7 +3,7 @@ local mply = FindMetaTable( "Player" )
 util.AddNetworkString("Show_Menus")
 
 function spawn_ents()
-	SetGlobalBool("EnoughPlayersCountDown", true)
+	SetGlobalBool("EnoughPlayersCountDown", false)
 	SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 end
 

@@ -420,7 +420,9 @@ function RoundRestart()
 	postround = false
 	activeRound = nil
 	if #GetActivePlayers() < 10 then
-	   WinCheck()
+	   --WinCheck()
+	   	SetGlobalBool("EnoughPlayersCountDown", true)
+		SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 	end
 	RoundTypeUpdate()
 	SetupCollide()
@@ -619,7 +621,7 @@ function WinCheck()
 		endround = false
 		hook.Run( "BreachPostround" )
 --		timer.Create("PostTime", GetPostTime(), 1, function()
-			RoundRestart()
+			--RoundRestart()
 --		end)
 	end
 end
