@@ -112,59 +112,6 @@ util.AddNetworkString("BREACH_SetForcedAnimSync")
 util.AddNetworkString("BREACH_EndForcedAnimSync")
 util.AddNetworkString("BREACH_SetForcedAnimSync")
 
-function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
-
-	if sequence == false then
-		self:StopForcedAnimation()
-		return
-	end
-	
-	  if SERVER then
-	  
-		if isstring(sequence) then sequence = self:LookupSequence(sequence) end
-		  self:SetCycle(0)
-		  self.ForceAnimSequence = sequence
-		  
-		  time = endtime
-		  
-		  if endtime == nil then
-			time = self:SequenceDuration(sequence)
-		  end
-		  
-		  
-		  
-		  net.Start("BREACH_SetForcedAnimSync")
-		  net.WriteEntity(self)
-		  net.WriteUInt(sequence, 20) -- seq cock
-		  net.Broadcast()
-		  
-		  if isfunction(startcallback) then startcallback() end
-		  
-		  self.StopFAnimCallback = stopcallback
-		  
-			timer.Create("SeqF"..self:EntIndex(), time, 1, function()
-			  if (IsValid(self)) then
-			  
-				self.ForceAnimSequence = nil
-				
-				net.Start("BREACH_EndForcedAnimSync")
-				net.WriteEntity(self)
-				net.Broadcast()
-				
-				self.StopFAnimCallback = nil
-				
-				if isfunction(finishcallback) then
-					finishcallback()
-				end
-				
-			  end
-			  
-			end)
-		  
-		end
-		
-	end
-
 net.Receive("проверкаслуха:БазарНачался", function(len,ply) 
 end)
 

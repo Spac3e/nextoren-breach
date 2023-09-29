@@ -3,17 +3,15 @@ local mply = FindMetaTable( "Player" )
 util.AddNetworkString("Show_Menus")
 
 function spawn_ents()
-	SetGlobalBool("EnoughPlayersCountDown", true)
-	SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 end
-
 concommand.Add("loot", spawn_ents)
 
 function test1()
-	SetGlobalInt("EnoughPlayersCountDownStart", 11)
-	SetGlobalBool("EnoughPlayersCountDown", true)
 end
 concommand.Add("test", test1)
+function  test12()
+end
+concommand.Add("test12", test12)
 
 function SendSpecMessage(ignore, ...)
 	local plys = player.GetAll()
@@ -617,11 +615,14 @@ function SupportSpawn()
                 v:SetupNormal()
                 NTFCutscene(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
-                SupportFreeze(v)
+                --v:SetPos(spawn)
+                --SupportFreeze(v)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [NTF]")
             end
+
+			ntf_pre_intro()
+
         elseif change_sup == "cl" then
             -- CHAOS
             PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
@@ -665,12 +666,15 @@ function SupportSpawn()
                 local spawn = table.remove(chaosspawns, math.random(#chaosspawns))
                 v:SendLua("CutScene()")
                 v:SetupNormal()
-                SupportFreeze(v)
+                --SupportFreeze(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
+                --v:SetPos(spawn)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [CHAOS]")
             end
+
+			cl_pre_intro()
+
         elseif change_sup == "gru" then
             -- GRU
 			PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
@@ -719,12 +723,15 @@ function SupportSpawn()
                     net.Broadcast()
                 end
                 v:SetupNormal()
-                SupportFreeze(v)
+                --SupportFreeze(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
+                --v:SetPos(spawn)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [GRU]")
             end
+
+			gru_pre_intro()
+
         elseif change_sup == "goc" then
             -- GOC
 			PlayAnnouncer("nextoren/round_sounds/intercom/support/goc_enter.mp3")
@@ -2084,3 +2091,113 @@ hook.Add('Tick', 'mini_sustem_round', function()
 
 
 end)
+
+function gru_pre_intro()
+local gru_spawns = {
+        mesto_1 = { Angel = Vector(0, 0, 0), Vector = Vector(-10650, -65, 2680)},
+        mesto_2 = { Angel = Vector(0, 0, 0), Vector = Vector(-10650, -100, 2680)},
+        mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(-10737, -48, 2680)},
+        mesto_4 = { Angel = Vector(0, 90, 0), Vector = Vector(-10774, -48, 2680)},
+		mesto_5 = { Angel = Vector(0, -90, 0), Vector = Vector(-10784, -118, 2680)},
+		mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(-10739, -118, 2680)}
+}
+local gru_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+    local btr = ents.Create("prop_dynamic")
+   	btr:SetModel("models/sw/avia/ka60/ka60.mdl")
+    btr:SetPos(Vector(-10827, -84, 2639))
+   	btr:Spawn()
+timer.Simple(20, function()
+   	btr:Remove()
+end)
+    for k, v in pairs(player.GetAll()) do
+        if v:GTeam() == TEAM_GRU then
+            v:SetMoveType(MOVETYPE_OBSERVER)
+			SpawnPos = (table.Random( gru_spawns ))
+            v:SetPos(SpawnPos.Vector)
+            v:SetNWEntity("NTF1Entity", v)
+            v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+            v:SetForcedAnimation(table.Random( gru_ani ), 20)
+            timer.Simple(20, function() 
+				v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+                v:SetNWEntity("NTF1Entity", NULL)
+                v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+                v:StopForcedAnimation()
+                v:SetMoveType(MOVETYPE_WALK)
+				v:SetPos(table.Random(SPAWN_OUTSIDE))
+        end)
+		table.RemoveByValue(gru_spawns, SpawnPos)
+        end
+    end
+end
+
+function cl_pre_intro()
+local cl_spawns = {
+        mesto_1 = { Angel = Vector(0, 90, 0), Vector = Vector(-10899, -80, 1782)},
+        mesto_2 = { Angel = Vector(0, -90, 0), Vector = Vector(-10899, -80, 1782)},
+        mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(-10869, -80, 1782)},
+        mesto_4 = { Angel = Vector(0, -90, 0), Vector = Vector(-10869, -80, 1782)},
+		mesto_5 = { Angel = Vector(0, 90, 0), Vector = Vector(-10829, -80, 1782)},
+		mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(-10829, -80, 1782)}
+}
+local cl_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+local btr = ents.Create("prop_dynamic")
+btr:SetModel("models/scp_chaos_jeep/chaos_jeep.mdl")
+btr:SetPos(Vector(-10827, -84, 1739))
+btr:Spawn()
+timer.Simple(20, function()
+btr:Remove()
+end)
+for k, v in pairs(player.GetAll()) do
+    if v:GTeam() == TEAM_CHAOS then
+		v:SetMoveType(MOVETYPE_OBSERVER)
+		SpawnPos = (table.Random( cl_spawns ))
+		v:SetPos(SpawnPos.Vector)
+		v:SetNWEntity("NTF1Entity", v)
+		v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+		if v:GetRoleName() != "CI Juggernaut" then
+		v:SetForcedAnimation(table.Random( cl_ani ), 20)
+		else
+		v:SetForcedAnimation("0_chaos_sit_jug", 20)
+		end
+		timer.Simple(20, function() 
+			v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+			v:SetNWEntity("NTF1Entity", NULL)
+			v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+			v:StopForcedAnimation()
+			v:SetMoveType(MOVETYPE_WALK)
+			v:SetPos(table.Random(SPAWN_OUTSIDE))
+		end)
+	table.RemoveByValue(cl_spawns, SpawnPos)
+    end
+end
+end
+function ntf_pre_intro()
+local ntf_spawns = {
+        mesto_1 = { Angel = Vector(0, 90, 0), Vector = Vector(14928, 13037, -15760)},
+        mesto_2 = { Angel = Vector(0, 90, 0), Vector = Vector(14898, 13037, -15760)},
+        mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(14861, 13037, -15760)},
+        mesto_4 = { Angel = Vector(0, -90, 0), Vector = Vector(14940, 12966, -15760)},
+		mesto_5 = { Angel = Vector(0, -90, 0), Vector = Vector(14910, 12966, -15760)},
+		mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(14895, 12966, -15760)}
+}
+	local ntf_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+    for k, v in pairs(player.GetAll()) do
+        if v:GTeam() == TEAM_NTF then
+            v:SetMoveType(MOVETYPE_OBSERVER)
+			SpawnPos = (table.Random( ntf_spawns ))
+            v:SetPos(SpawnPos.Vector)
+            v:SetNWEntity("NTF1Entity", v)
+            v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+            v:SetForcedAnimation(table.Random( ntf_ani ), 25)
+            timer.Simple(25, function() 
+				v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+                v:SetNWEntity("NTF1Entity", NULL)
+                v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+                v:StopForcedAnimation()
+                v:SetMoveType(MOVETYPE_WALK)
+				v:SetPos(table.Random(SPAWN_OUTSIDE))
+            end)
+		table.RemoveByValue(ntf_spawns, SpawnPos)
+        end
+    end
+end
