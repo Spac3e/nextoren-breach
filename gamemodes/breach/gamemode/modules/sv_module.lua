@@ -517,9 +517,13 @@ function NTFCutscene(ply)
 end
 
 function GRUCutscene(ply)
+	ply:Freeze(false)
+	ply.cantopeninventory = nil
 end
 
 function CHAOSCutscene(ply)
+	ply:Freeze(false)
+	ply.cantopeninventory = nil
 end
 
 function SupportFreeze(ply)

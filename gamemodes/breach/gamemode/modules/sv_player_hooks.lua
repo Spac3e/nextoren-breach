@@ -10,10 +10,16 @@ util.AddNetworkString("DropAdditionalArmor")
 util.AddNetworkString("NTF_Intro")
 util.AddNetworkString("Eventmessage")
 
+
 local eblya = {
 	{reason = "Ебливый нига", value = 551},
 	{reason = "Ебливый нига 2", value = 12 + 5}
 }
+
+function BroadcastStopMusic()
+	net.Start("ClientStopMusic")
+	net.Broadcast()
+end
 
 concommand.Add("suk", function(ply)
 	net.Start("LevelBar")

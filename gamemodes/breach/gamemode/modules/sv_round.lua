@@ -409,7 +409,7 @@ function RoundRestart()
 	CleanUp()
 	if GetGlobalInt("RoundUntilRestart") then
 		if GetGlobalInt("RoundUntilRestart", 10) < 1 then
-			RestartGame()
+			--RestartGame()
 		end
 		SetGlobalInt("RoundUntilRestart", GetGlobalInt("RoundUntilRestart") -1)
 	else

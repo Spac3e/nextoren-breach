@@ -1011,10 +1011,10 @@ BREACH = BREACH || {}
 
 local mply = FindMetaTable("Player")
 
+-- FORCED ANIM (COCK) --
 function mply:StopForcedAnimation()
     if CLIENT then return end
     timer.Remove("SeqF"..self:EntIndex())
-    timer.Remove("MoveCheckSeq"..self:EntIndex())
     if isfunction(self.StopFAnimCallback) then self.StopFAnimCallback() self.StopFAnimCallback = nil end
     
     self.ForceAnimSequence = nil        
@@ -1033,10 +1033,9 @@ if CLIENT then
     
     net.Receive("BREACH_SetForcedAnimSync", function(len)
         local ply = net.ReadEntity()
-		if !IsValid(ply) then return end
-        local sequence = net.ReadString()
+        local sequence = net.ReadUInt(20)
         ply:SetCycle(0)
-        ply.ForceAnimSequence = ply:LookupSequence(sequence)
+        ply.ForceAnimSequence = sequence
     end)
 end
 
