@@ -1,3 +1,11 @@
+/* 
+	
+	This script handles conversion from the outdated USMG system to net.
+	
+	Not 100% mine. I just made it into one addon and made it work for gmod now.
+
+*/
+
 local devmode = false // Toggle only if something broke so that you can report it back to me
 local META_PLAYER = FindMetaTable("Player")
 

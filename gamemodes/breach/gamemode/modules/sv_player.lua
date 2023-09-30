@@ -14,6 +14,61 @@ end
 function mply:LevelBar()
 end
 
+function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
+
+	if sequence == false then
+		self:StopForcedAnimation()
+		return
+	end
+	
+	  if SERVER then
+	  
+		if isstring(sequence) then sequence = self:LookupSequence(sequence) end
+		  self:SetCycle(0)
+		  self.ForceAnimSequence = sequence
+		  
+		  time = endtime
+		  
+		  if endtime == nil then
+			time = self:SequenceDuration(sequence)
+		  end
+		  
+		  
+		  
+		  net.Start("BREACH_SetForcedAnimSync")
+		  net.WriteEntity(self)
+		  net.WriteUInt(sequence, 20) -- seq cock
+		  net.Broadcast()
+		  
+		  if isfunction(startcallback) then startcallback() end
+		  
+		  self.StopFAnimCallback = stopcallback
+		  
+			timer.Create("SeqF"..self:EntIndex(), time, 1, function()
+			  if (IsValid(self)) then
+			  
+				self.ForceAnimSequence = nil
+				
+				net.Start("BREACH_EndForcedAnimSync")
+				net.WriteEntity(self)
+				net.Broadcast()
+				
+				self.StopFAnimCallback = nil
+				
+				if isfunction(finishcallback) then
+					finishcallback()
+				end
+				
+			  end
+			  
+			end)
+		  
+		end
+		
+	end
+
+
+	
 function DamageModifier(ply, modifier, minModifier)
     if IsValid(ply) and isnumber(modifier) and isnumber(minModifier) then
         modifier = math.Max(modifier, minModifier)
@@ -529,7 +584,8 @@ function mply:SurvivorCleanUp()
         self:SetUsingCloth("")
         self:SetUsingArmor("")
         self:SetUsingHelmet("")
-        self:SetStamina(100)
+        self:SetStamina(200)
+		self:SetNWBool("Have_docs", false)
         self:Flashlight(false)
         self:SetBoosted(false)
     end
@@ -630,7 +686,7 @@ function mply:ApplyRoleStats(role)
 	if role["randomizeface"] or !role["white"] then
 		for k,v in pairs(self:LookupBonemerges()) do
 			if CORRUPTED_HEADS[v:GetModel()] then v:SetSubMaterial(1, PickFaceSkin(isblack,self:SteamID64(),false)) end
-			if v:GetModel():find("fat_heads") then continue end
+			if v:GetModel():find("fat_heads") or v:GetModel():find("bor_heads") then continue end
 			if v:GetModel():find("heads") or v:GetModel():find("balaclavas_new") then
 				if !self:IsFemale() then
 				v:SetSubMaterial(0, PickFaceSkin(isblack,self:SteamID64(),false))
@@ -712,10 +768,6 @@ function mply:ApplyRoleStats(role)
     if self:HasWeapon("item_tazer") then
         self:GetWeapon("item_tazer"):SetClip1(20)
     end
-
-	if self:HasWeapon("item_tazer") then
-		self:GetWeapon("item_tazer"):SetClip1(20)
-	end
 
 	self:Namesurvivor()
     

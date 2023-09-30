@@ -112,59 +112,6 @@ util.AddNetworkString("BREACH_SetForcedAnimSync")
 util.AddNetworkString("BREACH_EndForcedAnimSync")
 util.AddNetworkString("BREACH_SetForcedAnimSync")
 
-function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallback, stopcallback)
-
-	if sequence == false then
-		self:StopForcedAnimation()
-		return
-	end
-	
-	  if SERVER then
-	  
-		if isstring(sequence) then sequence = self:LookupSequence(sequence) end
-		  self:SetCycle(0)
-		  self.ForceAnimSequence = sequence
-		  
-		  time = endtime
-		  
-		  if endtime == nil then
-			time = self:SequenceDuration(sequence)
-		  end
-		  
-		  
-		  
-		  net.Start("BREACH_SetForcedAnimSync")
-		  net.WriteEntity(self)
-		  net.WriteUInt(sequence, 20) -- seq cock
-		  net.Broadcast()
-		  
-		  if isfunction(startcallback) then startcallback() end
-		  
-		  self.StopFAnimCallback = stopcallback
-		  
-			timer.Create("SeqF"..self:EntIndex(), time, 1, function()
-			  if (IsValid(self)) then
-			  
-				self.ForceAnimSequence = nil
-				
-				net.Start("BREACH_EndForcedAnimSync")
-				net.WriteEntity(self)
-				net.Broadcast()
-				
-				self.StopFAnimCallback = nil
-				
-				if isfunction(finishcallback) then
-					finishcallback()
-				end
-				
-			  end
-			  
-			end)
-		  
-		end
-		
-	end
-
 net.Receive("проверкаслуха:БазарНачался", function(len,ply) 
 end)
 
@@ -172,22 +119,32 @@ net.Receive("Player_FullyLoadMenu", function(len,ply)
 	ply:SetNWBool("Player_IsPlaying", true)
 end)
 
-net.Receive("Load_player_data", function()
-	net.ReadTable(tab)
+net.Receive("Load_player_data", function(len,ply)
+	local tab = net.ReadTable()
+	ply.specialability = tab.useability
 end)
 
 net.Receive("111roq", function()
 	net.ReadFloat()
 end)
 
-net.Receive("Change_player_settings", function(id, int)
-	net.ReadUInt(12)
-	net.ReadBool()
+net.Receive("Change_player_settings", function(len, ply)
+    local id = net.ReadUInt(12)
+    local boolValue = net.ReadBool()
+
+    ply.playerSettings = ply.playerSettings or {}
+    ply.playerSettings[id] = boolValue
+
 end)
 
-net.Receive("Change_player_settings_id", function(id, bool, int)
-	net.ReadUInt(12)
-	net.ReadUInt(32)
+net.Receive("Change_player_settings_id", function(len, ply)
+    local id = net.ReadUInt(12)
+    local intValue = net.ReadUInt(32)
+     
+    if id == 1 then
+		ply.specialability = intValue
+	end
+
 end)
 
 local banned_sounds = {

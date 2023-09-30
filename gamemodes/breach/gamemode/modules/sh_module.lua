@@ -404,7 +404,6 @@ role.ADMIN = "ADMIN MODE"
 SCP106 = "SCP106"
 SCP049 = "SCP049"
 SCP638 = "SCP638"
-SCP076 = "SCP0762"
 SCP8602 = "SCP8602"
 SCP062FR = "SCP062FR"
 SCP1015RU = "SCP1015RU"
@@ -1428,6 +1427,7 @@ end
 
 function GM:Move( ply, mv )
 end
+
 
 player_manager.AddValidModel("12312399", "models/cultist/humans/chaos/fat/chaos_fat.mdl")
 player_manager.AddValidHands("12312399", "models/cultist/humans/chaos/hands/c_arms_chaos.mdl", 0, "000000")

@@ -18,7 +18,7 @@ ENT.collisionside = 10
 ENT.FootAngles = 8
 ENT.FootAngles2 = 8
 
-ENT.Speed = 140
+ENT.Speed = 135
 ENT.WalkSpeedAnimation = 1.0
 
 ENT.AttackRange = 90
@@ -27,8 +27,8 @@ ENT.InitialAttackRange = 90
 ENT.Bone1 = "foot_control_R"
 ENT.Bone2 = "foot_control_L"
 
-ENT.health = 80000
-ENT.Damage = 40
+ENT.health = 1400
+ENT.Damage = 35
 
 ENT.NextAttack = 0
 ENT.AttackFinishTime = .1

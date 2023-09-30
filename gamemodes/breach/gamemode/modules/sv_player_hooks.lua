@@ -128,40 +128,35 @@ net.Receive("NTF_Special_1", function(len, ply)
 end)
 
 function CheckStart()
-	MINPLAYERS = GetConVar("br_min_players"):GetInt()
 	if gamestarted == false and #GetActivePlayers() >= 10 and GetGlobalBool("EnoughPlayersCountDown") == false then
-		--RoundRestart()
 		SetGlobalBool("EnoughPlayersCountDown", true)
 		SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 145)
-		for k,v in pairs(player.GetAll()) do
-			v.MusicPlaying = true
-		end
-		timer.Create( "PreStartRound", 145, 1, function() 
+        BroadcastPlayMusic("sound/no_music/preparing_game.ogg", 1)
+		timer.Create("SUPERKOSTIL4000000000000000MEGATONNAGOVNA", 144,1,function()
+			for k,v in pairs(player.GetAll()) do 
+				v:ScreenFade(SCREENFADE.IN, Color(0, 0, 0, 255),2,3.2)
+			end
+		end)
+		timer.Create( "шайлушай", 145, 1, function() 
 			SetGlobalBool("EnoughPlayersCountDown", false)
+		end)
+		timer.Create( "PreStartRound", 145, 1, function() 
 			if gamestarted == true or #GetActivePlayers() < 10 then return end
 			RoundRestart()
-		end )
-		print("круто")
+		end)
 	end
+
 	if gamestarted == true and #GetActivePlayers() < 10 and (GetGlobalBool("EnoughPlayersCountDown") == true) then
-		--RoundRestart()
+		timer.Remove("шайлушай")
 		timer.Remove("PreStartRound")
-		print("да")
-		for k,v in pairs(player.GetAll()) do
-			v.MusicPlaying = false
-		end
-		SetGlobalBool("EnoughPlayersCountDown", false)
-		--SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 120)
-		print("круто")
+		timer.Remove("SUPERKOSTIL4000000000000000MEGATONNAGOVNA")
+		BroadcastStopMusic()
 	end
-	if #GetActivePlayers() == 10 and #GetActivePlayers() == #player.GetAll() then
-		--RoundRestart()
-	end
+
 	if gamestarted then
 		BroadcastLua( 'gamestarted = true' )
 	end
 end
-
 
 function GM:PlayerInitialSpawn( ply )
 	ply:SetCanZoom( false )
@@ -423,6 +418,10 @@ hook.Add("PlayerDisconnect", "CanHear", function(ply)
     можетслушать[ply] = nil
 end)
 
+говорливыесцп = {
+	"SCP049",
+	"SCP076"
+}
 
 function GM:PlayerCanHearPlayersVoice(listener, talker)
     if not talker:Alive() or not listener:Alive() then
@@ -441,16 +440,14 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
 
     local talkerRole = talker:GetRoleName()
     local listenerRole = listener:GetRoleName()
+    local talkerTeam = talker:GTeam()
+    local listenerTeam = listener:GTeam()
 
-    if (talkerRole == role.SCP957 and listenerRole == role.SCP9571) or (talkerRole == role.SCP9571 and listenerRole == role.SCP9571) then
-        return true
-    end
-
-    if talker:GTeam() == TEAM_SCP and not listener:GTeam() == TEAM_SCP then
+    if talkerTeam == TEAM_SCP and listenerTeam ~= TEAM_SCP and listenerTeam ~= TEAM_DZ and not говорливыесцп[talkerRole] then
         return false
     end
 
-    if talker:GTeam() == TEAM_SPEC then
+	if talker:GTeam() == TEAM_SPEC then
         return listener:GTeam() == TEAM_SPEC
     end
 
@@ -564,36 +561,18 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 end )
 
 
-util.AddNetworkString("dradio_sendMessage")
+util.AddNetworkString("radio_sendmessage")
 
-net.Receive("dradio_sendMessage", function(len,ply)
-	local message = net.ReadString()
-	local freq = net.ReadDouble()
-	local speaker = net.ReadEntity()
-	message = string.sub(message, 3)
-	speaker.frequency = freq
-	if frequency == 0 and speaker == ply then
-		chat.AddText(RADIO.FailMessage)
-	end 
-	if frequency and frequency != 0 and speaker.frequency != 0 and speaker.frequency == frequency then 
-		chat.AddText(Color(175,199,139,255), "[ " .. frequency .. "] ", team.GetColor(speaker:Team()), speaker:Name() .. ": ", Color(255,255,255), message)
-	end
-
+net.Receive("radio_sendmessage", function(len,ply)
+	local text = net.ReadString()
+	RXSENDNotify(text)
 end)
 
-hook.Add("PlayerSay", "RRadioTextChat", function( speaker, text, teamChat )
-	local findA = string.find(text, "!r")
-	local findB = string.find(text, "/r")
-	if findA or findB then 
-		net.Start("dradio_sendMessage")
-		net.WriteString(text)
-		net.WriteFloat(speaker.frequency)
-		net.WriteEntity(speaker)
-		net.Broadcast() 
-		return ""
-	end 
-
-
+hook.Add("PlayerSay", "Radio_thing", function( speaker, text, teamChat )
+	if string.find(text, "/r") or string.find(text, "!r") then
+		net.Start("radio_sendmessage")
+		net.Broadcast()
+	end
 end)
 
 

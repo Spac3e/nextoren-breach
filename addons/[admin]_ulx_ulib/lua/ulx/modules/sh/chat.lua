@@ -44,7 +44,7 @@ if SERVER then ULib.ucl.registerAccess( seeasayAccess, ULib.ACCESS_OPERATOR, "Ab
 
 function ulx.donate( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/3193621324044770528/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
 
 end
 local donate = ulx.command( "FAQ", "ulx donate", ulx.donate, "!donate", true, true )
@@ -54,7 +54,7 @@ donate:help( "Donation" )
 
 function ulx.steam( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity\")")
 
 end
 local steam = ulx.command( "FAQ", "ulx steam", ulx.steam, "!steam", true, true )
@@ -64,7 +64,7 @@ steam:help( "Steam group" )
 
 function ulx.discord( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/evnTaEKnGq\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity\")")
 
 end
 local discord = ulx.command( "FAQ", "ulx discord", ulx.discord, "!discord", true, true )
@@ -74,7 +74,7 @@ discord:help( "Discord" )
 
 function ulx.rules( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/5089647632456815273/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
 
 end
 local rules = ulx.command( "FAQ", "ulx rules", ulx.rules, "!rules", true, true )
@@ -83,7 +83,7 @@ rules:help( "Server Rules" )
 
 function ulx.faq( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/4287991687312245493/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
 
 end
 local faq = ulx.command( "FAQ", "ulx faq", ulx.faq, "!faq", true, true )
@@ -116,7 +116,7 @@ function ulx.asay( calling_ply, message )
 
 	if !admins then
 		calling_ply:RXSENDNotify("l:no_admins")
-		calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/3/3193621324037941231/\")")
+		calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
 		return
 	end
 

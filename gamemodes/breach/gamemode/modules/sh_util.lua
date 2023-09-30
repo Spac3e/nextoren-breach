@@ -247,7 +247,7 @@ function util.FormatTime( seconds, depth )
 end
 
 function sql.GetColumns(name)
-  local rows = sql.QueryValue("SELECT sql FROM sqlite_master WHERE name = '" .. name .. "'")
+  local rows = newMysql.queryValue("SELECT sql FROM sqlite_master WHERE name = '" .. name .. "'")
   if ( !rows ) then
     return {}
   end

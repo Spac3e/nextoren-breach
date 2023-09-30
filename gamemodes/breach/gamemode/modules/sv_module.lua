@@ -3,17 +3,16 @@ local mply = FindMetaTable( "Player" )
 util.AddNetworkString("Show_Menus")
 
 function spawn_ents()
-	SetGlobalBool("EnoughPlayersCountDown", true)
-	SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 end
-
 concommand.Add("loot", spawn_ents)
 
 function test1()
-	SetGlobalInt("EnoughPlayersCountDownStart", 11)
-	SetGlobalBool("EnoughPlayersCountDown", true)
 end
 concommand.Add("test", test1)
+
+function test2()
+end
+concommand.Add("test2", 2)
 
 function SendSpecMessage(ignore, ...)
 	local plys = player.GetAll()
@@ -132,10 +131,6 @@ net.Receive("GiveWeaponFromClient", function(len,ply)
 	local weapon = net.ReadString()
 	ply:Give(weapon)
 	ply:SelectWeapon(weapon)
-end)
-
-net.Receive("Load_player_data", function()
-	net.ReadTable(tab)
 end)
 
 function mply:PlayGestureSequence( sequence )
@@ -333,142 +328,194 @@ end
 
 concommand.Add("132",Create_Items)
 
-function makaka_weps()
-	for k, v in pairs(SPAWN_AMMONEW) do
-		local spawns = table.Copy(v.spawns)
-		local dices = {}
-	
-		local n = 0
-		for _, dice in pairs(v.ents) do
-			local d = {
-				min = n,
-				max = n + dice[2],
-				ent = dice[1]
-			}
-	
-			table.insert(dices, d)
-			n = n + dice[2]
-		end
-	
-		for i = 1, math.min(v.amount, #spawns) do
-			local spawn = table.remove(spawns, math.random(1, #spawns))
-			local dice = math.random(0, n - 1)
-			local ent
-	
-			for _, d in pairs(dices) do
-				if d.min <= dice and d.max > dice then
-					ent = d.ent
-					break
-				end
-			end
-	
-			if ent then
-				local keycard = ents.Create(ent)
-				if IsValid(keycard) then
-					keycard:Spawn()
-					keycard:SetPos(spawn)
-					-- keycard:SetKeycardType(ent)
-				end
-			end
-		end
-	end
-end
-
 function BREACH.Round_Spawn_Loot()
     local spawnTable = SPAWN_UNIFORMS
-    makaka_weps()
-    -- Entities
-    for _, entity in ipairs(ENTITY_SPAWN_LIST) do
-        local class = entity.Class
-        local spawns = entity.Spawns
-        for _, spawn in ipairs(spawns) do
-            local pos = spawn.pos or spawn
-            local ang = spawn.ang or Angle(0, 0, 0)
-            local ent = ents.Create(class)
-            ent:SetPos(pos)
-            ent:SetAngles(ang)
-            ent:Spawn()
-        end
-    end
 
-    -- Loot
-    for _, spawnData in pairs(SPAWN_ITEMS) do
-        local spawns = table.Copy(spawnData.spawns)
-        local dices = {}
-        local totalWeight = 0
-
-        -- Create "dice" for random selection
-        for _, dice in pairs(spawnData.ents) do
-            local weight = dice[2]
-            local diceEntry = {
-                min = totalWeight,
-                max = totalWeight + weight,
-                ent = dice[1]
-            }
-
-            table.insert(dices, diceEntry)
-            totalWeight = totalWeight + weight
-        end
-
-        -- Spawn objects
-        local amountToSpawn = math.min(spawnData.amount, #spawns)
-        for i = 1, amountToSpawn do
-            local spawnIndex = math.random(1, #spawns)
-            local diceRoll = math.random(0, totalWeight - 1)
-            local selectedEntity
-
-            for _, dice in pairs(dices) do
-                if diceRoll >= dice.min and diceRoll < dice.max then
-                    selectedEntity = dice.ent
-                    break
-                end
-            end
-
-            if selectedEntity then
-                local newItem = ents.Create(selectedEntity)
-                if IsValid(newItem) then
-                    newItem:SetPos(spawns[spawnIndex])
-                    newItem:Spawn()
-                end
-            end
-
-            table.remove(spawns, spawnIndex)
-        end
-    end
-
-    -- Uniform
-    local spawnCount
-    if math.random(0, 1) == 1 then
-        spawnCount = math.random(SPAWN_UNIFORMS.bigroundamount[1], SPAWN_UNIFORMS.bigroundamount[2])
-    else
-        spawnCount = math.random(SPAWN_UNIFORMS.smallroundamount[1], SPAWN_UNIFORMS.smallroundamount[2])
-    end
-
-    for i = 1, spawnCount do
-        local spawnPos = table.Random(SPAWN_UNIFORMS.spawns)
-        local entityName = table.Random(SPAWN_UNIFORMS.entities)
-
-        if spawnPos then
-            local ent = ents.Create(entityName)
-
-            if IsValid(ent) then
-                ent:SetPos(spawnPos)
-                ent:Spawn()
-            end
-        end
-    end
-	makaka_weps()
-    -- Other
-	for k, v in ipairs(SPAWN_VEHICLE) do
-		local car = ents.Create("prop_vehicle_jeep")
-		car:SetModel("models/scpcars/scpp_wrangler_fnf.mdl")
-		car:SetKeyValue("vehiclescript", "scripts/vehicles/wrangler88.txt")
-        car:SetPos(v[1])
-        car:SetAngles(v[2])
-		car:Spawn()
-		car:Activate()
-		WakeEntity( car )
+	local function RandomItem(list)
+		local totalWeight = 0
+	
+		for _, item in ipairs(list) do
+			totalWeight = totalWeight + item[2]
+		end
+	
+		local randomValue = math.random(1, totalWeight)
+		local weightSum = 0
+	
+		for _, item in ipairs(list) do
+			weightSum = weightSum + item[2]
+			if randomValue <= weightSum then
+				return item[1]
+			end
+		end
+	
+		return nil
 	end
+	
+    -- Loot
+	local function makaka_super_new_loot()
+		for area, spawnData in pairs(SPAWN_ITEMS) do
+			local spawns = table.Copy(spawnData.spawns)
+			local spawnedItems = {} 
+		
+			if area == "scpsobject" then
+				local scpsobjectItems = table.Copy(spawnData.ents)
+				for i = 1, spawnData.amount do
+					if #scpsobjectItems > 0 then
+						local spawnIndex = math.random(1, #spawns)
+						local selectedEntity = table.remove(scpsobjectItems, 1)
+		
+						local newItem = ents.Create(selectedEntity)
+						if IsValid(newItem) then
+							newItem:SetPos(spawns[spawnIndex])
+							newItem:Spawn()
+						end
+		
+						table.remove(spawns, spawnIndex)
+					else
+						break
+					end
+				end
+			else
+				local amountToSpawn = math.min(spawnData.amount, #spawns)
+				for i = 1, amountToSpawn do
+					local spawnIndex = math.random(1, #spawns)
+					local selectedEntity = RandomItem(spawnData.ents)
+		
+					local newItem = ents.Create(selectedEntity)
+					if IsValid(newItem) then
+						newItem:SetPos(spawns[spawnIndex])
+						newItem:Spawn()
+					end
+		
+					table.remove(spawns, spawnIndex)
+				end
+			end
+		end
+	end
+	
+    -- Uniform
+	local function makaka_uniforms()
+		local spawnCount
+		if math.random(0, 1) == 1 then
+			spawnCount = math.random(SPAWN_UNIFORMS.bigroundamount[1], SPAWN_UNIFORMS.bigroundamount[2])
+		else
+			spawnCount = math.random(SPAWN_UNIFORMS.smallroundamount[1], SPAWN_UNIFORMS.smallroundamount[2])
+		end
+	
+		for i = 1, spawnCount do
+			local spawnPos = table.Random(SPAWN_UNIFORMS.spawns)
+			local entityName = table.Random(SPAWN_UNIFORMS.entities)
+	
+			if spawnPos then
+				local ent = ents.Create(entityName)
+	
+				if IsValid(ent) then
+					ent:SetPos(spawnPos)
+					ent:Spawn()
+				end
+			end
+		end
+	end
+
+    -- Other
+	local function super_mega_car_from_makaka_zavod()
+		for k, v in ipairs(SPAWN_VEHICLE) do
+			local car = ents.Create("prop_vehicle_jeep")
+			car:SetModel("models/scpcars/scpp_wrangler_fnf.mdl")
+			car:SetKeyValue("vehiclescript", "scripts/vehicles/wrangler88.txt")
+			car:SetPos(v[1])
+			car:SetAngles(v[2])
+			car:Spawn()
+			car:Activate()
+			WakeEntity( car )
+		end
+	end
+	
+	
+	-- Entities
+	local function makaka_ents()
+		for _, entity in ipairs(ENTITY_SPAWN_LIST) do
+			local class = entity.Class
+			local spawns = entity.Spawns
+			for _, spawn in ipairs(spawns) do
+				local pos = spawn.pos or spawn
+				local ang = spawn.ang or Angle(0, 0, 0)
+				local ent = ents.Create(class)
+				ent:SetPos(pos)
+				ent:SetAngles(ang)
+				ent:Spawn()
+			end
+		end
+	end
+
+	local function makaka_weps()
+		for k, v in pairs(SPAWN_AMMONEW) do
+			local spawns = table.Copy(v.spawns)
+			local dices = {}
+		
+			local n = 0
+			for _, dice in pairs(v.ents) do
+				local d = {
+					min = n,
+					max = n + dice[2],
+					ent = dice[1]
+				}
+		
+				table.insert(dices, d)
+				n = n + dice[2]
+			end
+		
+			for i = 1, math.min(v.amount, #spawns) do
+				local spawn = table.remove(spawns, math.random(1, #spawns))
+				local dice = math.random(0, n - 1)
+				local ent
+		
+				for _, d in pairs(dices) do
+					if d.min <= dice and d.max > dice then
+						ent = d.ent
+						break
+					end
+				end
+		
+				if ent then
+					local keycard = ents.Create(ent)
+					if IsValid(keycard) then
+						keycard:Spawn()
+						keycard:SetPos(spawn)
+					end
+				end
+			end
+		end
+	end
+
+	local function makaka_generators()
+		local maxGenerators = 5
+		
+		for i = 1, maxGenerators do
+			if #SPAWN_GENERATORS > 0 then
+				local spawnIndex = math.random(1, #SPAWN_GENERATORS)
+				local spawnData = table.remove(SPAWN_GENERATORS, spawnIndex)
+				
+				local generatorEntity = ents.Create("ent_generator")
+				if IsValid(generatorEntity) then
+					generatorEntity:SetPos(spawnData.Pos)
+					generatorEntity:SetAngles(spawnData.Ang)
+					generatorEntity:Spawn()
+				else
+				end
+			else
+				break
+			end
+		end
+	end
+
+
+	makaka_super_new_loot()
+	makaka_weps()
+	makaka_ents()
+	makaka_uniforms()
+	makaka_generators()
+	super_mega_car_from_makaka_zavod()
 
 end
 
@@ -531,7 +578,7 @@ function SupportFreeze(ply)
 	ply.cantopeninventory = true
 	ply.supported = true
 	ply:ConCommand("lounge_chat_clear")
-	ply:ConCommand("stopsound")
+	--ply:ConCommand("stopsound")
 end
 
 function CultBook()
@@ -553,6 +600,117 @@ ntfcoolspawn = {
 	{vec = Vector(14939.730469, 13012.394531, -15768.997070), ang = Angle(0, 90, 0), seq = "d1_t01_breakroom_sit01_idle"}
 }
 
+function gru_pre_intro()
+	local gru_spawns = {
+			mesto_1 = { Angel = Vector(0, 0, 0), Vector = Vector(-10650, -65, 2680)},
+			mesto_2 = { Angel = Vector(0, 0, 0), Vector = Vector(-10650, -100, 2680)},
+			mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(-10737, -48, 2680)},
+			mesto_4 = { Angel = Vector(0, 90, 0), Vector = Vector(-10774, -48, 2680)},
+			mesto_5 = { Angel = Vector(0, -90, 0), Vector = Vector(-10784, -118, 2680)},
+			mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(-10739, -118, 2680)}
+	}
+	local gru_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+		local btr = ents.Create("prop_dynamic")
+		   btr:SetModel("models/sw/avia/ka60/ka60.mdl")
+		btr:SetPos(Vector(-10827, -84, 2639))
+		   btr:Spawn()
+	timer.Simple(20, function()
+		   btr:Remove()
+	end)
+		for k, v in pairs(player.GetAll()) do
+			if v:GTeam() == TEAM_GRU then
+				v:SetMoveType(MOVETYPE_OBSERVER)
+				SpawnPos = (table.Random( gru_spawns ))
+				v:SetPos(SpawnPos.Vector)
+				v:SetNWEntity("NTF1Entity", v)
+				v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+				v:SetForcedAnimation(table.Random( gru_ani ), 20)
+				timer.Simple(20, function() 
+					v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+					v:SetNWEntity("NTF1Entity", NULL)
+					v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+					v:StopForcedAnimation()
+					v:SetMoveType(MOVETYPE_WALK)
+					v:SetPos(table.Random(SPAWN_OUTSIDE))
+			end)
+			table.RemoveByValue(gru_spawns, SpawnPos)
+			end
+		end
+	end
+	
+	function cl_pre_intro()
+	local cl_spawns = {
+			mesto_1 = { Angel = Vector(0, 90, 0), Vector = Vector(-10899, -80, 1782)},
+			mesto_2 = { Angel = Vector(0, -90, 0), Vector = Vector(-10899, -80, 1782)},
+			mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(-10869, -80, 1782)},
+			mesto_4 = { Angel = Vector(0, -90, 0), Vector = Vector(-10869, -80, 1782)},
+			mesto_5 = { Angel = Vector(0, 90, 0), Vector = Vector(-10829, -80, 1782)},
+			mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(-10829, -80, 1782)}
+	}
+	local cl_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+	local btr = ents.Create("prop_dynamic")
+	btr:SetModel("models/scp_chaos_jeep/chaos_jeep.mdl")
+	btr:SetPos(Vector(-10827, -84, 1739))
+	btr:Spawn()
+	timer.Simple(20, function()
+	btr:Remove()
+	end)
+	for k, v in pairs(player.GetAll()) do
+		if v:GTeam() == TEAM_CHAOS then
+			v:SetMoveType(MOVETYPE_OBSERVER)
+			SpawnPos = (table.Random( cl_spawns ))
+			v:SetPos(SpawnPos.Vector)
+			v:SetNWEntity("NTF1Entity", v)
+			v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+			if v:GetRoleName() != "CI Juggernaut" then
+			v:SetForcedAnimation(table.Random( cl_ani ), 20)
+			else
+			v:SetForcedAnimation("0_chaos_sit_jug", 20)
+			end
+			timer.Simple(20, function() 
+				v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+				v:SetNWEntity("NTF1Entity", NULL)
+				v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+				v:StopForcedAnimation()
+				v:SetMoveType(MOVETYPE_WALK)
+				v:SetPos(table.Random(SPAWN_OUTSIDE))
+			end)
+		table.RemoveByValue(cl_spawns, SpawnPos)
+		end
+	end
+	end
+	function ntf_pre_intro()
+	local ntf_spawns = {
+			mesto_1 = { Angel = Vector(0, 90, 0), Vector = Vector(14928, 13037, -15760)},
+			mesto_2 = { Angel = Vector(0, 90, 0), Vector = Vector(14898, 13037, -15760)},
+			mesto_3 = { Angel = Vector(0, 90, 0), Vector = Vector(14861, 13037, -15760)},
+			mesto_4 = { Angel = Vector(0, -90, 0), Vector = Vector(14940, 12966, -15760)},
+			mesto_5 = { Angel = Vector(0, -90, 0), Vector = Vector(14910, 12966, -15760)},
+			mesto_6 = { Angel = Vector(0, -90, 0), Vector = Vector(14895, 12966, -15760)}
+	}
+		local ntf_ani = { "0_chaos_sit_1", "0_chaos_sit_2", "0_chaos_sit_3" }
+		for k, v in pairs(player.GetAll()) do
+			if v:GTeam() == TEAM_NTF then
+				v:SetMoveType(MOVETYPE_OBSERVER)
+				SpawnPos = (table.Random( ntf_spawns ))
+				v:SetPos(SpawnPos.Vector)
+				v:SetNWEntity("NTF1Entity", v)
+				v:SetNWAngle("ViewAngles", SpawnPos.Angel:Angle())
+				v:SetForcedAnimation(table.Random( ntf_ani ), 25)
+				timer.Simple(25, function() 
+					v:ScreenFade( SCREENFADE.IN, Color( 0, 0, 0, 255 ), 5, 10 )
+					v:SetNWEntity("NTF1Entity", NULL)
+					v:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+					v:StopForcedAnimation()
+					v:SetMoveType(MOVETYPE_WALK)
+					v:SetPos(table.Random(SPAWN_OUTSIDE))
+				end)
+			table.RemoveByValue(ntf_spawns, SpawnPos)
+			end
+		end
+	end
+
+	
 function SupportSpawn()
 
     local players = {}
@@ -617,11 +775,14 @@ function SupportSpawn()
                 v:SetupNormal()
                 NTFCutscene(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
-                SupportFreeze(v)
+                --v:SetPos(spawn)
+                --SupportFreeze(v)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [NTF]")
             end
+
+			ntf_pre_intro()
+
         elseif change_sup == "cl" then
             -- CHAOS
             PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
@@ -665,12 +826,15 @@ function SupportSpawn()
                 local spawn = table.remove(chaosspawns, math.random(#chaosspawns))
                 v:SendLua("CutScene()")
                 v:SetupNormal()
-                SupportFreeze(v)
+                --SupportFreeze(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
+                --v:SetPos(spawn)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [CHAOS]")
             end
+
+			cl_pre_intro()
+
         elseif change_sup == "gru" then
             -- GRU
 			PlayAnnouncer("nextoren/round_sounds/intercom/support/enemy_enter.ogg")
@@ -719,12 +883,15 @@ function SupportSpawn()
                     net.Broadcast()
                 end
                 v:SetupNormal()
-                SupportFreeze(v)
+                --SupportFreeze(v)
                 v:ApplyRoleStats(selected)
-                v:SetPos(spawn)
+                --v:SetPos(spawn)
 
                 print("Assigning " .. v:Nick() .. " to role: " .. selected.name .. " [GRU]")
             end
+
+			gru_pre_intro()
+
         elseif change_sup == "goc" then
             -- GOC
 			PlayAnnouncer("nextoren/round_sounds/intercom/support/goc_enter.mp3")
@@ -1156,6 +1323,11 @@ function GM:ScalePlayerDamage(ply, hitgroup, dmginfo)
     if ( attacker:GTeam() == TEAM_GOC && ( wep && wep:IsValid() ) && wep.Primary && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP ) then
         dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
     end
+
+	if attacker:GetRoleName() == role.SCI_SpyUSA and attacker:GetActiveWeapon() == "cw_kk_ins2_arse_usp" and ply:GetNWBool("Have_docs") == false then
+		dmginfo:ScaleDamage(0.1)
+	end
+
 end
 
 hook.Add("ScalePlayerDamage", "Flinch", function(ply, grp)
