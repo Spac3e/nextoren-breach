@@ -235,13 +235,10 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 end
 
 function GM:PlayerDeathThink( ply )
-	if !ply:IsBot() and ply:GTeam() != TEAM_SPEC then
-		ply:SetGTeam(TEAM_SPEC)
-	end
-	if ( ply:IsBot() || ply:KeyPressed( IN_ATTACK ) || ply:KeyPressed( IN_ATTACK2 ) || ply:KeyPressed( IN_JUMP ) || postround ) then
-		ply:Spawn()
+    timer.Simple(4, function()
 		ply:SetSpectator()
-	end
+		ply:Spawn()
+	end)
 end
 
 function GM:PlayerNoClip( ply, desiredState )
@@ -455,6 +452,10 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
         return true
     end
 
+	if talker.supported == true then
+		return false
+	end
+
     if talker:GetPos():Distance(listener:GetPos()) < 750 then
         return true, true
     end
@@ -563,18 +564,17 @@ end )
 
 util.AddNetworkString("radio_sendmessage")
 
-net.Receive("radio_sendmessage", function(len,ply)
-	local text = net.ReadString()
-	RXSENDNotify(text)
-end)
-
 hook.Add("PlayerSay", "Radio_thing", function( speaker, text, teamChat )
-	if string.find(text, "/r") or string.find(text, "!r") then
+	if string.find(text,"/r") or string.find(text,"!r") then
 		net.Start("radio_sendmessage")
 		net.Broadcast()
 	end
 end)
 
+net.Receive("radio_sendmessage", function(len, ply)
+    local text = net.ReadString()
+    print("Received message: " .. text)
+end)
 
 local mply = FindMetaTable("Player")
 
@@ -617,7 +617,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 
     if ply:GTeam() ~= TEAM_SPEC then
         if wep.teams then
-            local canuse = false
+            local canuse = true
             for k, v in pairs(wep.teams) do
                 if v == ply:GTeam() then
                     canuse = true
@@ -626,7 +626,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
             end
 
             if not canuse then
-                return false
+                return true
             end
         end
     end
@@ -747,6 +747,13 @@ function GM:PlayerUse(ply, ent, key)
 			end
 
             if v.access ~= nil then
+
+				if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and (timer.TimeLeft("RoundTime")) < 180 then
+					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+                    ply:SetBottomMessage("l:access_granted")
+                    return true
+				else
+
                 if v.levelOverride and v.levelOverride(ply) then
                     return true
                 end
@@ -800,6 +807,7 @@ function GM:PlayerUse(ply, ent, key)
                     ply:SetBottomMessage("l:keycard_needed")
                     return false
                 end
+				end
             end
 
             if v.canactivate == nil or v.canactivate(ply, ent) then
