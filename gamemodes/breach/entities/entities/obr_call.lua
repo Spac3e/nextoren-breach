@@ -27,7 +27,7 @@ function ENT:Initialize()
   self:SetSolid( SOLID_NONE )
   self:SetActivate( true )
   self:SetCalled( false )
-  self:SetCD( CurTime() + 285 )
+  self:SetCD( CurTime() + 2 )
   self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
   self:SetRenderMode( 1 )
 
@@ -155,7 +155,13 @@ function ENT:Use( activator, caller )
 
         if ( SERVER ) then
 
-          OBRSpawn(count)
+
+          local mega_randomchik = math.random(1,5)
+          if caller:GetRoleName() == role.MTF_HOF and mega_randomchik == 2 then
+            OSNSpawn(5)
+          else
+            OBRSpawn(count)
+          end
 
           BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/obr_enter.wav" )' )
 

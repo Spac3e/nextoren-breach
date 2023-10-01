@@ -308,7 +308,6 @@ hook.Add( "RegisterSCP", "RegisterBaseSCPs", function()
 		base_speed = 135,
 		run_speed = 135,
 		max_speed = 135,
-		death_sound = "",
 	} )--]]
 
 	RegisterSCP( "SCP076", "models/cultist/scp/scp_076.mdl", "weapon_scp_076", {

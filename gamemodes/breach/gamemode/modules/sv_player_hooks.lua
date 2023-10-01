@@ -182,17 +182,7 @@ function GM:PlayerInitialSpawn( ply )
 		ply:SendLua( 'gamestarted = true' )
 	end
 end
-/*
-function GM:PlayerAuthed( ply, steamid, uniqueid )
-	ply.Active = false
-	ply.Leaver = "none"
-	if prepring then
-		ply:SetClassD()
-	else
-		ply:SetSpectator()
-	end
-end
-*/
+
 function GM:PlayerSpawn( ply )
 	//ply:SetupHands()
 	ply:SetTeam(1)
@@ -235,10 +225,13 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 end
 
 function GM:PlayerDeathThink( ply )
-    timer.Simple(4, function()
-		ply:SetSpectator()
+	if !ply:IsBot() and ply:GTeam() != TEAM_SPEC then
+		ply:SetGTeam(TEAM_SPEC)
+	end
+	if ( ply:IsBot() || ply:KeyPressed( IN_ATTACK ) || ply:KeyPressed( IN_ATTACK2 ) || ply:KeyPressed( IN_JUMP ) || postround ) then
 		ply:Spawn()
-	end)
+		ply:SetSpectator()
+	end
 end
 
 function GM:PlayerNoClip( ply, desiredState )
@@ -246,10 +239,44 @@ function GM:PlayerNoClip( ply, desiredState )
 end
 
 local scpdeadsounds = {
-    ["SCP049"] = "fug",
+	SCP106 = "nextoren/round_sounds/intercom/scp_contained/106.ogg",
+	SCP049 = "nextoren/round_sounds/intercom/scp_contained/049.ogg",
+	SCP638 = "nextoren/round_sounds/intercom/scp_contained/638.ogg",
+	SCP8602 = "nextoren/round_sounds/intercom/scp_contained/860.ogg",
+	SCP062FR = "nextoren/round_sounds/intercom/scp_contained/062fr.ogg",
+	SCP1015RU = "nextoren/round_sounds/intercom/scp_contained/1015ru.ogg",
+	SCP035 = "nextoren/round_sounds/intercom/scp_contained/035.ogg",
+	SCP062DE = "nextoren/round_sounds/intercom/scp_contained/062de.ogg",
+	SCP096 = "nextoren/round_sounds/intercom/scp_contained/096.ogg",
+	SCP542 = "nextoren/round_sounds/intercom/scp_contained/542.ogg",
+	SCP999 = "nextoren/round_sounds/intercom/scp_contained/999.ogg",
+	SCP1903 = "nextoren/round_sounds/intercom/scp_contained/1903.ogg",
+	SCP973 = "nextoren/round_sounds/intercom/scp_contained/973.ogg",
+	SCP457 = "nextoren/round_sounds/intercom/scp_contained/457.ogg",
+	SCP173 = "nextoren/round_sounds/intercom/scp_contained/173.ogg",
+	SCP2012 = "nextoren/round_sounds/intercom/scp_contained/2012.ogg",
+	SCP082 = "nextoren/round_sounds/intercom/scp_contained/082.ogg",
+	SCP939 = "nextoren/round_sounds/intercom/scp_contained/939.ogg",
+	SCP811 = "nextoren/round_sounds/intercom/scp_contained/811.ogg",
+	SCP682 = "nextoren/round_sounds/intercom/scp_contained/682.ogg",
+	SCP076 = "nextoren/round_sounds/intercom/scp_contained/076.ogg",
+	SCP912 = "nextoren/round_sounds/intercom/scp_contained/912.ogg"
 }
 
 function GM:PlayerDeath( victim, inflictor, attacker, ply )
+	if victim:GTeam() == TEAM_SCP then
+		print(victim:GetRoleName())
+		victim:SetNWBool("megabool3004", victim:GetRoleName())
+		timer.Create("SCPDEADLOL"..victim:SteamID(),12,1,function()
+		local evgeha = victim:GetNWBool("megabool3004")
+		PlayAnnouncer(scpdeadsounds[evgeha])
+		timer.Simple(13, function()
+		timer.Remove("SCPDEADLOL"..victim:SteamID())
+		victim:SetNWBool("megabool3004", nil)
+		end)
+		end)
+	end
+
 	victim:StripAmmo()
 	victim:SetUsingBag("")
 	victim:SetUsingCloth("")
@@ -291,9 +318,8 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	net.Start( "957Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
-	local scpded = scpdeadsounds[victim:GetRoleName()]
-	if victim:GTeam() == TEAM_SCP and scpded != "" then timer.Simple(4, function() PlayAnnouncer(scpded) end) end
-	victim:SetModelScale( 1 )
+ 	victim:SetModelScale( 1 )
+
 	if attacker != victim and postround == false and attacker:IsPlayer() then
 		if victim:GTeam() == attacker:GTeam() then
 			BREACH.Players:ChatPrint( attacker, true, true, "l:teamkill_you_teamkilled " , victim:Nick() , " " , gteams.GetColor(victim:GTeam()) ,victim:GetRoleName() , " " , Color(255,255,255), " " , victim:SteamID() , "")
@@ -307,10 +333,12 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end
 	end
 
+
 	local wasteam = victim:GTeam()
 	victim:SetRoleName(role.Spectator)
 	victim:SetTeam(TEAM_SPEC)
 	victim:SetGTeam(TEAM_SPEC)
+
 end
 
 function GM:PlayerDisconnected( ply )
@@ -561,19 +589,46 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 	end
 end )
 
+hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
+	if !IsValid(ply) and !ply:GTeam() == TEAM_SPEC then return end
+    if not ply:Alive() then return end
+    local radio = ply:HasWeapon("item_radio")
+	if !radio then return end
+    local getradioen = ply:GetWeapon("item_radio"):GetEnabled()
+	local getradio = ply:GetWeapon("item_radio")
+    local survname = ply:GetNamesurvivor() or ""
+	local check1 = string.find(text, "/r") or string.find(text, "!r") or string.find(text, "/R") or string.find(text, "!R")
+    local check2 = text == "/r" or text == "!r" or text == "" or string.find(text, "/R") or string.find(text, "!R") 
+	local freq = tonumber( string.sub( tostring( freq ), 1, 5 ) )
+	
+    if check1 then
+        if !radio then
+            ply:RXSENDNotify("l:no_radio")
+            return ""
+        end
 
-util.AddNetworkString("radio_sendmessage")
+        if getradioen != true then
+            ply:RXSENDNotify("l:turn_up_the_radio")
+            return ""
+        end
 
-hook.Add("PlayerSay", "Radio_thing", function( speaker, text, teamChat )
-	if string.find(text,"/r") or string.find(text,"!r") then
-		net.Start("radio_sendmessage")
-		net.Broadcast()
-	end
-end)
+        if check2 then
+            ply:RXSENDNotify("l:no_text_radio")
+            return ""
+        end
 
-net.Receive("radio_sendmessage", function(len, ply)
-    local text = net.ReadString()
-    print("Received message: " .. text)
+        text = string.gsub(text, "[/!]r%s*", "")
+
+		ply:EmitSound("nextoren/weapons/radio/squelch.ogg")
+
+        for k, v in pairs(player.GetAll()) do
+			if !v:HasWeapon("item_radio") then return false end
+			if ply:GetWeapon("item_radio"):GetEnabled() != true then return false end
+			if v:GetWeapon("item_radio").Channel != ply:GetWeapon("item_radio").Channel then return false end
+            v:RXSENDNotify(Color(7, 19, 185, 210), "l:radio_in_chat ", Color(24, 197, 38), "["..survname.."] ", Color(255, 255, 255), '<"'..text..'">')
+        end
+        return ""
+    end
 end)
 
 local mply = FindMetaTable("Player")
@@ -748,7 +803,7 @@ function GM:PlayerUse(ply, ent, key)
 
             if v.access ~= nil then
 
-				if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and (timer.TimeLeft("RoundTime")) < 180 then
+				if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and timer.Exists("RoundTime") and (timer.TimeLeft("RoundTime")) < 180 then
 					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
                     ply:SetBottomMessage("l:access_granted")
                     return true

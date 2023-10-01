@@ -4282,36 +4282,11 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			if SERVER then
 
 				ply:SetSpecialCD( CurTime() + 40 )
-
-				ply:EmitSound("nextoren/weapons/items/nightvision/nvgturnon.wav")
-
-				ply:EmitSound("nextoren/uiu_clocker/clocker.ogg", 90, 100, 45)
-
-				timer.Simple(10, function()
-					ply:StopSound("nextoren/uiu_clocker/clocker.ogg")
-				end)
 				
 				ply:ScreenFade(SCREENFADE.IN, Color(255,0,0,100), 1, 0.3)
 
 				local saveresist = table.Copy(ply.ScaleDamage)
 				local savespeed = ply:GetRunSpeed()
-                
-			if CLIENT then
-				local boneindex = ply:LookupBone("ValveBiped.Bip01_Head1")
-				local eyePos, eyeAng = ply:GetBonePosition(boneindex)
-				local dlight = DynamicLight(ply:EntIndex())
-
-				if dlight then
-					dlight.Pos = eyePos
-					dlight.r = 255
-					dlight.g = 0
-					dlight.b = 0
-					dlight.Brightness = 2
-					dlight.Size = 256
-					dlight.Decay = 1000 / 5
-					dlight.DieTime = CurTime() + 5
-				end
-			end
 
 				ply.Stamina = 200
 				ply:SetStamina(200)
