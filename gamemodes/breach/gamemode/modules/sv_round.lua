@@ -324,6 +324,7 @@ function CleanUp()
 	if timer.Exists("CheckEscape") == false then
 		timer.Create("CheckEscape", 1, 0, CheckEscape)
 	end
+	Radio_RandomizeChannels()
 	game.CleanUpMap()	
 	SetGlobalBool("Evacuation_HUD", false )
 	SetGlobalBool("NukeTime", false)
@@ -402,6 +403,7 @@ end
 
 function GM:Initialize()
 	SetGlobalInt("RoundUntilRestart", 10)
+	Radio_RandomizeChannels()
 end
 
 function RoundRestart()

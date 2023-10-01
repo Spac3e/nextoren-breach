@@ -7,21 +7,8 @@ end
 concommand.Add("loot", spawn_ents)
 
 function test1(ply)
-	local radio = ply:GetWeapon( "item_radio" )
-	net.Start("SetFrequency")
-	net.WriteEntity(radio)
-	net.WriteFloat(Radio_GetChannel(ply:GTeam(), ply:GetRoleName()))
-	net.Broadcast()
 end
 concommand.Add("test", test1)
-
-function SetupRadio(ply)
-	local radio = ply:GetWeapon( "item_radio" )
-	net.Start("SetFrequency")
-	net.WriteEntity(radio)
-	net.WriteFloat(Radio_GetChannel(ply:GTeam(), ply:GetRoleName()))
-	net.Send(ply)
-end
 
 function test2(ply)
 	--ply:SetNWBool("RXSEND_ONFIRE", true)

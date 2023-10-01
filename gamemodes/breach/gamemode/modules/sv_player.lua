@@ -953,6 +953,15 @@ function mply:ApplyRoleStats(role)
     if self:HasWeapon("item_tazer") then
         self:GetWeapon("item_tazer"):SetClip1(20)
     end
+	
+	if self:HasWeapon("item_radio") then
+		local radio = self:GetWeapon( "item_radio" )
+		net.Start("SetFrequency")
+		net.WriteEntity(self:GetWeapon( "item_radio" ))
+		net.WriteFloat(Radio_GetChannel(self:GTeam(), self:GetRoleName()))
+		net.Broadcast()
+		self:GetWeapon("item_radio").Channel = Radio_GetChannel(self:GTeam(), self:GetRoleName())
+	end
 
 	self:Namesurvivor()
     
@@ -1306,14 +1315,89 @@ end)
 
 local ment = FindMetaTable('Entity')
 
+function mply:Make409Statue()
+
+	if self.Used500 then return end
+
+	local ragdoll
+
+	if self:HasWeapon("item_special_document") then
+		local document = ents.Create("item_special_document")
+		document:SetPos(self:GetPos() + Vector(0,0,20))
+		document:Spawn()
+		document:GetPhysicsObject():SetVelocity(Vector(table.Random({-100,100}),table.Random({-100,100}),175))
+	end
+
+	if !self.DeathAnimation then
+		ragdoll = ents.Create("prop_ragdoll")
+		ragdoll:SetModel(self:GetModel())
+		ragdoll:SetSkin(self:GetSkin())
+
+		ragdoll:SetCollisionGroup(COLLISION_GROUP_DEBRIS_TRIGGER)
+
+		for i = 0, 9 do
+			ragdoll:SetBodygroup(i, self:GetBodygroup(i))
+		end
+		ragdoll:SetPos(self:GetPos())
+		ragdoll:Spawn()
+		
+		ragdoll:SetMaterial("nextoren/ice_material/icefloor_01_new")
+
+		if ( ragdoll && ragdoll:IsValid() ) then
+
+				for i = 1, ragdoll:GetPhysicsObjectCount() do
+
+					local physicsObject = ragdoll:GetPhysicsObjectNum( i )
+					local boneIndex = ragdoll:TranslatePhysBoneToBone( i )
+					local position, angle = self:GetBonePosition( boneIndex )
+
+					if ( physicsObject && physicsObject:IsValid() ) then
+
+						physicsObject:SetPos( position )
+						physicsObject:SetMass( 65 )
+						physicsObject:SetAngles( angle )
+						physicsObject:EnableMotion(false)
+						physicsObject:Wake()
+
+				end
+			end
+
+		end
+
+		local bonemerges = ents.FindByClassAndParent("ent_bonemerged", self)
+		if istable(bonemerges) then
+			for _, bnmrg in pairs(bonemerges) do
+				if IsValid(bnmrg) and !bnmrg:GetNoDraw() then
+					local bnmrg_rag = Bonemerge(bnmrg:GetModel(), ragdoll)
+					bnmrg_rag:SetMaterial("nextoren/ice_material/red_icefloor_01_new")
+				end
+			end
+		end
+
+	end
+
+	self:AddToStatistics("l:scp409_death", -100)
+	self:LevelBar()
+
+	local pos = self:GetPos()
+	local ang = self:GetAngles()
+
+	self:SetupNormal()
+	self:SetSpectator()
+
+	return ragdoll
+end
+
+
 function mply:SCP409Infect()
-	print("заразився 409м "..self:Name())
-	if !IsValid(self) and !self:IsPlayer() then return end
 	self.Infected409 = true
-	print(self:Name())
+
+	self:Make409Statue()
+
 	timer.Simple(1, function()
 		self.Infected409 = nil
 	end)
+	
 end
 
 function mply:Start409Infected()
@@ -1323,10 +1407,20 @@ function mply:Start409Infected()
 	self:SetBottomMessage("l:scp409_1st_stage")
 	timer.Create("MEGAINFECTEDMESSAGE"..self:SteamID(), math.random(30,35), 1, function()
 		self:SetBottomMessage("l:scp409_2st_stage")
+		self:ScreenFade( SCREENFADE.IN, Color( 21, 108, 221, 190), 0.5, 0.5 )
 		timer.Remove("MEGAINFECTEDMESSAGE"..self:SteamID())
 	end)
-	timer.Create("INFECTED"..self:SteamID(), math.random(130,165), 1, function()
-		timer.Remove("INFECTED"..self:SteamID())
+	timer.Create("INFECTED"..self:SteamID(), math.random(134,146), 1, function()
+		self:ScreenFade( SCREENFADE.IN, Color( 21, 108, 221, 190), 16, 10 )
+
+		net.Start("ForcePlaySound")
+		net.WriteString("nextoren/others/freeze_sound.ogg")
+		net.Send(self)
+
+		timer.Simple(16, function()
+		self:Make409Statue()
 		self.Infected409 = nil
+		timer.Remove("INFECTED"..self:SteamID())
+		end)
 	end)
 end

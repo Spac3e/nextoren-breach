@@ -623,13 +623,14 @@ hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
 
         for k, v in pairs(player.GetAll()) do
 			if !v:HasWeapon("item_radio") then return false end
-			if ply:GetWeapon("item_radio"):GetEnabled() != true then return false end
-			if v:GetWeapon("item_radio").Channel != ply:GetWeapon("item_radio").Channel then return false end
+			if v:GetWeapon("item_radio"):GetEnabled() != true then return false end
+			if v:GetWeapon("item_radio").Channel != ply:GetWeapon("item_radio").Channel then return false end			
             v:RXSENDNotify(Color(7, 19, 185, 210), "l:radio_in_chat ", Color(24, 197, 38), "["..survname.."] ", Color(255, 255, 255), '<"'..text..'">')
         end
         return ""
     end
 end)
+
 
 local mply = FindMetaTable("Player")
 
