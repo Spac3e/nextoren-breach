@@ -7,11 +7,8 @@ ROUNDS = {
 			disableNTF = false
 		end,
 		init = function()
-			BREACH.Round_Spawn_Loot()
-			timer.Create( "NTFEnterTime", GetNTFEnterTime(), 0, function()
-				SupportSpawn()
-			end )
-end,
+			BREACH.SPAWN_LOOT()
+        end,
 		roundstart = function()
 			BREACH.Round_Open_Dblock()
 		end,

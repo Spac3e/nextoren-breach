@@ -15,9 +15,9 @@ SWEP.KeyCategory = "CLevelSUP"
 SWEP.CLevels = {
 
   CLevel = 7,
-  CLevelSCI = 11,
-  CLevelGuard = 11,
-  CLevelMTF = 11,
-  CLevelSUP = 11
+  CLevelSCI = 7,
+  CLevelGuard = 7,
+  CLevelMTF = 7,
+  CLevelSUP = 7
 
 }

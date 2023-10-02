@@ -180,10 +180,33 @@ function mply:TakeHealth(number)
 	self:SetHealth(new)
 end
 
-function mply:AnimatedHeal(number)
+function mply:AddHealth(number)
 	local health, max = self:Health(), self:GetMaxHealth()
 	local new = health + number
 	self:SetHealth(math.min(new, max))
+end
+
+function mply:AnimatedHeal(amount)
+    local maxHealth = self:GetMaxHealth()
+    local targetHealth = math.min(self:Health() + amount, maxHealth)
+    local startTime = CurTime()
+    local timerName = "AnimatedHeal_" .. self:EntIndex()
+
+    if timer.Exists(timerName) then
+        timer.Remove(timerName)
+    end
+
+    timer.Create(timerName, 0.1, 3 / 0.1, function()
+        local elapsedTime = CurTime() - startTime
+
+        local currentHealth = Lerp(elapsedTime / 3, self:Health(), targetHealth)
+
+        self:SetHealth(math.min(math.Round(currentHealth), maxHealth))
+
+        if elapsedTime >= 3 then
+            timer.Remove(timerName)
+        end
+    end)
 end
 
 function mply:UnUseBag()

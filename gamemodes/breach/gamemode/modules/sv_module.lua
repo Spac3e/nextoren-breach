@@ -425,7 +425,7 @@ function DestroyAll()
 	end
 end
 
-function BREACH.Round_Spawn_Loot()
+function BREACH.SPAWN_LOOT()
     local spawnTable = SPAWN_UNIFORMS
 
 	local function RandomItem(list)
@@ -454,25 +454,6 @@ function BREACH.Round_Spawn_Loot()
 			local spawns = table.Copy(spawnData.spawns)
 			local spawnedItems = {} 
 		
-			if area == "scpsobject" then
-				local scpsobjectItems = table.Copy(spawnData.ents)
-				for i = 1, spawnData.amount do
-					if #scpsobjectItems > 0 then
-						local spawnIndex = math.random(1, #spawns)
-						local selectedEntity = table.remove(scpsobjectItems, 1)
-		
-						local newItem = ents.Create(selectedEntity)
-						if IsValid(newItem) then
-							newItem:SetPos(spawns[spawnIndex])
-							newItem:Spawn()
-						end
-		
-						table.remove(spawns, spawnIndex)
-					else
-						break
-					end
-				end
-			else
 				local amountToSpawn = math.min(spawnData.amount, #spawns)
 				for i = 1, amountToSpawn do
 					local spawnIndex = math.random(1, #spawns)
@@ -486,6 +467,30 @@ function BREACH.Round_Spawn_Loot()
 		
 					table.remove(spawns, spawnIndex)
 				end
+			end
+		end
+
+	-- SCPs
+	local function makaka_new_scps()
+		local spawnData = SPAWN_SCP_OBJECT
+		local spawns = table.Copy(spawnData.spawns)
+		local spawnedItems = {} 
+	
+		local scpsobjectItems = table.Copy(spawnData.ents)
+		for i = 1, spawnData.amount do
+			if #scpsobjectItems > 0 then
+				local spawnIndex = math.random(1, #spawns)
+				local selectedEntity = table.remove(scpsobjectItems, 1)
+	
+				local newItem = ents.Create(selectedEntity)
+				if IsValid(newItem) then
+					newItem:SetPos(spawns[spawnIndex])
+					newItem:Spawn()
+				end
+	
+				table.remove(spawns, spawnIndex)
+			else
+				break
 			end
 		end
 	end
@@ -675,6 +680,7 @@ function BREACH.Round_Spawn_Loot()
 	spawn_funny_gauss()
 	super_mega_car_from_makaka_zavod()
 	spawn_armor_goc(2)
+	makaka_new_scps()
 
 end
 

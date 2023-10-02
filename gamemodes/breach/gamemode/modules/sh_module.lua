@@ -924,66 +924,7 @@ if pl.PlayUnCrouchSoundLater and !ducking then
 	pl.PlayUnCrouchSoundLater = false
 end
 
---[[
-if GetGlobalString("RoundName") == "CTF" then
-	local shawm = false
-	for k, v in ipairs(ply:GetChildren()) do
-		if v:GetClass() == "item_ctf_doc" then
-			shawm = true
-		end
-	end
-
-	if mv:KeyDown(IN_SPEED) and shawm and ply:GTeam() != TEAM_SPEC then
-		mv:SetMaxClientSpeed(100)
-	end
-end
---]]
-
---[[
-if SERVER then
-	ply:SetBreachCrouch(pl.Ducking == true)
-else
-	pl.Ducking = ply:GetBreachCrouch()
-end
---]]
-
-	--[[
-	if mv:GetVelocity():Length2DSqr() > 100 and mv:KeyDown(IN_JUMP) and ply:IsOnGround() then
-		mv:SetButtons(mvbuttons - IN_JUMP)
-	end
-	--]]
-
 	if ply:GTeam() != TEAM_SCP then
-
-		--[[
-		local actwep = ply:GetActiveWeapon()
-		local actwepvalid = IsValid(actwep)
-		local actwep_class = actwepvalid and actwep:GetClass()
-
-		if actwepvalid then
-			if actwep_class == "item_shield" then
-				mv:RemoveKey(IN_DUCK)
-			end
-		end
-		--]]
-
-		--[[
-		if (ply:KeyPressed(IN_DUCK) and IsFirstTimePredicted()) and (!actwepvalid or actwep_class != "item_shield") then
-			pl.Ducking = !pl.Ducking
-			if AllowedModels[ply:GetModel()] then
-				if pl.Ducking then
-					ply:EmitSound( "^nextoren/charactersounds/foley/posechange_" .. math.random( 1, 6 ) .. ".wav", 60, math.random( 100, 105 ), 1, CHAN_STATIC )
-				else
-					ply:EmitSound( "^nextoren/charactersounds/foley/posechange_" .. math.random( 1, 6 ) .. ".wav", 60, math.random( 90, 95 ), 1, CHAN_STATIC )
-				end
-			end
-		end
-
-		if ducking then
-			mv:SetButtons(mv:GetButtons() - IN_DUCK)
-		end
-		--]]
-
 		if ducking then
 			ply:SetDuckSpeed(0.1)
 			ply:SetUnDuckSpeed(0.1)

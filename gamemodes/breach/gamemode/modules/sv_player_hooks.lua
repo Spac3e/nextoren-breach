@@ -714,10 +714,15 @@ function GM:PlayerCanPickupWeapon(ply, wep)
         end
 
         ply:BrProgressBar("l:progress_wait", 0.5, "nextoren/gui/icons/hand.png", trace.Entity, false, function()
-                ply:Give(trace.Entity:GetClass())
-                ply:EmitSound("nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random(98, 105), 1, CHAN_STATIC)
-                trace.Entity:Remove()
-            end)
+			if trace.Entity:GetClass("breach_keycard") then
+				timer.Simple(1, function()
+					ply:RemoveAmmo(48, 'pistol')
+				end)
+	         end
+            ply:Give(trace.Entity:GetClass())
+            ply:EmitSound("nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random(98, 105), 1, CHAN_STATIC)
+            trace.Entity:Remove()
+        end)
     end
     return ply.BrWeaponGive
 end
