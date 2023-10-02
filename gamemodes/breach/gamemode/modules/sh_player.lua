@@ -3313,55 +3313,56 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 
 		if ply:HaveSpecialAb(role.Goc_Special) then
 
-			if SERVER then
+		if SERVER then
 
-				if !ply.UsedTeleporter then
+			if !ply.UsedTeleporter then
 
-					ply:SetSpecialCD(CurTime() + 3)
+				ply:SetSpecialCD(CurTime() + 3)
 
-					if ply:GetPos():WithinAABox(Vector(-9240.0830078125, -1075.4862060547, 2639.8430175781), Vector(-12292.916015625, 1553.1733398438, 1209.9250488281)) then return end
+				if ply:GetPos():WithinAABox(Vector(-9240.0830078125, -1075.4862060547, 2639.8430175781), Vector(-12292.916015625, 1553.1733398438, 1209.9250488281)) then return end
 
-					ply.UsedTeleporter = true
+				ply.UsedTeleporter = true
 
-					if !ply:IsOnGround() then
-						ply:SetSpecialCD(CurTime() + 5)
-						return
-					end
-
-					local teleporter = ents.Create("ent_goc_teleporter")
-					teleporter:SetOwner(ply)
-					teleporter:SetPos(ply:GetPos() + Vector(0,0,3))
-					teleporter:Spawn()
-
-					ply.teleporterentity = teleporter
-
-				elseif IsValid(ply.teleporterentity) then
-
-					ply:SetSpecialCD(CurTime() + 45)
-
-					BroadcastLua("ParticleEffectAttach(\"mr_portal_1a\", PATTACH_POINT_FOLLOW, Entity("..ply:EntIndex().."), Entity("..ply:EntIndex().."):LookupAttachment(\"waist\"))")
-
-					net.Start("ThirdPersonCutscene2", true)
-					net.WriteUInt(2, 4)
-					net.WriteBool(false)
-					net.Send(ply)
-					ply:SetMoveType(MOVETYPE_OBSERVER)
-
-					ply:EmitSound("nextoren/others/introfirstshockwave.wav", 115, 100, 1.4)
-					ply:ScreenFade(SCREENFADE.OUT, color_white, 1.4, 1)
-
-					timer.Create("goc_special_teleport"..ply:SteamID64(), 2, 1, function()
-						ply:ScreenFade(SCREENFADE.IN, color_white, 2, 0.3)
-						ply:StopParticles()
-						ply:SetMoveType(MOVETYPE_WALK)
-						ply:SetPos(ply.teleporterentity:GetPos())
-					end)
-
-					ply:SetForcedAnimation("MPF_Deploy")
-
+				if !ply:IsOnGround() then
+					ply:SetSpecialCD(CurTime() + 5)
+					return
 				end
 
+				local teleporter = ents.Create("ent_goc_teleporter")
+				teleporter:SetOwner(ply)
+				teleporter:SetPos(ply:GetPos() + Vector(0,0,3))
+				teleporter:Spawn()
+
+				ply.teleporterentity = teleporter
+
+			elseif IsValid(ply.teleporterentity) then
+
+				ply:SetSpecialCD(CurTime() + 45)
+
+				BroadcastLua("ParticleEffectAttach(\"mr_portal_1a\", PATTACH_POINT_FOLLOW, Entity("..ply:EntIndex().."), Entity("..ply:EntIndex().."):LookupAttachment(\"waist\"))")
+
+				net.Start("ThirdPersonCutscene2", true)
+				net.WriteUInt(2, 4)
+				net.WriteBool(false)
+				net.Send(ply)
+				ply:SetMoveType(MOVETYPE_OBSERVER)
+
+				ply:EmitSound("nextoren/others/introfirstshockwave.wav", 115, 100, 1.4)
+				ply:ScreenFade(SCREENFADE.OUT, color_white, 1.4, 1)
+
+				timer.Create("goc_special_teleport"..ply:SteamID64(), 2, 1, function()
+					ply:ScreenFade(SCREENFADE.IN, color_white, 2, 0.3)
+					ply:StopParticles()
+					ply:SetMoveType(MOVETYPE_WALK)
+					ply:SetPos(ply.teleporterentity:GetPos())
+				end)
+
+				ply:SetForcedAnimation("MPF_Deploy")
+
 			end
+
+		end
+
 
 		elseif ply:HaveSpecialAb(role.ClassD_Thief) then
 
@@ -3432,6 +3433,10 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 			ply:SetSpecialCD(CurTime() + 7)
 
 			if SERVER then
+				if !ply.SpyUSAINFO then
+					ply:RXSENDNotify("l:spyusainfo")
+					ply.SpyUSAINFO = true
+				end
 				local all_documents = ents.FindByClass("item_special_document")
 
 				local search_corpses = ents.FindByClass("prop_ragdoll")
@@ -3479,7 +3484,7 @@ hook.Add( "PlayerButtonDown", "Specials", function( ply, button )
 						dist_clr = dist_clr_near
 					end
 
-					ply:RXSENDNotify("l:uiuspy_doc_dist_pt1 "..i.." = ",dist_clr,dist.."m",color_white,", l:uiuspy_doc_dist_pt2 ",location_color,location)
+					ply:RXSENDNotify("l:uiuspy_doc_dist_pt1 = ",dist_clr,dist.."m",color_white,", l:uiuspy_doc_dist_pt2 ",location_color,location)
 				end
 			end
 

@@ -112,13 +112,21 @@ net.Receive("NTF_Special_1", function(len, ply)
 	PlayAnnouncer( "nextoren/vo/ntf/camera_receive.ogg" )
 
     ntf_scan = {} 
+    niga_teams = {TEAM_CHAOS,TEAM_GOC,TEAM_GRU,TEAM_USA,TEAM_COTSK,TEAM_DZ}
 
-    for _, v in pairs( player.GetAll() ) do
+    for _, v in pairs(gteams.GetPlayers(team_id)) do
+		if team_id == 22 then
+			table.insert(ntf_scan, niga_teams)
+		end
         table.insert(ntf_scan, v)
 	end
 
 	ply:SetSpecialCD(CurTime() + 65)
 	timer.Simple( 15, function()
+	if #ntf_scan == 0 or #ntf_scan < 0 then
+		PlayAnnouncer("nextoren/vo/ntf/camera_notfound.ogg")
+		return
+	end
 	PlayAnnouncer("nextoren/vo/ntf/camera_found_1.ogg")
 	net.Start("TargetsToNTFs")
     net.WriteTable(ntf_scan)
@@ -648,10 +656,17 @@ do
         weapon = self:BrGive(className, bNoAmmo)
         self.BrWeaponGive = nil
 
-        local savedammo = wepent.SavedAmmo or 0
-        if is_cw then
+        local savedammo = wepent.SavedAmmo
+        if is_cw and savedammo and savedammo != 0 then
             weapon:SetClip1(savedammo)
         end
+	
+		if wepent:GetClass("weapon_special_gaus") then
+			if wepent.CanCharge != true then
+				weapon.CanCharge = false
+				weapon.Shooting = false
+			end
+		end
 
         return weapon
     end

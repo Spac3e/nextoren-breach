@@ -15,7 +15,7 @@ function ENT:SetupDataTables()
 
 end
 
-local vec_spawn = Vector( -2762.389404, 2268.9, 310.649048 )
+local vec_spawn = Vector( -2847.389404, 2269.2, 320.649048 )
 local angle_spawn = Angle( 90, -90, 0 )
 
 function ENT:Initialize()
@@ -27,7 +27,7 @@ function ENT:Initialize()
   self:SetSolid( SOLID_NONE )
   self:SetActivate( true )
   self:SetCalled( false )
-  self:SetCD( CurTime() + 2 )
+  self:SetCD( CurTime() + 350 )
   self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
   self:SetRenderMode( 1 )
 
@@ -155,13 +155,7 @@ function ENT:Use( activator, caller )
 
         if ( SERVER ) then
 
-
-          local mega_randomchik = math.random(1,5)
-          if caller:GetRoleName() == role.MTF_HOF and mega_randomchik == 2 then
-            OSNSpawn(5)
-          else
-            OBRSpawn(count)
-          end
+          OBRSpawn(count)
 
           BroadcastLua( 'surface.PlaySound( "nextoren/round_sounds/intercom/obr_enter.wav" )' )
 

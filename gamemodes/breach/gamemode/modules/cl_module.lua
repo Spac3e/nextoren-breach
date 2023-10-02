@@ -2648,10 +2648,6 @@ net.Receive( "TargetsToNTFs", function()
 
     local target = net.ReadTable()
     local team_indx = net.ReadUInt(12)
-    
-	
-	PrintTable(target)
-	print(team_indx)
 
     local clr_to_draw
     local universal_search
@@ -4353,7 +4349,7 @@ function Nextoren_MTF_Intro()
 
 		local time = CurTime()
 
-		local teststring = tostring( "\nMobile Task Force Squad\nLocation: Entrance Zone\nName: " .. client:GetNamesurvivor() .. "\nTime after Breach Event: " .. string.ToMinutesSeconds( math.abs( time - CurTime() ) ) .. "\nBrace yourself, soldier!" )
+		local teststring = tostring( "\nMobile Task Force Squad\nLocation: Entrance Zone\nName: " .. client:GetNamesurvivor() .. "\nTime after Breach Event: " .. string.ToMinutesSeconds( cltime ) .. "\nBrace yourself, soldier!" )
 
 		local stringtable = utf8.Explode( "", teststring )
 		surface.SetFont( "SubScoreboardHeader" )

@@ -773,6 +773,8 @@ function mply:SurvivorCleanUp()
 		self:SetNWBool("Have_docs", false)
         self:Flashlight(false)
         self:SetBoosted(false)
+		self:SetForcedAnimation(false)
+		self:SetMaxSlots(8)
     end
 end
 
@@ -1369,7 +1371,7 @@ function mply:Make409Statue()
 			for _, bnmrg in pairs(bonemerges) do
 				if IsValid(bnmrg) and !bnmrg:GetNoDraw() then
 					local bnmrg_rag = Bonemerge(bnmrg:GetModel(), ragdoll)
-					bnmrg_rag:SetMaterial("nextoren/ice_material/red_icefloor_01_new")
+					bnmrg_rag:SetMaterial("nextoren/ice_material/icefloor_01_new")
 				end
 			end
 		end

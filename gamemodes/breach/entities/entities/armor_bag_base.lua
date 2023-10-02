@@ -51,12 +51,12 @@ function ENT:Use(ply)
 		if SERVER then
 
 			if ply:GetUsingBag() != "" then
-				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:already_have_the_bag", Color(255, 255, 255))
+				ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:already_have_the_bag", Color(255, 255, 255))
 				return
 			end
 
 			ply:BrProgressBar("l:progress_wait", 1.5, "nextoren/gui/icons/hand.png", self, false, function()
-				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:took_on_the_bag", Color(255, 255, 255))
+				ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:took_on_the_bag", Color(255, 255, 255))
 		
 				ply:SetMaxSlots(ply:GetMaxSlots() + self.Slots)
 				ply:SetUsingBag(self:GetClass())
@@ -64,14 +64,14 @@ function ENT:Use(ply)
 				self:Remove()
 
 				net.Start("ForcePlaySound")
-				net.WriteString("nextoren/backpack_puton.ogg")
+				net.WriteString("shaky_backpack/backpack_puton.ogg")
 				net.Send(ply)
 			end)
 			
 		end
 	else
 		if SERVER then
-			ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:you_cant_wear_the_bag", Color(255, 255, 255) )
+			ply:BrTip(0, "[RX Breach]", Color(255, 0, 0), "l:you_cant_wear_the_bag", Color(255, 255, 255) )
 		end
 	end
 end
