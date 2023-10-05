@@ -10,6 +10,8 @@ util.AddNetworkString("DropAdditionalArmor")
 util.AddNetworkString("NTF_Intro")
 util.AddNetworkString("Eventmessage")
 
+local mply = FindMetaTable'Player'
+local ment = FindMetaTable'Player'
 
 local eblya = {
 	{reason = "Ебливый нига", value = 551},
@@ -104,6 +106,13 @@ function BroadcastPlayMusic( soundname, vsrf_flot )
 	    net.WriteFloat( vsrf_flot )
         net.WriteString( soundname )
 	net.Broadcast()
+end
+
+function mply:BroadcastPlayMusic( soundname, vsrf_flot )
+    net.Start( "ClientPlayMusic" )
+	    net.WriteFloat( vsrf_flot )
+        net.WriteString( soundname )
+	net.Send(self)
 end
 
 net.Receive("NTF_Special_1", function(len, ply)
@@ -632,8 +641,9 @@ hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
         for k, v in pairs(player.GetAll()) do
 			if !v:HasWeapon("item_radio") then return false end
 			if v:GetWeapon("item_radio"):GetEnabled() != true then return false end
-			if v:GetWeapon("item_radio").Channel != ply:GetWeapon("item_radio").Channel then return false end			
+			if v:GetWeapon("item_radio").Channel == ply:GetWeapon("item_radio").Channel then
             v:RXSENDNotify(Color(7, 19, 185, 210), "l:radio_in_chat ", Color(24, 197, 38), "["..survname.."] ", Color(255, 255, 255), '<"'..text..'">')
+			end
         end
         return ""
     end
@@ -657,15 +667,17 @@ do
         self.BrWeaponGive = nil
 
         local savedammo = wepent.SavedAmmo
+
         if is_cw and savedammo and savedammo != 0 then
             weapon:SetClip1(savedammo)
         end
 	
-		if wepent:GetClass("weapon_special_gaus") then
+		if wepent and wepent:GetClass("weapon_special_gaus") then
 			if wepent.CanCharge != true then
 				weapon.CanCharge = false
 				weapon.Shooting = false
 			end
+			return false
 		end
 
         return weapon

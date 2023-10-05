@@ -264,8 +264,12 @@ hook.Add("ScalePlayerDamage", "Megadamage", function(ply,hitgroup,dmginfo)
     end
 
 	if attacker:GetRoleName() == role.SCI_SpyUSA and attacker:GetActiveWeapon() == "cw_kk_ins2_arse_usp" and ply:GetNWBool("Have_docs") == false then
-		dmginfo:ScaleDamage(0.1)
+		dmginfo:ScaleDamage(000.1)
 	end
+
+	if ply.DamageModifier then
+        dmginfo:ScaleDamage(ply.DamageModifier)
+    end
 end)
 
 // Variables

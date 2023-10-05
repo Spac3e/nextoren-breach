@@ -4245,6 +4245,10 @@ function Nextoren_MTF_Intro()
 		PlayMusic( "sound/no_music/factions_spawn/mtf_intro.ogg", 1 )
 	end)
 
+	timer.Simple(27, function()
+		surface.PlaySound( "nextoren/start_round/start_round_mtf.mp3")
+	end)
+
 	surface.PlaySound( "nextoren/round_sounds/intercom/franklinlost.wav" )
 
 	local blackscreen = vgui.Create( "DPanel" )
@@ -4295,7 +4299,9 @@ function Nextoren_MTF_Intro()
 		timer.Simple(2, function()
 			util.ScreenShake( Vector(0, 0, 0), 35, 15, 3, 150 )
 			surface.PlaySound("nextoren/others/horror/horror_14.ogg")
+			timer.Simple(2, function()
 			DrawNewRoleDesc()
+			end)
 		end)
 
 		client.Role_Name = nil

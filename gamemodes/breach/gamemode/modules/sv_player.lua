@@ -798,6 +798,7 @@ function mply:SurvivorCleanUp()
         self:SetBoosted(false)
 		self:SetForcedAnimation(false)
 		self:SetMaxSlots(8)
+		self:SetInDimension(false)
     end
 end
 
