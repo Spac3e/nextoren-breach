@@ -30,7 +30,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_Q"],
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/special_attack.png",
+    [ "Icon" ] = "shaky/scp062/special_attack.png",
     [ "Abillity" ] = nil
 
   },
@@ -43,7 +43,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = "RMB",
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/shuriken.png",
+    [ "Icon" ] = "shaky/scp062/shuriken.png",
     [ "Abillity" ] = nil
 
   },
@@ -56,7 +56,7 @@ SWEP.AbilityIcons = {
     [ "CooldownTime" ] = 0,
     [ "KEY" ] = _G["KEY_R"],
     [ "Using" ] = false,
-    [ "Icon" ] = "nextoren/gui/special_abilities/scp062/speed.png",
+    [ "Icon" ] = "shaky/scp062/speed.png",
     [ "Abillity" ] = nil
 
   },

@@ -4,8 +4,8 @@ local ment = FindMetaTable( "Entity" )
 function mply:AddToMVP()
 end
 
-function mply:AddSpyDocument(ply)
-	ply:SetNWInt("CollectedDocument", 1)
+function mply:AddSpyDocument()
+	self:SetNWInt("CollectedDocument", 1)
 end
 
 function mply:SetOnFire(ply)
@@ -59,24 +59,12 @@ function mply:SetForcedAnimation(sequence, endtime, startcallback, finishcallbac
 					finishcallback()
 				end
 				
-			  end
+			end
 			  
-			end)
+		end)
 		  
-		end
-		
 	end
-
-
-	
-function DamageModifier(ply, modifier, minModifier)
-    if IsValid(ply) and isnumber(modifier) and isnumber(minModifier) then
-        modifier = math.Max(modifier, minModifier)
-        ply.DamageModifier = modifier
-        if SERVER then
-            ply:SetNWFloat("DamageModifier", modifier)
-        end
-    end
+		
 end
 
 local german_names = {}
@@ -460,11 +448,12 @@ function mply:UnUseArmor()
 	self:SetModel(self.OldModel)
 	self:SetSkin(self.OldSkin)
 	self:SetupHands()
-	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", self )
-   	for i = 1, #tbl_bonemerged do
-		local bonemerge = tbl_bonemerged[ i ]
-		bonemerge:SetInvisible(false)
+
+	for k,v in pairs(self:LookupBonemerges()) do
+		if v:GetModel() == "models/cultist/humans/mog/head_gear/mog_helmet.mdl" or v:GetModel() == "models/cultist/humans/balaclavas_new/balaclava_full.mdl" then v:Remove() end
+		v:SetInvisible(false)
 	end
+
 	self:SetBodyGroups(self.OldBodygroups)
 	local item = ents.Create( self:GetUsingCloth(self:GetClass()) )
 	if IsValid( item ) then
@@ -679,7 +668,7 @@ function mply:SetSpectator()
 	self.canblink = false
 	self.handsmodel = nil
 
-	print("adding " .. self:Nick() .. " to spectators")
+	--print("adding " .. self:Nick() .. " to spectators")
 end
 
 function mply:SetSCP0082( hp, speed, spawn )
@@ -850,6 +839,9 @@ end
 function mply:ApplyRoleStats(role)
 	self:SetRoleName( role.name )
 	self:SetGTeam( role.team )
+
+	self.kills = 0
+	self.teamkills = 0
 
 	local isblack = math.random(1,3) == 1
 	if role.white == true then isblack = false end
@@ -1444,7 +1436,9 @@ function mply:Start409Infected()
 		net.Send(self)
 
 		timer.Simple(16, function()
+		evacuate(self,"vse",-200,"l:scp409_death")
 		self:Make409Statue()
+
 		self.Infected409 = nil
 		timer.Remove("INFECTED"..self:SteamID())
 		end)

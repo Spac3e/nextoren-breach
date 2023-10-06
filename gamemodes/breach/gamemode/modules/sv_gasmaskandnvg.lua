@@ -3,9 +3,37 @@ util.AddNetworkString("GASMASK_SendEquippedStatus")
 
 local meta = FindMetaTable("Player")
 function meta:GASMASK_RequestToggle()
+
 	net.Start("GASMASK_RequestToggle")
 		net.WriteBool(self.GASMASK_Equiped)
 	net.Send(self)
+
+	if self.GASMASK_Equiped == true then
+				Bonemerge( "models/gmod4phun/w_contagion_gasmask_equipped.mdl", self )
+						for _, v in ipairs( self.BoneMergedEnts ) do
+
+							if ( v && v:IsValid() && v:GetModel():find( "_gasmask_" ) ) then
+					
+								local gasmask_bonemerge = v
+
+								self.GASMASK_Bonemerged = gasmask
+								--self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
+					
+							end
+					
+						end
+	else
+		for _, v in ipairs( self.BoneMergedEnts ) do
+
+			if ( v && v:IsValid() && v:GetModel():find( "_gasmask_" ) ) then
+
+				v:Remove()
+					
+			end
+					
+		end
+	end
+
 end
 
 function meta:GASMASK_SetEquipped(b)

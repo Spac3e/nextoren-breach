@@ -62,7 +62,9 @@ local PLAYER = {}
 
 function PLAYER:SetupDataTables()
 
-	if self.Player.DataTablesHasBeenSet then print("data has already been set for ".. self.Player:Nick()..", cancelling.") return end
+	if self.Player.DataTablesHasBeenSet then 
+	--print("data has already been set for ".. self.Player:Nick()..", cancelling.") 
+	return end
 	self.Player.DataTablesHasBeenSet = true
 	
 	self.Player:NetworkVar( "String", 0, "RoleName" )
@@ -94,20 +96,20 @@ function PLAYER:SetupDataTables()
 	self.Player:NetworkVar( "Bool", 8, "InDimension")
 	
 	if SERVER then
-		print("Setting up datatables for " .. self.Player:Nick())
+		--print("Setting up datatables for " .. self.Player:Nick())
 		self.Player:SetRoleName("Spectator")
 		self.Player:SetNamesurvivor( "none" )
 		self.Player:SetLastRole( "" )
 		self.Player:SetLastTeam( 0 )
 
-		print("setting up data")
+		--print("setting up data")
 
 		timer.Simple(5,function()
 			if !IsValid(self.Player) then
 				return
 			end
 		
-			print("setting up data: level")
+			--print("setting up data: level")
 			CheckPlayerData( self.Player, "breach_level" )
 			self.Player:SetNLevel( math.max(0, tonumber( self.Player:GetPData( "breach_level", 0 ) ) ) )
 	    end)
@@ -118,7 +120,7 @@ function PLAYER:SetupDataTables()
 				return
 			end
 		
-			print("setting up data: penalty")
+			--print("setting up data: penalty")
 			CheckPlayerData( self.Player, "breach_penalty" )
 			self.Player:SetPenaltyAmount( tonumber( self.Player:GetPData( "breach_penalty", 0 ) ) )
 	    end)
@@ -128,7 +130,7 @@ function PLAYER:SetupDataTables()
 				return
 			end
 
-	    	print("setting up data: exp")
+	    	--print("setting up data: exp")
 			CheckPlayerData( self.Player, "breach_exp" )
 			self.Player:SetNEXP( tonumber( self.Player:GetPData( "breach_exp", 0 ) ) )
 	    end)
@@ -138,7 +140,7 @@ function PLAYER:SetupDataTables()
 				return
 			end
 			
-			print("setting up data: elo")
+			--print("setting up data: elo")
 			CheckPlayerData(self.Player, "breach_elo")
 	        self.Player:SetElo(tonumber(self.Player:GetPData("breach_elo", 0)))
 		end)
@@ -148,7 +150,7 @@ function PLAYER:SetupDataTables()
 				return
 			end
 			
-			print("setting up data: escapes")
+			--print("setting up data: escapes")
 			CheckPlayerData(self.Player, "breach_escapes")
 			self.Player:SetNEscapes(tonumber(self.Player:GetPData("breach_escapes", 0)))
 		end)
@@ -158,11 +160,11 @@ function PLAYER:SetupDataTables()
 				return
 			end
 			
-			print("setting up data: deaths")
+			--print("setting up data: deaths")
 	        CheckPlayerData(self.Player, "breach_deaths")
 	        self.Player:SetNDeaths(tonumber(self.Player:GetPData("breach_deaths", 0)))
 
-			print("setting up data, complete")
+			--print("setting up data, complete")
 		end)
 
 		self.Player:SetNGTeam(1)

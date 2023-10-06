@@ -24,6 +24,8 @@ if SERVER then
 
 	function mply:Make009Statue()
 
+		if self.GASMASK_Equiped == true then return end
+
 		if self.Used500 then return end
 
 		local ragdoll
@@ -87,8 +89,10 @@ if SERVER then
 		local pos = self:GetPos()
 		local ang = self:GetAngles()
 
-		self:SetupNormal()
-		self:SetSpectator()
+		evacuate(self,"vse",-200,"l:scp009_death")
+
+		--self:SetupNormal()
+		--self:SetSpectator()
 		--self:SetPos(pos)
 		--self:SetAngles(ang)
 		--self:SetLocalAngles(ang)

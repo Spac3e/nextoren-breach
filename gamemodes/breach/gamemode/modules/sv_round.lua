@@ -5,37 +5,11 @@ roundEnd = roundEnd or 0
 MAP_LOADED = MAP_LOADED or false
 util.AddNetworkString("bettersendlua")
 
-function BREACH.Round_System_Start()
-   	LockKPPDoors()  
+function BREACH.Round_System_Start()  
 	local ent = ents.Create("esc_vse")
 	ent:Spawn()
 	local ent1 = ents.Create("entity_goc_nuke")
 	ent1:Spawn()
-
-	local scp_item_pos = {
-	Vector(7739, -4153, 58), 
-	Vector(7749,-3972, 67), 
-	Vector(8160, -3936, 55), 
-	Vector(8568, -3727, 64),
-	Vector(8396, -3728, 67), 
-	Vector(8537, -1952, 67), 
-	Vector(7085, -2104, 66), 
-	Vector(6669,-2319, 66), 
-	Vector(6672, -2104, 57),
-	Vector(6324, -2416, 69), 
-	Vector(6237, -2005, 66) 
-	}
-  
-	for k, v in pairs( scp_item_pos ) do
-
-		for k,ball in pairs(ents.FindInSphere((v), 40)) do
-			if IsValid(ball) then
-				if ball:GetClass() == "func_door" then ball:Fire("lock") end
-			end
-		end
-		
-	end
-
    --local ent = ents.Create("entity_goc_nuke")
    --ent:SetPos(Vector(7284, -3984, 1995))
    --ent:Create()
@@ -187,7 +161,7 @@ function UnlockKPPDoors()
 	end
 end
 
-  
+  --[[
   function OpenSCPDoors()
 	  for k,box in pairs(ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) )) do
 			if IsValid(box) then
@@ -285,7 +259,7 @@ end
 	  end
     end
   end
-
+]]--
 function BREACH.Round_Open_Dblock()
 
 	for k,box in pairs(ents.FindInBox( Vector( 7815, -6224, 239 ), Vector( 7900, -4864, 460 ) )) do
@@ -378,6 +352,7 @@ function CleanUpPlayers()
 end
 
 function RoundTypeUpdate()
+	
 	local nextRoundName = GetConVar( "br_force_specialround" ):GetString()
 	activeRound = nil
 	if tonumber( nextRoundName ) then
@@ -399,12 +374,15 @@ function RoundTypeUpdate()
 	if !activeRound then
 		activeRound = ROUNDS.normal
 	end
+	
 end
 
 function GM:Initialize()
 	SetGlobalInt("RoundUntilRestart", 10)
 	Radio_RandomizeChannels()
 end
+
+big_round = 0
 
 function RoundRestart()
 	print("round: starting")
@@ -426,38 +404,141 @@ function RoundRestart()
 	   	SetGlobalBool("EnoughPlayersCountDown", true)
 		SetGlobalInt("EnoughPlayersCountDownStart", CurTime() + 365)
 	end
-	RoundTypeUpdate()
-	SetupCollide()
-	SetupAdmins( player.GetAll() )
-	activeRound.setup()
-	net.Start("UpdateRoundType")
-		net.WriteString(activeRound.name)
-	net.Broadcast()	
-	activeRound.init()	
-	BREACH.Round_System_Start()
-	gamestarted = true
-	BroadcastLua('gamestarted = true')
-	net.Start("PrepStart")
-		net.WriteInt(GetPrepTime(), 8)
-	net.Broadcast()
-	UseAll()
-	DestroyAll()
-	--timer.Destroy("PostTime") -----?????
-	hook.Run( "BreachPreround" )
-	timer.Create("PreparingTime", GetPrepTime(), 1, function()
-		for k,v in pairs(player.GetAll()) do
-			v:Freeze(false)
-		end
-		preparing = false
-		postround = false		
-		activeRound.roundstart()
-		net.Start("RoundStart")
-			net.WriteInt(GetRoundTime(), 12)
+	if math.random( 0, 6 ) != 1 then
+		RoundTypeUpdate()
+		SetupCollide()
+		SetupAdmins( player.GetAll() )
+		activeRound.setup()
+		net.Start("UpdateRoundType")
+			net.WriteString(activeRound.name)
+		net.Broadcast()	
+		activeRound.init()	
+		BREACH.Round_System_Start()
+		gamestarted = true
+		BroadcastLua('gamestarted = true')
+		net.Start("PrepStart")
+			net.WriteInt(GetPrepTime(), 8)
 		net.Broadcast()
-		print("round: started")
-		roundEnd = CurTime() + GetRoundTime() + 3
-		hook.Run( "BreachRound" )
-		timer.Create("RoundTime", GetRoundTime(), 1, function()
+		UseAll()
+		DestroyAll()
+		--timer.Destroy("PostTime") -----?????
+		hook.Run( "BreachPreround" )
+		timer.Create("PreparingTime", GetPrepTime(), 1, function()
+			for k,v in pairs(player.GetAll()) do
+				v:Freeze(false)
+			end
+			preparing = false
+			postround = false		
+			activeRound.roundstart()
+			net.Start("RoundStart")
+				net.WriteInt(GetRoundTime(), 12)
+			net.Broadcast()
+			print("round: started")
+			roundEnd = CurTime() + GetRoundTime() + 3
+			hook.Run( "BreachRound" )
+			if #GetActivePlayers() > 30 then
+				big_round = true
+				BroadcastLua("big_round = true")
+				timer.Create("RoundTime", GetRoundTime(), 1, function()
+					net.Start("New_SHAKYROUNDSTAT") 
+						net.WriteString("l:roundend_alphawarhead")
+						net.WriteFloat(27)
+					net.Broadcast()
+
+						AlphaWarheadBoomEffect()
+						
+						if v:GTeam() != TEAM_SPEC then
+							v:Kill()
+						v:SendLua("surface.PlaySound(\"nextoren/ending/nuke.mp3\")")
+						v:ScreenFade( SCREENFADE.OUT, Color( 255, 255, 255, 255 ), 0.6, 4 )
+						v:SendLua("util.ScreenShake( Vector( 0, 0, 0 ), 50, 10, 3, 5000 )")		
+						end
+					timer.Simple(27, function()
+							RoundRestart()
+					end)
+
+					postround = false
+					postround = true	
+					print( "post init: good" )
+					activeRound.postround()		
+					GiveExp()	
+					print( "post functions: good" )
+					print( "round: post" )			
+					net.Start("SendRoundInfo")
+						net.WriteTable(roundstats)
+					net.Broadcast()		
+					--net.Start("PostStart")
+						--net.WriteInt(GetPostTime(), 6)
+					--	net.WriteInt(1, 4)
+					--net.Broadcast()	
+					print( "data broadcast: good" )
+					roundEnd = 0
+					timer.Destroy("PunishEnd")
+					hook.Run( "BreachPostround" )
+					--timer.Create("PostTime", GetPostTime(), 1, function()
+						print( "restarting round" )
+					--end)		
+				end)
+			else
+				big_round = false
+				BroadcastLua("big_round = false")
+				SetGlobalBool("EnoughPlayersCountDown", false)
+				timer.Create("RoundTime", GetRoundTime(), 1, function()
+					net.Start("New_SHAKYROUNDSTAT") 
+						net.WriteString("l:roundend_alphawarhead")
+						net.WriteFloat(27)
+					net.Broadcast()
+
+					AlphaWarheadBoomEffect()
+						for k,v in pairs(player.GetAll()) do
+						if v:GTeam() != TEAM_SPEC then
+							v:Kill()
+						v:SendLua("surface.PlaySound(\"nextoren/ending/nuke.mp3\")")
+						v:ScreenFade( SCREENFADE.OUT, Color( 255, 255, 255, 255 ), 0.6, 4 )
+						v:SendLua("util.ScreenShake( Vector( 0, 0, 0 ), 50, 10, 3, 5000 )")		
+						end
+						end
+					timer.Simple(27, function()
+							RoundRestart()
+						end)
+
+					postround = false
+					postround = true	
+					print( "post init: good" )
+					activeRound.postround()		
+					GiveExp()	
+					print( "post functions: good" )
+					print( "round: post" )			
+					net.Start("SendRoundInfo")
+						net.WriteTable(roundstats)
+					net.Broadcast()		
+					--net.Start("PostStart")
+						--net.WriteInt(GetPostTime(), 6)
+					--	net.WriteInt(1, 4)
+					--net.Broadcast()	
+					print( "data broadcast: good" )
+					roundEnd = 0
+					timer.Destroy("PunishEnd")
+					hook.Run( "BreachPostround" )
+					--timer.Create("PostTime", GetPostTime(), 1, function()
+						print( "restarting round" )
+					--end)		
+				end)
+			end
+
+		end)
+		OpenSecDoors = false
+		SCPLockDownHasStarted = false
+	else
+		big_round = 0
+		gamestarted = true
+		BroadcastLua('gamestarted = true')
+		CleanUpPlayers()
+		for k,v in pairs(player.GetAll()) do
+			v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
+		end
+			PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
+		timer.Create("RoundTime", 300, 1, function()
 			net.Start("New_SHAKYROUNDSTAT") 
                 net.WriteString("l:roundend_alphawarhead")
                 net.WriteFloat(27)
@@ -477,10 +558,7 @@ function RoundRestart()
 				end)
 
 			postround = false
-			postround = true	
-			print( "post init: good" )
-			activeRound.postround()		
-			GiveExp()	
+			postround = true		
 			print( "post functions: good" )
 			print( "round: post" )			
 			net.Start("SendRoundInfo")
@@ -498,7 +576,8 @@ function RoundRestart()
 				print( "restarting round" )
 			--end)		
 		end)
-	end)
+		Nazi_spawn()
+	end
 end
 
 canescortds = true

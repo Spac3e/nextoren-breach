@@ -62,11 +62,11 @@ ROUNDS = {
 		end,
 	},
 	dm = {
-		name = "MTF vs CI Deathmatch",
+		name = "Nazi and USA",
 		setup = function()
-			BUTTONS = table.Copy(BUTTONS)
-			SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
-			disableNTF = false
+			--BUTTONS = table.Copy(BUTTONS)
+			--SetupPlayers( GetRoleTable( #GetActivePlayers() ) )
+			---disableNTF = false
 		end,
 		init = function()
 			--SpawnShawmAndDocs()

@@ -56,82 +56,72 @@ btr_hp = 15000
 function ENT:OnTakeDamage( dmginfo )
 	btr_hp = btr_hp - dmginfo:GetDamage()
 end
+
 function ENT:Initialize()
-	self:SetPos(Vector(-1298, 7599, 1662))
-	self:SetAngles(Angle(0,-90,0))
+	fat_evac = 0
+	btr_katok = true
+	self:SetPos(Vector(2430, 7498, 1515))
+	self:SetAngles(Angle(0,90,0))
 	self:SetModel( "models/scp_chaos_jeep/chaos_jeep.mdl" )
 	self:SetSolid( SOLID_VPHYSICS )
-	self:LinearMotion(Vector(-1302, 6951, 1662), 0.002)
-	for k,ball in pairs(ents.FindInSphere((Vector(-1287, 7203, 1757)), 100)) do
+	self:LinearMotion(Vector(2442, 6847, 1515), 0.002)
+	self:SetSolidFlags( bit.bor( FSOLID_TRIGGER, FSOLID_USE_TRIGGER_BOUNDS ) )
+	
+	for k,ball in pairs(ents.FindInSphere((Vector(2435, 7194, 1607)), 100)) do
 	  if IsValid(ball) then
 		  if ball:GetClass() == "func_door" then ball:Fire("Open") end
 	  end
 	end
-	timer.Simple(2, function()
-		self:AngMotion(Angle(0, 0, 0), 0.002)
-	end)
-	timer.Simple(4, function()
-		self:LinearMotion(Vector(-1054, 6812, 1662), 0.002)
-	end)
 	timer.Simple(8, function()
-		self:LinearMotion(Vector(-43, 6968, 1662), 0.001)
 		for k,ball in pairs(ents.FindInSphere((Vector(-1317, 7201, 1751)), 500)) do
 	  		if IsValid(ball) then
 		 		if ball:GetClass() == "func_door" then ball:Fire("Close") end
 	  		end
 		end
-	end)
-	timer.Simple(23, function()
-		self:AngMotion(Angle(30, 0, 0), 0.002)
-	end)
-	timer.Simple(24, function()
-		self:AngMotion(Angle(20, 0, 0), 0.002)
-	end)
-	timer.Simple(23, function()
-		self:LinearMotion(Vector(509, 6970, 1520), 0.001)
-	end)
-	timer.Simple(31.5, function()
-		self:AngMotion(Angle(0, 0, 0), 0.002)
-	end)
-	timer.Simple(38, function()
-		self:LinearMotion(Vector(2674, 6935, 1515), 0.0005)
-	end)
-	timer.Simple(69, function()
+		btr_katok = false
 		self:SetBodyGroups("111")
 		self:SetAutomaticFrameAdvance( true )
 		self:ResetSequence( 1 )
 		self:SetPlaybackRate( 1 )
 		self:SetCycle( 1 )
 	end)
-	timer.Create( "1_phase", 130, 1, function()
-		self:LinearMotion(Vector(3532, 6874, 1515), 0.002)
+	timer.Create( "1_phase", 20, 1, function()
+		
+		self:LinearMotion(Vector(2430, 7498, 1515), 0.002)
 		self:SetAutomaticFrameAdvance( true )
 		self:ResetSequence( 2 )
 		self:SetPlaybackRate( 1 )
 		self:SetCycle( 1 )
 		self:SetBodyGroups("000")
-		for k,ball in pairs(ents.FindInSphere((Vector(2911, 6861, 1598)), 200)) do
-	  		if IsValid(ball) then
-		 		if ball:GetClass() == "func_door" then ball:Fire("Open") end
-	  		end
+		for k,ball in pairs(ents.FindInSphere((Vector(2435, 7194, 1607)), 100)) do
+		if IsValid(ball) then
+			if ball:GetClass() == "func_door" then ball:Fire("Open") end
+		end
 		end
 		for k,v in pairs(ents.FindInSphere(Vector(2666, 6915, 1576), 400)) do
-		evacuate(v,TEAM_CLASSD,1000,"l:cutscene_evac_by_ci")
-		evacuate(v,TEAM_CHAOS,1000,"l:cutscene_evac_by_ci")
+            if v:IsPlayer() then
+				if v:GetGTeam() == TEAM_CLASSD then
+						fat_evac = fat_evac + 1
+				end
+				evacuate(v,TEAM_CLASSD,1000,"l:cutscene_evac_by_ci")
+				timer.Simple(0.5, function()
+				evacuate(v,TEAM_CHAOS,1000,"l:cutscene_evac_by_ci")
+				btr_katok = true
+				end)
+			end
 		end
-	end)
-	timer.Create( "2_phase", 145, 1, function()
-		for k,ball in pairs(ents.FindInSphere((Vector(2911, 6861, 1598)), 200)) do
-	  		if IsValid(ball) then
-		 		if ball:GetClass() == "func_door" then ball:Fire("Close") end
-	  		end
-		end
-		self:Remove()
 	end)
 	self:SetAutomaticFrameAdvance( true )
   	self:ResetSequence( 2 )
   	self:SetPlaybackRate( 1 )
   	self:SetCycle( 1 )
+end
+
+function ENT:Touch(ply)
+	if btr_katok == false then return end
+	if ply:IsPlayer() then
+		ply:Kill()
+	end
 end
 
 function ENT:Think()

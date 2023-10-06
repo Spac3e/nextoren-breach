@@ -22,10 +22,10 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		scp = {['count'] = 1, ['roles'] = BREACH_ROLES.SCP.scp['roles'], ['spawns'] = SPAWN_SCP_RANDOM}
 		all = all - scp['count']
 
-		classd = {['count'] = math.Round(all_start * 0.45), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.45) , ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
-		scientist = {['count'] = math.Round(all_start * 0.27), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		scientist = {['count'] = math.Round(all_start * 0.27) , ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
 		all = all - scientist['count']
 
 		mtf = {['count'] = math.Round(all_start * 0.17), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
@@ -39,7 +39,7 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		scp = {['count'] = 1, ['roles'] = BREACH_ROLES.SCP.scp['roles'], ['spawns'] = SPAWN_SCP_RANDOM}
 		all = all - scp['count']
 
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.34) , ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
 		security = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
@@ -48,7 +48,7 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		mtf = {['count'] = math.Round(all_start * 0.17), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
 		all = all - mtf['count']
 
-		scientist = {['count'] = math.Round(all_start * 0.06), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		scientist = {['count'] = math.Round(all_start * 0.06) , ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
 		all = all - scientist['count']
 	
 		print("Класс-Д: "..classd['count'],"МОГ: "..mtf['count'], "СБ: "..security['count'], "Уч: "..scientist['count'])
@@ -59,7 +59,7 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		scp = {['count'] = 2, ['roles'] = BREACH_ROLES.SCP.scp['roles'], ['spawns'] = SPAWN_SCP_RANDOM}
 		all = all - scp['count']
 
-		classd = {['count'] = math.Round(all_start * 0.39), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.39) , ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
 		security = {['count'] = math.Round(all_start * 0.2), ['roles'] = BREACH_ROLES.SECURITY.security['roles'], ['spawns'] = SPAWN_SECURITY}
@@ -68,7 +68,7 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		mtf = {['count'] = math.Round(all_start * 0.3), ['roles'] = BREACH_ROLES.MTF.mtf['roles'], ['spawns'] = SPAWN_GUARD}
 		all = all - mtf['count']
 
-		scientist = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
+		scientist = {['count'] = math.Round(all_start * 0.1) , ['roles'] = BREACH_ROLES.SCI.sci['roles'], ['spawns'] = SPAWN_SCIENT}
 		all = all - scientist['count']
 	
 		print("Класс-Д: "..classd['count'],"МОГ: "..mtf['count'], "СБ: "..security['count'], "Уч: "..scientist['count'])
@@ -79,13 +79,13 @@ function GetRoleTable( all ) -- для бибязан поясняю, больш
 		scp = {['count'] = 3, ['roles'] = BREACH_ROLES.SCP.scp['roles'], ['spawns'] = SPAWN_SCP_RANDOM}
 		all = all - scp['count']
 
-		classd = {['count'] = math.Round(all_start * 0.34), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		classd = {['count'] = math.Round(all_start * 0.34) , ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - classd['count']
 
 		security = {['count'] = math.Round(all_start * 0.15), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - security['count']
 	
-		scientist = {['count'] = math.Round(all_start * 0.05), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
+		scientist = {['count'] = math.Round(all_start * 0.05) , ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}
 		all = all - scientist['count']
 	
 		medicine = {['count'] = math.Round(all_start * 0.1), ['roles'] = BREACH_ROLES.CLASSD.classd['roles'], ['spawns'] = SPAWN_CLASSD}

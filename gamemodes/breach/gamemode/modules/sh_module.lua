@@ -1005,10 +1005,11 @@ function GetPrepTime()
 end
 
 function GetRoundTime()
-	if GetGlobalBool("BigRound", false) then
-		return 840--1020
-	end
-	return 720--GetConVar("br_time_round"):GetInt()
+	if big_round == true then
+		return 1020--1020
+	else
+		return 720
+	end--GetConVar("br_time_round"):GetInt()
 end
 
 function GetPostTime()

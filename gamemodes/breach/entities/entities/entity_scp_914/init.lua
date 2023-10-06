@@ -270,7 +270,7 @@ function fackt_work()
 	local entsinbox = ents.FindInBox( Vector( 9553, -4481, 4 ), Vector( 9614, -4606, 125 ) ) 
     for k, v in ipairs( entsinbox ) do
        -- if v:IsPlayer() and v:GTeam() != TEAM_SPEC and v:GetMoveType("MOVETYPE_NOCLIP") then v:Kill()end
-		evacuate(v,"vse",50,"l:cutscene_evac_by_914")
+		evacuate(v,"vse",50,"l:scp914_death")
 		local spawn_item1 = ents.Create( "item_hamburger" )
 		spawn_item1:SetPos( Vector( 9585, -4979, 66 ) )
 		spawn_item1:Spawn()

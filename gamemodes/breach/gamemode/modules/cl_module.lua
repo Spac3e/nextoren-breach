@@ -2613,7 +2613,13 @@ net.Receive("GRUCommander", function(len)
 			
 					BREACH.GRUCommander.Users.DoClick = function( self )
 
-						teams_table[ i ].func()
+						if teams_table[ i ].name == "Помощь Военному Персоналу" then
+							net.Start("GRUCommander_peac") 
+							net.SendToServer()
+							SetGlobalString("gru_objective", "MilitaryHelp")
+						else
+							SetGlobalString("gru_objective", "Evacuation")
+						end
 			
 						BREACH.GRUCommander.MainPanel:Remove()
 						BREACH.GRUCommander.MainPanel.Disclaimer:Remove()

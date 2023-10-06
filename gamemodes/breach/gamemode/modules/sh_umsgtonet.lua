@@ -284,14 +284,14 @@ else
 	usermessage.__hooks = usermessage.__hooks or { };
 	function usermessage.Hook( _name, _callback )
 		if ( devmode ) then
-			print( "Adding NetUMSGReplacement Hook: ".. _name.." instead of here: " ..debug.getinfo(2).short_src );
+			--print( "Adding NetUMSGReplacement Hook: ".. _name.." instead of here: " ..debug.getinfo(2).short_src );
 		end
 		usermessage.__hooks[ _name ] = _callback;
 	end
 
 	for _name, v in pairs( usermessage:GetTable( ) ) do
 		if ( devmode ) then
-			print( "Adding NetUMSGReplacement Hook: ".. _name.." instead of here: " ..debug.getinfo(2).short_src );
+			--print( "Adding NetUMSGReplacement Hook: ".. _name.." instead of here: " ..debug.getinfo(2).short_src );
 		end
 		usermessage.Hook( _name, v.Function );
 	end

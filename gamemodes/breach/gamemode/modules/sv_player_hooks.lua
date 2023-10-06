@@ -281,6 +281,31 @@ local scpdeadsounds = {
 }
 
 function GM:PlayerDeath( victim, inflictor, attacker, ply )
+	if attacker != victim and postround == false and attacker:IsPlayer() then
+		if victim:GTeam() == attacker:GTeam() then
+			print(attacker:GetRoleName())
+			print(victim:GetRoleName())
+			attacker.teamkills = 1 + attacker.teamkills
+			BREACH.Players:ChatPrint( attacker, true, true, "l:teamkill_you_teamkilled " , victim:Nick() , " " , gteams.GetColor(victim:GTeam()) ,victim:GetRoleName() , " " , Color(255,255,255), " " , victim:SteamID() , "")
+			BREACH.Players:ChatPrint( victim, true, true, "l:teamkill_you_have_been_teamkilled " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , " ", "l:teamkill_report_if_rulebreaker")
+		
+		elseif (attacker:GTeam() == TEAM_SECURITY and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SECURITY and attacker:GTeam() == TEAM_GUARD) or (attacker:GTeam() == TEAM_CLASSD and victim:GTeam() == TEAM_CHAOS) or (victim:GTeam() == TEAM_CLASSD and attacker:GTeam() == TEAM_CHAOS) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_SPECIAL) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_SPECIAL) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_SECURITY) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_SECURITY) or (attacker:GTeam() == TEAM_SPECIAL and victim:GTeam() == TEAM_SECURITY) or (victim:GTeam() == TEAM_SPECIAL and attacker:GTeam() == TEAM_SECURITY) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_GUARD) or (attacker:GTeam() == TEAM_SPECIAL and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SPECIAL and attacker:GTeam() == TEAM_GUARD) then
+			print(attacker:GetRoleName())
+			print(victim:GetRoleName())
+			BREACH.Players:ChatPrint( attacker, true, true, "l:teamkill_you_teamkilled " , victim:Nick() , " " , gteams.GetColor(victim:GTeam()) ,victim:GetRoleName() , " " , Color(255,255,255), " " , victim:SteamID() , "")
+			BREACH.Players:ChatPrint( victim, true, true, "l:teamkill_you_have_been_teamkilled " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , "")
+			attacker.teamkills = 1 + attacker.kills
+		else
+
+			print(attacker:GetRoleName())
+			print(victim:GetRoleName())
+			attacker.kills = 1 + attacker.kills
+			BREACH.Players:ChatPrint( victim, true, true, "l:you_have_been_killed " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , " l:teamkill_report_if_rulebreaker")
+			attacker.kills = 1 + attacker.kills
+		end
+	end
+
+
 	if victim:GTeam() == TEAM_SCP then
 		print(victim:GetRoleName())
 		victim:SetNWBool("megabool3004", victim:GetRoleName())
@@ -319,16 +344,7 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
     --net.WriteTable(eblya)
 	--net.WriteUInt(victim:GetExp(), 32)
 	--net.Send(victim)
-	local rtime = (timer.TimeLeft("RoundTime"))
-	if rtime != nil then
-	exptoget = 1000
-	exptoget = (CurTime() - rtime)
-	exptoget = exptoget * 0.05
-	--exptoget = math.Round(math.Clamp(exptoget, 1000, 10000))
-	else
-	exptoget = 249
-	end
-	evacuate(victim,"vse",exptoget,"Kia")
+	evacuate(victim,"vse",0,"Kia")
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
@@ -336,20 +352,6 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		net.WriteBool( false )
 	net.Send( victim )
  	victim:SetModelScale( 1 )
-
-	if attacker != victim and postround == false and attacker:IsPlayer() then
-		if victim:GTeam() == attacker:GTeam() then
-			BREACH.Players:ChatPrint( attacker, true, true, "l:teamkill_you_teamkilled " , victim:Nick() , " " , gteams.GetColor(victim:GTeam()) ,victim:GetRoleName() , " " , Color(255,255,255), " " , victim:SteamID() , "")
-			BREACH.Players:ChatPrint( victim, true, true, "l:teamkill_you_have_been_teamkilled " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , " ", "l:teamkill_report_if_rulebreaker")
-		
-		elseif (attacker:GTeam() == TEAM_SECURITY and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SECURITY and attacker:GTeam() == TEAM_GUARD) or (attacker:GTeam() == TEAM_CLASSD and victim:GTeam() == TEAM_CHAOS) or (victim:GTeam() == TEAM_CLASSD and attacker:GTeam() == TEAM_CHAOS) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_SPECIAL) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_SPECIAL) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_SECURITY) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_SECURITY) or (attacker:GTeam() == TEAM_SPECIAL and victim:GTeam() == TEAM_SECURITY) or (victim:GTeam() == TEAM_SPECIAL and attacker:GTeam() == TEAM_SECURITY) or (attacker:GTeam() == TEAM_SCI and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SCI and attacker:GTeam() == TEAM_GUARD) or (attacker:GTeam() == TEAM_SPECIAL and victim:GTeam() == TEAM_GUARD) or (victim:GTeam() == TEAM_SPECIAL and attacker:GTeam() == TEAM_GUARD) then
-			BREACH.Players:ChatPrint( attacker, true, true, "l:teamkill_you_teamkilled " , victim:Nick() , " " , gteams.GetColor(victim:GTeam()) ,victim:GetRoleName() , " " , Color(255,255,255), " " , victim:SteamID() , "")
-			BREACH.Players:ChatPrint( victim, true, true, "l:teamkill_you_have_been_teamkilled " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , "")
-		else
-			BREACH.Players:ChatPrint( victim, true, true, "l:you_have_been_killed " , attacker:Nick() , " " , gteams.GetColor(attacker:GTeam()) ,attacker:GetRoleName() , " " , Color(255,255,255), " " , attacker:SteamID() , " l:teamkill_report_if_rulebreaker")
-		end
-	end
-
 
 	local wasteam = victim:GTeam()
 	victim:SetRoleName(role.Spectator)
@@ -672,13 +674,13 @@ do
             weapon:SetClip1(savedammo)
         end
 	
-		if wepent and wepent:GetClass("weapon_special_gaus") then
-			if wepent.CanCharge != true then
-				weapon.CanCharge = false
-				weapon.Shooting = false
-			end
-			return false
-		end
+		--if wepent and wepent:GetClass("weapon_special_gaus") then
+			--if wepent.CanCharge != true then
+			--	weapon.CanCharge = false
+			--	weapon.Shooting = false
+			--end
+			--return false
+		--end
 
         return weapon
     end
@@ -772,6 +774,9 @@ function IsInTolerance( spos, dpos, tolerance )
 end
 
 function GM:PlayerUse(ply, ent, key)
+
+	--	print(ent)
+
     if ply:GTeam() == TEAM_SPEC and ply:GetRoleName() ~= role.ADMIN then
         return false
     end
@@ -817,111 +822,186 @@ function GM:PlayerUse(ply, ent, key)
         end)
     end
 
+
     for k, v in pairs(BUTTONS) do
-        if v.pos == ent:GetPos() or v.tolerance then
-            if v.tolerance and not IsInTolerance(v.pos, ent:GetPos(), v.tolerance) then
-                continue
-            end
-
-            ply.lastuse = CurTime() + 1
-
-			if v.locked then
-				ply:SetBottomMessage("l:access_denied")
-                return false
+			if ply:GetRoleName() == role.Nazi or ply:GetRoleName() == role.USA then
+				ply.lastuse = CurTime() + 1
+				ply:EmitSound("nextoren/others/access_denied.wav")
+				ply:SetBottomMessage("l:menu_no")
+				return false 
 			end
-
-			if v.evac then
-                return true
-			end
-
-            if v.access ~= nil then
-
-				if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and timer.Exists("RoundTime") and (timer.TimeLeft("RoundTime")) < 180 then
+			if ent:GetClass() == "func_door" and v.name == "Комната Д-Блока" then
+				ply.lastuse = CurTime() + 1
+				if preparing != true then
 					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                    ply:SetBottomMessage("l:access_granted")
-                    return true
+					ply:SetBottomMessage("l:access_granted")
+					return true
 				else
-
-                if v.levelOverride and v.levelOverride(ply) then
-                    return true
-                end
-
-                local hui = ply:GetActiveWeapon():GetClass() or {}
-                local wep = string.sub(hui, 1, 14) or {}
-
-                if hui == "" then
-                    ply:SetBottomMessage("l:keycard_needed")
-                    return false
-                end
-
-                if hui == "breach_keycard_7" then
-                    if v.access.CLevelO5 ~= nil then
-                        if (ply:GetActiveWeapon().CLevels.CLevelO5 or 0) >= (v.access.CLevelO5 or 0) then
-                            ply:SetBottomMessage("l:access_granted")
-                            return true
-                        end
-                    end
-                end
-
-                if wep == "breach_keycard" then
-                    local keycard = wep
-
-                    if (ply:GetActiveWeapon().CLevels.CLevel or 0) >= (v.access.CLevel or 0) and (v.access.CLevel or 0) ~= 0 then
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                        ply:SetBottomMessage("l:access_granted")
-                        return true
-                    elseif (ply:GetActiveWeapon().CLevels.CLevelSUP or 0) >= (v.access.CLevelSUP or 0) and (v.access.CLevelSUP or 0) ~= 0 then
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                        ply:SetBottomMessage("l:access_granted")
-                        return true
-                    elseif (ply:GetActiveWeapon().CLevels.CLevelSCI or 0) >= (v.access.CLevelSCI or 0) and (v.access.CLevelSCI or 0) ~= 0 then
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                        ply:SetBottomMessage("l:access_granted")
-                        return true
-                    elseif (ply:GetActiveWeapon().CLevels.CLevelMTF or 0) >= (v.access.CLevelMTF or 0) and (v.access.CLevelMTF or 0) ~= 0 then
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                        ply:SetBottomMessage("l:access_granted")
-                        return true
-                    elseif (ply:GetActiveWeapon().CLevels.CLevelGuard or 0) >= (v.access.CLevelGuard or 0) and (v.access.CLevelGuard or 0) ~= 0 then
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-                        ply:SetBottomMessage("l:access_granted")
-                        return true
-                    else
-                        ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
-                        ply:SetBottomMessage("l:access_denied")
-                        return false
-                    end
-                else
-                    ply:SetBottomMessage("l:keycard_needed")
-                    return false
-                end
+					ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+					ply:SetBottomMessage("l:access_denied")
+					return false
 				end
-            end
+			end
+			if v.pos == ent:GetPos() or v.tolerance then
+				if v.tolerance and not IsInTolerance(v.pos, ent:GetPos(), v.tolerance) then
+					continue
+				end
 
-            if v.canactivate == nil or v.canactivate(ply, ent) then
-                --ply:SetBottomMessage("l:access_denied")
+				ply.lastuse = CurTime() + 1
 
-                if v.customaccessmsg then
-                    --ply:SetBottomMessage(v.customaccessmsg)
-                else
-                    --ply:SetBottomMessage("Access Granted")
-                end
+				if v.locked then
+					ply:SetBottomMessage("l:access_denied")
+					return false
+				end
+				if v.evac then
+					return true
+				end
 
-                return true
-            else
-                ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+				local hui = ply:GetActiveWeapon():GetClass() or {}
+				local wep = string.sub(hui, 1, 14) or {}
 
-                if v.customdenymsg then
-                    --ply:SetBottomMessage(v.customdenymsg)
-                else
-                    --ply:SetBottomMessage("l:access_denied")
-                end
+				--print(IsValid(v.access) == false)
 
-                return false
-            end
-        end
+				if v.access != nil and v.custom_access_granted != nil then
+
+						if wep != "breach_keycard" then
+						ply:SetBottomMessage("l:keycard_needed")
+						return false 
+						end
+						
+						if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and timer.Exists("RoundTime") and (timer.TimeLeft("RoundTime")) < 180 then
+							ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+							ply:SetBottomMessage("l:access_granted")
+							return true
+						else
+
+						if v.levelOverride and v.levelOverride(ply) then
+							return true
+						end
+
+						if hui == "" then
+							ply:SetBottomMessage("l:keycard_needed")
+							return false
+						end
+
+						if wep == "breach_keycard" then
+							
+							local keycard = wep
+
+							if ((ply:GetActiveWeapon().CLevels.CLevel or 0) >= (v.access.CLevel or 0) and (v.access.CLevel or 0) ~= 0) and v.custom_access_granted( ply, ent ) != false then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif ((ply:GetActiveWeapon().CLevels.CLevelSUP or 0) >= (v.access.CLevelSUP or 0) and (v.access.CLevelSUP or 0) ~= 0) and v.custom_access_granted( ply, ent ) != false then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif ((ply:GetActiveWeapon().CLevels.CLevelSCI or 0) >= (v.access.CLevelSCI or 0) and (v.access.CLevelSCI or 0) ~= 0) and v.custom_access_granted( ply, ent ) != false then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif ((ply:GetActiveWeapon().CLevels.CLevelMTF or 0) >= (v.access.CLevelMTF or 0) and (v.access.CLevelMTF or 0) ~= 0) and v.custom_access_granted( ply, ent ) != false then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif ((ply:GetActiveWeapon().CLevels.CLevelGuard or 0) >= (v.access.CLevelGuard or 0) and (v.access.CLevelGuard or 0) ~= 0) and v.custom_access_granted( ply, ent ) != false then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							--elseif v.custom_access_granted( ply, ent ) != false then
+								--ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								--ply:SetBottomMessage("l:access_granted")
+								--return true
+							else
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+								ply:SetBottomMessage("l:access_denied")
+								return false
+							end
+						else
+							ply:SetBottomMessage("l:keycard_needed")
+							return false
+						end
+					end
+
+				elseif v.access != nil and v.custom_access_granted == nil then
+					--print("залупа")
+						if wep != "breach_keycard" then
+						ply:SetBottomMessage("l:keycard_needed")
+						return false 
+						end
+						
+						if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and timer.Exists("RoundTime") and (timer.TimeLeft("RoundTime")) < 180 then
+							ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+							ply:SetBottomMessage("l:access_granted")
+							return true
+						else
+
+						if v.levelOverride and v.levelOverride(ply) then
+							return true
+						end
+
+						if hui == "" then
+							ply:SetBottomMessage("l:keycard_needed")
+							return false
+						end
+
+						if wep == "breach_keycard" then
+							
+							local keycard = wep
+
+							if (ply:GetActiveWeapon().CLevels.CLevel or 0) >= (v.access.CLevel or 0) and (v.access.CLevel or 0) ~= 0 then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif (ply:GetActiveWeapon().CLevels.CLevelSUP or 0) >= (v.access.CLevelSUP or 0) and (v.access.CLevelSUP or 0) ~= 0 then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif (ply:GetActiveWeapon().CLevels.CLevelSCI or 0) >= (v.access.CLevelSCI or 0) and (v.access.CLevelSCI or 0) ~= 0 then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif (ply:GetActiveWeapon().CLevels.CLevelMTF or 0) >= (v.access.CLevelMTF or 0) and (v.access.CLevelMTF or 0) ~= 0 then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							elseif (ply:GetActiveWeapon().CLevels.CLevelGuard or 0) >= (v.access.CLevelGuard or 0) and (v.access.CLevelGuard or 0) ~= 0 then
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+								ply:SetBottomMessage("l:access_granted")
+								return true
+							else
+								ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+								ply:SetBottomMessage("l:access_denied")
+								return false
+							end
+						else
+							ply:SetBottomMessage("l:keycard_needed")
+							return false
+						end
+					end
+
+				elseif v.access == nil and v.custom_access_granted != nil then
+					--print("пизда")
+					if wep != "breach_keycard" then
+						ply:SetBottomMessage("l:keycard_needed")
+						return false
+					else
+					if v.custom_access_granted( ply, ent ) then
+					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+					ply:SetBottomMessage("l:access_granted")
+					return true
+					else
+					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+					ply:SetBottomMessage("l:access_denied")
+					return false
+					end
+					return v.custom_access_granted( ply, ent ) or false
+					end
+
+				end
+			end
+		end
     end
-end
 
 function GM:CanPlayerSuicide( ply )
 	return false
