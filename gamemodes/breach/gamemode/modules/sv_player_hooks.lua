@@ -462,7 +462,7 @@ hook.Add("PlayerDisconnect", "CanHear", function(ply)
     можетслушать[ply] = nil
 end)
 
-говорливыесцп = {
+local говорливыесцп = {
 	"SCP049",
 	"SCP076"
 }
@@ -482,21 +482,12 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
         player_manager.RunClass(listener, "SetupDataTables")
     end
 
-    local talkerRole = talker:GetRoleName()
-    local listenerRole = listener:GetRoleName()
-    local talkerTeam = talker:GTeam()
-    local listenerTeam = listener:GTeam()
-
-    if talkerTeam == TEAM_SCP and listenerTeam ~= TEAM_SCP and listenerTeam ~= TEAM_DZ and not говорливыесцп[talkerRole] then
+    if talker:GTeam() == TEAM_SCP and listener:GTeam() != TEAM_SCP and listener:GTeam()	!= TEAM_DZ and !говорливыесцп[talker:GetRoleName()] then
         return false
     end
 
 	if talker:GTeam() == TEAM_SPEC then
         return listener:GTeam() == TEAM_SPEC
-    end
-
-    if HaveRadio(listener, talker) == true then
-        return true
     end
 
 	if talker.supported == true then
@@ -607,6 +598,10 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 		return ""
 	end
 end )
+
+
+function GM:PlayerSay(ply)
+end
 
 hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
 	if !IsValid(ply) and !ply:GTeam() == TEAM_SPEC then return end
