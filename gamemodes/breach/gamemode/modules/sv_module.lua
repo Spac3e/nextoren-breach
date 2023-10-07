@@ -2732,10 +2732,31 @@ function Nazi_spawn()
 
 end
 
-hook.Add( "AcceptInput", "AutoCloseDoor", function( ent, name, activator, caller, data )
-	timer.Create("СУка"..ent:EntIndex(), 10, 1, function() 
-	if IsValid(ent) then
-	ent:Fire("Close")
+hook.Add("AcceptInput", "AutoCloseDoor", function(ent, name, activator, caller, data)
+	local idi_gulay = {228}
+    local timerokdayname = "дверкащаприкроется_" .. ent:EntIndex()
+	local model_gulay = {"янеябумодель.mdl"}
+
+    if table.HasValue(idi_gulay, ent:EntIndex()) then
+        return
+    end
+
+    if table.HasValue(model_gulay, ent:GetModel()) then
+        return
+    end
+
+    if timer.Exists(timerokdayname) then
+        timer.Destroy(timerokdayname)
+    end
+
+    timer.Create(timerokdayname, 10, 1, function()
+        if IsValid(ent) then
+            ent:Fire("close")
+        end
+    end)
+
+	if ent:IsValid() and ent:GetClass() == "func_button" then
+		--print(ent:GetInternalVariable("m_Skin"))
 	end
-	end)
-end )
+
+end)

@@ -466,10 +466,13 @@ end
 function mply:SpectatePlayerNext()
 	if self:GTeam() != TEAM_SPEC then return end
 
+	self:SetMoveType(MOVETYPE_NOCLIP)
+
 	local players = self:GetValidSpectateTargets()
 	if self:GetObserverMode() == OBS_MODE_ROAMING then
 		if #players > 0 then
 			self:Spectate( OBS_MODE_CHASE )
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		else
 			return
 		end
@@ -478,6 +481,7 @@ function mply:SpectatePlayerNext()
 	if #players < 1 then
 		self:UnSpectate()
 		self:Spectate( OBS_MODE_ROAMING )
+		self:SetMoveType(MOVETYPE_NOCLIP)
 		return
 	end
 
@@ -510,13 +514,14 @@ end
 
 function mply:SpectatePlayerPrev()
 	if self:GTeam() != TEAM_SPEC then return end
-	self:SetMoveType( MOVETYPE_NOCLIP )
+	self:SetMoveType(MOVETYPE_NOCLIP)
 
 	local players = self:GetValidSpectateTargets()
 
 	if self:GetObserverMode() == OBS_MODE_ROAMING then
 		if #players > 0 then
 			self:Spectate( OBS_MODE_CHASE )
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		else
 			return
 		end
@@ -525,6 +530,8 @@ function mply:SpectatePlayerPrev()
 	if #players < 1 then
 		self:UnSpectate()
 		self:Spectate( OBS_MODE_ROAMING )
+		self:SetMoveType(MOVETYPE_NOCLIP)
+
 		return
 	end
 
@@ -557,27 +564,28 @@ end
 
 function mply:ChangeSpectateMode()
 	if self:GTeam() != TEAM_SPEC then return end
-	if self.DeathScreen or self.SetupAsSpectator then return end
-
+	self:SetMoveType(MOVETYPE_NOCLIP)
+	
 	local cur_mode = self:GetObserverMode()
 
 	if #self:GetValidSpectateTargets() < 1 then
 		if cur_mode != OBS_MODE_ROAMING then
 			self:UnSpectate()
-			self:SetMoveType( MOVETYPE_NOCLIP )
 			self:Spectate( OBS_MODE_ROAMING )
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		end
 
 		return
 	end
 
 	if cur_mode == OBS_MODE_ROAMING then
-		self:SetMoveType( MOVETYPE_NOCLIP )
 		self:Spectate( OBS_MODE_CHASE )
+		self:SetMoveType(MOVETYPE_NOCLIP)
 		self:SpectatePlayerNext()
+		self:SetMoveType(MOVETYPE_NOCLIP)
 	elseif cur_mode == OBS_MODE_IN_EYE then
-		self:SetMoveType( MOVETYPE_NOCLIP )
 		self:Spectate( OBS_MODE_CHASE )
+		self:SetMoveType(MOVETYPE_NOCLIP)
 	elseif cur_mode == OBS_MODE_CHASE then
 		--self:Spectate( OBS_MODE_IN_EYE )
 	end
@@ -585,10 +593,10 @@ function mply:ChangeSpectateMode()
 end
 
 function mply:GetValidSpectateTargets( all )
-	local players = {}
+	local players = GetActivePlayers()
 	local tab = {}
 
-	for k, v in pairs(player.GetAll()) do
+	for k, v in pairs(players) do
 		if v:GTeam() != TEAM_SPEC or !v:Alive() then return end
 		if all then
 			table.insert( players, v )
@@ -597,41 +605,27 @@ function mply:GetValidSpectateTargets( all )
 end
 
 function mply:InvalidatePlayerForSpectate()
-	local roam = #self:GetValidSpectateTargets() < 1
-
-	for k, v in pairs(player.GetAll()) do
-		if v:GTeam() != TEAM_SPEC then return end
-		if v != self then
-			if v:GetObserverTarget() == self then
-				if roam then
-					v:UnSpectate()
-					v:Spectate( OBS_MODE_ROAMING )
-					self:SetMoveType( MOVETYPE_NOCLIP )
-				else
-					v:SpectatePlayerNext()
-					self:SetMoveType( MOVETYPE_NOCLIP )
-				end
-			end
-		end
-	end
-end
-
-function mply:CheckSpectatorMode( all )
-	if self:GetObserverMode() == OBS_MODE_ROAMING then
-		local players = self:GetValidSpectateTargets( all )
-		if #players > 0 then
-			self:Spectate( OBS_MODE_CHASE )
-			self:SpectateEntity( players[1] )
-			self:SetMoveType( MOVETYPE_NOCLIP )
-		end
-	end
+    local roam = #self:GetValidSpectateTargets() < 1
+    for k, v in pairs(player.GetAll()) do
+        if v:GTeam() != TEAM_SPEC then return end
+        if v != self then
+            if v:GetObserverTarget() == self then
+                if roam then
+                    v:UnSpectate()
+                    v:Spectate(OBS_MODE_ROAMING)
+                else
+                    v:SpectatePlayerNext()
+                end
+                self:SetMoveType(MOVETYPE_NOCLIP)
+            end
+        end
+    end
 end
 
 function CheckSpectatorMode( all )
 	for k, v in pairs( player.GetAll() ) do
 		if v:GTeam() == TEAM_SPEC then
 			v:CheckSpectatorMode( all )
-			v:SetMoveType( MOVETYPE_NOCLIP )
 		end
 	end
 end
@@ -648,7 +642,6 @@ function mply:SetSpectator()
 	self:SetGTeam(TEAM_SPEC)
 	self:SetNoDraw(true)
 	self:SetNoTarget( true )
-	self:SetMoveType( MOVETYPE_NOCLIP )
 	--self:SetNoCollideWithTeammates(true)
 
 	if roam or #players < 1 then
@@ -667,6 +660,8 @@ function mply:SetSpectator()
 	self.UsingArmor = nil
 	self.canblink = false
 	self.handsmodel = nil
+
+	self:SetMoveType(MOVETYPE_NOCLIP)
 
 	--print("adding " .. self:Nick() .. " to spectators")
 end
@@ -704,7 +699,7 @@ function UIUSpy_MakeDocuments()
     local igroki_s_documentami = {}
 
     for _, ply in ipairs(player.GetAll()) do
-        if ply:GTeam() != TEAM_SCP or ply:GTeam() != TEAM_SPEC or ply:GetRoleName() != "UIU Spy" then -- LOL
+        if ply:GTeam() != TEAM_SCP or ply:GTeam() != TEAM_SPEC or ply:GetRoleName() != "UIU Spy" then
             table.insert(igroki_s_documentami, ply)
         end
     end
@@ -715,8 +710,8 @@ function UIUSpy_MakeDocuments()
             local target = igroki_s_documentami[index]
             
             target:Give("item_special_document")
-			target:RXSENDNotify("Вы являетесь важным сотрудником фонда! При себе вы имеете важные документы которые вы должны эвакуировать и не умереть.")
-			target:SetNWBool("Have_docs", true)
+            target:RXSENDNotify("Вы являетесь важным сотрудником фонда! При себе вы имеете важные документы, которые вы должны эвакуировать и не умереть.")
+            target:SetNWBool("Have_docs", true)
 
             table.remove(igroki_s_documentami, index)
         end
@@ -1068,10 +1063,13 @@ hook.Add( "KeyPress", "keypress_spectating", function( ply, key )
 	if ply:GTeam() != TEAM_SPEC or ply:GetRoleName() == role.ADMIN then return end
 	if ( key == IN_ATTACK ) then
 		ply:SpectatePlayerLeft()
+		ply:SetMoveType(MOVETYPE_NOCLIP)
 	elseif ( key == IN_ATTACK2 ) then
 		ply:SpectatePlayerRight()
+		ply:SetMoveType(MOVETYPE_NOCLIP)
 	elseif ( key == IN_RELOAD ) then
 		ply:ChangeSpecMode()
+		ply:SetMoveType(MOVETYPE_NOCLIP)
 	end
 end )
 
@@ -1093,6 +1091,7 @@ function mply:SpectatePlayerRight()
 	for k,v in pairs(allply) do
 		if k == self.SpecPly then
 			self:SpectateEntity( v )
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		end
 	end
 end
@@ -1115,6 +1114,7 @@ function mply:SpectatePlayerLeft()
 	for k,v in pairs(allply) do
 		if k == self.SpecPly then
 			self:SpectateEntity( v )
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		end
 	end
 end
@@ -1123,30 +1123,28 @@ function mply:ChangeSpecMode()
 	if !self:Alive() then return end
 	if !(self:GTeam() == TEAM_SPEC) then return end
 	self:SetNoDraw(true)
+	self:SetMoveType(MOVETYPE_NOCLIP)
 	local m = self:GetObserverMode()
 	local allply = #GetAlivePlayers()
 	if allply < 2 then
 		self:Spectate(OBS_MODE_ROAMING)
+		self:SetMoveType(MOVETYPE_NOCLIP)
 		return
 	end
-	/*
-	if m == OBS_MODE_CHASE then
-		self:Spectate(OBS_MODE_IN_EYE)
-	else
-		self:Spectate(OBS_MODE_CHASE)
-	end
-	*/
-	
+
 	if m == OBS_MODE_IN_EYE then
 		self:Spectate(OBS_MODE_CHASE)	
 	elseif m == OBS_MODE_CHASE then
+		self:SetMoveType(MOVETYPE_NOCLIP)
 		if GetConVar( "br_allow_roaming_spectate" ):GetInt() == 1 then
 			self:Spectate(OBS_MODE_ROAMING)
 		elseif GetConVar( "br_allow_ineye_spectate" ):GetInt() == 1 then
 			self:Spectate(OBS_MODE_IN_EYE)
 			self:SpectatePlayerLeft()
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		else
 			self:SpectatePlayerLeft()
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		end	
 	elseif m == OBS_MODE_ROAMING then
 		if GetConVar( "br_allow_ineye_spectate" ):GetInt() == 1 then
@@ -1155,9 +1153,11 @@ function mply:ChangeSpecMode()
 		else
 			self:Spectate(OBS_MODE_CHASE)
 			self:SpectatePlayerLeft()
+			self:SetMoveType(MOVETYPE_NOCLIP)
 		end
 	else
 		self:Spectate(OBS_MODE_ROAMING)
+		self:SetMoveType(MOVETYPE_NOCLIP)
 	end
 end
 
