@@ -23,6 +23,15 @@ function BroadcastStopMusic()
 	net.Broadcast()
 end
 
+concommand.Add("Ac", function(ply)
+	for _, ent in pairs(ents.GetAll()) do
+		if ent:GetClass("prop_dynamic") then
+		ent:SetKeyValue("Skin", 1)
+		end
+	end
+end)
+
+
 concommand.Add("suk", function(ply)
 	net.Start("LevelBar")
     net.WriteTable(eblya)
@@ -84,6 +93,12 @@ function IsPremium(ply)
 end
 
 function Player:SetBottomMessage( msg )
+    net.Start( "SetBottomMessage" )
+        net.WriteString( msg )
+    net.Send( self )
+end
+
+function Player:setBottomMessage( msg )
     net.Start( "SetBottomMessage" )
         net.WriteString( msg )
     net.Send( self )
@@ -599,10 +614,6 @@ hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
 	end
 end )
 
-
-function GM:PlayerSay(ply)
-end
-
 hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
 	if !IsValid(ply) and !ply:GTeam() == TEAM_SPEC then return end
     if not ply:Alive() then return end
@@ -788,33 +799,45 @@ function GM:PlayerUse(ply, ent, key)
     local trent = ply:GetEyeTrace().Entity
     local trmodel = trent:GetModel()
 
+	if trent:GetClass("prop_dynamic") then
+		trent:SetKeyValue("Skin",1)
+	end
+
     -- SCP OPEN UP!
-    if ply:GTeam() == TEAM_SCP and ent:GetClass() == "func_button" then
-        local время = 7
-        local падажжи = 2.5
-        
-        if IsValid(ent) and ent:GetClass() == "func_button" and ent == ply:GetEyeTrace().Entity then
-            ply:BrProgressBar("Выламываю...", время, "nextoren/gui/icons/notifications/breachiconfortips.png", ent, false, function()
-                local звуктаймер = 0
-                local звукнаигрался = false
+	if ply:GTeam() == TEAM_SCP and IsValid(ent) and ent:GetClass() == "func_button" then
+		local время = 7
+		local падажжи = 2.5
+		
+		local traceResult = ply:GetEyeTrace()
+		if IsValid(traceResult.Entity) and traceResult.Entity == ent then
+			local взломПроисходит = false
+			local звукиПроиграны = 0
 
-                timer.Create("BreakDoorSound", падажжи, math.floor(время / падажжи), function()
-                    звуктаймер = звуктаймер + падажжи
-                    if !звукнаигрался then
-                        ply:EmitSound("nextoren/doors/door_jam.mp3", 75, 100, 1, CHAN_AUTO)
-                        звукнаигрался = true
-                    end
-                end)
+			timer.Create("BreakDoorSound", падажжи, math.floor(0 / падажжи), function()
+				local звуктаймер = 0
+				local звукнаигрался = false
 
-                timer.Simple(время, function()
-                    timer.Remove("BreakDoorSound")
-                    ply:EmitSound("nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO)
-                    ent:Fire("use")
-                end)
-            end)
-        end
-    end
+				timer.Create("BreakDoorSound", падажжи, 4, function()
+					if звукиПроиграны < 4 then
+						ply:EmitSound("nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO)
+						звукиПроиграны = звукиПроиграны + 1
+					end
+				end)
+					end)
 
+	
+			ply:BrProgressBar("Выламываю...", время, "nextoren/gui/icons/notifications/breachiconfortips.png", ent, false, function()
+				timer.Simple(0, function()
+					timer.Remove("BreakDoorSound")
+					ply:EmitSound("nextoren/doors/door_break.wav", 75, 100, 1, CHAN_AUTO)
+					if IsValid(ent) and !взломПроисходит then
+						ent:Fire("use")
+						взломПроисходит = true
+					end
+				end)
+			end)
+		end
+	end
     -- Cleaner Loot
     local validToUseMusor = {"nigga.mdl"}
 

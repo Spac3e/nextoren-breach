@@ -281,7 +281,7 @@ function GhostBoneMerge(entity, model, no_draw, skin, sub_material)
         entity.no_draw = true
     end
 
-    if model:find("/heads/") or model:find("/head/") or model:find("cultist/humans/goc/head/") or model:find("head") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and not model:find("hair") then
+	if model:find("/heads/") or model:find("/head/") or model:find("/funnyheads/") or model:find("goc/head") or model:find("balaclavas_new") or model:find("balaclavas") and !model:find("hair") then
         entity.HeadEnt = bnmrg
         if entity.Sub_Material then
             local sub_material_id = 0

@@ -111,35 +111,39 @@ function ENT:Use( activator, caller )
 
   if self:GetEnabled() and activator:GTeam() != TEAM_COTSK then
     
-    for i = 1, #player.GetHumans() do
-      local ply = player.GetHumans()[i]
-      if ply:GTeam() == TEAM_COTSK then
-        BREACH.Players:ChatPrint( ply, true, true, "l:cultbook_ritual_distrupted" )
+    local function finish()
+      for i = 1, #player.GetHumans() do
+        local ply = player.GetHumans()[i]
+        if ply:GTeam() == TEAM_COTSK then
+          BREACH.Players:ChatPrint( ply, true, true, "l:cultbook_ritual_distrupted" )
+        end
       end
+
+      timer.UnPause("Evacuation")
+      timer.UnPause("EvacuationWarhead")
+      timer.UnPause("RoundTime")
+      timer.UnPause("EndRound_Timer")
+      timer.Remove("cultist_detonation")
+      BroadcastLua("cltime = "..tostring(timer.TimeLeft("RoundTime")))
+      self:SetEnabled(false)
+      SetGlobalBool( "Evacuation_HUD", false )
+      BroadcastStopMusic()
+      net.Start( "ForcePlaySound" )
+        net.WriteString( "nextoren/entities/intercom/start.mp3" )
+      net.Broadcast()
+
+      BREACH.Players:ChatPrint( player.GetAll(), true, true, "l:cultbook_ritual_stopped" )
     end
 
-    timer.UnPause("Evacuation")
-    timer.UnPause("EvacuationWarhead")
-    timer.UnPause("RoundTime")
-    timer.UnPause("EndRound_Timer")
-    timer.Remove("cultist_detonation")
-    BroadcastLua("cltime = "..tostring(timer.TimeLeft("RoundTime")))
-    self:SetEnabled(false)
-    SetGlobalBool( "Evacuation_HUD", false )
-    BroadcastStopMusic()
-    net.Start( "ForcePlaySound" )
-      net.WriteString( "nextoren/entities/intercom/start.mp3" )
-    net.Broadcast()
-
-    BREACH.Players:ChatPrint( player.GetAll(), true, true, "l:cultbook_ritual_stopped" )
+    activator:BrProgressBar("Прерываем ритуал...", 5, "nextoren/gui/icons/notifications/breachiconfortips.png", self, false, finish, nil, nil)
 
   end
   if !self:GetEnabled() and activator:HasWeapon("ritual_paper") then
     if GetGlobalBool("Evacuation", false) then return end
     if preparing then return end
     if postround then return end
-    if timer.Exists("EvacuationWarhead") then return end
-    if timer.Exists("Evacuation") then return end
+    if !timer.Exists("EvacuationWarhead") then return end
+    if !timer.Exists("Evacuation") then return end
     if activator:GetActiveWeapon() and activator:GetActiveWeapon():GetClass() != "ritual_paper" then
       activator:RXSENDNotify("l:quran_needed")
       return
@@ -148,8 +152,8 @@ function ENT:Use( activator, caller )
       if GetGlobalBool("Evacuation", false) then return end
 	  if preparing then return end
 	  if postround then return end
-	  if timer.Exists("EvacuationWarhead") then return end
-	  if timer.Exists("Evacuation") then return end
+	  if !timer.Exists("EvacuationWarhead") then return end
+	  if !timer.Exists("Evacuation") then return end
       self:SetEnabled(true)
       activator:SetNWEntity("NTF1Entity", NULL)
 
