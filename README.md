@@ -7,8 +7,7 @@
 - [Imperator](https://github.com/ImperioRator)
 
 ##  Links
-[![steam](https://img.shields.io/badge/%3CCONTENT%3E%20-%237289DA.svg?&style=for-the-badge&logo=steam&logoColor=white)](https://discord.gg/vaultcommunity)
-
+[![steam](https://img.shields.io/badge/%3CCONTENT%3E%20-%237289DA.svg?&style=for-the-badge&logo=steam&logoColor=white)](https://steamcommunity.com/sharedfiles/filedetails/?id=3044598688)
 
 ## Credits
 NextOren Team, RxSend (For weapons and lua code, and ofc client-side backdoors which already removed)
