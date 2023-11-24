@@ -185,7 +185,7 @@ function ENT:Draw()
 
 					draw.SimpleText( "SCP-Objects detected", "LiveTabMainFont_small", 0, 340, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-				end]]
+				end]]--
 
 			end
 		cam.End3D2D()

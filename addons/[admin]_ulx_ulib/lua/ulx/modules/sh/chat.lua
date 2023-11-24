@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   addons/[admin]_ulx_ulib/lua/ulx/modules/sh/chat.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 -- This module holds any type of chatting functions
 CATEGORY_NAME = "Chat"
 
@@ -44,7 +56,7 @@ if SERVER then ULib.ucl.registerAccess( seeasayAccess, ULib.ACCESS_OPERATOR, "Ab
 
 function ulx.donate( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/3193621324044770528/\")")
 
 end
 local donate = ulx.command( "FAQ", "ulx donate", ulx.donate, "!donate", true, true )
@@ -54,7 +66,7 @@ donate:help( "Donation" )
 
 function ulx.steam( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND\")")
 
 end
 local steam = ulx.command( "FAQ", "ulx steam", ulx.steam, "!steam", true, true )
@@ -64,7 +76,7 @@ steam:help( "Steam group" )
 
 function ulx.discord( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/evnTaEKnGq\")")
 
 end
 local discord = ulx.command( "FAQ", "ulx discord", ulx.discord, "!discord", true, true )
@@ -74,7 +86,7 @@ discord:help( "Discord" )
 
 function ulx.rules( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/5089647632456815273/\")")
 
 end
 local rules = ulx.command( "FAQ", "ulx rules", ulx.rules, "!rules", true, true )
@@ -83,7 +95,7 @@ rules:help( "Server Rules" )
 
 function ulx.faq( calling_ply )
 
-	calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
+	calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/0/4287991687312245493/\")")
 
 end
 local faq = ulx.command( "FAQ", "ulx faq", ulx.faq, "!faq", true, true )
@@ -116,7 +128,7 @@ function ulx.asay( calling_ply, message )
 
 	if !admins then
 		calling_ply:RXSENDNotify("l:no_admins")
-		calling_ply:SendLua("gui.OpenURL(\"https://discord.gg/vaultcommunity/\")")
+		calling_ply:SendLua("gui.OpenURL(\"https://steamcommunity.com/groups/RXSEND/discussions/3/3193621324037941231/\")")
 		return
 	end
 

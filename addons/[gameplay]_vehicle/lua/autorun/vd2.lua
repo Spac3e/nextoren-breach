@@ -1,6 +1,6 @@
 --[[
 Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
+Server IP:   62.122.215.225:27015
 File Path:   addons/[gameplay]_vehicle/lua/autorun/vd2.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -359,7 +359,7 @@ end
 
     if ( speed > 250 ) then
 
-      ply:SetBottomMessage("You cannot exit a moving vehicle!")
+      ply:setBottomMessage("You cannot exit a moving vehicle!")
       return false
 
     end
@@ -700,7 +700,7 @@ end
 
     elseif ( IsFirstTimePredicted() && ply:GetVehicle().TurnedOff && !ply:HasWeapon( "item_keys" ) ) then
 
-      ply:SetBottomMessage( "У вас нет ключей." )
+      ply:setBottomMessage( "У вас нет ключей." )
 
     end
 
@@ -717,7 +717,7 @@ end
 
     if ( vehicle:GetClass() == "prop_vehicle_jeep" && vehicle:GetDriver() == player ) then
 
-      player:SetBottomMessage( "Нажмите клавишу \"B\" для активации двигателя.")
+      player:setBottomMessage( "Нажмите клавишу \"B\" для активации двигателя.")
 
     end
 

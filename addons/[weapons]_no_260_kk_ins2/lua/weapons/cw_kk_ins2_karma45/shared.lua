@@ -1,6 +1,6 @@
 --[[
 Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
+Server IP:   62.122.215.225:27015
 File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_karma45/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -201,9 +201,9 @@ SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "SMG1"
 
 SWEP.FireDelay = 0.075
-SWEP.FireSound = "CW_KK_INS2_MP5K_FIRE"
+SWEP.FireSound = "CW_KK_INS2_AKS74U_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_MP5K_FIRE_SUPPRESSED"
-SWEP.Recoil = 1.75
+SWEP.Recoil = 1
 
 SWEP.HipSpread = 0.035
 SWEP.AimSpread = 0.0153

@@ -1,7 +1,7 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   addons/[weapons]_new_weapons/lua/weapons/cw_kk_ins2_svd/sh_sounds.lua
+Server Name: RXSEND Breach
+Server IP:   62.122.215.225:27015
+File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_svd/sh_sounds.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/

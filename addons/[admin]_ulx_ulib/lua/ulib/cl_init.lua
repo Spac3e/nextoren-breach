@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   46.174.50.119:27015
+File Path:   addons/[admin]_ulx_ulib/lua/ulib/cl_init.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 ULib = ULib or {} -- Init table
 
 include( "ulib/shared/defines.lua" )
@@ -20,6 +32,7 @@ include( "ulib/shared/cami_ulib.lua" )
 local files = file.Find( "ulib/modules/*.lua", "LUA" )
 if #files > 0 then
 	for _, file in ipairs( files ) do
+		Msg( "[ULIB] Loading SHARED module: " .. file .. "\n" )
 		include( "ulib/modules/" .. file )
 	end
 end
@@ -28,6 +41,7 @@ end
 local files = file.Find( "ulib/modules/client/*.lua", "LUA" )
 if #files > 0 then
 	for _, file in ipairs( files ) do
+		Msg( "[ULIB] Loading CLIENT module: " .. file .. "\n" )
 		include( "ulib/modules/client/" .. file )
 	end
 end

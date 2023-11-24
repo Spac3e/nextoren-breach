@@ -1,6 +1,3 @@
---[[
-gamemodes/breach/entities/weapons/item_snav_300.lua
---]]
 AddCSLuaFile()
 
 SWEP.ViewModelFOV	= 62

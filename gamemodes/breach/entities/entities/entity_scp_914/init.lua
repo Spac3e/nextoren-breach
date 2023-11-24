@@ -258,69 +258,106 @@ net.Receive( "914_edit_status", function()
 end)
 
 net.Receive( "914_run", function()
-    
 	visual_work()
-
 end)
 
-
-
 function fackt_work()
-
-	local entsinbox = ents.FindInBox( Vector( 9553, -4481, 4 ), Vector( 9614, -4606, 125 ) ) 
-    for k, v in ipairs( entsinbox ) do
-       -- if v:IsPlayer() and v:GTeam() != TEAM_SPEC and v:GetMoveType("MOVETYPE_NOCLIP") then v:Kill()end
-		evacuate(v,"vse",50,"l:scp914_death")
-		local spawn_item1 = ents.Create( "item_hamburger" )
-		spawn_item1:SetPos( Vector( 9585, -4979, 66 ) )
-		spawn_item1:Spawn()
-		if v:GetClass() != "func_door" and v:GetClass() != "prop_dynamic" then
-			if scp_914_items[v:GetClass()] == nil then return end
-			local hui = v:GetClass()
-			local wep = string.sub( hui, 1, 15 )
-			if table.Count(scp_914_items[hui][scp_914_r_status]) > 1 then
-				local spawn_item = ents.Create( table.Random( scp_914_items[hui][scp_914_r_status] ) )
-				spawn_item:SetPos( Vector( 9585, -4979, 66 ) )
-				spawn_item:Spawn()
-			else
-				if !table.IsEmpty(scp_914_items[hui][scp_914_r_status]) then
-					local spawn_item = ents.Create( scp_914_items[hui][scp_914_r_status] )
-					spawn_item:SetPos( Vector( 9585, -4979, 66 ) )
-					spawn_item:Spawn()
-				end
-			end
-			v:Remove()
-		end
+    local entsinbox = ents.FindInBox(Vector(9553, -4481, 4), Vector(9614, -4606, 125))
+    for k, v in ipairs(entsinbox) do
+        if v:IsPlayer() and v:Team() != TEAM_SPEC and v:GetMoveType() != MOVETYPE_NOCLIP then
+            evacuate(v, "vse", 50, "l:scp914_death")
+            local spawn_item1 = ents.Create("item_hamburger")
+            spawn_item1:SetPos(Vector(9585, -4979, 66))
+            spawn_item1:Spawn()
+        else
+            if v:GetClass() != "func_door" and v:GetClass() != "prop_dynamic" then
+                if scp_914_items[v:GetClass()] == nil then
+                    continue
+                end
+                if table.Count(scp_914_items[v:GetClass()][scp_914_r_status]) > 1 then
+                    local spawn_item = ents.Create(table.Random(scp_914_items[v:GetClass()][scp_914_r_status]))
+                    spawn_item:SetPos(Vector(9585, -4979, 66))
+                    spawn_item:Spawn()
+                else
+                    if not table.IsEmpty(scp_914_items[v:GetClass()][scp_914_r_status]) then
+                        local spawn_item = ents.Create(scp_914_items[v:GetClass()][scp_914_r_status])
+                        spawn_item:SetPos(Vector(9585, -4979, 66))
+                        spawn_item:Spawn()
+                    end
+                end
+                v:Remove()
+            end
+        end
     end
 end
 
 function visual_work()
 	sound.Play( "nextoren/scp/914/refining.ogg", Vector(9566, -4769, 88) )
-	timer.Simple( 2, function()
-	for k,ball in pairs(ents.FindInSphere((Vector(9544, -4556, 66)), 50)) do
-        if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Close") end
+
+    timer.Simple(2, function()
+        for k, ball in pairs(ents.FindInSphere(Vector(9544, -4556, 66), 50)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Close")
+            end
         end
-    end
-	for k,ball in pairs(ents.FindInSphere((Vector(9543, -5004, 66)), 50)) do
-        if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Close") end
+
+        for k, ball in pairs(ents.FindInSphere(Vector(9543, -5004, 66), 50)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Close")
+            end
         end
-    end
-	end)
-	timer.Simple( 14, function()
-	for k,ball in pairs(ents.FindInSphere((Vector(9544, -4556, 66)), 15)) do
-        if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Open") end
+    end)
+
+    timer.Simple(14, function()
+        for k, ball in pairs(ents.FindInSphere(Vector(9544, -4556, 66), 15)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Open")
+            end
         end
-    end
-	for k,ball in pairs(ents.FindInSphere((Vector(9543, -5004, 66)), 15)) do
-        if IsValid(ball) then
-			if ball:GetClass() == "func_door" then ball:Fire("Open") end
+
+        for k, ball in pairs(ents.FindInSphere(Vector(9543, -5004, 66), 15)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Open")
+            end
         end
-    end
-	fackt_work()
-	end)
+
+        fackt_work()
+    end)
+end
+
+
+function visual_work()
+	sound.Play( "nextoren/scp/914/refining.ogg", Vector(9566, -4769, 88) )
+
+    timer.Simple(2, function()
+        for k, ball in pairs(ents.FindInSphere(Vector(9544, -4556, 66), 50)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Close")
+            end
+        end
+
+        for k, ball in pairs(ents.FindInSphere(Vector(9543, -5004, 66), 50)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Close")
+            end
+        end
+    end)
+
+    timer.Simple(14, function()
+        for k, ball in pairs(ents.FindInSphere(Vector(9544, -4556, 66), 15)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Open")
+            end
+        end
+
+        for k, ball in pairs(ents.FindInSphere(Vector(9543, -5004, 66), 15)) do
+            if IsValid(ball) and ball:GetClass() == "func_door" then
+                ball:Fire("Open")
+            end
+        end
+
+        fackt_work()
+    end)
 end
 
 function ENT:Think()

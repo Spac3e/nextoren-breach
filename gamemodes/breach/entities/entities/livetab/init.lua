@@ -3,8 +3,6 @@ AddCSLuaFile( "shared.lua" )
 include('shared.lua')
 
 function ENT:Initialize()
-
-
 	self:SetModel( "models/next_breach/gas_monitor.mdl" )
 	//self:PhysicsInit( SOLID_VPHYSICS )
 	//self:SetMoveType( MOVETYPE_VPHYSICS )
@@ -14,6 +12,8 @@ function ENT:Initialize()
 	//if (phys:IsValid()) then
 		//phys:Wake()
 	//end
+
+	self:SetSupportChannel(Radio_GetChannel(TEAM_GUARD))
 end
  
 function ENT:Use( activator, caller )

@@ -1,7 +1,7 @@
 --[[
-Server Name: Breach 2.6.0 [Alpha]
-Server IP:   94.26.255.7:27415
-File Path:   addons/[weapons]_new_weapons/lua/weapons/cw_kk_ins2_svd/shared.lua
+Server Name: RXSEND Breach
+Server IP:   62.122.215.225:27015
+File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_kk_ins2_svd/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
   / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
@@ -242,12 +242,12 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.Primary.ClipSize		= 20
 SWEP.Primary.DefaultClip = 0 --	= 20
 SWEP.Primary.Automatic		= false
-SWEP.Primary.Ammo			= "AR2"
+SWEP.Primary.Ammo			= "7.62x39MM"
 
-SWEP.FireDelay = 60/600
+SWEP.FireDelay = 0.559
 SWEP.FireSound = "CW_KK_INS2_SVD_FIRE"
 SWEP.FireSoundSuppressed = "CW_KK_INS2_SVD_FIRE_SUPPRESSED"
-SWEP.Recoil = 3
+SWEP.Recoil = 4
 
 SWEP.HipSpread = 0.043
 SWEP.AimSpread = 0.005
@@ -256,7 +256,7 @@ SWEP.MaxSpreadInc = 0.05
 SWEP.SpreadPerShot = 0.007
 SWEP.SpreadCooldown = 0.13
 SWEP.Shots = 1
-SWEP.Damage = 42
+SWEP.Damage = 190
 
 SWEP.FirstDeployTime = 1.5
 SWEP.DeployTime = 0.7

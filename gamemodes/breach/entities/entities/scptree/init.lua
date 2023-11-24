@@ -25,45 +25,61 @@ function ENT:Initialize()
     self:SetPos(Vector(9085.486328, -1932.134644, 5.520229))
 end
 
+function LinearMotionModule(ent, endpos, speed)
+    if !IsValid(ent) then return end
+    local ratio = 0
+    local time = 0
+    local startpos = ent:GetPos()
+    timer.Create(ent:GetClass().."_linear_motion", FrameTime(), 9999999999999, function()
+        if !IsValid(ent) then return end
+        ratio = speed + ratio
+        time = time + FrameTime()
+        ent:SetPos(LerpVector(ratio, startpos, endpos))
+        if ent:GetPos():DistToSqr(endpos) < 1 then
+            ent:SetPos(endpos)
+        end
+        if ent:GetPos() == endpos then
+            timer.Remove(ent:GetClass().."_linear_motion")
+        end
+    end)
 
--- Функция для анимации предмета
-local function AnimateItem(item, destination)
-    if IsValid(item) and IsValid(destination) then
-        local startPos = item:GetPos()
-        local endPos = destination
-
-        item:SetPos(startPos - Vector(0, 0, 10)) -- Переместить предмет вниз немного
-
-        timer.Simple(2, function() -- Измените продолжительность анимации по необходимости (2 секунды в этом примере)
-            if IsValid(item) and IsValid(destination) then
-                item:SetPos(endPos)
-                item:SetVelocity(Vector(0, 0, 300)) -- Бросить предмет вверх (настройте скорость по необходимости)
-            end
-        end)
-    end
 end
+
 
 function ENT:Think()
     if SERVER then
-        local nearbyEntities = ents.FindInSphere(self:GetPos(), 150)
+        local nearbyEntities = ents.FindInBox(Vector(8873, -1791, -3),Vector(9296, -2052, 11), 150)
         for _, item in pairs(nearbyEntities) do
-            if IsValid(item) and item:IsWeapon() and !IsValid(item:GetOwner()) then
+            if IsValid(item) and item:IsWeapon() and !IsValid(item:GetOwner()) and not item.Copied then
                 local itemClass = item:GetClass()
-                if itemClass == "meganias" or item == self.Copied or item == self.CopiedOut then
-                    continue -- Пропустить определенные классы энтити и уже скопированные предметы
+                local itemPos = (item:GetPos())
+                LinearMotionModule(item,item:GetPos() - Vector(0, 0, 10),0.005)
+                if itemClass == "weapon_special_gaus" or item == self.Copied or item == self.CopiedOut then
+                    continue
                 end
-
+                item.Copied = true
+                timer.Simple(3, function()
                 local copy = ents.Create(itemClass)
-                copy:SetPos(Vector(9085.438477, -1904.265137, 81.331055)) -- Задайте желаемую позицию для выбрасывания
+                copy:SetPos(itemPos)
                 copy:Spawn()
+                local copy2 = ents.Create(itemClass)
+                copy2:SetPos(itemPos)
+                copy2:Spawn()
+                LinearMotionModule(copy,copy:GetPos() + Vector(0, 0, 0),0.05)
+                LinearMotionModule(copy2,copy2:GetPos() + Vector(0, 0, 0),0.05)
+                --LinearMotionModule(item,item:GetPos() + Vector(0, 0, 10),0.005)
+                copy.Copied = true
+                copy2.Copied = true
 
-                -- Примените параметры copied и copiedout
+                item.Copied = true
+
                 self.Copied = item
                 self.CopiedOut = copy
-
-                AnimateItem(copy, copy:GetPos() + Vector(0, 0, 10)) -- Анимировать созданный предмет
-
-                break -- Один раз скопировали предмет и прервали цикл
+                self.CopiedOut = copy2
+                item:Remove()
+                end)
+                --LinearMotionModule(copy,copy:GetPos() + Vector(0, 0, 80),0.001)
+                break
             end
         end
     end

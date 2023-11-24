@@ -17,7 +17,7 @@ function ENT:Initialize()
 		//phys:Wake()
 	//end
 
-		timer.Simple(72, function()
+		timer.Simple(100, function()
 			self:Remove()
 		end)
 
@@ -30,8 +30,8 @@ end
 function ENT:Think()
 
 	for k,v in pairs(ents.FindInSphere(Vector(-3643, 5276, 1690), 50)) do
-		evacuate(v,TEAM_SCP,1000,"l:cutscene_evac_by_rph")
-		evacuate(v,TEAM_DZ,1000,"l:cutscene_evac_by_rph")
+		evacuate(v,TEAM_SCP,900,"l:ending_tp_to_unknown_loc")
+		evacuate(v,TEAM_DZ,900,"l:ending_tp_to_unknown_loc")
 	end
 
 end

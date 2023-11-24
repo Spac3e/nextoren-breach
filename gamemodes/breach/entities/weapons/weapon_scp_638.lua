@@ -35,8 +35,7 @@ SWEP.AbilityIcons = {
     ["Icon"] = "nextoren/gui/special_abilities/638/638_cone_damage.png",
     ["Abillity"] = nil
 
-  },
-  --[[
+  },--[[
   {
 
     ["Name"] = "Slow Scream",
@@ -48,7 +47,7 @@ SWEP.AbilityIcons = {
     ["Icon"] = "nextoren/gui/special_abilities/638/638_slow_scream.png",
     ["Abillity"] = nil
 
-  },
+  },--]]
   {
 
     ["Name"] = "∞ Decibels",
@@ -60,7 +59,7 @@ SWEP.AbilityIcons = {
     ["Icon"] = "nextoren/gui/special_abilities/638/638_aoe_scream.png",
     ["Abillity"] = nil
 
-  },]]
+  },
 
 }
 
@@ -283,6 +282,60 @@ function SWEP:Deploy()
               caller:SetWalkSpeed(savewalk)
             end
           end)
+        end
+      elseif ( button == KEY_C && !( ( wep.AbilityIcons[ 4 ].CooldownTime || 0 ) > CurTime() ) ) then
+
+        wep.AbilityIcons[ 4 ].CooldownTime = CurTime() + wep.AbilityIcons[ 4 ].Cooldown
+
+        for i = 1, #wep.AbilityIcons do
+          if wep.AbilityIcons[i].CooldownTime < CurTime() or i < 3 then
+            wep.AbilityIcons[i].CooldownTime = CurTime() + 17
+          end
+        end
+
+        if SERVER then
+
+          self:SetNextPrimaryFire(CurTime() + 17)
+          self:SetNextSecondaryFire(CurTime() + 17)
+          net.Start("ThirdPersonCutscene")
+          net.WriteUInt(8, 4)
+          net.WriteBool(false)
+          net.Send(caller)
+          caller:SetMoveType(MOVETYPE_OBSERVER)
+          caller:SetNWAngle("ViewAngles", caller:GetAngles())
+          caller:EmitSound("nextoren/scp/638/high_decibel_scream.ogg", 1255, math.random(90,110), 1.25, CHAN_VOICE)
+
+          timer.Create("SCREAMER_DODAMAGE_"..caller:SteamID64(), 1, 8, function()
+
+            if caller:GetRoleName() != "SCP638" then timer.Remove("SCREAMER_DODAMAGE_"..caller:SteamID64()) return end
+
+            local plys = ents.FindInSphere(caller:GetPos(), 320)
+
+            for i = 1, #plys do
+
+              local ply = plys[i]
+
+              if IsValid(ply) and ply:IsPlayer() then
+
+                if ply:GTeam() != TEAM_SCP and ply:GTeam() != TEAM_SPEC then
+
+                  ply:TakeDamage(25, caller, caller:GetActiveWeapon())
+
+                end
+
+              end
+
+            end
+
+          end)
+
+          caller:SetForcedAnimation("BoomerVar_squat", caller:SequenceDuration(caller:LookupSequence("BoomerVar_squat")), nil, function()
+            caller:SetForcedAnimation("Crouch_idle_upper_knife", 6.5, nil, function()
+              caller:SetNWAngle("ViewAngles", Angle(0,0,0))
+              caller:SetMoveType(MOVETYPE_WALK)
+            end)
+          end)
+
         end
 
       end

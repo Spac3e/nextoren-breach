@@ -59,7 +59,7 @@ function ENT:Use( activator )
               net.Broadcast()
 
             end)
-
+          SetGlobalBool( "NukeTime", true )
           SetGlobalBool( "Evacuation_HUD", true )
           for k,v in pairs(player.GetAll()) do
             v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:goc_nuke_start", Color(255, 255, 255))
@@ -85,6 +85,7 @@ function ENT:Use( activator )
           PlayAnnouncer("nextoren/sl/warheadcrank.ogg")
           PlayAnnouncer("no_music/nukes/nuke_sequence_main_1.ogg")
         timer.Simple( 15, function()
+          SetGlobalBool( "NukeTime", true )
           SetGlobalBool( "Evacuation_HUD", true )
             timer.Create("NukeTimer", self:GetDeactivationTime(), 1, function()
 
@@ -169,14 +170,17 @@ end
 
 function I_Nuke_Boom()
   AlphaWarheadBoomEffect()
-	for k,v in pairs(player.GetAll()) do
-    if v:GTeam() != TEAM_SPEC then
-		v:KillSilent()
-    v:SendLua("surface.PlaySound(\"nextoren/ending/nuke.mp3\")")
-	  v:ScreenFade( SCREENFADE.OUT, Color( 255, 255, 255, 255 ), 0.6, 4 )
-	  v:SendLua("util.ScreenShake( Vector( 0, 0, 0 ), 50, 10, 3, 5000 )")		
-	end
-	end
+	timer.Simple(5, function()
+		for k,v in pairs(player.GetAll()) do
+			if v:GTeam() != TEAM_SPEC then
+				v:TakeDamage(99999,nil,nil)
+			end
+		end
+	end)
+						
+	timer.Simple(27, function()
+		RoundRestart()
+	end)
   timer.Simple(27, function()
 		RoundRestart()
 	end)
@@ -221,6 +225,6 @@ end
 
 function Goc_Evac()
 	for k,v in pairs(player.GetAll()) do
-    evacuate(v,TEAM_GOC,900,"l:activated_warhead")
+    evacuate(v,TEAM_GOC,950,"l:activated_warhead")
 	end
 end

@@ -47,15 +47,15 @@ function ENT:Draw()
   ang:RotateAroundAxis( oang:Right(), -90 )
   ang:RotateAroundAxis( oang:Up(), 90 )
 
-  if ( cltime - 570 < 90 ) then
+  	if ( cltime - 570 < 90 ) then
 
-    clr = Color( 250, 128, 114 )
+    	clr = Color( 250, 128, 114 )
 
 	else
 
 		clr = color_white
 
-  end
+  	end
 
   cam.Start3D2D( pos + oang:Forward() * -6 + oang:Up() * 13 + oang:Right() * -3, ang, 0.07 )
 
@@ -91,44 +91,44 @@ function ENT:Draw()
     	draw.SimpleText( "SCP Foundation STATUS", "LZText", -68, 80, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 		end
-		if big_round == true then
-		if ( preparing || !gamestarted ) then
+		if GetGlobalBool("BigRound") == true then
+			if ( preparing || !gamestarted ) then
 
-			draw.SimpleText( "Welcome to the SCP Foundation!", "LZTextSmall", -68, 120, ColorAlpha( preparing_clr, 180 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTEk )
-			draw.SimpleText( "Have a very safe and productive day!", "LZTextSmall", -68, 185, ColorAlpha( preparing_clr, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( "Welcome to the SCP Foundation!", "LZTextSmall", -68, 120, ColorAlpha( preparing_clr, 180 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTEk )
+				draw.SimpleText( "Have a very safe and productive day!", "LZTextSmall", -68, 185, ColorAlpha( preparing_clr, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		elseif (  ( cltime - 570 > 90 ) ) then
+			elseif (  ( cltime - 570 > 90 ) ) then
 
-			self.Decontamination_Time = timer.TimeLeft("LZDecont") || 0
+				self.Decontamination_Time = timer.TimeLeft("LZDecont") || 0
 
-			draw.SimpleText( ">> The Decontamination Process will begin in ", "LZTextSmall", -80, 120, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.SimpleText( ">>" .. string.ToMinutesSeconds( cltime - "660" ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.OutlinedBox( -195, 140, 250, 100, 4, clr )
+				draw.SimpleText( ">> The Decontamination Process will begin in ", "LZTextSmall", -80, 120, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( ">>" .. string.ToMinutesSeconds( cltime - "660" ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.OutlinedBox( -195, 140, 250, 100, 4, clr )
 
-		elseif ( cltime - 570 < 90 ) then
+			elseif ( cltime - 570 < 90 ) then
 
-			draw.SimpleText( ">> Immediately leave the current zone!", "LZTextSmall", -80, 185, ColorAlpha( danger_clr, 180 * Pulsate( 2 ) ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( ">> Immediately leave the current zone!", "LZTextSmall", -80, 185, ColorAlpha( danger_clr, 180 * Pulsate( 2 ) ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		end
+			end
 		else
-		if ( preparing || !gamestarted ) then
+			if ( preparing || !gamestarted ) then
 
-			draw.SimpleText( "Welcome to the SCP Foundation!", "LZTextSmall", -68, 120, ColorAlpha( preparing_clr, 180 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTEk )
-			draw.SimpleText( "Have a very safe and productive day!", "LZTextSmall", -68, 185, ColorAlpha( preparing_clr, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( "Welcome to the SCP Foundation!", "LZTextSmall", -68, 120, ColorAlpha( preparing_clr, 180 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTEk )
+				draw.SimpleText( "Have a very safe and productive day!", "LZTextSmall", -68, 185, ColorAlpha( preparing_clr, 200 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		elseif (  ( cltime - 270 > 90 ) ) then
+			elseif (  ( cltime - 420 > 90 ) ) then
 
-			self.Decontamination_Time = timer.TimeLeft("LZDecont") || 0
+				self.Decontamination_Time = timer.TimeLeft("LZDecont") || 0
 
-			draw.SimpleText( ">> The Decontamination Process will begin in ", "LZTextSmall", -80, 120, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.SimpleText( ">>" .. string.ToMinutesSeconds( cltime - "460" ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-			draw.OutlinedBox( -195, 140, 250, 100, 4, clr )
+				draw.SimpleText( ">> The Decontamination Process will begin in ", "LZTextSmall", -80, 120, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( ">>" .. string.ToMinutesSeconds( cltime - "420" ), "LZTextBig", -101, 185, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.OutlinedBox( -195, 140, 250, 100, 4, clr )
 
-		elseif ( cltime - 270 < 90 ) then
+			elseif ( cltime - 420 < 90 ) then
 
-			draw.SimpleText( ">> Immediately leave the current zone!", "LZTextSmall", -80, 185, ColorAlpha( danger_clr, 180 * Pulsate( 2 ) ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+				draw.SimpleText( ">> Immediately leave the current zone!", "LZTextSmall", -80, 185, ColorAlpha( danger_clr, 180 * Pulsate( 2 ) ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
-		end
+			end
 		end
 
 

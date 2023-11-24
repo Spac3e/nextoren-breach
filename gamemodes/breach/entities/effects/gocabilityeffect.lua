@@ -1,3 +1,15 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   62.122.215.225:27015
+File Path:   gamemodes/breach/entities/effects/gocabilityeffect.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
 AddCSLuaFile()
 
 local matRefract = Material("sprites/heatwave")
@@ -139,12 +151,12 @@ end
 function EFFECT:RenderParent()
 --gamemodes/breach/entities/effects/gocabilityeffect.lua:141: attempt to call method 'StartClip' (a nil value)
 
-	--local bClipping = self.SpawnEffect:StartClip( self, 1 )
+	local bClipping = self.SpawnEffect:StartClip( self, 1 )
 	self:DrawModel()
-	--render.PopCustomClipPlane()
-	--render.EnableClipping( bClipping );
+	render.PopCustomClipPlane()
+	render.EnableClipping( bClipping );
 
-	--self.SpawnEffect:RenderOverlay( self )
+	self.SpawnEffect:RenderOverlay( self )
 
 end
 
@@ -158,7 +170,7 @@ function EFFECT:StartClip( model, spd )
 
 	--local Fraction = (self.LifeTime - CurTime()) / self.Time
 	--Fraction = math.Clamp( Fraction / spd, 0, 1 )
-	self.Fraction = math.Approach( self.Fraction, 1, FrameTime() * .2 )
+	self.Fraction = math.Approach( self.Fraction, 1, FrameTime() * 0.1 )
 
 	local Lerped = nil
 	if self.Reverse then

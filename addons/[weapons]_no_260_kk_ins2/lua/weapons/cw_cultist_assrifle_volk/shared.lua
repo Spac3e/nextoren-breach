@@ -1,6 +1,6 @@
 --[[
 Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
+Server IP:   62.122.215.225:27015
 File Path:   addons/[weapons]_no_260_kk_ins2/lua/weapons/cw_cultist_assrifle_volk/shared.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
@@ -252,7 +252,7 @@ SWEP.AdminSpawnable		= CustomizableWeaponry_KK.ins2.isContentMounted4(SWEP)
 SWEP.Primary.ClipSize		= 30
 SWEP.Primary.DefaultClip = 0 --	= 0
 SWEP.Primary.Automatic		= true
-SWEP.Primary.Ammo			= "GRU"
+SWEP.Primary.Ammo			= "AR2"
 
 SWEP.FireDelay = 0.092307692307692
 SWEP.FireSound = "CW_KK_INS2_AKM_FIRE"

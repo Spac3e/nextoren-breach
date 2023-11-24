@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
-File Path:   addons/[chat]_voicechatmeter/lua/voicemeter/cl_voice_meter.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 surface.CreateFont( "Jack_VoiceFont", {
  font = "Arial",
  size = VoiceChatMeter.FontSize or 17,
@@ -473,7 +461,7 @@ function Jack.StartVoice(ply)
   --end
 
 
-  if VAULT_YOUTUBERS[ply:SteamID64()] and ply:GTeam() == TEAM_SPEC then
+  if MONIX_YOUTUBERS[ply:SteamID64()] and ply:GTeam() == TEAM_SPEC then
   	--clr = Color(255,0,0)
   	NameStr = "[YouTuber] "..ply:Nick()
   end
@@ -491,9 +479,11 @@ function Jack.StartVoice(ply)
 		if client:GetPos():DistToSqr(ply:GetPos()) > 562500 then NameStr = "Неизвестный #"..tostring(math.floor(util.SharedRandom(ply:GetNamesurvivor(), 100, 999))) end
 		if ply:GetNWBool("IntercomTalking", false) then NameStr = "(INTERCOM) Неизвестный" end
 	end
-	if LocalPlayer():IsAdmin() and ply != LocalPlayer() then NameStr = ply:Nick() end
+	if LocalPlayer():IsAdmin() and ply != LocalPlayer() then NameStr = NameStr.." ("..ply:Nick()..")" end
   	clr = Color(255,255,255, 240)
   end
+
+
   
 	-- The player's name
 	maintextbar:SetPos(maintextbar:GetTall()+17,H*.25)
@@ -509,16 +499,16 @@ function Jack.StartVoice(ply)
 	--maintextbar:MoveToFront()
 	--maintextbar:MoveToBack()
 
-	if ( emoticons[ply:GetUserGroup()] or VAULT_YOUTUBERS[ply:SteamID64()] ) and ply:GTeam() == TEAM_SPEC then
+	if ( emoticons[ply:GetUserGroup()] or MONIX_YOUTUBERS[ply:SteamID64()] ) and ply:GTeam() == TEAM_SPEC then
 
-		if ply:GetUserGroup() != "premium" or ( ply:GetUserGroup() == "premium" and ply:GetNWBool("display_premium_icon", true) ) or VAULT_YOUTUBERS[ply:SteamID64()] then
+		if ply:GetUserGroup() != "premium" or ( ply:GetUserGroup() == "premium" and ply:GetNWBool("display_premium_icon", true) ) or MONIX_YOUTUBERS[ply:SteamID64()] then
 
 			local icon = vgui.Create("DPanel", NameBar)
 		  icon:SetSize(NameTxt:GetTall()-4,NameTxt:GetTall()-2)
 		  icon:SetPos(40,10)
 		  maintextbar:SetX(maintextbar:GetX() + 18)
 		  local icon_mg = emoticons[ply:GetUserGroup()]
-		  if VAULT_YOUTUBERS[ply:SteamID64()] then
+		  if MONIX_YOUTUBERS[ply:SteamID64()] then
 		  	icon_mg = Material("icon16/user_red.png")
 		  end
 		  icon.Paint = function(self, w, h)

@@ -98,21 +98,23 @@ end
 
 function ENT:PlaySoundStart()
 
-	net.Start( "ForcePlaySound" )
+	--net.Start( "ForcePlaySound" )
 
-		net.WriteString( "nextoren/entities/intercom/start.mp3" )
+		--net.WriteString( "nextoren/entities/intercom/start.mp3" )
 
-	net.Broadcast()
+	--net.Broadcast()
+	PlayAnnouncer("nextoren/entities/intercom/start.mp3")
 
 end
 
 function ENT:PlaySoundEnd()
 
-	net.Start( "ForcePlaySound" )
+	--net.Start( "ForcePlaySound" )
 
-		net.WriteString( "nextoren/entities/intercom/stop.mp3" )
+		--net.WriteString( "nextoren/entities/intercom/stop.mp3" )
 
-	net.Broadcast()
+	--net.Broadcast()
+	PlayAnnouncer("nextoren/entities/intercom/stop.mp3")
 	/*
 	net.Start( "IntercomStatus" )
 
@@ -539,6 +541,14 @@ if SERVER then
 				if IsValid(intercom) then intercom:SetStatus("") end
 			end)
 		end
+		if actionname == "camera" then
+			ply:SetViewEntity(ents.FindByClass("br_camera")[1])
+
+			ply.CameraLook = true
+
+			net.Start("camera_enter")
+			net.Send(ply)
+		end
 		if actionname == "live" then
 			intercom:SetStatus("Alive")
 			timer.Create("IntercomTimer_ChangeStatus", 5, 1, function()
@@ -569,6 +579,7 @@ if CLIENT then
 					--{ name = "Наблюдение по камерам", func = function() end },
 					--{ name = "Запросы", func = function() end },
 					--{ name = "Состояние комплекса", func = function() end },
+					{ name = "Просмотр камер", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("camera") net.SendToServer() end },
 					{ name = "Живые сущности в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("live") net.SendToServer() end },
 					{ name = "Научный персонал в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("sci") net.SendToServer() end },
 					{ name = "Военный персонал в ОЗ", func = function() net.Start("IntercomAction") net.WriteEntity(LocalPlayer():GetEyeTrace().Entity) net.WriteString("mil") net.SendToServer() end },

@@ -1,6 +1,6 @@
 --[[
 Server Name: RXSEND Breach
-Server IP:   46.174.50.119:27015
+Server IP:   62.122.215.225:27015
 File Path:   addons/[weapons]_no_260_kk_ins2/lua/entities/cw_kk_ins2_projectile_pf60/cl_init.lua
 		 __        __              __             ____     _                ____                __             __         
    _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____

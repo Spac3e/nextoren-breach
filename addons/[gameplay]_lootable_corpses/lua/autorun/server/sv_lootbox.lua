@@ -3,12 +3,21 @@ util.AddNetworkString( "ShowEQAgain" )
 util.AddNetworkString( "ParticleAttach" )
 util.AddNetworkString( "LootEnd" )
 util.AddNetworkString("LC_TakeWep")
+util.AddNetworkString("3DSoundPosition")
 
 net.Receive("LootEnd", function(len, ply)
 	if (ply.ForceAnimSequence) then
 		ply:SetForcedAnimation(false)
 		ply.MovementLocked = nil
 	end
+end)
+
+net.Receive("3DSoundPosition", function(len, ply)
+	net.Start("3DSoundPosition")
+	net.WriteString(net.ReadString())
+	net.WriteVector(net.ReadVector())
+	net.WriteUInt(net.ReadUInt(8), 8)
+	net.Broadcast()
 end)
 
 AddCSLuaFile( "lootable_corpses_config.lua" )
@@ -27,114 +36,110 @@ end)
 
 local clr_red = Color( 255, 0, 0 )
 
-function PlayerCanPickupWeapon( ply, weap )
-	if ( ( ply.NextPickup || 0 ) > CurTime() ) then return false end
-	if ( ply.ForceToGive && weap:GetClass() == ply.ForceToGive ) then
-		ply.HasWeaponCheck = { class = ply.ForceToGive, ent = weap }
-	 	--ply.NextPickup = CurTime() + 1
-		timer.Simple( .1, function()
-			if ( ply.HasWeaponCheck && ply.HasWeaponCheck.class && !ply:HasWeapon( ply.HasWeaponCheck.class ) ) then
-				if ( ply.HasWeaponCheck.ent && ply.HasWeaponCheck.ent:IsValid() ) then
-					ply.HasWeaponCheck.ent:Remove()
-				end
-				ply:Give( ply.HasWeaponCheck.class, false )
-			end
-			ply.HasWeaponCheck = nil
-		end)
-		ply.ForceToGive = nil
+function PlayerCanPickupWeapon(ply, weap)
+    if (ply.NextPickup || 0) > CurTime() then
+        return false
+    end
 
-		return true
- 	end
+    if (ply.ForceToGive && weap:GetClass() == ply.ForceToGive) then
+        ply.HasWeaponCheck = {class = ply.ForceToGive, ent = weap}
 
+        timer.Simple(.1, function()
+            if (ply.HasWeaponCheck && ply.HasWeaponCheck.class && !ply:HasWeapon(ply.HasWeaponCheck.class)) then
+                if (ply.HasWeaponCheck.ent && ply.HasWeaponCheck.ent:IsValid()) then
+                    ply.HasWeaponCheck.ent:Remove()
+                end
+                ply:Give(ply.HasWeaponCheck.class, false)
+            end
+            ply.HasWeaponCheck = nil
+        end)
+        ply.ForceToGive = nil
+        return true
+    end
 
+    if (!ply:KeyDown(IN_USE)) then
+        return false
+    end
 
-	if ( !ply:KeyDown( IN_USE ) ) then return false end
-	if ( ply:GTeam() == TEAM_SCP || ply:GTeam() == TEAM_SPEC || ply:Health() <= 0 ) then return false end
-	local tr = ply:GetEyeTrace()
-	local wepent = tr.Entity
+    if (ply:Team() == TEAM_SCP || ply:Team() == TEAM_SPEC || ply:Health() <= 0) then
+        return false
+    end
 
-	--[[if ( ply.Stance == "Crouching" ) then
-    tr.StartPos = tr.StartPos - vec_down_ctrl
-    wepent = ply:StanceVision( tr )
-    end]]
+    local tr = ply:GetEyeTrace()
+    local wepent = tr.Entity
 
-	--if ( !( tr.Entity && tr.Entity:IsValid() ) ) then return false end
+    if (wepent:IsWeapon() && wepent:GetPos():DistToSqr(ply:GetPos()) <= 6400) then
+        local ent_class = wepent:GetClass()
+        if (ply:HasWeapon(ent_class)) then
+            ply.NextPickup = CurTime() + 1
+            BREACH.Players:ChatPrint(ply, true, true, "У Вас уже есть данный предмет.")
+            return false
+        end
 
-	if ( wepent:IsWeapon() && wepent:GetPos():DistToSqr( ply:GetPos() ) <= 6400 ) then
-		local ent_class = wepent:GetClass()
+        local maximumdefaultslots = ply:GetMaxSlots()
+        local maximumitemsslots = 6
+        local maximumnotdroppableslots = 6
+        local countdefault = 0
+        local countitem = 0
+        local countnotdropable = 0
+        local is_cw = wepent.CW20Weapon
 
-		if ( ply:HasWeapon( ent_class ) ) then
-			ply.NextPickup = CurTime() + 1
-			BREACH.Players:ChatPrint( ply, true, true, "У Вас уже есть данный предмет." )
-			return false
-		end
+        for _, weapon in ipairs(ply:GetWeapons()) do
+            if (is_cw && weapon.CW20Weapon && weapon.Primary.Ammo == wepent.Primary.Ammo) then
+                ply.NextPickup = CurTime() + 1
+                BREACH.Players:ChatPrint(ply, true, true, "У Вас уже есть данный тип оружия.")
+                return
+            end
+            if (!weapon.Equipableitem && !weapon.UnDroppable) then
+                countdefault = countdefault + 1
+            elseif (weapon.Equipableitem) then
+                countitem = countitem + 1
+            elseif (weapon.UnDroppable) then
+                countnotdropable = countnotdropable + 1
+            end
+        end
 
-		local maximumdefaultslots = ply:GetMaxSlots()
-		local maximumitemsslots = 6
-		local maximumnotdroppableslots = 6
-		local countdefault = 0
-		local countitem = 0
-		local countnotdropable = 0
-		local is_cw = wepent.CW20Weapon
+        if (!wepent.Equipableitem && !wepent.UnDroppable && countdefault >= maximumdefaultslots) then
+            ply:BrEventMessage("Your main inventory is full")
+            return false
+        elseif (wepent.Equipableitem && countitem >= maximumitemsslots) then
+            ply:BrEventMessage("Your second inventory is full")
+            return false
+        elseif (wepent.UnDroppable && countnotdropable >= maximumnotdroppableslots) then
+            ply:BrEventMessage("Your main inventory is full")
+            return false
+        end
 
-		for _, weapon in ipairs( ply:GetWeapons() ) do
-			if ( is_cw && weapon.CW20Weapon && weapon.Primary.Ammo == wepent.Primary.Ammo ) then
-				ply.NextPickup = CurTime() + 1
-				BREACH.Players:ChatPrint( ply, true, true, "У Вас уже есть данный тип оружия." )
-				return
-			end
+        local physobj = wepent:GetPhysicsObject()
+        if (physobj && physobj:IsValid()) then
+            physobj:EnableMotion(false)
+        end
 
-			if ( !weapon.Equipableitem && !weapon.UnDroppable ) then
-				countdefault = countdefault + 1
-			elseif ( weapon.Equipableitem ) then
-				countitem = countitem + 1
-			elseif ( weapon.UnDroppable ) then
-				countnotdropable = countnotdropable + 1
-			end
-		end
+        ply:BrProgressBar("Поднятие вещи...", 1, "", "nextoren/gui/icons/notifications/breachiconfortips.png", true, function()
+            if (wepent:IsWeapon()) then
+                ply:EmitSound("nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random(98, 105), 1, CHAN_STATIC)
+                ply:Give(ent_class, true)
+                local wep_index = wepent:EntIndex()
+                timer.Simple(.7, function()
+                    if (ply && ply:IsValid() && !ply:HasWeapon(ent_class)) then
+                        for _, v in ipairs(ents.FindInSphere(ply:GetPos(), 100)) do
+                            if (v:IsWeapon() && v:GetClass() == ent_class && v:EntIndex() == wep_index) then
+                                ply:BreachGive(v:GetClass())
+                                v:Remove()
+                            end
+                        end
+                    end
+                end)
+            end
+        end, nil, function()
+            if (physobj && physobj:IsValid()) then
+                physobj:EnableMotion(true)
+            end
+        end)
+        return false
+    end
 
-		if ( !wepent.Equipableitem && !wepent.UnDroppable && countdefault >= maximumdefaultslots ) then
-			ply:BrEventMessage( "Your main inventory is full" )
-			return false
-		elseif ( wepent.Equipableitem && countitem >= maximumitemsslots ) then
-			ply:BrEventMessage( "Your second inventory is full" )
-			return false
-		elseif ( wepent.UnDroppable && countnotdropable >= maximumnotdroppableslots ) then
-			ply:BrEventMessage( "Your main inventory is full" )
-			return false
-		end
-
-		local physobj = wepent:GetPhysicsObject()
-
-		if ( physobj && physobj:IsValid() ) then
-			physobj:EnableMotion( false )
-		end
-
-		ply:BrProgressBar( "Поднятие вещи...", 1, "", "nextoren/gui/icons/notifications/breachiconfortips.png", true, function()
-
-			if ( wepent:IsWeapon() ) then
-				ply:EmitSound( "nextoren/charactersounds/inventory/nextoren_inventory_itemreceived.wav", 75, math.random( 98, 105 ), 1, CHAN_STATIC )
-				ply:Give( ent_class, true )
-
-				local wep_index = wepent:EntIndex()
-
-				timer.Simple( .7, function()
-
-					if ( ply && ply:IsValid() && !ply:HasWeapon( ent_class ) ) then
-						for _, v in ipairs( ents.FindInSphere( ply:GetPos(), 100 ) ) do
-							if ( v:IsWeapon() && v:GetClass() == ent_class && v:EntIndex() == wep_index ) then
-								ply:BreachGive( v:GetClass() )
-								v:Remove()
-							end
-						end
-					end
-				end)
-			end
-
-		end, nil, function() if ( physobj && physobj:IsValid() ) then physobj:EnableMotion( true ) end end )
-		return false
-	end
-	return false
+    return false
 end
 
 --hook.Add( "PlayerCanPickupWeapon", "UseWeapon", PlayerCanPickupWeapon )
@@ -159,115 +164,13 @@ hook.Add( "KeyPress", "KeyPressForRagdoll", function( ply, key )
 	local tr = ply:GetEyeTrace()
 	local trent = ply:GetEyeTrace().Entity
 	if ( key != IN_USE && key != IN_RELOAD ) then return end
- 	if ( ply:GTeam() == TEAM_SPEC || ply:GTeam() == TEAM_SCP && ply:GetRoleName() != "SCP049" ) then return end
+ 	if ( ply:GTeam() == TEAM_SPEC || ply:GTeam() == TEAM_SCP) then return end
 
-	if ( key == IN_RELOAD && ply:GetRoleName() == "SCP049" ) then
-		local tr = ply:GetEyeTrace()
-		local self = tr.Entity
-		if ( self:GetClass() != "prop_ragdoll" || self:GetPos():DistToSqr( ply:GetPos() ) > 3025 ) then return end
-
-	elseif ( key == IN_USE ) then
+	if ( key == IN_USE ) then
 
 		local tr = ply:GetEyeTrace()
 		local self = tr.Entity
 		if ( !self.breachsearchable || self:GetClass() != "prop_ragdoll" || self:GetPos():DistToSqr( ply:GetPos() ) > 3025 ) then return end
-
-		if ( ply:GetRoleName() == "SCP049" && self:GetIsVictimAlive() ) then
-			if ( self:HasHazmat() ) then
-				ply:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить тело в спец. одежде", Color( 255, 0, 0, 220 ) )
-				return
-			elseif ( self:GetModel():find( "scp_special_scp" ) ) then
-				ply:BrTip( 3, "[NextOren Breach]", Color( 210, 0, 0, 200 ), "Вы не можете заразить данного человека", Color( 255, 0, 0, 220 ) )
-				return
-			end
-
-			ply:BrProgressBar( "Превращение в зомби", 6, "nextoren/charactersounds/loot_sound.wav", nil, true, function()
-
-				if ( self:GetIsVictimAlive() ) then
-					local plyowner = self:GetOwner()					
-					timer.Remove( "Death" .. plyowner:EntIndex() )
-					if ( plyowner:GTeam() == TEAM_SPEC ) then return end
-					plyowner:SetPos( plyowner:GetPos() + ply:GetAngles():Forward() * 4 )
-
-					self:Remove()
-
-					SetZombie( plyowner )
-
-					plyowner:Give( "weapon_scp_049_2" )
-					plyowner.AdditionalScaleDamage = .15
-
-					timer.Simple( 0, function()
-						plyowner:SetActiveWeapon( plyowner:GetWeapon( "weapon_scp_049_2" ) )
-						timer.Simple( .25, function()
-							if ( plyowner && plyowner:IsValid() && plyowner.IsZombie ) then
-								plyowner:SelectWeapon( "weapon_scp_049_2" )
-							end
-						end)
-					end)
-
-					if ( plyowner && plyowner:IsValid() ) then
-						plyowner:SetTeam( TEAM_SCP )
-					end
-
-					net.Start( "GetRoleData" )
-						net.WriteString( "SCP0492" )
-						net.WriteString( "Подчиняйтесь SCP-049." )
-						net.WriteBool( false )
-					net.Send( plyowner )
-
-					plyowner.Footsteps = zombie_footsteps
-					plyowner.IsZombie = true
-					plyowner.SpecialAbility = nil
-					plyowner.SpecialAbilityTable = nil
-
-					plyowner:SetNoDraw( false )
-					plyowner:SetNotSolid( false )
-					plyowner:AddToStatistics( "Captured by SCP049", -50 )
-					plyowner:ConCommand( "stopsound" )
-					plyowner:ScreenFade( SCREENFADE.OUT, color_black, .01, 3 )
-					plyowner:SetMaxHealth( plyowner:GetMaxHealth() * 2 )
-					plyowner:SetHealth( plyowner:GetMaxHealth() )
-
-					plyowner.AffectedBy049 = false
-
-					timer.Simple( 3.25, function() -- debug timer
-
-						if ( ( plyowner && plyowner:IsValid() ) && plyowner.IsZombie && plyowner:Health() > 0 && plyowner:IsFrozen() ) then
-							plyowner:Freeze( false )
-							plyowner:SetMoveType( MOVETYPE_WALK )
-							plyowner:SetNotSolid( false )
-
-							net.Start( "SCP049_PlayerScreenManipulations" )
-								net.WriteUInt( 2, 2 )
-								net.WriteBool( false )
-							net.Send( plyowner )
-
-							plyowner:SetDSP( 1 )
-							plyowner.AdditionalScaleDamage = .7
-						end
-					end)
-
-					plyowner:SetForcedAnimation( "breach_zombie_getup", 2.25, nil, function()
-
-						plyowner:Freeze( false )
-						plyowner:SetMoveType( MOVETYPE_WALK )
-						plyowner:SetNotSolid( false )
-
-						net.Start( "SCP049_PlayerScreenManipulations" )
-							net.WriteUInt( 2, 2 )
-							net.WriteBool( false )
-						net.Send( plyowner )
-
-						plyowner:SetDSP( 1 )
-						plyowner.AdditionalScaleDamage = .7
-					end )
-					self:SetIsVictimAlive( false )
-				end
-			end)
-			return
-		end
-
-		if ( ply:GTeam() == TEAM_SCP ) then return end
 
 		--ply:SetForcedAnimation( "616", 0, nil )
 		--ply:SetNWEntity( "NTF1Entity", ply )
@@ -387,7 +290,7 @@ end
 
 local corpse_mdl = Model( "models/cultist/humans/corpse.mdl" )
 
-function CreateLootBox( ply, inflictor, attacker, knockedout )
+function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 	local team = ply:GTeam()
 	if ( team == TEAM_SPEC ) then return end
 
@@ -400,13 +303,22 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 		SCPRagdoll:SetAngles( ply:GetAngles() )
 		SCPRagdoll:Spawn()
 		SCPRagdoll:SetPlaybackRate( 1 )
-		SCPRagdoll:SetSequence( ply.DeathAnimation )
-		SCPRagdoll.AutomaticFrameAdvance = true
-		SCPRagdoll.Think = function( self )
-			self:NextThink( CurTime() )
-			return true
+		if ply:GetModel() == "models/cultist/scp/scp_939.mdl" or ply:GetModel() == "models/cultist/scp/scp_999_new.mdl" then
+			SCPRagdoll:SetSequence( "die" )
+			SCPRagdoll.AutomaticFrameAdvance = true
+			SCPRagdoll.Think = function( self )
+				self:NextThink( CurTime() )
+				return true
+			end
+		else
+			SCPRagdoll:SetSequence( ply.DeathAnimation )
+			SCPRagdoll.AutomaticFrameAdvance = true
+			SCPRagdoll.Think = function( self )
+				self:NextThink( CurTime() )
+				return true
+			end
 		end
-
+--[[
 		if ( !ply.DeathLoop ) then
 			timer.Simple( SCPRagdoll:SequenceDuration() - .1, function()
 				local SCPRagdoll2 = ents.Create( "prop_ragdoll" )
@@ -439,6 +351,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 				SCPRagdoll:Remove()
 			end)
 		end
+		]]--
 		return
 	end
 
@@ -461,8 +374,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
     LootBox:SetBodygroup( v.id, ply:GetBodygroup( v.id ) )
     end
 
-
-
 	LootBox:SetSkin( ply:GetSkin() )
 	LootBox:SetMaterial( ply:GetMaterial() )
 
@@ -477,7 +388,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 	LootBox.OldSkin = ply.OldSkin
 	LootBox.OldModel = ply.OldModel
 	LootBox.OldBodygroups = ply.OldBodygroups
-
 
 	if ply.BoneMergedEnts and not (ply.burnttodeath or ply.Death_ByAcid) then
 		if ply.HeadEnt and ply.HeadEnt:IsValid() then
@@ -497,7 +407,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 			end
 		end
 	end
-
+	
 	if ( team == TEAM_SCP && ply.SCPTable && ply.SCPTable.DeleteRagdoll ) then
 		LootBox:Remove()
 		ply:SetNWEntity( "RagdollEntityNO", nil )
@@ -531,8 +441,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 		end
 
 		timer.Simple( .25, function()
-			local ef_data = { Name = "br_blood_stream", Entity = LootBox, bone_id = LootBox:LookupBone( "ValveBiped.Bip01_Head1" ) }
-			NetEffect( ef_data )
+			BroadcastLua("ParticleEffectAttach(\"br_blood_stream\", PATTACH_POINT_FOLLOW, Entity("..LootBox:EntIndex().."), Entity("..LootBox:EntIndex().."):LookupBone(\"ValveBiped.Bip01_Head1\"))")
 			LootBox.HeadEnt:SetSkin( ply:GetSkin() )
 			LootBox.HeadEnt:SetBodygroup( 0, math.random( 1, 3 ) )
 		end )
@@ -676,7 +585,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 			end
 
 			for _, v in ipairs( ents.FindInSphere( self:GetPos(), 400 ) ) do
-				if ( v:IsPlayer() && v:IsSolid() && v:Health() > 0 && !v:HasHazmat() ) then
+				if ( v:IsPlayer() && v:IsSolid() && v:Health() > 0 && !string.find(string.lower(v:GetModel()),"hazmat")) then
 					local radiation_info = DamageInfo()
 					radiation_info:SetDamageType( DMG_RADIATION )
 					radiation_info:SetDamage( 4 )
@@ -706,7 +615,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 			if ( IsValid( physicsObject ) ) then
 
 				physicsObject:SetPos( position )
-				physicsObject:SetMass( 65 )
+				physicsObject:SetMass( 75 )
 				physicsObject:SetAngles( angle )
 
 
@@ -716,8 +625,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 					physicsObject:SetVelocity( ( velocity / math.Rand( 2, 6 ) ) * math.Rand( .6, .9 ) )
 				end
 
-
-
 				if ( ply.force ) then
 
 					if ( boneIndex == headIndex ) then
@@ -726,8 +633,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 						physicsObject:ApplyForceCenter( ply.force )
 					end
 				end
-
-
 
 				timer.Simple( .2, function()
 
@@ -758,6 +663,12 @@ function CreateLootBox( ply, inflictor, attacker, knockedout )
 
     	LootBox:SetVictimHealth( ply:Health() )
 		LootBox:SetIsVictimAlive( true )
+		LootBox:SetOwner( ply )
+
+		LootBox:TakeDamageInfo(dmginfo)
+
+		LootBox.SCP049Victim = true
+		LootBox.SCP049User = ply
 
 		timer.Simple( 40, function()
 			if ( LootBox && LootBox:IsValid() ) then

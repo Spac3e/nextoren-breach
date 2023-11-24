@@ -4,4 +4,4 @@
 -- resource.AddWorkshop("486217238") // CW MAGS
 -- resource.AddWorkshop("707343339") // CW MEL
 
-resource.AddWorkshop("657241323") // KK INS2
+--resource.AddWorkshop("657241323") // KK INS2

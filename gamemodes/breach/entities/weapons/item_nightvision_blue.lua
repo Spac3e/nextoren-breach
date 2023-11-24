@@ -151,7 +151,7 @@ function SWEP:Reload()
 
 					self.Nightvision_Owner = self.Owner
 					self.Owner:EmitSound( "nextoren/weapons/items/nightvision/nvgturnon.wav", 75, 100, 1, CHAN_STATIC )
-					if ( !banned_models[ self.Owner:GetModel() ] ) then
+					if ( !banned_models[self.Owner:GetModel()] or self.Owner:GetRoleName() == role.ClassD_GOCSpy) then
 
 						Bonemerge( "models/cultist/items/nightvision/bonemerge_nvg_forface.mdl", self.Owner )
 						for _, v in ipairs( self.Owner.BoneMergedEnts ) do

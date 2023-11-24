@@ -2,12 +2,14 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
+ENT.CollisionGroup = COLLISION_GROUP_NONE
+
 function ENT:Initialize()
 	self:SetModel(self.Model) 
 	self:PhysicsInit(SOLID_VPHYSICS)
 	self:SetMoveType(MOVETYPE_VPHYSICS)
 	self:SetSolid(SOLID_VPHYSICS)
-	self:SetCollisionGroup(COLLISION_GROUP_NONE)
+	self:SetCollisionGroup(self.CollisionGroup)
 	self.CanHurt = true
 	local phys = self:GetPhysicsObject()
 

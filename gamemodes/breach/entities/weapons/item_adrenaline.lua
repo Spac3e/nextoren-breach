@@ -1,5 +1,7 @@
 if ( CLIENT ) then
+
   SWEP.InvIcon = Material( "nextoren/gui/icons/adrenalin.png" )
+
 end
 
 SWEP.ViewModelFOV = 60
@@ -190,9 +192,9 @@ function SWEP:PrimaryAttack()
 
 	  end
 
-    if ( SERVER ) then
+    if ( CLIENT ) then
 
-      self.Owner:SetStamina( math.Clamp( self.Owner:GetStamina() + 30, 0, 100 ) )
+      self.Owner.Stamina = self.Owner.Stamina + 30
 
     end
 
