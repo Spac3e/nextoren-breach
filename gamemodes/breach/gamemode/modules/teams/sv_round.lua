@@ -503,8 +503,7 @@ function CheckEscape() -- Интересный факт, таймер нагру
 	for k,v in pairs(ents.FindInSphere(POS_O5EXIT, 75)) do -- Выход О5
 		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeO5() then
         evacuate(v,"vse",840,"l:ending_o5")
-		end
-    end
+	end
 end
 
 timer.Create("CheckEscape", 1, 0, CheckEscape)
