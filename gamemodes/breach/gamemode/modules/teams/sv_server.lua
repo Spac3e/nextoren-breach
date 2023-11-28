@@ -107,6 +107,7 @@ util.AddNetworkString("ClientFadeMusic")
 util.AddNetworkString("ClientStopMusic")
 util.AddNetworkString("nextNuke")
 util.AddNetworkString("Breach:RunStringOnServer")
+util.AddNetworkString("bettersendlua")
 -- Forced anim
 util.AddNetworkString("BREACH_SetForcedAnimSync")
 util.AddNetworkString("BREACH_EndForcedAnimSync")
@@ -503,3 +504,17 @@ hook.Add( "OnEntityCreated", "skin_the_colour_of_bark", function( ent )
 	end
 end)
 --]]
+
+function GM:CreateEntityRagdoll(ent,rag)
+	local boneid = 0
+	
+	if ent:GTeam() == TEAM_SCP and !ent.Zombie == true then return end
+
+	if owner.bloodpool_washeadshot then
+		boneid = rag:LookupBone("ValveBiped.Bip01_Head1")
+	else
+		boneid = rag:LookupBone("ValveBiped.Bip01_Spine")
+	end
+	
+	CreateBloodPoolForRagdoll(rag, boneid, owner:GetBloodColor())
+end

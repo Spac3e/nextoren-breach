@@ -467,7 +467,7 @@ function CheckEscape() -- Интересный факт, таймер нагру
 					evacuate(v,"vse",950,"l:ending_mission_complete")
 				end
 			end
-			if v:GTeam() == TEAM_CLASSD and v:CanEscapeFBI() then
+			if v:IsPlayer() and v:Alive() and v:GTeam() == TEAM_CLASSD and v:CanEscapeFBI() then
 				evacuate(v,"vse",2000,"l:ending_escaped_site19_got_captured")
 			elseif v:GTeam() != TEAM_USA then
 				evacuate(v,"vse",2000,"l:ending_escaped_site19")
@@ -503,8 +503,7 @@ function CheckEscape() -- Интересный факт, таймер нагру
 	for k,v in pairs(ents.FindInSphere(POS_O5EXIT, 75)) do -- Выход О5
 		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeO5() then
         evacuate(v,"vse",840,"l:ending_o5")
-		end
-    end
+	end
 end
 
 timer.Create("CheckEscape", 1, 0, CheckEscape)
@@ -603,8 +602,6 @@ function SetupCollide()
 end
 
 function BREACH.Round_System_Start()  
-	local ent = ents.Create("esc_vse")
-	ent:Spawn()
 	local ent1 = ents.Create("entity_goc_nuke")
 	ent1:Spawn()
 end

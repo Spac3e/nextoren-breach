@@ -1591,7 +1591,7 @@ function mply:StopGestureSlot(slot)
     self:AnimRestartGesture(slot, self:AnimTranslateGestureSlot(slot, self:AnimLookupGestureSlot(slot)))
 end
 
-function mply:BetterSendLua()
+function mply:BetterSendLua(code)
 	net.Start("bettersendlua")
 	net.WriteString(code)
 	net.Send(self)

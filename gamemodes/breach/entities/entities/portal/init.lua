@@ -28,10 +28,10 @@ function ENT:Use( activator, caller )
 end
  
 function ENT:Think()
-
 	for k,v in pairs(ents.FindInSphere(Vector(-3643, 5276, 1690), 50)) do
+		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC then
 		evacuate(v,TEAM_SCP,900,"l:ending_tp_to_unknown_loc")
 		evacuate(v,TEAM_DZ,900,"l:ending_tp_to_unknown_loc")
+		end
 	end
-
 end

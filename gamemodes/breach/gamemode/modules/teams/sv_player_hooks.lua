@@ -467,13 +467,13 @@ end
 local voice_distance = 0x57E40 -- 360000 ( 600^2 )
 
 local function Declare_Value(listener, speaker)
-    local isindist = listener:EyePos():DistToSqr(speaker:EyePos()) < voice_distance
+	local isindist = listener:EyePos():DistToSqr( speaker:EyePos() ) < voice_distance
 
-    if speaker:GetNWBool("IntercomTalking") then
+	if speaker:GetNWBool("IntercomTalking") then
         isindist = true
     end
 
-    return isindist
+	return isindist, isindist
 end
 
 local hear_table = {}
@@ -539,7 +539,9 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 	
 	if talker:GTeam() == TEAM_SPEC and listener:GTeam() == TEAM_SPEC then return true end
 
-	if talker:GTeam() == TEAM_SCP and roleswhitelist[ply:GetRoleName()] then return true end
+	if talker:GTeam() == TEAM_SCP and roleswhitelist[listener:GetRoleName()] then return true end
+	
+	if listener:GetNWBool("Player_IsPlaying") == true then return false end
 	
 	if talker:GetNWBool("IntercomTalking") == true then return true end
 	

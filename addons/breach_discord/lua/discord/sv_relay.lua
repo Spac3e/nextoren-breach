@@ -75,7 +75,7 @@ function socket:onError( txt )
 end
 
 function socket:onConnected()
-	print( '[Discord] connected to Discord server' )
+	--print( '[Discord] connected to Discord server' )
     local req = [[
     {
       "op": 2,
@@ -103,11 +103,11 @@ function socket:onConnected()
 end
 
 function socket:onDisconnected()
-    print( '[Discord] WebSocket disconnected' )
+    --print( '[Discord] WebSocket disconnected' )
     timer.Remove( '!!discord_hearbeat' )
 
     if Discord.isSocketReloaded != true then
-        print( '[Discord] WebSocket reload in 5 sec...' )
+        --print( '[Discord] WebSocket reload in 5 sec...' )
         timer.Simple( 5, function() socket:open() end )
     end
 end
@@ -137,7 +137,7 @@ function Discord.send(form)
 
 	CHTTP({
 		["failed"] = function( msg )
-			print( "[Discord] "..msg )
+			--print( "[Discord] "..msg )
 		end,
 		["method"] = "POST",
 		["url"] = Discord.webhook,

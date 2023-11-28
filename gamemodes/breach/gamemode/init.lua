@@ -17,9 +17,6 @@ else
 	error( "Unsupported map " .. game.GetMap() .. "!" )
 end
 
-local DISABLED_MODULES = {
-}
-
 local vsego = 0
 -- Load modules...
 local function LoadModules()
@@ -29,14 +26,9 @@ local function LoadModules()
 		include(fol .. v)
 	end
 	MsgC( Color(255,0,255), "[NextOren Breach] Legend: ", Color(0,255,255), "Server ", Color(147,112,219), "Shared ", Color(255,165,0), "Client\n" )
-	
-	--AddCSLuaFile(fol.. 'faction_module' .. "/" ..'sh_faction.lua')
-	--include(fol.. 'faction_module' .. "/" ..'sh_faction.lua')
-	--include(fol.. 'misc_module' .. "/" ..'sv_globaldata.lua')
-	
+		
 	for _, folder in SortedPairs(folders, true) do
 		if folder == "." or folder == ".." then continue end
-		if DISABLED_MODULES[folder] then continue end
 		for _, File in SortedPairs(file.Find(fol .. folder .."/cl_*.lua", "LUA"), true) do
 			MsgC( Color(255,100,0), "[NextOren Breach] Pooling CLIENT file: " .. File .. "\n" )
 			AddCSLuaFile(fol.. folder .. "/" ..File)
@@ -46,7 +38,6 @@ local function LoadModules()
 	Msg("======================================================================\n")
 	for _, folder in SortedPairs(folders, true) do
 		if folder == "." or folder == ".." then continue end
-		if DISABLED_MODULES[folder] then continue end
 		for _, File in SortedPairs(file.Find(fol .. folder .."/sh_*.lua", "LUA"), true) do
 			MsgC( Color(255,255,0), "[NextOren Breach] Loading + Pooling SHARED file: " .. File .. "\n" )
 			AddCSLuaFile(fol..folder .. "/" ..File)
@@ -58,7 +49,6 @@ local function LoadModules()
 	
 	for _, folder in SortedPairs(folders, true) do
 		if folder == "." or folder == ".." then continue end
-		if DISABLED_MODULES[folder] then continue end
 		for _, File in SortedPairs(file.Find(fol .. folder .."/sv_*.lua", "LUA"), true) do
 			MsgC( Color(0,255,255), "[NextOren Breach] Loading SERVER file: " .. File .. "\n" )
 			include(fol.. folder .. "/" ..File)
@@ -74,9 +64,3 @@ local function LoadModules()
 end	
 
 LoadModules()
-
-local workshop_items = engine.GetAddons()
-for i = 1, #workshop_items do
-    local addon_id = workshop_items[i].wsid
-    resource.AddWorkshop(addon_id)
-end

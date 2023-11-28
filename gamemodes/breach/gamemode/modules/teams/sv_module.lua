@@ -577,15 +577,15 @@ function BREACH.Round.SpawnLoot()
 
 					local spawnposit = availableSpawns[spawnIndex]
 
-					if spawnposit == Vector(8168.5478515625, 336.69119262695, 129.061496734619) or spawnposit == Vector(8814.4169921875, -366.80648803711, 129.061483383179) then
+					if spawnposit == Vector(8814.4169921875, -366.80648803711, 129.061483383179) then
 						tesla:SetAngles(Angle(0,0,0))
-					end
+					end					
 	
 					if spawnposit == Vector(6282.9453125, 1177.1953125, 129.061498641968) then
 						tesla:SetAngles(Angle(0,90,0))
 					end
 
-					if spawnposit == Vector(3522.5834960938, 4021.2414550781, 129.061498641968) or spawnposit == Vector(4158.148926, 1878.148560, 129.361298) or spawnposit == Vector(4157.9526367188, -932.20758056641, 129.061511993408) then
+					if spawnposit == Vector(3522.5834960938, 4021.2414550781, 129.061498641968) or spawnposit == Vector(4158.148926, 1878.148560, 129.361298) or spawnposit == Vector(4157.9526367188, -932.20758056641, 129.061511993408) or spawnposit == Vector(8168.5478515625, 336.69119262695, 129.061496734619) then
 						tesla:SetAngles(Angle(0,-90,0))
 					end
 
@@ -1871,7 +1871,7 @@ function evacuate(personal, roles_for_evac, give_score, desc)
         {reason = desc, value = give_score},
     }
 
-    if IsValid(personal) and personal:Alive() then
+    if IsValid(personal) and personal:Alive() and personal:IsPlayer() then
         for k, v in pairs(personal:GetWeapons()) do
             if v:GetClass() == "item_cheemer" then
                 table.insert(eblya, {reason = "l:cheemer_rescue", value = 1000})
@@ -2137,7 +2137,7 @@ function BREACH.PowerfulUIUSupport()
 end
 
 hook.Add("AcceptInput", "AutoCloseDoor", function(ent, name, activator, caller, data)
-    local idi_gulay = {228}
+    local idi_gulay = {228,1799,1797,1660,1661}
     local timerokdayname = "дверкащаприкроется_" .. ent:EntIndex()
     local model_gulay = {"models/next_breach/elev/elevator_b_top.mdl"}
 	local closetime = 10
