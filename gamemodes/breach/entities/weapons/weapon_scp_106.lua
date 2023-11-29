@@ -86,7 +86,7 @@ if ( SERVER ) then
 
           player:SetPos( random_vector )
 
-					if ( !blink_random && player:GTeam() != TEAM_SCP && player.canblink ) then
+					if ( player:GTeam() != TEAM_SCP ) then
 
 	          CreateSearchSequence( player, random_vector, initial_pos )
 
@@ -134,7 +134,7 @@ if ( SERVER ) then
 
 			local owner = self:GetOwner()
 
-			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GetRoleName() == "Spectator" ) then
+			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GTeam() == TEAM_SPEC ) then
 
 				self:Remove()
 
@@ -606,13 +606,7 @@ else -- ( CLIENT )
 
 			self:NextThink( CurTime() )
 
-			if ( self:GetCycle() >= .99 ) then
-
-				self:SetCycle( 0 )
-
-			end
-
-			self:SetCycle( self:GetCycle() + .001 )
+			self:SetCycle( 0 )
 
       if ( self.DeathTime ) then
 

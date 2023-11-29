@@ -1,16 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   62.122.215.225:27015
-File Path:   gamemodes/breach/entities/weapons/weapon_scp_049_redux.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
-
 if ( CLIENT ) then
 
 	net.Receive( "SCP049_PlayerScreenManipulations", function()
@@ -552,8 +539,6 @@ function SWEP:GrabVictim( victim )
 					end
 				end)]]
 
-				body.SCP049Victim = true
-				body.SCP049User = victim
 
 				local savename = victim:GetNamesurvivor()
 

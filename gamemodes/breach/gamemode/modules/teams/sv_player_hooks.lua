@@ -469,9 +469,6 @@ local voice_distance = 0x57E40 -- 360000 ( 600^2 )
 local function Declare_Value(listener, speaker)
 	local isindist = listener:EyePos():DistToSqr( speaker:EyePos() ) < voice_distance
 
-	if speaker:GetNWBool("IntercomTalking") then
-        isindist = true
-    end
 
 	return isindist, isindist
 end
@@ -482,9 +479,9 @@ local function CalcVoice( client, players )
 	for i = 1, #players do
 		local speaker = players[ i ]
 		if ( hear_table[ client ][ speaker ] == nil && client != speaker ) then
-		      local canhearspeaker, canhearlistener = Declare_Value( client, speaker )
-		      hear_table[ client ][ speaker ] = canhearspeaker
-		      hear_table[ speaker ][ client ] = canhearlistener
+		    local canhearspeaker, canhearlistener = Declare_Value( client, speaker )
+		    hear_table[ client ][ speaker ] = canhearspeaker
+		    hear_table[ speaker ][ client ] = canhearlistener
 		end
 	end
 end
@@ -504,7 +501,7 @@ local function CreateVoiceTable()
 	end
 end
 
-timer.Create( "CalcVoice", .5, 0, function()
+timer.Create("CalcVoice", .5, 0, function()
 	CreateVoiceTable()
 end)
 
@@ -517,7 +514,7 @@ local roleswhitelist = {
 	[role.SCP049] = true,
 }
 
-function GM:PlayerCanHearPlayersVoice( listener, talker )
+function GM:PlayerCanHearPlayersVoice(listener, talker)
 	if ( talker:Health() <= 0 or listener:Health() <= 0 ) then return false end
 
 	if !talker:Alive() or !listener:Alive() then return false end
@@ -531,7 +528,6 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 	player_manager.SetPlayerClass(listener, "class_breach")
 	player_manager.RunClass(listener, "SetupDataTables")
 	end
-	
 
 	if talker:GTeam() == TEAM_SCP and listener:GTeam() == TEAM_SCP then return true end
 	
@@ -541,15 +537,14 @@ function GM:PlayerCanHearPlayersVoice( listener, talker )
 
 	if talker:GTeam() == TEAM_SCP and roleswhitelist[listener:GetRoleName()] then return true end
 	
-	if listener:GetNWBool("Player_IsPlaying") == true then return false end
+	if listener:GetNWBool("Player_IsPlaying") == false then return false end
 	
 	if talker:GetNWBool("IntercomTalking") == true then return true end
 	
 	if talker.supported == true then return false end
 	
-	return hear_table[ listener ] && hear_table[ listener ][ talker ], true
+	return hear_table[listener] && hear_table[listener][talker], true
 end
-
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
 	if activevote and ( text == "!forgive" or text == "!punish" ) then

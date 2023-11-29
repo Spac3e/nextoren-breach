@@ -865,6 +865,7 @@ end
 
 function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf )
 	if ply.IsZombie == true then
+		local vel = ply:GetVelocity():Length2DSqr()
 		if ( vel > 22500 ) then
 			if IsValid(ply:GetActiveWeapon()) then
 				ply:EmitSound( "^nextoren/charactersounds/zombie/foot"..math.random(1,3)..".wav", 75, math.random( 100, 120 ), volume * .8 )

@@ -469,7 +469,7 @@ function CheckEscape() -- Интересный факт, таймер нагру
 			end
 			if v:IsPlayer() and v:Alive() and v:GTeam() == TEAM_CLASSD and v:CanEscapeFBI() then
 				evacuate(v,"vse",2000,"l:ending_escaped_site19_got_captured")
-			elseif v:GTeam() != TEAM_USA then
+			elseif v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_USA then
 				evacuate(v,"vse",2000,"l:ending_escaped_site19")
 			end
 		end
