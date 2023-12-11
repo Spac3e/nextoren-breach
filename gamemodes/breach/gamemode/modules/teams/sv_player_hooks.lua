@@ -689,7 +689,6 @@ hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
     end
 end)
 
-
 do
     mply.BrGive = mply.BrGive or mply.Give
 

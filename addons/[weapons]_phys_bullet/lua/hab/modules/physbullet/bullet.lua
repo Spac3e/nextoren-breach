@@ -986,14 +986,6 @@ function MODULE:BulletApplyDamage( Ent, Index, Bullet, Mode ) -- apply damage
 
 	if CLIENT or !Ent or !Index or !Bullet then return end
 
-	if IsValid(Ent) then
-		if !Ent:IsNPC() then
-			if Ent:IsPlayer() and !Ent:IsBot() then
-				return
-			end
-		end
-	end
-
 	local force = Bullet.Force * Bullet.VelocityFraction
 
 	local dmg = DamageInfo( ) -- damage structure
