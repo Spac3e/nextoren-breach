@@ -11,6 +11,8 @@ if ( CLIENT ) then
   SWEP.DrawSecondaryAmmo = false
   SWEP.DrawAmmo = false
 
+  SWEP.InvIcon = Material( "nextoren/gui/icons/crowbar.png", "noclamp smooth" )
+
 end
 
 SWEP.Base = "breach_melee_base"

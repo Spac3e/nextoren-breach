@@ -1296,8 +1296,8 @@ local notoutsidetab = {
 	["$pp_colour_addr"] = 0,
 	["$pp_colour_addg"] = 0,
 	["$pp_colour_addb"] = 0,
-	["$pp_colour_brightness"] = 0,
-	["$pp_colour_contrast"] = 1.05,
+	["$pp_colour_brightness"] = -0.01,
+	["$pp_colour_contrast"] = 0.7,
 	["$pp_colour_colour"] = 1,
 	["$pp_colour_mulr"] = 0,
 	["$pp_colour_mulg"] = 0,
@@ -1379,7 +1379,7 @@ hook.Add( "RenderScreenspaceEffects", "ToytownEffect", function()
     tab2["$pp_colour_colour"] = Death_Desaturation_Intensity
   end
 
-  if client:GTeam() == TEAM_SCP then
+  if client:GTeam() == TEAM_SCP and GetConVar("breach_config_scp_red_screen"):GetBool() then
   	tab2 = forscptab
   end
 
@@ -1404,14 +1404,13 @@ local function BreachVersionIndicator()
 
 	if ( LocalPlayer():Health() <= 0 ) then return end
 	if clang == nil then return end
-	if hud_style:GetInt() != 0 then return end
 	if LocalPlayer():GetTable().IN_106_DIMENSION then return end
 	if hide_title:GetInt() == 1 then return end
 	local clang = clang
 
-	draw.SimpleText( clang.bugs, F("futura_16"), widthz * 0.5, heightz * 0.96, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-	draw.SimpleText( clang.version_title, F("futura_16"), widthz * 0.5, heightz * 0.99, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-	draw.SimpleText( clang.version, F("futura_16"), widthz * 0.5, heightz * 0.974, clr1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	draw.SimpleText( clang.bugs, "ScoreboardContent", widthz * 0.5, heightz * 0.96, red, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	draw.SimpleText( clang.version_title, "ScoreboardContent", widthz * 0.5, heightz * 0.99, clr, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+	draw.SimpleText( clang.version, "ScoreboardContent", widthz * 0.5, heightz * 0.974, clr1, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
 end
 hook.Add( "HUDPaintBackground", "BreachVersionIndicator", BreachVersionIndicator )

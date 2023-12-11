@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   62.122.215.225:27015
-File Path:   gamemodes/breach/gamemode/modules/anim_base/sh_mtables.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 local BREACH_GM = GM || GAMEMODE
 local FindMetaTable = FindMetaTable;
 local CurTime = CurTime;
@@ -596,6 +584,16 @@ function BREACH_GM:MouthMoveAnimation( ply )
 
   local plytable = ply:GetTable()
 
+  if !plytable.talkmult then plytable.talkmult = 0 end
+
+  if plytable.talkedrecently and plytable.talkedrecently >= CurTime() then
+    plytable.talkmult = math.Approach(plytable.talkmult, 1, FrameTime()*10)
+  else
+    plytable.talkmult = math.Approach(plytable.talkmult, 0, FrameTime()*5)
+  end
+
+  local talk_value = 0.5 + math.sin(CurTime()*15) * 0.5
+
   if ( !( plytable.HeadEnt && plytable.HeadEnt:IsValid() ) ) then
     if ply:GTeam() == TEAM_SPECIAL or mouth_allowed_playermodels[ply:GetModel()] then
       plytable.HeadEnt = ply
@@ -615,10 +613,6 @@ function BREACH_GM:MouthMoveAnimation( ply )
   local multiplier = 1/GetConVar("voice_scale"):GetFloat() 
 
 	local weight = ply:IsSpeaking() && !plytable.DisableMouthAnimation && math.min( ply:VoiceVolume() * multiplier * 6, 1 ) || 0
-
-  if ply:IsSuperAdmin() then
-    weight = weight * 5
-  end
 
   if ( flex[ 1 ] ) then
 
@@ -648,7 +642,7 @@ function BREACH_GM:MouthMoveAnimation( ply )
 
   if ( flex[ 2 ] ) then
 
-	  plytable.HeadEnt:SetFlexWeight( flex[ 2 ], weight * 1.5 )
+	  plytable.HeadEnt:SetFlexWeight( flex[ 2 ], Lerp(plytable.talkmult, weight * 1.5, talk_value) )
 
   end
 
@@ -826,6 +820,12 @@ function GM:PlayerWeaponChanged( client, weapon, force )
         plytable.SafeModeWalk = v[ 1 ]
         plytable.Walk = v[ 2 ] || 0
         plytable.AimWalk = v[ 3 ] || 0
+
+        if BREACH.AnimationTable.AltWalk[holdType.."_altwalk"] then
+          plytable.AltWalk = client:LookupSequence(BREACH.AnimationTable.AltWalk[holdType.."_altwalk"])
+        else
+          plytable.AltWalk = 0
+        end
 
       else
 
@@ -1088,11 +1088,6 @@ do
 
       elseif ( velLength > 500 ) then
 
-        if pl.nextfootstep <= CurTime() and player:GetWalkSpeed() < 128 and SERVER then
-          GAMEMODE:PlayerFootstep(player, player:GetPos(), nil, nil, 0.3)
-          pl.nextfootstep = CurTime() + 0.5
-        end
-
         if ( wepIsCW ) then
 
           if weptable.KKINS2Nade then
@@ -1120,8 +1115,13 @@ do
 
               else
 
-                pl.CalcSeqOverride = pl.Walk
-                pl.CalcIdeal = pl.Walk
+                if velLength > 6000 or pl.AltWalk == 0 then
+                  pl.CalcSeqOverride = pl.Walk
+                  pl.CalcIdeal = pl.Walk
+                else
+                  pl.CalcSeqOverride = pl.AltWalk
+                  pl.CalcIdeal = pl.AltWalk
+                end
 
               end
 
@@ -1146,6 +1146,11 @@ do
 
           pl.CalcSeqOverride = pl.SafeModeWalk
           pl.CalcIdeal = pl.SafeModeWalk
+
+           if !(velLength > 3000 or pl.AltWalk == 0) then
+              pl.CalcSeqOverride = pl.AltWalk
+             pl.CalcIdeal = pl.AltWalk
+          end
 
         end
 

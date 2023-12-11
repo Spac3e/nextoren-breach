@@ -86,7 +86,7 @@ function ENT:Initialize()
 		self:SetCycle( 1 )
 	end)
 	
-	timer.Create( "1_phase", 103, 1, function()
+	timer.Create( "1_phase", 99, 1, function()
 		
 		self:LinearMotion(Vector(2430, 7498, 1515), 0.002)
 		self:SetAutomaticFrameAdvance( true )

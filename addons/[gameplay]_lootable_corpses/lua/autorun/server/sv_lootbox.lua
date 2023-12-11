@@ -4,6 +4,15 @@ util.AddNetworkString( "ParticleAttach" )
 util.AddNetworkString( "LootEnd" )
 util.AddNetworkString("LC_TakeWep")
 util.AddNetworkString("3DSoundPosition")
+util.AddNetworkString("LC_TakeAmmo")
+
+net.Receive("LC_TakeAmmo", function(len,ply) 
+	local ent = net.ReadEntity()
+	local ammotype = net.ReadUInt(16)
+	local ammovalue = net.ReadUInt(16)
+
+	print(ent,ammotype,ammovalue)
+end)
 
 net.Receive("LootEnd", function(len, ply)
 	if (ply.ForceAnimSequence) then
@@ -228,66 +237,6 @@ function CreateUnconsBody( victim )
 	CreateLootBox( victim, nil, nil, true )
 end
 
-function TestDeathPose( ply )
-	local ragdoll = ents.Create( "base_gmodentity" )
-	ragdoll:SetPos( ply:GetPos() )
-	ragdoll:SetModel( ply:GetModel() )
-	ragdoll:Spawn()
-	ragdoll:SetPlaybackRate( 1 )
-	ragdoll.AutomaticFrameAdvance = true
-	ragdoll:SetSequence( ply:LookupSequence( "deathpose_front" ) )
-	ragdoll:SetNoDraw( true )
-	ragdoll.Think = function( self )
-		self:NextThink( CurTime() )
-		self:SetCycle( .16 )
-		return true
-	end
-	--timer.Simple( 2, function()
-		local test_ragdoll = ents.Create( "prop_ragdoll" )
-		test_ragdoll:SetPos( ragdoll:GetPos() )
-		test_ragdoll:SetModel( ragdoll:GetModel() )
-		test_ragdoll:Spawn()
-
-		local velocity = player.GetByID( 2 ):GetVelocity() - ( player.GetByID( 2 ):GetAimVector() * 6 )
-
-		if ( test_ragdoll && test_ragdoll:IsValid() ) then
-			local headIndex = test_ragdoll:LookupBone( "ValveBiped.Bip01_Head1" )
-			test_ragdoll:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-
-			for i = 1, test_ragdoll:GetPhysicsObjectCount() do
-
-				local physicsObject = test_ragdoll:GetPhysicsObjectNum( i )
-				local boneIndex = test_ragdoll:TranslatePhysBoneToBone( i )
-				local position, angle = ragdoll:GetBonePosition( boneIndex )
-
-				if ( physicsObject && physicsObject:IsValid() ) then
-					physicsObject:SetPos( position )
-					physicsObject:SetMass( 65 )
-					physicsObject:SetAngles( angle )
-
-					if ( boneIndex == headIndex ) then
-						physicsObject:SetVelocity( ( velocity / 6 ) * 1.5 )
-					else
-						physicsObject:SetVelocity( velocity / 6 )
-					end
-
-					if ( player.GetByID( 2 ).force ) then
-						if ( boneIndex == headIndex ) then
-							physicsObject:ApplyForceCenter( player.GetByID( 2 ).force * 1.5 )
-						else
-							physicsObject:ApplyForceCenter( player.GetByID( 2 ).force )
-						end
-					end
-
-					timer.Simple( .2, function()
-						physicsObject:ApplyForceCenter( Vector( 0, 0, physicsObject:GetMass() - math.random( 4000, 6000 ) ) )
-					end)
-				end
-			end
-		end
-	--end)
-end
-
 local corpse_mdl = Model( "models/cultist/humans/corpse.mdl" )
 
 function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
@@ -318,40 +267,6 @@ function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 				return true
 			end
 		end
---[[
-		if ( !ply.DeathLoop ) then
-			timer.Simple( SCPRagdoll:SequenceDuration() - .1, function()
-				local SCPRagdoll2 = ents.Create( "prop_ragdoll" )
-
-				SCPRagdoll2:SetModel( SCPRagdoll:GetModel() )
-				SCPRagdoll2:SetPos( SCPRagdoll:GetPos() )
-				SCPRagdoll2:SetAngles( SCPRagdoll:GetAngles() )
-				SCPRagdoll2:SetMaterial( SCPRagdoll:GetMaterial() )
-				SCPRagdoll2:SetSequence( SCPRagdoll:GetSequence() )
-				SCPRagdoll2:SetCycle( SCPRagdoll:GetCycle() )
-				SCPRagdoll2:Spawn()
-
-				if ( SCPRagdoll2 && SCPRagdoll2:IsValid() ) then
-
-					SCPRagdoll2:SetCollisionGroup( COLLISION_GROUP_WEAPON )
-
-					for i = 1, SCPRagdoll2:GetPhysicsObjectCount() do
-
-						local physicsObject = SCPRagdoll2:GetPhysicsObjectNum( i )
-						local boneIndex = SCPRagdoll2:TranslatePhysBoneToBone( i )
-						local position, angle = SCPRagdoll:GetBonePosition( boneIndex )
-
-						if ( physicsObject && physicsObject:IsValid() ) then
-							physicsObject:SetPos( position )
-							physicsObject:SetMass( 65 )
-							physicsObject:SetAngles( angle )
-						end
-					end
-				end
-				SCPRagdoll:Remove()
-			end)
-		end
-		]]--
 		return
 	end
 
@@ -690,7 +605,7 @@ function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 		LootBox:SetNWString( "DeathReason2", "l:body_headshot" )
 	end
 	LootBox.vtable = {}
-	LootBox.vtable.Ammo = {}
+	LootBox.vtable.Ammo = ply:GetAmmo()
 	LootBox.vtable.Entity = LootBox
 	LootBox.vtable.Weapons = {}
 	LootBox.vtable.Name = ply:GetNamesurvivor()
@@ -701,5 +616,3 @@ function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 		end
 	end
 end
-
-hook.Add( "PlayerDeath", "create_loot_box", CreateLootBox )

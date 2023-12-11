@@ -1,13 +1,10 @@
 local MenuTable = {}
-MenuTable.url = "https://rxsend-breach.fandom.com/ru/wiki/"
+MenuTable.url = "https://nextoren.fandom.com/ru/wiki/NextOren"
 MenuTable.start = "Play"
 MenuTable.Leave = "Leave"
 MenuTable.OurGroup = "Wiki"
 MenuTable.FAQ = "Information"
 MenuTable.Settings = "Settings"
-
---INTRO_PANEL:Remove()
-
 
 local dark_clr = Color(0,0,0,155)
 
@@ -21,11 +18,9 @@ local scp = Material("nextoren/gui/icons/notifications/breachiconfortips.png", "
 local garland = Material("happy_new_year/happy_new_year.png", "noclamp smooth")
 
 local function drawmat(x,y,w,h,mat)
-
   surface.SetDrawColor(color_white)
   surface.SetMaterial(mat)
   surface.DrawTexturedRect(x,y,w,h)
-
 end
 
 concommand.Add("debug_reset_mainmenu", function()
@@ -55,149 +50,6 @@ surface.CreateFont( "dev_name", {
   outline = false,
   
 })
-
-local shaky = "Shaky"
-local uracos = "UracosVereches"
-local shakyuracos = "UracosVereches & Shaky"
-
-local PATCHIE = {
-  {type = "title", str = "12/05/2023"},
-    {str = "Исправлены руки от первого лица у Врача и некоторых сб"},
-    {str = "Изменена внешность и резист Сержанта СБ"},
-    {str = "КД Способности щилдмеха была изменена с 80 до 300 секунд"},
-    {str = "Вырезан Георг"},
-    {str = "Исправлена скорость и сила прыжка Скрытника"},
-    {str = "Внесены правки в украинский язык (Благодарность Senpai#2647)"},
-    {str = "Добавлен белорусский язык (Благодарность Ahssagsgff#3278)"},
-    {str = "Добавлена смена роли за поддержку премиум статусу"},
-  {type = "title", str = "30/04/2023"},
-    {str = "Во время игры вы будете слышать всех вами заглушённых игроков"},
-    {str = "Исправлена уязвимость с командой !ignore"},
-    {str = "Добавлена возможность заменять сообщения игрока мотивационными цитатами"},
-    {str = "В интерком теперь можно писать только в чат"},
-  {type = "title", str = "15/04/2023"},
-    {str = "SCP-1025 больше нельзя передвигать"},
-    {str = "457, 912, 1093 был вырезан"},
-    {str = "Вырезана последняя способность SCP-062-FR"},
-    {str = "Добавлена пассивная невидимость SCP-062-FR"},
-    {str = "SCP-062-FR больше не получает хп от трупов"},
-    {str = "Исправлена обводка в большинстве случаев."},
-    {str = "Переработана абилка стана SCP-062-FR"},
-    {str = "Теперь SCP-939 видит через стены людей при движении, разговоре"},
-    {str = "Добавлен стан при использовании крика на ПКМ за SCP-638"},
-  {type = "title", str = "14/03/2023"},
-    {str = "Длительность большого раунда изменено с 17 минут до 14 (test)"},
-   {type = "title", str = "05/03/2023"},
-    {str = "Добавлена роль Класс-Д Штрафник"},
-    {str = "Новая система наказаний при получении варнов"},
-    {str = "Перманентный бан теперь не с 15 варнов, а с 30"},
-    {str = "Исправлено то что предметы и люди не пропадали возле лифтов поддержек при спавне"},
-   {type = "title", str = "03/03/2023"},
-    {str = "Исправлено отсутствия резиста при использовании способности SCP-682"},
-    {str = "Добавлен вики в главное меню"},
-    {str = "Убран дискорд из главного меню"},
-    {str = "Добавлена загрузочная панель к правилам при x64 версии гмода"},
-   {type = "title", str = "01/03/2023"},
-    {str = "Скорость превращения в зомби изменено с 10 секунд на 5"},
-    {str = "Изменен КД способности 106 на J с 5 на 10 секунд"},
-    {str = "При использовании способности 682 ко всем способностям"},
-    {str = "добавляется кд в 15 секунд"},
-    {str = "Время действия Рейдж мода 912 изменено с 25 секунд на 10"},
-    {str = "Теперь если 096 не убьет цель в течении минуты, метка таргета пропадет"},
-    {str = "Теперь при лутании трупа его невозможно двигать"},
-    {str = "Проныра теперь в 2 раза быстрее ломает решетку отверткой"},
-   {type = "title", str = "27/02/2023"},
-    {str = "Переработан резист шлема"},
-    {str = "Переработан резист СБ"},
-    {str = "Переработан урон дробовика"},
-   {type = "title", str = "25/02/2023"},
-    {str = "Модель женщин была переработана"},
-   {type = "title", str = "10/02/2023"},
-    {str = "Реворкнут SCP-268"},
-    {str = "Реворкнут шокер (Зажимайте R чтобы посмотреть заряд"},
-    {str = "заряжается батарейкой в инвентаре)"},
-    {str = "Добавлена Виевмодель батерейке"},
-    {str = "Исправлено то что взрыв 811 не убивал людей"},
-    {str = "Повышен резист для зомби"},
-  {type = "title", str = "28/01/2023"},
-    {str = "Изменена внешность Санитара, Специалиста, штурмовика, ГО мог"},
-  {type = "title", str = "19/01/2023"},
-    {str = "Исправлено поломанное редактирование оружие при отсутствии бинда"},
-    {str = "Исправлена задержка дыхания при многократном прицеле"},
-    {str = "Добавлена опция отключения киллфида"},
-    {str = "Убрано новогоднее меню"},
-    {str = "Убрана способность 076-2 на Q"},
-    {str = "КД атаки 082 изменена с 1.7 секунд на 1, во время агра 0.5 секунд"},
-    {str = "Добавлены руки от первого лица у 082"},
-    {str = "Если у игрока меньше 11 уровня, он получает двойной опыт"},
-    {str = "Исправлен баг с 1499 и 106"},
-    {str = "Исправлен абуз таблетками"},
-    {str = "Защита от количества пуль легкого шлема изменена с 5 на 1"},
-    {str = "Защита от количества пуль тяжелого шлема изменена с 10 на 2"},
-    {str = "Защита от количества пуль легкого бронежилета изменена с 6 на 2"},
-    {str = "Защита от количества пуль тяжелого бронежилета изменена с 10 на 4"},
-  {type = "title", str = "08/01/2023"},
-    {str = "Исправлено то, что нельзя было лутать мусорки за Уборщика"},
-  {type = "title", str = "05/01/2023"},
-    {str = "Добавлено меню быстрых фраз"},
-  {type = "title", str = "02/01/2023"},
-    {str = "Исправлен спавн ОНП"},
-  {type = "title", str = "28/12/2022"},
-    {str = "В честь нового года скидка на все до 10 января"},
-  {type = "title", str = "24/12/2022"},
-    {str = "Исправлено то, что за матильду мог заспавниться игрок ниже 5 уровня"},
-  {type = "title", str = "23/12/2022"},
-    {str = "Граната штурмовика выдается только при получении вооружения", by = shaky},
-  {type = "title", str = "12/12/2022"},
-    {str = "Исправлена невидимая модель ГК", by = shaky},
-    {str = "Исправлено появление 2-х SCP-009", by = shaky},
-  {type = "title", str = "11/12/2022"},
-    {str = "Новая карта", by = shaky},
-    {str = "Изменен SCP-912", by = shaky},
-    {str = "Удален SCP-860", by = shaky},
-    {str = "Удален диспетчер", by = shaky},
-    {str = "Полностью переписана система лута", by = shaky},
-    {str = "Добавлен резист в тело ГК на 1 выстрел", by = shaky},
-    {str = "Обновлен эффект портала КМД ДЗ", by = shaky},
-    {str = "Обновлен эффект побега СЦП", by = shaky},
-    {str = "Исправлены поломанные анимации вертолета", by = shaky},
-    {str = "Добавлена способность спортсмену", by = shaky},
-    {str = "Дополнен перевод на китайский", by = shakyuracos},
-  {type = "title", str = "07/12/2022"},
-    {str = "Исправлены ошибки в переводе", by = uracos},
-    {str = "Перевод на английский обновлен до последней версии", by = uracos},
-    {str = "Громкость игрока в интеркоме зависит от настройки громкости громкоговорителя", by = uracos},
-  {type = "title", str = "03/12/2022"},
-    {str = "Наклон можно отменить на бег", by = uracos},
-    {str = "Исправлены кривые приседания", by = uracos},
-    {str = "Прыжок с разбега больше не отнимает всю выносливость", by = uracos},
-    {str = "Попытка прыжка в приседе не отнимает выносливость впустую", by = uracos},
-  {type = "title", str = "25/11/2022"},
-    {str = "Перевод режима готов(наверное, мог что-то пропустить)", by = uracos},
-    {str = "Переводы на англ., казахский и татарский дополнены", by = uracos},
-  {type = "title", str = "24/11/2022"},
-    {str = "Дополнен перевод режима", by = uracos},
-    {str = "Добавлена способность для Специалиста ГОК", by = shaky},
-  {type = "title", str = "23/11/2022"},
-    {str = "Полный перевод режима", by = uracos},
-    {str = "Добавлен казахский язык", by = uracos},
-    {str = "Добавлен татарский язык", by = uracos},
-  {type = "title", str = "21/11/2022"},
-    {str = "[TEST] Добавлены наклоны", by = shaky},
-    {str = "Other minor changes", by = shaky},
-  {type = "title", str = "20/11/2022"},
-    {str = "Добавлена настройка \"Weapon Z Offset\"", by = shaky},
-    {str = "Изменены фонарики оружий", by = shaky},
-  {type = "title", str = "15/11/2022"},
-    {str = "Исправлена балаклава СБ", by = shaky},
-    {str = "Исправлена модель ОБР", by = shaky},
-    {str = "Обновлено главное меню", by = shaky},
-    {str = "Исправлено сломанное главное меню", by = shaky},
-    {str = "Обновлена модель Рядового СБ", by = shaky},
-    {str = "Исправлены анимации пистолетов", by = shaky},
-    {str = "Добавлена змейка (br_snake)", by = shaky},
-
-}
 
 function draw.RotatedText( text, x, y, font, color, ang )
   render.PushFilterMag( TEXFILTER.ANISOTROPIC )
@@ -277,34 +129,17 @@ end
 
 local button_lang = {
   play = "l:menu_play",
-
   resume = "l:menu_resume",
-
   disconnect = "l:menu_disconnect",
-
   credits = "l:menu_credits",
-
   settings = "l:menu_settings",
-
   donate = "l:menu_donate",
-
   wiki = "l:menu_wiki",
-
   rules = "l:menu_my_life_my_rules",
 }
 
 local function get_button_lang(str)
-
-  --local mylang = langtouse
-
-  --if !button_lang[str] then return "NOT FOUND" end
-
-  --if button_lang[str][mylang] then return button_lang[str][mylang] end
-
-  --if mylang == "ukraine" then return button_lang[str]["russian"] end
-
   return L(button_lang[str]) --["english"]
-
 end
 
 surface.CreateFont("MainMenuFont", {
@@ -656,7 +491,6 @@ local function StartIntro()
   if ( gamestarted ) then
 
     roundstring = "l:startintro_round_will_begin " .. string.ToMinutesSeconds( cltime )
-    --BREACH.Round.GameStarted = true
 
   else
 
@@ -713,7 +547,7 @@ local function StartIntro()
 end
 
 function music_menu()
-  surface.PlaySound( "monix/mainmenu.ogg" )
+  surface.PlaySound( "nextoren/unity/scpu_menu_theme_v3.01.ogg" )
 end
 concommand.Add( "music_menu", music_menu )
 
@@ -733,26 +567,16 @@ local credits = {
   "| Cultist_kun - Creator of 1.0, inspired to make 2.6.0",
   "| Ghelid - Creator of 1.0, inspired to make 2.6.0",
   "----------------------------------------------------------",
+  "| Jithead - server tester",
+  "| Dest - server tester",
+  "| Solyanka - server tester",
+  "| kotiknr - server tester",
+  "| and many others",
+  "----------------------------------------------------------",
   "| You - thanks for playing on the server!",
   "| Bismillahi rahmani rahim ☪",
   "----------------------------------------------------------",
 }
-
---[[
-    "| Mod - Ukraine Language",
-  "| Senpai - Ukraine Language",
-  "| D-3826(907778731) - Tatarian Language",
-  "| pisya_popa2015(839867612) - Kazakh Language",
-  "| OberTechno and Жора(1012087123) - English Language",
-  "| Ramn - Chinese Language",
-  "| Ahssagsgff - belorussian Language",
-  "----------------------------------------------------------",
-  "| Nightvich - server tester",
-  "| Mysok - server tester",
-  "| Solyanka - server tester",
-  "| котик ня - server tester",
-  "----------------------------------------------------------",
-  --]]
 
 function OpenCreditsMenu()
 
@@ -929,14 +753,6 @@ function StartBreach( firsttime )
         surface.PlaySound( "nextoren/gui/main_menu/main_menu_select_1.wav" )
       end,
     },
-    --[[
-    {
-      name = "donate",
-      func = function()
-        surface.PlaySound( "nextoren/gui/main_menu/main_menu_select_1.wav" )
-        createdonationmenu()
-      end,
-    },]]
     {
       name = "wiki",
       func = function()
@@ -968,106 +784,6 @@ function StartBreach( firsttime )
   INTRO_PANEL:SetSize( scrw, scrh );
   INTRO_PANEL:SetPos( 0, 0 )
   INTRO_PANEL.OpenTime = RealTime()
-
-  local button = vgui.Create("DButton", INTRO_PANEL)
-  button:SetSize(110,25)
-  button:SetText("")
-  button:SetPos(0,15)
-  button:CenterHorizontal()
-  button.lerp = 0
-  local clr_butt = Color(255,255,255,115)
-  button.Paint = function(self, w, h)
-
-      drawmat(0,0,w,1,gradients)
-      drawmat(0,h-1,w,1,gradients)
-
-      surface.SetDrawColor(color_white)
-      surface.SetMaterial(grad2)
-      surface.DrawTexturedRect(1, 0, 1, h/2)
-      surface.SetMaterial(grad1)
-      surface.DrawTexturedRect(1, h/2, 1, h/2)
-
-      surface.SetDrawColor(color_white)
-      surface.SetMaterial(grad2)
-      surface.DrawTexturedRect(w-1, 0, 1, h/2)
-      surface.SetMaterial(grad1)
-      surface.DrawTexturedRect(w-1, h/2, 1, h/2)
-
-      if self:IsHovered() then
-        draw.RoundedBox(0,1,1,w-2,h-2,ColorAlpha(color_white, 100))
-      end
-
-      draw.DrawText(BREACH.TranslateString"l:menu_changelog", "ScoreboardContent", w/2, 6, nil, TEXT_ALIGN_CENTER)
-
-  end
-
-  local PATCHIE_PANEL = vgui.Create("DScrollPanel", INTRO_PANEL)
-
-  function PATCHIE_PANEL:UpdatePatchie()
-
-    self:Clear()
-
-    for _, text in ipairs(PATCHIE) do
-      if !text.type then
-        local str = vgui.Create("DLabel", PATCHIE_PANEL)
-        str:Dock(TOP)
-        str:SetSize(0,30)
-        str:SetText("   - "..text.str)
-        str:SetTextColor(color_white)
-        str:SetFont("ChatFont_new")
-      elseif text.type == "title" then
-        local titlepanel = vgui.Create("DPanel", PATCHIE_PANEL)
-        titlepanel:Dock(TOP)
-        titlepanel:SetSize(0,30)
-        titlepanel.Paint = function(self, w, h)
-          drawmat(0,h-1,w,1,gradients)
-        end
-        local title = vgui.Create("DLabel", titlepanel)
-        title:SetText(text.str)
-        title:SetFont("ScoreboardHeader")
-        title:SizeToContentsX()
-        title:SetPos(PATCHIE_PANEL:GetWide()/2-title:GetWide()/2, 3)
-      end
-    end
-
-  end
-
-  button.opened = false
-  button.DoClick = function(self)
-    if !self.opened then
-      PATCHIE_PANEL:UpdatePatchie()
-      self.opened = !self.opened
-      button:MoveTo(button:GetX(), PATCHIE_PANEL:GetTall() + 30, 1)
-      PATCHIE_PANEL:MoveTo(PATCHIE_PANEL:GetX(), 15, 1)
-    else
-      self.opened = !self.opened
-      button:MoveTo(button:GetX(), 15, 1)
-      PATCHIE_PANEL:MoveTo(PATCHIE_PANEL:GetX(), -500, 1)
-    end
-  end
-
-  PATCHIE_PANEL:SetSize(500,500)
-  PATCHIE_PANEL:SetPos(0,-500)
-  PATCHIE_PANEL:CenterHorizontal()
-  PATCHIE_PANEL.Paint = function(self, w, h)
-
-      surface.SetDrawColor(color_white)
-      surface.SetMaterial(grad2)
-      surface.DrawTexturedRect(1, 0, 1, h/2)
-      surface.SetMaterial(grad1)
-      surface.DrawTexturedRect(1, h/2, 1, h/2)
-
-      surface.SetDrawColor(color_white)
-      surface.SetMaterial(grad2)
-      surface.DrawTexturedRect(w-1, 0, 1, h/2)
-      surface.SetMaterial(grad1)
-      surface.DrawTexturedRect(w-1, h/2, 1, h/2)
-
-  end
-
-  PATCHIE_PANEL:UpdatePatchie()
-
-
 
   function INTRO_PANEL:OpenUrl(url)
 
@@ -1176,7 +892,6 @@ function StartBreach( firsttime )
     if !GetConVar("breach_config_mge_mode"):GetBool() then
       Backgrounds = {
         "rxsend/mainmenu/ntf_sniper.png",
-        "rxsend/mainmenu/poster.png",
         "rxsend/mainmenu/goc_commander.png",
         "rxsend/mainmenu/is_agent.png",
         "rxsend/mainmenu/scp.png",
@@ -1233,13 +948,13 @@ function StartBreach( firsttime )
     surface.SetMaterial(ico)
     surface.DrawTexturedRect(5,0+offset_height,100,100)
 
-    draw.DrawText("Breach 2.6.0", "ScoreboardHeader", 105, 45+offset_height)
+    draw.DrawText("NextOren Breach", "ScoreboardHeader", 105, 25+offset_height)
     surface.SetDrawColor(color_white)
     surface.SetMaterial(gradients)
     surface.DrawTexturedRect(100, 80+offset_height, 305, 3)
 
-    --draw.RoundedBox(0, 100, 60, 305, 3, color_white)
-    --draw.DrawText("Created by Shaky | UracosVereches | Cyox", "ScoreboardContent", 105, 65)
+    draw.RoundedBox(0, 100, 60, 305, 3, color_white)
+    draw.DrawText("UnOfficial 2.6.0 ReCreation", "ScoreboardContent", 105, 65)
 
     if weareprecaching then
        draw.RoundedBox(0, scrw * 0.44, scrh * 0.487, scrw * 0.12, scrh * 0.03, Color(0, 0, 0))
@@ -1252,11 +967,12 @@ function StartBreach( firsttime )
   creatorlist:SetPos(20,100+offset_height)
   creatorlist.Paint = function() end
   local spisok = {
-    --{defaultname = "Shaky", id = "76561198869328954", who = BREACH.TranslateString"l:menu_lead l:menu_dev"},
-    --{defaultname = "UracosVereches", id = "76561197997716528", who = BREACH.TranslateString"l:menu_lead l:menu_dev"},
-    --{defaultname = "SelMash", id = "76561198137564177", who = BREACH.TranslateString"l:menu_lead l:menu_dev"},
-    {defaultname = "Cyox", id = "76561198825698418", who = BREACH.TranslateString"l:menu_dev"},
-    --{defaultname = "Mysok", id = "76561198813382230", who = BREACH.TranslateString"l:menu_head_admin"},
+    {defaultname = "-Spac3", id = "76561198797549224", who = BREACH.TranslateString"l:menu_dev"},
+    {defaultname = "Shaky", id = "76561198869328954", who = BREACH.TranslateString"RXSEND Developer"},
+    {defaultname = "Cyox", id = "76561198825698418", who = BREACH.TranslateString"RXSEND Developer"},
+    {defaultname = "Ghelid", id = "76561198019442318", who = BREACH.TranslateString"Лучше для мужчины нет!"},
+    {defaultname = "Cultist_Kun", id = "76561197987190249", who = BREACH.TranslateString"NextOren Developer"},
+    {defaultname = "BrownJourney", id = "76561198286190382", who = BREACH.TranslateString"NextOren Developer"},
   }
 
   local sin, cos, rad = math.sin, math.cos, math.rad
@@ -1379,48 +1095,6 @@ function StartBreach( firsttime )
   
     draw.RoundedBox(0,0,0,w,h,clr_black)
 
-    --[[
-
-    cur_bg_time_length = cur_bg_time_length + FrameTime()
-
-    if cur_bg_time_length >= 5 and !makedisappear then
-
-      makedisappear = true
-
-    end
-
-    if lerp >= 1 then
-    
-      makedisappear = false
-      lerp = 0
-      cur_bg_time_length = 0
-      curbg = nextbg
-      nextbg = nextbg + 1
-
-      if nextbg > #Backgrounds - 1 then
-        nextbg = 1
-      end
-
-    end
-
-    if isnumber(Backgrounds[curbg]) then
-      updatebackgrounds()
-      curbg = 1 nextbg = 2
-    end
-
-
-    surface.SetDrawColor(color_white)
-    surface.SetMaterial(Backgrounds[curbg] || Backgrounds[1])
-    surface.DrawTexturedRect(0,0,w,h)
-
-    if makedisappear then
-      lerp = math.Approach(lerp, 1, FrameTime()*.6)
-      surface.SetDrawColor(ColorAlpha(color_white, lerp*255))
-
-      surface.SetMaterial(Backgrounds[nextbg] || Backgrounds[2])
-      surface.DrawTexturedRect(0,0,w,h)
-    end]]
-
     if ( input.IsKeyDown( KEY_ESCAPE ) && INTRO_PANEL.OpenTime < RealTime() - .2 && !FIRSTTIME_MENU ) then
 
       ShowMainMenu = CurTime() + .1
@@ -1439,31 +1113,6 @@ function StartBreach( firsttime )
   end
 
 end
-
---[[
-do
-
-  local client = LocalPlayer()
-
-  if ( !( client.GetActive && client:GetActive() ) && !IsValid( INTRO_PANEL ) ) then
-
-    timer.Create( "StartMainMenu", 0, 0, function()
-
-      local client = LocalPlayer()
-
-      if ( client && client:IsValid() ) then
-
-        --StartBreach( true )
-        timer.Remove( "StartMainMenu" )
-
-      end
-
-    end )
-
-  end
-
-end
---]]
 
 function send_prefix_data()
 
@@ -1669,22 +1318,8 @@ end)
 
 hook.Add("HUDShouldDraw", "Breach_Screenshot_Mode", function(name)
   if GetConVar("breach_config_screenshot_mode"):GetInt() == 0 then return end
-
-  -- So we can change weapons
-  --if ( name == "CHudWeaponSelection" ) then return true end
-  --if ( name == "CHudChat" ) then return true end
-
   return false
-
 end)
-
---cvars.AddChangeCallback("breach_config_optimize", function(cvar, old, new)
-  --BREACHOptimize = GetConVar("breach_config_optimize"):GetBool()
---end)
-
---cvars.AddChangeCallback("breach_config_potato", function(cvar, old, new)
-  --BREACHPotato = GetConVar("breach_config_potato"):GetBool()
---end)
 
 local yellow = GetConVar("breach_config_filter_yellow")
 local blue = GetConVar("breach_config_filter_blue")
@@ -1718,12 +1353,7 @@ local _DrawColorModify = DrawColorModify
 
 local translate_translations = {
   ["russian"] = "русский",
-  ["ukraine"] = "український",
-  ["chinese"] = "简体中文",
-  ["english"] = "english",
-  ["tatarian"] = "татарча",
-  ["kazakh"] = "қазақ",
-  ["belorussian"] = "Беларускі",
+  ["english"] = "english"
 }
 
 BREACH.Options = {
@@ -1732,7 +1362,7 @@ BREACH.Options = {
     settings = {
       {
         name = "SEXY CHEMIST",
-        checkplayer = RXSEND_SEXY_CHEMISTS,
+        checkplayer = NEXTOREN_SEXY_CHEMISTS,
         cvar = "breach_config_sexual_chemist",
         type = "bool",
       },
@@ -1791,12 +1421,7 @@ BREACH.Options = {
         type = "choice",
         value = {
           "russian",
-          "ukraine",
-          "chinese",
-          "english",
-          "tatarian",
-          "kazakh",
-          "belorussian",
+          "english"
         },
       },
     },
@@ -1929,6 +1554,11 @@ BREACH.Options = {
         type = "bool"
       },
       {
+        name = "l:menu_hudstyle",
+        cvar = "breach_config_hud_style",
+        type = "bool"
+      },
+      {
         name = "l:menu_scp_red_vision",
         cvar = "breach_config_scp_red_screen",
         type = "bool"
@@ -1996,12 +1626,6 @@ BREACH.Options = {
       },
     }
   }
-  --[[
-  [10] = {
-    name = "HUD Style",
-    cvar = "breach_config_hud_style",
-    type = "bool",
-  },]]
 }
 
 local TEXTENTRY_FRAME
@@ -2122,7 +1746,7 @@ function OpenDonateMenu()
     drawmat(0,0,w,1,gradients)
     drawmat(0,h-1,w,1,gradients)
 
-    draw.DrawText("По вопросам или покупки\n_spac3_ (это дискорд)", "ScoreboardHeader", w/2, 5, Color(255,0,0), TEXT_ALIGN_CENTER)
+    draw.DrawText("Похоже, вы не можете\nпотратить свои деньги...", "ScoreboardHeader", w/2, 5, Color(255,0,0), TEXT_ALIGN_CENTER)
   end
 
 end
@@ -2404,8 +2028,6 @@ function OpenConfigMenu()
       drawmat(0,h-1,w,1,gradients)
 
       draw.DrawText(L(category.name), "ScoreboardContent", w/2, 5, clr_text, TEXT_ALIGN_CENTER)
-
-      --draw.DrawText(tostring(math.floor(convar:GetInt())), "ScoreboardContent", 57, 12, nil, TEXT_ALIGN_CENTER)
 
     end
 
@@ -2780,14 +2402,14 @@ function GM:PreRender()
         INTRO_PANEL.OpenTime = RealTime()
         INTRO_PANEL:SetVisible( true )
         ShowMainMenu = true
-        mainmenumusic = CreateSound( ply, "monix/mainmenu.ogg" )
+        mainmenumusic = CreateSound( ply, "nextoren/unity/scpu_menu_theme_v3.01.ogg" )
     mainmenumusic:Play()
 
       else
 
         StartBreach(false) -- syka
         ShowMainMenu = true
-        mainmenumusic = CreateSound( ply, "monix/mainmenu.ogg" )
+        mainmenumusic = CreateSound( ply, "nextoren/unity/scpu_menu_theme_v3.01.ogg" )
     mainmenumusic:Play()
 
       end

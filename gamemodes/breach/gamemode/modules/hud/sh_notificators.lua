@@ -94,14 +94,14 @@ if CLIENT then
 				end
 			end
 	
-			chat.AddText(Color(0, 230, 0), "[MONIX] ", Color(255, 255, 255), unpack(message))
+			chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 255, 255), unpack(message))
 	end)
 	
 	net.Receive("BreachWarningFromServer", function()
 		local message = net.ReadString()
 	
 		if message == nil then return end
-			chat.AddText(Color(230, 0, 0), "[MONIX] ", Color(255, 150, 150), message)
+			chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 150, 150), message)
 	end)
 	
 	--1.0 compatibility
@@ -123,7 +123,7 @@ if CLIENT then
 					msg[k] = BREACH.TranslateString(v)
 				end
 			end
-			chat.AddText(Color(0, 230, 0), "[MONIX] ", Color(255, 255, 255), unpack(msg))
+			chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 255, 255), unpack(msg))
 	end
 	
 	function RXSENDWarning(message)
@@ -140,7 +140,7 @@ if CLIENT then
 					message[k] = BREACH.TranslateString(v)
 				end
 			end
-			chat.AddText(Color(230, 0, 0), "[MONIX] ", Color(255, 150, 150), unpack(message))
+			chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 150, 150), unpack(message))
 	end
 	
 	end

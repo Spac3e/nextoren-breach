@@ -57,7 +57,7 @@ function SWEP:Eat()
   if SERVER then
 
     self.Owner:ScreenFade(SCREENFADE.IN, Color(0,255,0, 100), 0.5, 0)
-    self.Owner:BrTip(0, "[VAULT]", Color(255,0,0,220), "l:you_feel_healthy", color_white )
+    self.Owner:BrTip(0, "[NextOren Breach]", Color(255,0,0,220), "l:you_feel_healthy", color_white )
     self.Owner.Used500 = true
     self.Owner.Infected409 = false
     timer.Remove("SCP409Phase1_"..self.Owner:SteamID64())

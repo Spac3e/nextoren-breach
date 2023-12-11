@@ -342,7 +342,7 @@ function mply:CLevel()
 end*/
 
 function mply:RequiredEXP()
-	return 680 * math.max(1, self:GetNLevel())
+	return 680 * math.max(1, self.GetNLevel and self:GetNLevel() or 1)
 end
 
 function mply:IsFemale()
@@ -962,7 +962,9 @@ local function DrawNewInventory( notvictim, vtab, ammo )
 				surv.headply = bonemerge
 				surv.headpanel = head
 			end
-
+			for i = 0, 3 do
+				head:SetBodygroup(i, bonemerge:GetBodygroup(i))
+			end
 		end
 
 	else
@@ -976,10 +978,15 @@ local function DrawNewInventory( notvictim, vtab, ammo )
 		for _, bonemerge in pairs(vtab.Entity:LookupBonemerges()) do
 
 			if !IsValid(bonemerge) then continue end
+			local head
 			if CORRUPTED_HEADS[bonemerge:GetModel()] then
-				surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible(), bonemerge:GetSkin())
+				head = surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(1), bonemerge:GetInvisible(), bonemerge:GetSkin())
 			else
-				surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible(), bonemerge:GetSkin())
+				head = surv:BoneMerged(bonemerge:GetModel(), bonemerge:GetSubMaterial(0), bonemerge:GetInvisible(), bonemerge:GetSkin())
+			end
+
+			for i = 0, 3 do
+				head:SetBodygroup(i, bonemerge:GetBodygroup(i))
 			end
 
 		end
@@ -5253,129 +5260,6 @@ function mply:MeleeViewPunch( damage )
 
 end
 
---[[
-function Sprint( ply )
-
-	n_new = ply:GetStaminaScale()
-
-	sR = tonumber( string.sub( 2 - .5 / 2, 1, 1, 1.0 - 1 ) )
-    sL = tonumber( string.sub( 3.5 - n_new, 1, 1.0, string.len( n_new ) ) ) or tonumber( string.sub( 3 - n_new, 1, 1.0 + 1, string.len( n_new ) ) )
-
-	if not ply.RunSpeed then ply.RunSpeed = 0 end
-
-	if not ply.lTime then ply.lTime = 0 end
-
-	if !ply.GetRunSpeed then return end
-
-	if ( ply:GetAdrenaline() ) then return end
-
-	if ( ply:GetBoosted() ) then return end
-
-	if ( ply:GetEnergized() ) then return end
-
-	if ply:GetRunSpeed() == ply:GetWalkSpeed() or GetConVar("br_stamina_enable"):GetInt() == 0 then
-
-		ply:SetStamina(100)
-
-	else
-
-		if !ply:GetStamina() then ply:SetStamina(100) end
-
-		if ply.exhausted then
-
-			if ply:GetStamina() >= 30 then
-
-				ply.exhausted = false
-
-				ply:SetRunSpeed( ply.RunSpeed )
-
-				ply:SetJumpPower( ply.jumppower )
-
-			end
-
-			if ply.lTime < CurTime() then
-
-				ply.lTime = CurTime() + 0.1
-
-				ply:SetStamina(ply:GetStamina() + sR) 
-
-			end
-
-		else
-
-			if ply:GetStamina() <= 0 then
-
-				ply:SetStamina(0)
-
-				ply.exhausted = true
-
-				ply.RunSpeed = ply:GetRunSpeed()
-
-				ply.jumppower = ply:GetJumpPower()
-
-				ply:SetRunSpeed( ply:GetWalkSpeed() + 1 )
-
-				ply:SetJumpPower(20)
-
-			end
-
-			if ply.lTime < CurTime() then
-
-				ply.lTime = CurTime() + 0.1
-
-				if ply.sprintEnabled and !( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER or ply:GetMoveType() == MOVETYPE_OBSERVER  or ply:InVehicle() ) and ply:GTeam() != TEAM_SCP then
-
-					ply:SetStamina(ply:GetStamina() - sL) 
-
-				else
-
-				    ply.lTime = CurTime() + 0.1
-
-					ply:SetStamina(ply:GetStamina() + sR)
-
-				end
-
-				if ply.jumped and !( ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_LADDER or ply:GetMoveType() == MOVETYPE_OBSERVER  or ply:InVehicle() or ply:OnGround() ) and ply:GTeam() != TEAM_SCP then
-
-					ply:GetStamina(ply:GetStamina() - 25)
-
-
-
-				end
-
-			end
-
-		end
-
-		if ply:GetStamina() > 100 then ply:SetStamina(100) end
-
-		if ply.Using714 and ply:GetStamina() > 30 then ply:SetStamina(30) end
-
-	end
-
-end
---]]
-
-if SERVER then
-
-	util.AddNetworkString("SetStamina")
-
-	function mply:SetStamina(float)
-		net.Start("SetStamina", true)
-		net.WriteFloat(float)
-		net.WriteBool(false)
-		net.Send(self)
-	end
-
-	function mply:AddStamina(float)
-		net.Start("SetStamina", true)
-		net.WriteFloat(float)
-		net.WriteBool(true)
-		net.Send(self)
-	end
-
-end
-
 net.Receive("SetStamina", function()
 
 	local stamina = net.ReadFloat()
@@ -5392,22 +5276,27 @@ end)
 
 local cd_stamina = 0
 if CLIENT then
-	concommand.Add("test111", function()
-		LocalPlayer().Stamina = 10
-	end)
 	hook.Add("KeyPress", "Stamina_drain", function(ply, press)
 		if ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_OBSERVER then
 			return
 		end
 
-		if press == IN_JUMP and ply.Stamina and !ply:Crouching() then
+		if press == IN_JUMP and ply.Stamina and !ply:Crouching() and ply:IsOnGround() then
 			if !ply:GetEnergized() and !ply:GetAdrenaline() then
+				cd_stamina = CurTime() + 3
 				ply.Stamina = ply.Stamina - 6
 			end
 		end
 
 	end)
 end
+
+function UpdateStamina_Breach(v, cd)
+	if !cd then cd = 1.5 end
+	LocalPlayer().Stamina = v
+	cd_stamina = CurTime() + cd
+end
+
 function Sprint( ply, mv )
 
 	if ply:GetMoveType() == MOVETYPE_NOCLIP or ply:GetMoveType() == MOVETYPE_OBSERVER then
@@ -5419,8 +5308,11 @@ function Sprint( ply, mv )
 		ply.exhausted = nil
 		return
 	end
-
 	local pl = ply:GetTable()
+
+	if !pl.LastSysTime then
+		pl.LastSysTime = SysTime()
+	end
 	local n_new = ply:GetStaminaScale()
 	local stamina = pl.Stamina
 	local maxstamina = n_new*100
@@ -5446,19 +5338,19 @@ function Sprint( ply, mv )
 	local isrunning = false
 
 	if IsValid(activeweapon) and activeweapon.HoldingBreath then
-		stamina = stamina - 0.025
+		stamina = stamina - (SysTime() - pl.LastSysTime) * 8
 	end
 
 	if !adrenaline then
 		if mv:KeyDown(IN_SPEED) and !( ply:GetVelocity():Length2DSqr() < 0.25 or movetype == MOVETYPE_NOCLIP or movetype == MOVETYPE_LADDER or movetype == MOVETYPE_OBSERVER or invehicle ) and plyteam != TEAM_SCP and !pl.exhausted then
-			if !energized then stamina = stamina - 0.0115 end
+			if !energized then stamina = stamina - (SysTime() - pl.LastSysTime) * 4 end
 			cd_stamina = CurTime() + 1.5
 			isrunning = true
 		end
 	end
 	if !isrunning and !ply:GetPos():WithinAABox(Vector(-4120.291504, -11427.226563, 38.683075), Vector(1126.214844, -15695.861328, -3422.429688)) then
 		if cd_stamina <= CurTime() then
-			local add = FrameTime()
+			local add = (SysTime() - pl.LastSysTime) * 7
 			if energized then
 				add = add *2
 			end
@@ -5468,7 +5360,7 @@ function Sprint( ply, mv )
 	end
 
 	if isrunning and mv:KeyPressed(IN_JUMP) and IsFirstTimePredicted() then
-		stamina = stamina - 15
+		stamina = stamina - (SysTime() - pl.LastSysTime) * 15
 	end
 
 	if stamina < 0 and !pl.exhausted and !boosted then
@@ -5478,6 +5370,8 @@ function Sprint( ply, mv )
 		pl.exhausted = true
 		exhausted_cd = CurTime() + 7
 	end
+
+	pl.LastSysTime = SysTime()
 
 
 	pl.Stamina = stamina
@@ -5512,7 +5406,7 @@ end)
 
 if CLIENT then
 	function mply:DropWeapon( class )
-		net.Start( "DropWeapon" )
+		net.Start( "DropWeapon", true )
 			net.WriteString( class )
 		net.SendToServer()
 	end
@@ -5528,49 +5422,8 @@ if CLIENT then
 		cmd:SelectWeapon( LocalPlayer().DoWeaponSwitch )
 
 		if LocalPlayer():GetActiveWeapon() == LocalPlayer().DoWeaponSwitch then
+			LocalPlayer():GetActiveWeapon().DrawCrosshair = true
 			LocalPlayer().DoWeaponSwitch = nil
 		end
 	end )
 end
-
---[[
-hook.Add("KeyPress", "stm_on", function( ply, button )
-
-	if button == IN_SPEED then ply.sprintEnabled = true end
-
-end )
-
-
-
-hook.Add("KeyPress", "stmj_on", function( ply, button )
-
-	if button == IN_JUMP then ply.jumped = true end
-
-end )
-
-
-
-hook.Add("KeyRelease", "stmj_off", function( ply, button )
-
-	if button == IN_JUMP then ply.jumped = false end
-
-end )
-
-
-
-hook.Add("KeyRelease", "stm_off", function( ply, button )
-
-	if button == IN_SPEED then ply.sprintEnabled = false end
-
-end )
-
-function GM:KeyPress(ply, key)
-
-	if ( key == IN_SPEED ) then
-
-		Sprint(ply)
-
-	end
-
-end
---]]

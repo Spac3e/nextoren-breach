@@ -152,6 +152,47 @@ function PrecachePlayerSounds( ply )
   BREACH.ResourcesPrecached = true
 
   local StartTime = SysTime()
+
+  PrecacheDir( "models/cultist/" )
+  PrecacheDir( "models/weapons/" )
+  PrecacheDir( "sound/nextoren/" )
+  PrecacheDir( "models/gmod4phun/" )
+  PrecacheDir( "sound/no_music/" )
+  PrecacheDir( "sound/player/")
+  PrecacheDir( "sound/cw/")
+  PrecacheDir( "sound/common/")
+  PrecacheDir( "sound/physics/")
+  PrecacheDir( "models/props_gffice/" )
+  PrecacheDir( "models/cultist_props/" )
+  PrecacheDir( "models/cult_props/" )
+  PrecacheDir( "models/noundation/" )
+  PrecacheDir( "models/props_beneric/" )
+  PrecacheDir( "models/props_canteen/" )
+  PrecacheDir( "models/props_glackmesa/" )
+  PrecacheDir( "models/props_gm/" )
+  PrecacheDir( "models/props_guestionableethics/" )
+  PrecacheDir( "models/next_breach/" )
+  PrecacheDir( "models/models/" )
+  PrecacheDir( "sound/weapons/")
+  PrecacheDir( "sound/bullet/" )
+  PrecacheDir( "models/scp_helicopter/" )
+  PrecacheDir( "models/scp_chaos_jeep/" )
+
+  if ( CLIENT ) then
+
+    PrecacheDir( "sound/ttt_foundation/" )
+    PrecacheDir( "materials/models/cultist/" )
+    PrecacheDir( "materials/models/all_scp_models/" )
+    PrecacheDir( "materials/nextoren/" )
+    PrecacheDir( "materials/nextoren_hud/" )
+
+  end
+
+  print( "End time: ", SysTime() - StartTime )
+
+  --[[
+
+  local StartTime = SysTime()
   PrecacheDir( "models/breach/" )
   PrecacheDir( "models/breach_anims/" )
   PrecacheDir( "models/breach_animations/" )
@@ -234,6 +275,8 @@ function PrecachePlayerSounds( ply )
   end
 
   print( "End time: ", SysTime() - StartTime )
+
+  --]]
 
 end
 

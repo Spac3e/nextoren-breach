@@ -1,3 +1,16 @@
+--[[
+Server Name: RXSEND Breach
+Server IP:   62.122.215.225:27015
+File Path:   addons/[weapons]_phys_bullet/lua/hab/modules/physbullet/bullet.lua
+		 __        __              __             ____     _                ____                __             __         
+   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
+  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
+ (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
+/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
+                                     /____/                                 /____/_____/                                  
+--]]
+
+
 local MODULE = hab.Module.PhysBullet
 
 MODULE.EntityCache = MODULE.EntityCache or {}
@@ -972,6 +985,14 @@ end)
 function MODULE:BulletApplyDamage( Ent, Index, Bullet, Mode ) -- apply damage
 
 	if CLIENT or !Ent or !Index or !Bullet then return end
+
+	if IsValid(Ent) then
+		if !Ent:IsNPC() then
+			if Ent:IsPlayer() and !Ent:IsBot() then
+				return
+			end
+		end
+	end
 
 	local force = Bullet.Force * Bullet.VelocityFraction
 

@@ -493,13 +493,88 @@ function mply:UnUseArmor()
 	self:SetUsingCloth("")
 end
 
+function mply:SetSpectator()
+	self:Flashlight( false )
+	self:AllowFlashlight( false )
+	self:StripWeapons()
+	self:RemoveAllAmmo()
+	self:SetRoleName(role.Spectator)
+	self:SetTeam(TEAM_SPEC)
+	self:SetGTeam(TEAM_SPEC)
+	self:SetModel("models/props_junk/watermelon01.mdl")
+	self:SetNoDraw(true)
+	self:SetNoTarget(true)
+	self:SetMoveType(MOVETYPE_NOCLIP)
+	self:InvalidatePlayerForSpectate()
+
+	local plys = self:GetValidSpectateTargets()
+
+	if #plys < 1 then
+		self:UnSpectate()
+		self:Spectate( OBS_MODE_ROAMING )
+		self:SetObserverMode(OBS_MODE_ROAMING)
+	else
+		self:Spectate( OBS_MODE_CHASE )
+		self:SetObserverMode(OBS_MODE_CHASE)
+		self:SpectateEntity( plys[1] )
+	end
+
+	self.Active = true
+	self.BaseStats = nil
+	self.UsingArmor = nil
+	self.canblink = false
+	self.handsmodel = nil
+	self.alreadyselectedscp = false
+end
+
+
+function mply:InvalidatePlayerForSpectate()
+	local roam = #self:GetValidSpectateTargets() < 1
+
+	for k, v in pairs( player.GetAll() ) do
+		if v:GTeam() == TEAM_SPEC then
+
+	if v != self then
+		if v:GetObserverTarget() == self then
+			if roam then
+				v:UnSpectate()
+				v:Spectate( OBS_MODE_ROAMING )
+				v:SetObserverMode(OBS_MODE_CHASE)
+			else
+				v:SpectatePlayerNext()
+			end
+		end
+	end
+end
+end
+end
+
+function mply:GetValidSpectateTargets( all )
+	local plys = {}
+
+	for k, v in pairs(player.GetAll()) do
+		if all then
+			table.insert( plys, v )
+		else
+			if v:GTeam() != TEAM_SPEC then
+				table.insert( plys, v )
+			end
+		end
+	end
+
+	return plys
+end
+
 function mply:SpectatePlayerNext()
 	if self:GTeam() != TEAM_SPEC then return end
+
+	self:SetMoveType(MOVETYPE_NOCLIP)
 
 	local plys = self:GetValidSpectateTargets()
 	if self:GetObserverMode() == OBS_MODE_ROAMING then
 		if #plys > 0 then
 			self:Spectate( OBS_MODE_CHASE )
+			self:SetObserverMode(OBS_MODE_CHASE)
 		else
 			return
 		end
@@ -508,6 +583,7 @@ function mply:SpectatePlayerNext()
 	if #plys < 1 then
 		self:UnSpectate()
 		self:Spectate( OBS_MODE_ROAMING )
+		self:SetObserverMode(OBS_MODE_ROAMING)
 		return
 	end
 
@@ -534,20 +610,21 @@ function mply:SpectatePlayerNext()
 	local target = plys[index]
 
 	if target != cur_target then
-		--print( self, "PlyNext - new", target )
 		self:SpectateEntity( target )
 	end
 end
 
 function mply:SpectatePlayerPrev()
 	if self:GTeam() != TEAM_SPEC then return end
-	--if self.DeathScreen or self.SetupAsSpectator then return end
 
 	local plys = self:GetValidSpectateTargets()
+
+	self:SetMoveType(MOVETYPE_NOCLIP)
 
 	if self:GetObserverMode() == OBS_MODE_ROAMING then
 		if #plys > 0 then
 			self:Spectate( OBS_MODE_CHASE )
+			self:SetObserverMode(OBS_MODE_CHASE)
 		else
 			return
 		end
@@ -556,7 +633,7 @@ function mply:SpectatePlayerPrev()
 	if #plys < 1 then
 		self:UnSpectate()
 		self:Spectate( OBS_MODE_ROAMING )
-		--print( "PlyPrev - foce roam", self )
+		self:SetObserverMode(OBS_MODE_ROAMING)
 		return
 	end
 
@@ -583,126 +660,53 @@ function mply:SpectatePlayerPrev()
 	local target = plys[index]
 
 	if target != cur_target then
-		--print( self, "PlyPrev - new", target )
 		self:SpectateEntity( target )
 	end
 end
 
 function mply:ChangeSpectateMode()
 	if self:GTeam() != TEAM_SPEC then return end
-	--if self.DeathScreen or self.SetupAsSpectator then return end
 
 	local cur_mode = self:GetObserverMode()
 
 	if #self:GetValidSpectateTargets() < 1 then
 		if cur_mode != OBS_MODE_ROAMING then
-			--print( "SpecMode - foce roam", self )
 			self:UnSpectate()
 			self:Spectate( OBS_MODE_ROAMING )
+			self:SetObserverMode(OBS_MODE_ROAMING)
 		end
-
 		return
 	end
 
 	if cur_mode == OBS_MODE_ROAMING then
 		self:Spectate( OBS_MODE_CHASE )
+		self:SetObserverMode(OBS_MODE_CHASE)
+		self:SetMoveType(MOVETYPE_NOCLIP)
 		self:SpectatePlayerNext()
-	elseif cur_mode == OBS_MODE_IN_EYE then
-		self:Spectate( OBS_MODE_CHASE )
 	elseif cur_mode == OBS_MODE_CHASE then
-		--self:Spectate( OBS_MODE_IN_EYE )
-	end
-
-	--print( "change spec mode", self )
-end
-
-function mply:GetValidSpectateTargets( all )
-	local plys = {}
-
-	for k, v in pairs( player.GetAll() ) do
-		if all then
-			table.insert( plys, v )
-		end
-	end
-
-	return plys
-end
-
-function mply:InvalidatePlayerForSpectate()
-	local roam = #self:GetValidSpectateTargets() < 1
-
-		for k, v in pairs( player.GetAll() ) do
-			if v:GTeam() == TEAM_SPEC then
-
-		if v != self then
-			if v:GetObserverTarget() == self then
-				if roam then
-					v:UnSpectate()
-					v:Spectate( OBS_MODE_ROAMING )
-				else
-					v:SpectatePlayerNext()
-				end
-			end
-		end
-      end
-    end
- end
-
-function mply:CheckSpectatorMode( all )
-	if self:GetObserverMode() == OBS_MODE_ROAMING then
-		local plys = self:GetValidSpectateTargets( all )
-		if #plys > 0 then
-			self:Spectate( OBS_MODE_CHASE )
-			self:SpectateEntity( plys[1] )
-		end
-	end
-end
-
-function CheckSpectatorMode( all )
-	for k, v in pairs( player.GetAll() ) do
-		if v:GTeam() == TEAM_SPEC then
-			v:CheckSpectatorMode( all )
-		end
-	end
-end
-
-function mply:SetSpectator()
-	local players = self:GetValidSpectateTargets() or {}
-	--self:CrosshairEnable()
-	--self:SetNamesurvivor("Spectator")
-	self:Flashlight( false )
-	self:AllowFlashlight( false )
-	self:StripWeapons()
-	self:RemoveAllAmmo()
-	self:SetRoleName(role.Spectator)
-	self:SetTeam(TEAM_SPEC)
-	self:SetGTeam(TEAM_SPEC)
-	self:SetNoDraw(true)
-	self:SetNoTarget( true )
-	--self:SetNoCollideWithTeammates(true)
-
-	local plys = self:GetValidSpectateTargets()
-
-	if roam or #plys < 1 then
-		self:UnSpectate()
 		self:Spectate( OBS_MODE_ROAMING )
-	else
-		self:Spectate( OBS_MODE_CHASE )
-		--print( self, "Setup spectate", plys[1] )
-		self:SpectateEntity( plys[1] )
+		self:SetObserverMode(OBS_MODE_ROAMING)
 	end
+end
 
-	--if self.SetRoleName then self:SetRoleName(role.Spectator) end
-	self.Active = true
-	self.BaseStats = nil
-	self.UsingArmor = nil
-	self.canblink = false
-	self.handsmodel = nil
-	self.alreadyselectedscp = false
-	
-	self:SetMoveType(MOVETYPE_NOCLIP)
-
-	--print("adding " .. self:Nick() .. " to spectators")
+function GM:KeyPress( ply, key )
+	if ply:GTeam() != TEAM_SPEC or ply:IsBot() then return end
+	if key == IN_ATTACK then
+		ply:SpectatePlayerNext()
+		if ply:GetMoveType() != 8 then
+			ply:SetMoveType(MOVETYPE_NOCLIP)
+		end
+	elseif key == IN_ATTACK2 then
+		ply:SpectatePlayerPrev()
+		if ply:GetMoveType() != 8 then
+			ply:SetMoveType(MOVETYPE_NOCLIP)
+		end
+	elseif key == IN_RELOAD then
+		ply:ChangeSpectateMode()
+		if ply:GetMoveType() != 8 then
+			ply:SetMoveType(MOVETYPE_NOCLIP)
+		end
+	end
 end
 
 function mply:SetSCP0082( hp, speed, spawn )
@@ -861,6 +865,20 @@ function mply:SetupZombie()
 		victim:SetNotSolid(false)
 		victim:SetNWEntity("NTF1Entity", NULL)
 	end)
+end
+
+function mply:SetStamina(float)
+	net.Start("SetStamina", true)
+	net.WriteFloat(float)
+	net.WriteBool(false)
+	net.Send(self)
+end
+
+function mply:AddStamina(float)
+	net.Start("SetStamina", true)
+	net.WriteFloat(float)
+	net.WriteBool(true)
+	net.Send(self)
 end
 
 function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf )
@@ -1189,107 +1207,6 @@ end
 function mply:IsActivePlayer()
 	return self.Active
 end
-
-hook.Add("KeyPress", "keypress_spectating", function(ply, key)
-    if !IsValid(ply) or ply:GTeam() != TEAM_SPEC or ply:GetRoleName() == role.ADMIN then return end
-    if key == IN_ATTACK then
-        ply:SpectatePlayerLeft()
-        ply:SetMoveType(MOVETYPE_NOCLIP)
-    elseif key == IN_ATTACK2 then
-        ply:SpectatePlayerRight()
-        ply:SetMoveType(MOVETYPE_NOCLIP)
-    elseif key == IN_RELOAD then
-        ply:ChangeSpecMode()
-        ply:SetMoveType(MOVETYPE_NOCLIP)
-    end
-end)
-
-function mply:SpectatePlayerRight()
-	if !self:Alive() then return end
-	if self:GetObserverMode() != OBS_MODE_IN_EYE and
-	   self:GetObserverMode() != OBS_MODE_CHASE 
-	then return end
-	self:SetNoDraw(true)
-	local allply = GetAlivePlayers()
-	if #allply == 1 then return end
-	if not self.SpecPly then
-		self.SpecPly = 0
-	end
-	self.SpecPly = self.SpecPly - 1
-	if self.SpecPly < 1 then
-		self.SpecPly = #allply 
-	end
-	for k,v in pairs(allply) do
-		if k == self.SpecPly then
-			self:SpectateEntity( v )
-		end
-	end
-end
-
-function mply:SpectatePlayerLeft()
-	if !self:Alive() then return end
-	if self:GetObserverMode() != OBS_MODE_IN_EYE and
-	   self:GetObserverMode() != OBS_MODE_CHASE 
-	then return end
-	self:SetNoDraw(true)
-	local allply = GetAlivePlayers()
-	if #allply == 1 then return end
-	if not self.SpecPly then
-		self.SpecPly = 0
-	end
-	self.SpecPly = self.SpecPly + 1
-	if self.SpecPly > #allply then
-		self.SpecPly = 1
-	end
-	for k,v in pairs(allply) do
-		if k == self.SpecPly then
-			self:SpectateEntity( v )
-		end
-	end
-end
-
-function mply:ChangeSpecMode()
-	if !self:Alive() then return end
-	if !(self:GTeam() == TEAM_SPEC) then return end
-	self:SetNoDraw(true)
-	local m = self:GetObserverMode()
-	local allply = #GetAlivePlayers()
-	if allply < 2 then
-		self:Spectate(OBS_MODE_ROAMING)
-		return
-	end
-	/*
-	if m == OBS_MODE_CHASE then
-		self:Spectate(OBS_MODE_IN_EYE)
-	else
-		self:Spectate(OBS_MODE_CHASE)
-	end
-	*/
-	
-	if m == OBS_MODE_IN_EYE then
-		self:Spectate(OBS_MODE_CHASE)	
-	elseif m == OBS_MODE_CHASE then
-		if GetConVar( "br_allow_roaming_spectate" ):GetInt() == 1 then
-			self:Spectate(OBS_MODE_ROAMING)
-		elseif GetConVar( "br_allow_ineye_spectate" ):GetInt() == 1 then
-			self:Spectate(OBS_MODE_IN_EYE)
-			self:SpectatePlayerLeft()
-		else
-			self:SpectatePlayerLeft()
-		end	
-	elseif m == OBS_MODE_ROAMING then
-		if GetConVar( "br_allow_ineye_spectate" ):GetInt() == 1 then
-			self:Spectate(OBS_MODE_IN_EYE)
-			self:SpectatePlayerLeft()
-		else
-			self:Spectate(OBS_MODE_CHASE)
-			self:SpectatePlayerLeft()
-		end
-	else
-		self:Spectate(OBS_MODE_ROAMING)
-	end
-end
-
 
 function mply:SaveExp()
 	self:SetPData( "breach_exp", self:GetExp() )

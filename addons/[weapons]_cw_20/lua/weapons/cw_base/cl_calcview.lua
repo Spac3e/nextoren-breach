@@ -529,14 +529,16 @@ function SWEP.CreateMove(move)
 			ang = move:GetViewAngles()
 
 			if ( !wep.holdingBreath ) then
-				ang.p = ang.p - math.cos( CT * ( 6.5 - stamina / 20 ) ) * 0.003 * ( 7 - stamina / 16 ) * 2
+				ang.p = ang.p - math.cos( CT * ( 6.5 / 20 ) ) * 0.003 * ( 7 / 16 ) * 2
 			end
 			local S = .05
 			local Sporadicness = 120
 			local Amt = 20
 			local WDir = VectorRand()
 			WDir = (WDir + FT * VectorRand() * Sporadicness):GetNormalized()
-			ang.yaw = math.NormalizeAngle(ang.yaw + WDir.x * FT * Amt * S)
+			if ( !wep.holdingBreath ) then
+				ang.yaw = math.NormalizeAngle(ang.yaw + WDir.x * FT * Amt * S)
+			end
 			move:SetViewAngles( ang )
 
 		elseif ( wep.dt && wep.holdingBreath && !aiming ) then

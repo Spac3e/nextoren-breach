@@ -248,7 +248,7 @@ function RoundRestart()
         BroadcastLua('gamestarted = true')
         CleanUpPlayers()
         for k,v in pairs(player.GetAll()) do
-            v:BrTip(0, "[MONIX Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
+            v:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:evac_5min", Color(255, 255, 255))
         end
         PlayAnnouncer( "nextoren/round_sounds/main_decont/decont_5_b.mp3" )
 		activeRound.init()	
@@ -290,137 +290,6 @@ function RoundRestart()
 end
 
 --[[ Staroe
-canescortds = true
-canescortrs = true
-function CheckEscape()
-	for k,v in pairs(ents.FindInSphere(POS_ESCAPE, 250)) do
-		if v:IsPlayer() == true then
-			if v:Alive() == false then return end
-			if v.isescaping == true then return end
-			if v:GTeam() == TEAM_CLASSD or v:GTeam() == TEAM_SCI or v:GTeam() == TEAM_SCP then
-				if v:GTeam() == TEAM_SCI then
-					roundstats.rescaped = roundstats.rescaped + 1
-					local rtime = timer.TimeLeft("RoundTime")
-					local exptoget = 300
-					if rtime != nil then
-						exptoget = GetConVar("br_time_round"):GetInt() - (CurTime() - rtime)
-						exptoget = exptoget * 1.8
-						exptoget = math.Round(math.Clamp(exptoget, 300, 10000))
-					end
-					net.Start("OnEscaped")
-						net.WriteInt(1,4)
-					net.Send(v)
-					v:AddFrags(5)
-					v:AddExp(exptoget, true)
-					v:GodEnable()
-					v:Freeze(true)
-					v.canblink = false
-					v.isescaping = true
-					timer.Create("EscapeWait" .. v:SteamID64(), 2, 1, function()
-						v:Freeze(false)
-						v:GodDisable()
-						v:SetSpectator()
-						WinCheck()
-						v.isescaping = false
-					end)
-					//v:PrintMessage(HUD_PRINTTALK, "You escaped! Try to get escorted by MTF next time to get bonus points.")
-				elseif v:GTeam() == TEAM_CLASSD then
-					roundstats.descaped = roundstats.descaped + 1
-					local rtime = timer.TimeLeft("RoundTime")
-					local exptoget = 500
-					if rtime != nil then
-						exptoget = GetConVar("br_time_round"):GetInt() - (CurTime() - rtime)
-						exptoget = exptoget * 2
-						exptoget = math.Round(math.Clamp(exptoget, 500, 10000))
-					end
-					net.Start("OnEscaped")
-						net.WriteInt(2,4)
-					net.Send(v)
-					v:AddFrags(5)
-					v:AddExp(exptoget, true)
-					v:GodEnable()
-					v:Freeze(true)
-					v.canblink = false
-					v.isescaping = true
-					timer.Create("EscapeWait" .. v:SteamID64(), 2, 1, function()
-						v:Freeze(false)
-						v:GodDisable()
-						v:SetSpectator()
-						WinCheck()
-						v.isescaping = false
-					end)
-					//v:PrintMessage(HUD_PRINTTALK, "You escaped! Try to get escorted by Chaos Insurgency Soldiers next time to get bonus points.")
-				elseif v:GTeam() == TEAM_SCP then
-					roundstats.sescaped = roundstats.sescaped + 1
-					local rtime = timer.TimeLeft("RoundTime")
-					local exptoget = 425
-					if rtime != nil then
-						exptoget = GetConVar("br_time_round"):GetInt() - (CurTime() - rtime)
-						exptoget = exptoget * 1.9
-						exptoget = math.Round(math.Clamp(exptoget, 425, 10000))
-					end
-					net.Start("OnEscaped")
-						net.WriteInt(4,4)
-					net.Send(v)
-					v:AddFrags(5)
-					v:AddExp(exptoget, true)
-					v:GodEnable()
-					v:Freeze(true)
-					v.canblink = false
-					v.isescaping = true
-					timer.Create("EscapeWait" .. v:SteamID64(), 2, 1, function()
-						v:Freeze(false)
-						v:GodDisable()
-						v:SetSpectator()
-						WinCheck()
-						v.isescaping = false
-					end)
-				end
-			end
-		end
-	end
-end
-timer.Create("CheckEscape", 1, 0, CheckEscape)
--- [[ Experementi
-
-canescortds = true
-canescortrs = true
-
-function CheckEscape()
-	for _, v in pairs(ents.FindInSphere(POS_ESCAPE, 250)) do
-		if v:IsPlayer() and v:Alive() and not v.isescaping then
-			local team = v:GTeam()
-
-			if team == TEAM_CLASSD or team == TEAM_SCI or team == TEAM_SCP then
-				local exptoget = CalculateExpToGet(v, team)
-				local escapeType = GetEscapeType(team)
-
-				-- Add error handling for timer
-				local rtime = timer.Exists("RoundTime") and timer.TimeLeft("RoundTime") or nil
-
-				net.Start("OnEscaped")
-					net.WriteInt(escapeType, 4)
-				net.Send(v)
-
-				v:AddFrags(5)
-				v:AddExp(exptoget, true)
-				v:GodEnable()
-				v:Freeze(true)
-				v.canblink = false
-				v.isescaping = true
-
-				timer.Create("EscapeWait" .. v:SteamID64(), 2, 1, function()
-					v:Freeze(false)
-					v:GodDisable()
-					v:SetSpectator()
-					WinCheck()
-					v.isescaping = false
-				end)
-			end
-		end
-	end
-end
-
 function CalculateExpToGet(player, team)
 	local rtime = timer.Exists("RoundTime") and timer.TimeLeft("RoundTime") or nil
 	local exptoget = 300
@@ -745,10 +614,10 @@ function Simpe_anons_run(time,sing)
 end
 
 function PreEvacTemp()
-    local songevac = 'shaky_newmusic/evacuation'..math.random(1,6)..'.ogg' 
+    local songevac = 'shaky_new_music/evacuation_'..math.random(1,6)..'.ogg' 
     PlayAnnouncer(songevac) 
     for k,v in pairs(player.GetAll()) do 
-    v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_start_leave_immediately', Color(255, 0, 0)) 
+    v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_start_leave_immediately', Color(255, 0, 0)) 
     end 
     PlayAnnouncer( 'nextoren/round_sounds/intercom/start_evac.ogg' ) 
     SetGlobalBool('Evacuation', true) 
@@ -766,29 +635,29 @@ hook.Add("Tick", "RoundSytem", function()
 	if GetGlobalBool("BigRound") == true then
 		Simpe_anons_run(1000,"SB_Anonce()")
 		Simpe_anons_run(980,"sound.Play( 'nextoren/others/button_unlocked.wav', Vector(4743, -2750, 66) ) OpenSecDoors = true") 
-		Simpe_anons_run(900,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_15min', Color(255, 255, 255)) end OpenSecDoors = true SCPLockDownHasStarted = true PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_15_b.mp3' )")
+		Simpe_anons_run(900,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_15min', Color(255, 255, 255)) end OpenSecDoors = true SCPLockDownHasStarted = true PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_15_b.mp3' )")
 		Simpe_anons_run(899,"OpenSCPDoors()") 
 		Simpe_anons_run(730,"SupportSpawn()") 
-		Simpe_anons_run(720,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:decont_1min', Color(255, 255, 255)) end timer.Remove('RandomAnnouncer') PlayAnnouncer( 'nextoren/round_sounds/lhz_decont/decont_1_min.ogg' ) BroadcastPlayMusic('sound/no_music/light_zone/light_zone_decontamination.ogg', 2)") 
+		Simpe_anons_run(720,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:decont_1min', Color(255, 255, 255)) end timer.Remove('RandomAnnouncer') PlayAnnouncer( 'nextoren/round_sounds/lhz_decont/decont_1_min.ogg' ) BroadcastPlayMusic('sound/no_music/light_zone/light_zone_decontamination.ogg', 2)") 
 		Simpe_anons_run(705,"KPP_Evac()")
 		Simpe_anons_run(660,"KPP_Evac_End() BREACH.Decontamination = true")
-		Simpe_anons_run(600,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_10min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_10_b.mp3' )") 
+		Simpe_anons_run(600,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_10min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_10_b.mp3' )") 
 		Simpe_anons_run(540,"SupportSpawn()") 
-		Simpe_anons_run(300,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_5min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_5_b.mp3' )")
+		Simpe_anons_run(300,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_5min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_5_b.mp3' )")
 		Simpe_anons_run(189,"PreEvacTemp()")
-		Simpe_anons_run(133,"local heli = ents.Create( 'heli' ) heli:Spawn() local btr = ents.Create( 'apc' ) btr:Spawn() local portal = ents.Create( 'portal' ) portal:Spawn() SetGlobalBool('Evacuation_HUD', true ) for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_start', Color(255, 0, 0)) end PlayAnnouncer('nextoren/round_sounds/main_decont/final_nuke.mp3')") 
+		Simpe_anons_run(133,"local heli = ents.Create( 'heli' ) heli:Spawn() local btr = ents.Create( 'apc' ) btr:Spawn() local portal = ents.Create( 'portal' ) portal:Spawn() SetGlobalBool('Evacuation_HUD', true ) for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_start', Color(255, 0, 0)) end PlayAnnouncer('nextoren/round_sounds/main_decont/final_nuke.mp3')") 
 	else
 		Simpe_anons_run(710,"SB_Anonce()") 
 		Simpe_anons_run(690,"sound.Play( 'nextoren/others/button_unlocked.wav', Vector(4743, -2750, 66) ) OpenSecDoors = true") 
-		Simpe_anons_run(600,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_10min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_10_b.mp3' )") 
+		Simpe_anons_run(600,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_10min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_10_b.mp3' )") 
 		Simpe_anons_run(599,"OpenSCPDoors()") 
 		Simpe_anons_run(500,"SupportSpawn()") 
-		Simpe_anons_run(480,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:decont_1min', Color(255, 255, 255)) end timer.Remove('RandomAnnouncer') PlayAnnouncer( 'nextoren/round_sounds/lhz_decont/decont_1_min.ogg' ) BroadcastPlayMusic('sound/no_music/light_zone/light_zone_decontamination.ogg', 2) OpenSecDoors = true SCPLockDownHasStarted = true") 
+		Simpe_anons_run(480,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:decont_1min', Color(255, 255, 255)) end timer.Remove('RandomAnnouncer') PlayAnnouncer( 'nextoren/round_sounds/lhz_decont/decont_1_min.ogg' ) BroadcastPlayMusic('sound/no_music/light_zone/light_zone_decontamination.ogg', 2) OpenSecDoors = true SCPLockDownHasStarted = true") 
 		Simpe_anons_run(465,"KPP_Evac()")
 		Simpe_anons_run(420,"KPP_Evac_End()") 
-		Simpe_anons_run(300,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_5min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_5_b.mp3' )")
+		Simpe_anons_run(300,"for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_5min', Color(255, 255, 255)) end PlayAnnouncer( 'nextoren/round_sounds/main_decont/decont_5_b.mp3' )")
 		Simpe_anons_run(189,"PreEvacTemp()")
-		Simpe_anons_run(133,"local heli = ents.Create( 'heli' ) heli:Spawn() local btr = ents.Create( 'apc' ) btr:Spawn() local portal = ents.Create( 'portal' ) portal:Spawn() SetGlobalBool('Evacuation_HUD', true ) for k,v in pairs(player.GetAll()) do v:BrTip(0, '[MONIX Breach]', Color(255, 0, 0), 'l:evac_start', Color(255, 0, 0)) end PlayAnnouncer('nextoren/round_sounds/main_decont/final_nuke.mp3')") 
+		Simpe_anons_run(133,"local heli = ents.Create( 'heli' ) heli:Spawn() local btr = ents.Create( 'apc' ) btr:Spawn() local portal = ents.Create( 'portal' ) portal:Spawn() SetGlobalBool('Evacuation_HUD', true ) for k,v in pairs(player.GetAll()) do v:BrTip(0, '[NextOren Breach]', Color(255, 0, 0), 'l:evac_start', Color(255, 0, 0)) end PlayAnnouncer('nextoren/round_sounds/main_decont/final_nuke.mp3')") 
 	end
 end)
 

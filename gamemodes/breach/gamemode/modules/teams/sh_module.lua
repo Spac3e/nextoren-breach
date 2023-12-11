@@ -42,6 +42,8 @@ end)
 function BREACH.TranslateString(str)
 	if SERVER then return str end --серверу все равно не надо ничего переводить
 
+	local isfound = true
+
 	local tab = string.Explode(" ", str)
 	if #tab >= 2 then
 		for k, v in ipairs(tab) do
@@ -58,7 +60,12 @@ function BREACH.TranslateString(str)
 				if ALLLANGUAGES[langtouse][phrase] then
 					tab[k] = before..ALLLANGUAGES[langtouse][phrase]
 				else
-					tab[k] = before..ALLLANGUAGES["russian"][phrase] or before.."recursive phrase not found "..phrase --fallback
+					if ALLLANGUAGES["russian"][phrase] then
+						tab[k] = ALLLANGUAGES["russian"][phrase]
+					else
+						isfound = false
+						tab[k] = before.."recursive phrase not found "..phrase
+					end
 				end
 			end
 		end
@@ -82,7 +89,7 @@ function BREACH.TranslateString(str)
 			end
 		end
 
-		return str
+		return str, isfound
 	end
 
 	--text doesn't have spaces
@@ -96,15 +103,20 @@ function BREACH.TranslateString(str)
 
 		if ALLLANGUAGES[langtouse][phrase] then
 			str = before..ALLLANGUAGES[langtouse][phrase]
-			return str
+			return str, isfound
 		else
-			return before..ALLLANGUAGES["russian"][phrase] or before.."phrase not found "..phrase --fallback
+			if ALLLANGUAGES["russian"][phrase] then
+				return ALLLANGUAGES["russian"][phrase], isfound
+			else
+				isfound = false
+				return before.."phrase not found "..phrase, isfound
+			end
 		end
 
-		return str
+		return str, isfound
 	end
 
-	return str
+	return str, isfound
 end
 
 function BREACH.TranslateNonPrefixedString(str)
@@ -159,7 +171,7 @@ CORRUPTED_HEADS = {
 	[ "models/cultist/heads/male/male_head_6.mdl" ] = true
 }
 
-MONIX_SEXY_CHEMIST = {
+NEXTOREN_SEXY_CHEMIST = {
 	["76561198439587764"] = true, -- GOOGLENSKY
 	["76561198358765564"] = true, -- Подгузник
 	["76561198309170158"] = true, -- Денис
@@ -174,7 +186,7 @@ MONIX_SEXY_CHEMIST = {
 	["76561199137632323"] = true, -- jitheat
 }
 
-MONIX_YOUTUBERS = { -- Жесткие тюбики
+NEXTOREN_YOUTUBERS = { -- Жесткие тюбики
 	["76561198889301217"] = "https://www.youtube.com/channel/UCHG-qnA4i270X2_KpPLeHXw",
 	["76561199112412418"] = "https://www.youtube.com/@quinwise9214", -- quinwise
 	["76561198030081688"] = "https://www.youtube.com/channel/UCnDtpUcUDiJ2KoZ7p3Nehlg", -- narkis
@@ -978,13 +990,10 @@ local silencedwalkroles = {
 	["SCP457"] = true,
 	["SCP096"] = true,
 	["SCP062DE"] = true,
-	["SCP973"] = true,
-	["SCP811"] = true,
 	["SCP062FR"] = true,
 	["SCP1903"] = true,
-	["SCP542"] = true,
 	["SCP999"] = true,
-	["SCP076"] = true,
+	--["SCP076"] = true,
 	["SCP106"] = true,
 }
 
@@ -992,6 +1001,10 @@ SCPFOOTSTEP = {
 	["SCP682"] = true,
 	["SCP939"] = true,
 	["SCP082"] = true,
+}
+
+FOOTSTEP_SOUNDTIME = {
+	["SCP638"] = 500,
 }
 
 function GM:PlayerFootstep( ply, pos, foot, sound, volume, rf )
@@ -1014,12 +1027,35 @@ local pl = ply:GetTable()
 	if ply:GetNoDraw() then return true end
 
 	if silencedwalkroles[ply:GetRoleName()] then
-		if ply:GetRoleName() == "SCP062DE" and ply:KeyDown(IN_SPEED) and ply:HasWeapon("cw_kk_ins2_doi_mp40") then
-			ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, 45, volume * .5)
+		if ply:GetRoleName() == "SCP062DE" then
+			if SERVER then
+				ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, 85, volume * .5)
+			end
+			return false
 		end
 		return true
 	end
 
+	if ply:GetModel():find("goc") then
+		if SERVER then
+			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", 75, math.random( 90, 110 ), volume * .8)
+		end
+		return true
+	end
+
+	if ply:GetRoleName() == "SCP973" then
+		if SERVER then
+			ply:EmitSound( "^nextoren/charactersounds/foley_scp/cop_step_"..math.random( 1, 6 )..".wav", 75, math.random( 90, 110 ), volume * 1.1)
+		end
+		return true
+	end
+
+	if ply:GetRoleName() == "SCP542" then
+		if SERVER then
+			ply:EmitSound( "^nextoren/charactersounds/foley_scp/ger_walk_"..math.random( 1, 6 )..".wav", 75, math.random( 90, 110 ), volume * 1.1)
+		end
+		return true
+	end
 	if ply:GetRoleName() == "SCP8602" then
 		if SERVER and !ply.SilenceSCP860 then 
 			ply:EmitSound( "^nextoren/scp/682/scp_682_footstep_"..math.random(1,4)..".ogg", 75, math.random(200,225), volume * .8 )
@@ -1062,29 +1098,12 @@ local pl = ply:GetTable()
 	elseif ( AllowedModels[ ply:GetModel() ] ) then
 
 		if ( vel > 22500 ) then
-			if IsValid(ply:GetActiveWeapon()) then
-				if ply:GetActiveWeapon():GetClass() == "item_shield" then
-					ply:EmitSound( "^player/footstepsnew/shield_step_0"..math.random(1,10)..".wav", 300, math.random( 100, 120 ), 2 * .5 )
-					ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, math.random( 100, 120 ), volume * .5)
-				else
-					ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, math.random( 100, 120 ), volume * .5)
-				end
-			else
-				ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, math.random( 100, 120 ), volume * .5 )
-			end
+
+			ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, math.random( 100, 120 ), volume * .3 )
 
 		else
 
-			if IsValid(ply:GetActiveWeapon()) then
-				if ply:GetActiveWeapon():GetClass() == "item_shield" then
-					ply:EmitSound( "^player/footstepsnew/shield_step_0"..math.random(1,10)..".wav", 300, math.random( 100, 120 ), 2 * .8)
-					ply:EmitSound( "^nextoren/charactersounds/foley/run/run_"..math.random( 1, 40 )..".wav", 75, math.random( 100, 120 ), volume * .8)
-				else
-					ply:EmitSound( "^nextoren/charactersounds/foley/run/run_"..math.random( 1, 40 )..".wav", 75, math.random( 100, 120 ), volume * .8)
-				end
-			else
-				ply:EmitSound( "^nextoren/charactersounds/foley/sprint/sprint_"..math.random( 1, 52 )..".wav", 75, math.random( 100, 120 ), volume * .5 )
-			end
+			ply:EmitSound( "^nextoren/charactersounds/foley/run/run_"..math.random( 1, 40 )..".wav", 75, math.random( 100, 120 ), volume * .3)
 
 		end
 
@@ -1105,6 +1124,16 @@ local pl = ply:GetTable()
 		if SERVER then
 
 			ply:EmitSound( "^nextoren/charactersounds/zombie/foot"..math.random(1,3)..".wav", 75, math.random( 100, 120 ), volume * .8 )
+		
+		end
+
+		return true
+
+	elseif ply:GetRoleName() == "SCP076" or ply:GetRoleName() == "SCP811" then
+
+		if SERVER then
+
+			ply:EmitSound( "^nextoren/charactersounds/zombie/foot"..math.random(2,3)..".wav", 75, math.random( 85, 95 ), volume * .35 )
 		
 		end
 

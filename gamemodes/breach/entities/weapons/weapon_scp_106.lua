@@ -86,7 +86,7 @@ if ( SERVER ) then
 
           player:SetPos( random_vector )
 
-					if ( player:GTeam() != TEAM_SCP ) then
+					if ( !blink_random && player:GTeam() != TEAM_SCP && player.canblink ) then
 
 	          CreateSearchSequence( player, random_vector, initial_pos )
 
@@ -124,32 +124,24 @@ if ( SERVER ) then
     player.Dimension_TouchEntity = ents.Create( "touch_entity" )
     player.Dimension_TouchEntity:SetModel( player:GetModel() )
     player.Dimension_TouchEntity:SetOwner( player )
-		local position_to_return = initial_pos
-		player.Dimension_TouchEntity.OwnerName = player:GetNamesurvivor()
+	local position_to_return = initial_pos
+	player.Dimension_TouchEntity.OwnerName = player:GetNamesurvivor()
     player.Dimension_TouchEntity:SetPos( body_origin )
     player.Dimension_TouchEntity:Spawn()
     --print( "touch entity has been created at vector ", body_origin )
 
-		player.Dimension_TouchEntity.Think = function( self )
-
-			local owner = self:GetOwner()
-
-			if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GTeam() == TEAM_SPEC ) then
-
-				self:Remove()
-
-			end
-
+	player.Dimension_TouchEntity.Think = function( self )
+		local owner = self:GetOwner()
+		if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GetRoleName() == "Spectator" ) then
+			self:Remove()
 		end
+	end
 
     player.Dimension_TouchEntity.TouchFunc = function( self, player )
-
 			net.Start( "DimensionSequence" )
 			net.Send( player )
-
 			player:Freeze( true )
       player.canblink = nil
-
 			timer.Simple( .25, function()
 
 				if ( ( player && player:IsValid() ) && ( self && self:IsValid() ) ) then
@@ -606,7 +598,13 @@ else -- ( CLIENT )
 
 			self:NextThink( CurTime() )
 
-			self:SetCycle( 0 )
+			if ( self:GetCycle() >= .99 ) then
+
+				self:SetCycle( 0 )
+
+			end
+
+			self:SetCycle( self:GetCycle() + .001 )
 
       if ( self.DeathTime ) then
 

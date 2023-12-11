@@ -26,6 +26,12 @@ include("breach/gamemode/modules/teams/sh_module.lua")
 
 BREACH_ROLES = {}
 
+BREACH.ChaosSpy_CanBe = {
+	role.SECURITY_Recruit,
+	role.SECURITY_OFFICER,
+	role.SECURITY_IMVSOLDIER
+}
+
 BREACH_ROLES.OBR = {
 	obr = {
 		name = "Отряд Быстрого Реагирования",

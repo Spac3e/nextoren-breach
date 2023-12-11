@@ -769,7 +769,7 @@ end
 
 net.Receive( "GRUCommander_peac", function()
 	for k,v in pairs(player.GetAll()) do
-		v:BrTip( 0, "[MONIX]", Color(0, 255, 0), "В комплекс прибыла дружественая групировка ГРУ для помощи военному персоналу!", Color(200, 255, 255) )
+		v:BrTip( 0, "[NextOren Breach]", Color(230, 0, 0), "В комплекс прибыла дружественая групировка ГРУ для помощи военному персоналу!", Color(200, 255, 255) )
 	end
 end )
 
@@ -1030,7 +1030,7 @@ function SupportSpawn()
 			ntf_pre_intro()
 			timer.Simple(36, function()
 			for k,v in pairs(player.GetAll()) do
-			v:BrTip(0, "[MONIX Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
+			v:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:ntf_enter", Color(255, 255, 255))
 			end
 			PlayAnnouncer("nextoren/round_sounds/intercom/support/ntf_enter.ogg")
 			end)
@@ -1865,7 +1865,7 @@ function DARK()
     BroadcastLua('RunConsoleCommand("mat_specular", 0)')
 end
 
-function evacuate(personal, roles_for_evac, give_score, desc)
+function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
     local exptoget = give_score
     local eblya = {
         {reason = desc, value = give_score},
@@ -1941,7 +1941,9 @@ function evacuate(personal, roles_for_evac, give_score, desc)
                     personal.isescaping = true
                     personal:Freeze(false)
                     personal:GodDisable()
-                    personal:SetSpectator()
+					if personal.deathsequence != true then
+						personal:SetSpectator()
+					end
                     personal.isescaping = false
                     net.Start("LevelBar")
                     net.WriteTable(eblya)
@@ -1965,8 +1967,10 @@ function evacuate(personal, roles_for_evac, give_score, desc)
                 personal.isescaping = true
                 personal:Freeze(false)
                 personal:GodDisable()
-                personal:SetSpectator()
-                personal.isescaping = false
+				if personal.deathsequence != true then
+					personal:SetSpectator()
+				end
+				personal.isescaping = false
                 net.Start("LevelBar")
                 net.WriteTable(eblya)
                 net.WriteUInt(personal:GetNEXP(), 32)
@@ -2018,7 +2022,9 @@ function evacuate(personal, roles_for_evac, give_score, desc)
         personal.isescaping = true
         personal:Freeze(false)
         personal:GodDisable()
-        personal:SetSpectator()
+		if personal.deathsequence != true then
+			personal:SetSpectator()
+		end
         personal.isescaping = false
         net.Start("LevelBar")
         net.WriteTable(survival_bonus)

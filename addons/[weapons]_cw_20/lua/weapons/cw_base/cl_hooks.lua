@@ -65,22 +65,26 @@ local function CW20_RenderScreenspaceEffects()
 	
 	local curTime = CurTime()
 	local frameTime = FrameTime()
-	
-	if curTime > ply.cwFlashbangDuration then
-		ply.cwFlashbangIntensity = math.Approach(ply.cwFlashbangIntensity, 0, frameTime)
-	end
-	
-	ply.cwFlashbangDisplayIntensity = math.Approach(ply.cwFlashbangDisplayIntensity, ply.cwFlashbangIntensity, frameTime * 15)
-	
-	if curTime > ply.cwFlashDuration then
-		ply.cwFlashIntensity = math.Approach(ply.cwFlashIntensity, 0, frameTime)
-	end
-	
-	if ply.cwFlashbangDisplayIntensity > 0 then
-		DrawMotionBlur(0.01 * (1 - ply.cwFlashbangDisplayIntensity), ply.cwFlashbangDisplayIntensity, 0)
+
+	if ply.cwFlashbangDuration then
 		
-		surface.SetDrawColor(255, 255, 255, 255 * ply.cwFlashIntensity * ply.cwFlashbangDisplayIntensity)
-		surface.DrawRect(-1, -1, ScrW() + 2, ScrH() + 2)
+		if curTime > ply.cwFlashbangDuration then
+			ply.cwFlashbangIntensity = math.Approach(ply.cwFlashbangIntensity, 0, frameTime)
+		end
+		
+		ply.cwFlashbangDisplayIntensity = math.Approach(ply.cwFlashbangDisplayIntensity, ply.cwFlashbangIntensity, frameTime * 15)
+		
+		if curTime > ply.cwFlashDuration then
+			ply.cwFlashIntensity = math.Approach(ply.cwFlashIntensity, 0, frameTime)
+		end
+		
+		if ply.cwFlashbangDisplayIntensity > 0 then
+			DrawMotionBlur(0.01 * (1 - ply.cwFlashbangDisplayIntensity), ply.cwFlashbangDisplayIntensity, 0)
+			
+			surface.SetDrawColor(255, 255, 255, 255 * ply.cwFlashIntensity * ply.cwFlashbangDisplayIntensity)
+			surface.DrawRect(-1, -1, ScrW() + 2, ScrH() + 2)
+		end
+
 	end
 end
 

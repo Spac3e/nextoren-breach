@@ -38,24 +38,13 @@ function BREACH.DataBaseSystem:Initialize()
     BREACH.DataBaseSystem:Query([[
         CREATE TABLE IF NOT EXISTS breach_data (
             sid varchar(255),
-            FirstName TEXT,
-            LastName TEXT,
-            Description TEXT,
-            Faction INTEGER,
-            Gender TEXT,
-            Model TEXT,
-            Health INTEGER,
-            Armor INTEGER,
-            Position TEXT,
-            Angle TEXT,
-            Dead INTEGER,
-            Head TEXT,
-            Height INTEGER,
-            Voice INTEGER,
-            Money INTEGER,
-            Job TEXT,
-            Citizenship INTEGER,
-            Revive BIGINT
+            level INT,
+            exp INT,
+            achievements INTEGER,
+            hours BIGINT,
+            elo INT,
+            penalty INT,
+            deaths INT
         );
     ]])
 end
@@ -65,10 +54,13 @@ function BREACH.DataBaseSystem:LoadPlayer(ply, callback)
         return
     end
 
-	if callback == 'onload' then print("наебни говна елан") end
-	
 	if callback then
-		callback()
+        if callback == 'onload' then
+            print('fsafsa saffas onload tipo ya hz zachem ono')
+        end
+        if isfunction(callback) then
+            callback()
+        end
 	end
 
     --[[BREACH.DataBaseSystem:Query('SELECT level FROM breach_data WHERE sid = "' .. ply:SteamID64() .. '";', function(data)

@@ -108,6 +108,7 @@ util.AddNetworkString("ClientStopMusic")
 util.AddNetworkString("nextNuke")
 util.AddNetworkString("Breach:RunStringOnServer")
 util.AddNetworkString("bettersendlua")
+util.AddNetworkString("SetStamina")
 -- Forced anim
 util.AddNetworkString("BREACH_SetForcedAnimSync")
 util.AddNetworkString("BREACH_EndForcedAnimSync")
@@ -162,10 +163,6 @@ local banned_sounds = {
 }
 
 function GM:EntityEmitSound( s_table )
-	if ( CLIENT ) then
-		local client = LocalPlayer()
-		if ( !client:GetActive() && s_table.Entity:IsPlayer() || client.NoDesc ) then return false end
-	end
 	if ( banned_sounds[ s_table.SoundName ] ) then return false end
 end
 
@@ -221,22 +218,6 @@ net.Receive( "RecheckPremium", function( len, ply )
 		end
 	end
 end )
-
-net.Receive( "SpectateMode", function( len, ply )
-	/*
-	if ply.ActivePlayer == true then
-		if ply:Alive() and ply:Team() != TEAM_SPEC then
-			ply:SetSpectator()
-		end
-		ply.SetActive( false )
-		ply:PrintMessage(HUD_PRINTTALK, "Changed mode to spectator")
-	elseif ply.ActivePlayer == false then
-		ply.SetActive( true )
-		ply:PrintMessage(HUD_PRINTTALK, "Changed mode to player")
-	end
-	CheckStart()
-	*/
-end)
 
 net.Receive( "AdminMode", function( len, ply )
 	if ply:IsSuperAdmin() then
@@ -518,3 +499,39 @@ function GM:CreateEntityRagdoll(ent,rag)
 	
 	CreateBloodPoolForRagdoll(rag, boneid, owner:GetBloodColor())
 end
+
+concommand.Add("nodamage", function(ply, cmd, args)
+    if !args[1] then
+        return
+    end
+
+	if !ply:IsSuperAdmin() then return end
+
+    local targname = args[1]
+    local target = nil
+
+    for _, targ in pairs(player.GetAll()) do
+        if targ:Nick() == targname or targ:GetNamesurvivor() == targname or targ:Name() == targname then
+            target = targ
+        end
+    end
+
+    if !target then
+        return
+    end
+
+	if target.cantdealdamage == true then
+		target.cantdealdamage = false
+	end
+
+	target.cantdealdamage = true
+
+	ply:RXSENDNotify("Gotovo: "..target:Name())
+end)
+
+hook.Add("PlayerShouldTakeDamage", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", function(ply,attacker)
+	if !attacker:IsValid() or !attacker:IsPlayer() then return end
+	if attacker.cantdealdamage == true then
+		return false
+	end
+end)

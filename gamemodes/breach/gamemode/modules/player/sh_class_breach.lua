@@ -103,7 +103,7 @@ function PLAYER:SetupDataTables()
 		print("setting up data")
 
 		BREACH.DataBaseSystem:LoadPlayer(self.Player, function()
-			print("[MONIX MYSQLOO] Data for " .. self.Player:Nick() .." has been set successfuly!")
+			print("[NextOren MYSQLOO] Data for " .. self.Player:Nick() .." has been set successfuly!")
 		end)
 
 		BREACH.DataBaseSystem:LoadPlayer(ply, onload)

@@ -126,7 +126,7 @@ if CLIENT then
 	SWEP.PronePos = Vector(6.717, -6.273, -6.577)
 	SWEP.ProneAng = Vector(5.618, 49.055, -15.311)
 	
-	SWEP.DrawCrosshair = false
+	--SWEP.DrawCrosshair = false
 	SWEP.BounceWeaponIcon = false
 	SWEP.DrawWeaponInfoBox = false
 	SWEP.CurFOVMod = 0

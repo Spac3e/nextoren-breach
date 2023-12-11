@@ -31,7 +31,7 @@ english.NRegistry = {
 
 english.NFailed = "Filed to access NRegistry with key: %s"
 
-english.version_title = "MONIX Breach 2.6.0"
+english.version_title = "NextOren Breach 2.6.0"
 english.version = "Alpha Stage"
 english.bugs = "Report bugs!"
 
@@ -590,7 +590,7 @@ english.levels_gifted_pt2 = " level!"
 english.sins_cleansed = "All your warnings have been cleared!"
 english.you_are_not_supposed_to_be_here_pt1 = "Warning, you in zone that you are not supposed to be here, if you don't leave in 5 seconds"
 english.you_are_not_supposed_to_be_here_pt2 = "you will die!"
-english.premium_expired = "Looks like your premium status has expired, you can extend premium status, visit Discord server MONIX to find out more."
+english.premium_expired = "Looks like your premium status has expired, you can extend premium status, visit Discord server to find out more."
 english.not_enough_players = "Not enough for players, waiting for more."
 english.game_will_start_soon = "Game will start in 2 minutes!"
 english.not_enough_players_for_round_start = "Not enough players for round start, waiting for more..."
@@ -980,6 +980,7 @@ english.menu_do_precache_or_nah = "Perform content precache?"
 english.menu_precache_hover = "During precache you will respawn anyway if it's possible"
 english.menu_no_precache_hover = "You should skip precache only if it takes more than 4 minutes and you're being kicked due to this.\nWARNING: Expect a lot of lags during the game"
 english.menu_quickchat = "Quick chat"
+russian.menu_hudstyle = "New HUD Design"
 
 --TASKS
 english.tasks_evacuate_personnel_and_defend_comrades = "Evacuate personnel, support teammates"

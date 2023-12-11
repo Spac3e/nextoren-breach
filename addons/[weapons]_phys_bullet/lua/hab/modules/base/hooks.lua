@@ -125,12 +125,3 @@ hab.hook( "EntityNetworkedVarChanged", "HAB_Base_EntityNetworkedVarChanged", fun
 
 end )
 ]]
-hab.hook( "PlayerFootstep", "HAB_Base_PlayerFootstep", function( ply, pos, foot, sound, volume, filter )
-
-	if IsValid( ply ) and ( ( hab.cval.Base.Footstep_Suppress_Crouched > 0 and ply:Crouching( ) ) or ply:GetMaxSpeed( ) < hab.cval.Base.Footstep_Min_Speed ) then
-
-		return true
-
-	end
-
-end )

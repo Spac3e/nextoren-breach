@@ -130,6 +130,12 @@ function SWEP:createCustomVM(mdl)
 	self.CW_KK_HANDS:AddEffects(EF_BONEMERGE)
 	self.CW_KK_HANDS:AddEffects(EF_BONEMERGE_FASTCULL)
 
+	if self.Viewmodel_OffsetBones then
+		for i, v in pairs(self.Viewmodel_OffsetBones) do
+			self.CW_KK_HANDS:ManipulateBonePosition(i, v)
+		end
+	end
+
 	self.CW_GREN = self:createManagedCModel(self.CW_GREN_TWEAK.vm, RENDERGROUP_BOTH)
 	self.CW_GREN:SetNoDraw(true)
 	self.CW_GREN:SetupBones()

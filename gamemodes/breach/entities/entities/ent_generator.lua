@@ -188,7 +188,7 @@ function ENT:Use( caller )
 
         for i, v in pairs(player.GetAll()) do
           if v:GTeam() != TEAM_SPEC then
-            v:BrTip(0, "[VAULT]", Color(255,0,0), "l:repaired_generators_count " .. GetGlobalInt( "ActivatedGenerators" ) .. "/5!", color_white)
+            v:BrTip(0, "[NextOren Breach]", Color(255,0,0), "l:repaired_generators_count " .. GetGlobalInt( "ActivatedGenerators" ) .. "/5!", color_white)
           end
         end
 

@@ -1,3 +1,5 @@
+-- Code was kindfullly given by CODING BEAST NAMED SHAKY BRICHERS
+
 local surface = surface
 local Material = Material
 local draw = draw
@@ -42,6 +44,18 @@ surface.CreateFont( "JuneFont", {
   
 })
 
+surface.CreateFont( "rolemenu_desc", {
+
+	font = "Univers LT Std 47 Cn Lt",
+	size = 20,
+	weight = 500,
+	antialias = true,
+	  extended = true,
+	shadow = false,
+	outline = false
+  
+})
+
 ROLEMENU = ROLEMENU || {}
 
 local faction_switched = nil
@@ -64,7 +78,214 @@ function DrawBlurPanel( panel, amount, heavyness )
 
 end
 
+local small_box_adjust = {
+	["SCP-096"] = {
+		ang = Angle(-5,75,-5),
+		pos = Vector(45,43,-20),
+		seq = "idle",
+	},
+	["SCP-682"] = {
+		ang = Angle(0,75,0),
+		pos = Vector(15,-25,-6),
+		seq = "0_Stand_0",
+	},
+	["SCP-082"] = {
+		ang = Angle(0,75,0),
+		pos = Vector(39,39,-32),
+		seq = "idle_knife",
+	},
+	["SCP-106"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(0,0,1),
+	},
+	["SCP-2012"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(0,0,3),
+	},
+	["SCP-811"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(0,0,2),
+	},
+	["SCP-973"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(0,0,2),
+	},
+	["SCP-638"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(0,0,0),
+	},
+	["SCP-999"] = {
+		ang = Angle(0,95,0),
+		pos = Vector(33,5,11),
+	},
+	["SCP-062-FR"] = {
+		ang = Angle(0,75,-5),
+		pos = Vector(40,30,-20),
+	},
+	["SCP-939"] = {
+		ang = Angle(0,0,0),
+		pos = Vector(5,37,-2),
+	},
+}
+
+
+local function adjust_position(pn, model, rolename)
+
+	pn._ang = Angle(0, 45, 0)
+	pn._pos = Vector(0, -2, 0)
+
+	if model == "models/cultist/scp/scp_939.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-33, -33, 0)
+		pn.customseq = "idle_knife"
+
+	elseif model == "models/cultist/scp/scp_999_new.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-33, -33, 0)
+		pn.customseq = "idle_knife"
+
+	elseif model == "models/cultist/scp/scp_062fr_new.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-15, -15, 0)
+		pn.customseq = "stand_idle_2"
+
+
+	elseif model == "models/cultist/scp/scp_082.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-24, -24, -6)
+		pn.customseq = "idle_knife"
+		pn.Entity:SetPlaybackRate(0.4)
+
+	elseif model == "models/cultist/scp/scp_811.mdl" then
+
+		pn.customseq = "811_Walk_01"
+		pn.Entity:SetPlaybackRate(0.4)
+
+
+	elseif model == "models/cultist/scp/scp_049.mdl" then
+
+		pn.customseq = "0_049_idle"
+
+	elseif model == "models/cultist/scp/scp_106.mdl" then
+
+		pn.customseq = "0_106_Idle_new"
+
+	elseif model == "models/cultist/scp/scp_096.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-5, -5, 0)
+		pn.customseq = "idle"
+
+	elseif model == "models/cultist/scp/scp638/scp_638.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(-5, -5, 0)
+		pn.customseq = "idle_standing"
+
+	elseif model == "models/cultist/scp/scp_682.mdl" then
+
+		pn._ang = Angle(0, 35, 0)
+		pn._pos = Vector(-65, -55, -10)
+		pn.customseq = "0_Stand_0"
+
+	elseif model == "models/cultist/humans/class_d/shaky/class_d_bor_new.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(0, -2, 0)
+		pn.customseq = nil
+
+		pn.Entity:SetPlaybackRate(0.4)
+
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(7,5,0))
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-9,0,0))
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_ForeArm"), Angle(9,0,0))
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_ForeArm"), Angle(-5,0,0))
+
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_Thigh"), Angle(5,0,0))
+
+	elseif model == "models/cultist/humans/class_d/shaky/class_d_fat_new.mdl" then
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(0, -2, 0)
+		pn.customseq = nil
+
+		pn.Entity:SetPlaybackRate(0.4)
+
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(7,0,0))
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-6,0,0))
+
+		pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_Thigh"), Angle(5,0,0))
+
+	else
+
+		pn._ang = Angle(0, 45, 0)
+		pn._pos = Vector(0, -2, 0)
+		pn.customseq = nil
+
+		pn.Entity:SetPlaybackRate(0.4)
+
+		if pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm") then
+
+			pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_Hand"), Angle(0,17,0))
+
+			pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_Thigh"), Angle(5,0,0))
+
+			if model:find("class_d") or model:find("head_site") or model:find("sci") or model:find("secur") then
+				pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(3,0,0))
+				if model:find("head_site") then
+					pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(2,0,0))
+					pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_Hand"), Angle(0,17,0))
+				else
+					pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-1,0,0))
+				end
+			else
+				pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(3,0,0))
+				pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-3,0,0))
+			end
+
+			if rolename == "GOC Juggernaut" then
+				pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_R_UpperArm"), Angle(8,0,0))
+				pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_L_UpperArm"), Angle(-6,0,0))
+			end
+
+			pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_Spine4"), Angle(0,10,0))
+			pn.Entity:ManipulateBoneAngles(pn.Entity:LookupBone("ValveBiped.Bip01_Spine1"), Angle(0,-10,0))
+		end
+	end
+
+end
+
+
 local blur = Material("pp/blurscreen")
+function draw.Blur_New(_x, _y, _w, _h, panel, amount, heavyness)
+	local x, y = panel:LocalToScreen( 0, 0 )
+
+	  local scrW, scrH = ScrW(), ScrH()
+	  surface.SetDrawColor( 255, 255, 255 )
+	  surface.SetMaterial(blur)
+
+	  local sx, sy = panel:LocalToScreen( _x, _y )
+	  local sex, syx = panel:LocalToScreen( _x+_w, _y+_h )
+
+	  for i = 1, ( heavyness || 3 ) do
+
+	  	blur:SetFloat( "$blur", ( i / 3 ) * ( amount || 6 ) )
+		blur:Recompute()
+		render.UpdateScreenEffectTexture()
+
+	  	render.SetScissorRect(sx, sy, sex, syx, true)
+
+		    surface.DrawTexturedRect( x * -1, y * -1, scrW, scrH )
+
+	    render.SetScissorRect( 0, 0, 0, 0, false )
+
+	end
+end
+
 function draw.Blur(x, y, w, h)
 	local X, Y = 0,0
 
@@ -168,7 +389,7 @@ end
 	
 	BREACH.RoleMenu = vgui.Create( "DPanel" )
 	BREACH.RoleMenu:SetSize( 960, 702 )
-	BREACH.RoleMenu:SetPos( dividedw - 480, dividedh - 351 - 32 )
+	BREACH.RoleMenu:Center()
 	BREACH.RoleMenu:SetText( "" )
 	BREACH.RoleMenu.OnRemove = function()
 	
@@ -277,24 +498,20 @@ end
     end 
 	local faction_table = {
 
-		[ 1 ] = { name = clang.NTF, icon = "nextoren/gui/roles_icon/ntf.png", roles = BREACH_ROLES.NTF, class_d = "Враг", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_ntf" },
-		[ 2 ] = { name = clang.Chaos, icon = "nextoren/gui/roles_icon/chaos.png", roles = BREACH_ROLES.CHAOS, class_d = "Союзник", chaos = "Союзник", gru = "Враг", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_chaos" },
-		[ 3 ] = { name = clang.GRU, icon = "nextoren/gui/roles_icon/gru.png", roles = BREACH_ROLES.GRU, class_d = "Нейтралитет", chaos = "Враг", gru = "Союзник", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Нейтралитет", sb = "Нейтралитет", mog = "Нейтралитет", obr = "Нейтралитет", scp = "Враг", ntf = "Нейтралитет", Desc = "l:f2_gru" },
-		[ 4 ] = { name = clang.DZ, icon = "nextoren/gui/roles_icon/dz.png", class_d = "Враг", roles = BREACH_ROLES.DZ, chaos = "Враг", gru = "Враг", dz = "Союзник", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Союзник", ntf = "Враг", Desc = "l:f2_dz" },
-		[ 5 ] = { name = clang.UIU, icon = "nextoren/gui/roles_icon/fbi.png", roles = BREACH_ROLES.FBI, class_d = "Нейтралитет", chaos = "Враг", gru = "Враг", dz = "Враг", uiu = "Союзник", goc = "Враг", sci = "Нейтралитет", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_uiu" },
-		[ 6 ] = { name = clang.Goc, icon = "nextoren/gui/roles_icon/goc.png", roles = BREACH_ROLES.GOC, class_d = "Враг", chaos = "Враг", gru = "Враг", dz = "Враг", uiu = "Враг", goc = "Союзник", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_goc" },
-		[ 7 ] = { name = clang.SCI, icon = "nextoren/gui/roles_icon/sci.png", roles = BREACH_ROLES.SCI, class_d = "Нейтралитет", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Нейтралитет", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_sci" },
-		[ 8 ] = { name = clang.SCI_SPECIAL, icon = "nextoren/gui/roles_icon/sci_special.png", roles = BREACH_ROLES.SPECIAL, class_d = "Нейтралитет", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Нейтралитет", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_sci" },
-		[ 9 ] = { name = clang.SECURITY, icon = "nextoren/gui/roles_icon/sb.png", roles = BREACH_ROLES.SECURITY, class_d = "Нейтралитет", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_security" },
-		[ 10 ] = { name = clang.MTF, icon = "nextoren/gui/roles_icon/mtf.png", roles = BREACH_ROLES.MTF, class_d = "Враг", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_mtf" },
-		--[ 11 ] = { name = clang.OSN, icon = "nextoren/gui/roles_icon/osn.png", roles = BREACH_ROLES.OSN, class_d = "Враг", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_osn" },
-		[ 11 ] = { name = clang.QRT, icon = "nextoren/gui/roles_icon/obr.png", roles = BREACH_ROLES.OBR, class_d = "Враг", chaos = "Враг", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Союзник", sb = "Союзник", mog = "Союзник", obr = "Союзник", scp = "Враг", ntf = "Союзник", Desc = "l:f2_qrt" },
-		[ 12 ] = { name = clang.ClassD, icon = "nextoren/gui/roles_icon/class_d.png", roles = BREACH_ROLES.CLASSD, class_d = "Союзник", chaos = "Союзник", gru = "Нейтралитет", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Нейтралитет", sb = "Нейтралитет", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_classd" },
-		[ 13 ] = { name = clang.Cult, icon = "nextoren/gui/roles_icon/scarlet.png", roles = BREACH_ROLES.COTSK, class_d = "Враг", chaos = "Враг", gru = "Враг", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_cult" },
-		[ 14 ] = { name = "SCP", icon = "nextoren/gui/roles_icon/scp.png", roles = BREACH_ROLES.SCP, class_d = "Враг", chaos = "Враг", gru = "Враг", dz = "Союзник", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Союзник", ntf = "Враг", Desc = "l:f2_scp" },
-		--[ 16 ] = { name = clang.MINIGAMES, icon = "nextoren/gui/roles_icon/scp.png", roles = BREACH_ROLES.MINIGAMES, class_d = "Враг", chaos = "Враг", gru = "Враг", dz = "Союзник", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Союзник", ntf = "Враг", Desc = "l:f2_minigames" },
-		--[ 17 ] = { name = clang.SKP, icon = "nextoren/gui/roles_icon/nazi.png", roles = BREACH_ROLES.NAZI, class_d = "Враг", chaos = "Враг", gru = "Враг", dz = "Враг", uiu = "Враг", goc = "Враг", sci = "Враг", sb = "Враг", mog = "Враг", obr = "Враг", scp = "Враг", ntf = "Враг", Desc = "l:f2_skp" }
-	
+		[ 1 ] = { name = clang.ClassD, icon = "nextoren/gui/roles_icon/class_d.png", roles = BREACH_ROLES.CLASSD, Desc = "l:f2_classd" },
+		[ 2 ] = { name = clang.SECURITY, icon = "nextoren/gui/roles_icon/sb.png", roles = BREACH_ROLES.SECURITY, Desc = "l:f2_security" },
+		[ 3 ] = { name = clang.SCI, icon = "nextoren/gui/roles_icon/sci.png", roles = BREACH_ROLES.SCI, Desc = "l:f2_sci" },
+		[ 4 ] = { name = clang.SCI_SPECIAL, icon = "nextoren/gui/roles_icon/sci_special.png", roles = BREACH_ROLES.SPECIAL, Desc = "l:f2_sci" },
+		[ 5 ] = { name = clang.MTF, icon = "nextoren/gui/roles_icon/mtf.png", roles = BREACH_ROLES.MTF, Desc = "l:f2_mtf" },
+		[ 6 ] = { name = clang.QRT, icon = "nextoren/gui/roles_icon/obr.png", roles = BREACH_ROLES.OBR, Desc = "l:f2_qrt" },
+		[ 7 ] = { name = clang.NTF, icon = "nextoren/gui/roles_icon/ntf.png", roles = BREACH_ROLES.NTF, Desc = "l:f2_ntf" },
+		[ 8 ] = { name = clang.Chaos, icon = "nextoren/gui/roles_icon/chaos.png", roles = BREACH_ROLES.CHAOS, Desc = "l:f2_chaos" },
+		[ 9 ] = { name = clang.GRU, icon = "nextoren/gui/roles_icon/gru.png", roles = BREACH_ROLES.GRU, Desc = "l:f2_gru" },
+		[ 10 ] = { name = clang.Goc, icon = "nextoren/gui/roles_icon/goc.png", roles = BREACH_ROLES.GOC, Desc = "l:f2_goc" },
+		[ 11 ] = { name = clang.Cult, icon = "nextoren/gui/roles_icon/scarlet.png", roles = BREACH_ROLES.COTSK, Desc = "l:f2_cult" },
+		[ 12 ] = { name = clang.UIU, icon = "nextoren/gui/roles_icon/fbi.png", roles = BREACH_ROLES.FBI, Desc = "l:f2_uiu" },
+		[ 13 ] = { name = clang.DZ, icon = "nextoren/gui/roles_icon/dz.png", class_d = "Враг", roles = BREACH_ROLES.DZ, Desc = "l:f2_dz" },
+		[ 14 ] = { name = "SCP", icon = "nextoren/gui/roles_icon/scp.png", roles = BREACH_ROLES.SCP, Desc = "l:f2_scp" },
 	}
 
 	for i = 1, #faction_table do
@@ -303,7 +520,7 @@ end
 
 	    if ( faction_tbl.roles ) then
 
-	    	for i, v in pairs(faction_tbl.roles) do
+	    	for i, _ in pairs(faction_tbl.roles) do
 
 		      table.SortByMember( faction_tbl.roles[i].roles, "level", true )
 
@@ -342,7 +559,7 @@ end
 
 	local model_pos_x = 110
 	local model_pos_y = 90
-	local model_fov = 90
+	local model_fov = 40
 	
 	local class_modelpanel2 = vgui.Create( "DPanel", BREACH.RoleMenu )
     class_modelpanel2:SetPos(model_pos_x + 450, model_pos_y - 50)
@@ -358,58 +575,72 @@ end
 
     end
 
-    --[[
-	local icon_SPEC2 = vgui.Create( "DModelPanel", BREACH.RoleMenu )
-    icon_SPEC2:SetSize(500,400)
-	icon_SPEC2:SetPos(model_pos_x, model_pos_y + 50)
-	icon_SPEC2:SetFOV( model_fov )
-    icon_SPEC2:SetModel("")
-    function icon_SPEC2:LayoutEntity( Entity )
-        Entity:SetAngles(Angle(0,45,0))
-    end
-
-    --]]
-
     local icon_SPEC = vgui.Create( "DModelPanel", BREACH.RoleMenu )
-    icon_SPEC:SetSize(500,400)
-	icon_SPEC:SetPos(model_pos_x, model_pos_y + 50)
+    icon_SPEC:SetSize(190,324)
+	icon_SPEC:SetPos(model_pos_x+160, model_pos_y + 100)
 	icon_SPEC:SetFOV( model_fov )
     icon_SPEC:SetModel("")
 	icon_SPEC:SetAnimated(false)
-    function icon_SPEC:LayoutEntity( Entity )
-        Entity:SetAngles(Angle(0,45,0))
 
+	icon_SPEC._ang = Angle(0, 45, 0)
+	icon_SPEC._pos = Vector(0, -2, 0)
+
+
+	icon_SPEC.Pressed = false
+
+
+	function icon_SPEC:DragMousePress()
+		self.PressX, self.PressY = input.GetCursorPos()
+		self.Pressed = true
+	end
+
+	function icon_SPEC:DragMouseRelease() self.Pressed = false end
+
+
+
+
+    function icon_SPEC:LayoutLocation( Entity )
+    	if ( self.Pressed ) then
+				local mx, my = input.GetCursorPos()
+				self._ang = self._ang - Angle( 0, ( ( self.PressX or mx ) - mx ) / 2, 0 )
+
+				self.PressX, self.PressY = mx, my
+			end
+    	
+        Entity:SetAngles(self._ang)
+        Entity:SetPos(self._pos)
     end
+    icon_SPEC._Paint = icon_SPEC.Paint
+    icon_SPEC.Paint = function(self, w, h)
+	    	if self:GetModel() then
 
-    --[[
+	    		local _lerp = (1-self.lerp)
+		    	
+	    		local bg_x, bg_y, bg_w, bg_h = 0,0+(h/2*_lerp),w, h*self.lerp
 
-    local icon_SPEC3 = vgui.Create( "DModelPanel", BREACH.RoleMenu )
-    icon_SPEC3:SetSize(500,400)
-	icon_SPEC3:SetPos(model_pos_x, model_pos_y + 50)
-	icon_SPEC3:SetFOV( model_fov )
-    icon_SPEC3:SetModel("")
-    function icon_SPEC3:LayoutEntity( Entity )
-        Entity:SetAngles(Angle(0,45,0))
-    end
+	    		draw.Blur_New(bg_x, bg_y, bg_w, bg_h, self)
 
-    local icon_SPEC4 = vgui.Create( "DModelPanel", BREACH.RoleMenu )
-    icon_SPEC4:SetSize(500,400)
-	icon_SPEC4:SetPos(model_pos_x, model_pos_y + 50)
-	icon_SPEC4:SetFOV( model_fov )
-    icon_SPEC4:SetModel("")
-    function icon_SPEC4:LayoutEntity( Entity )
-        Entity:SetAngles(Angle(0,45,0))
-    end
+		    	draw.RoundedBox(0,bg_x, bg_y, bg_w, bg_h,ColorAlpha( color_black, 180 ))
 
-    local icon_SPEC5 = vgui.Create( "DModelPanel", BREACH.RoleMenu )
-    icon_SPEC5:SetSize(500,400)
-	icon_SPEC5:SetPos(model_pos_x, model_pos_y + 50)
-	icon_SPEC5:SetFOV( model_fov )
-    icon_SPEC5:SetModel("")
-    function icon_SPEC5:LayoutEntity( Entity )
-        Entity:SetAngles(Angle(0,45,0))
-    end]]
-	
+		    	self.startx = 0
+				self.starty = (self:GetTall()/2*_lerp)
+				self.endx = 0
+				self.endy = -(self:GetTall()/2*_lerp)
+
+				self._Paint(self, w, h)
+
+
+				draw.RoundedBox(0, 0, (h/2*_lerp), w, 15,clr_gray_noalpha)
+				draw.RoundedBox(0, 0, (h-15)-(h/2*_lerp), w, 15,clr_gray_noalpha)
+
+
+		    	self.lerp = math.Approach(self.lerp, 1, RealFrameTime()*2)
+
+		    else
+		    	self.lerp = 0
+		    end
+		end
+
 	BREACH.FactionsSelector.ActualWindow = vgui.Create( "DPanel", BREACH.RoleMenu )
     BREACH.FactionsSelector.ActualWindow:SetText( "" )
     BREACH.FactionsSelector.ActualWindow:SetPos( 0, 4 )
@@ -456,6 +687,18 @@ end
         BREACH.FactionInformation.Desc.PlayerStatistics.Box1y = ( inf_menu_height / 6 ) / 2 - 16
         BREACH.FactionInformation.Desc.PlayerStatistics.Box2y = ( inf_menu_height / 6 ) / 2
         BREACH.FactionInformation.Desc.PlayerStatistics.TextAlpha = 0
+
+        local function reset_animation()
+			BREACH.FactionInformation.Desc.PlayerDescModel.Box1x = ( inf_menu_width / 2 ) / 2
+			BREACH.FactionInformation.Desc.PlayerDescModel.Box2x = ( inf_menu_width / 2 ) / 2
+			BREACH.FactionInformation.Desc.PlayerDescModel.icon_Alpha = 0
+			BREACH.FactionInformation.Desc.PlayerDescModel.desc_Alpha = 0
+			BREACH.FactionInformation.Desc.PlayerDescModel.TimeCreation = RealTime() -0.2
+
+			BREACH.FactionInformation.Desc.PlayerStatistics.Box1y = ( inf_menu_height / 6 ) / 2 - 16
+	        BREACH.FactionInformation.Desc.PlayerStatistics.Box2y = ( inf_menu_height / 6 ) / 2
+	        BREACH.FactionInformation.Desc.PlayerStatistics.TextAlpha = 0
+		end
 
         BREACH.FactionInformation.Desc.PlayerStatistics.Paint = function( self, w, h )
 
@@ -515,13 +758,14 @@ end
 				surface.DrawTexturedRect( 0, 0, w, h )
 		  
 		  
-				drawMultiLine( L(faction_table[ i ].Desc), "JuneFont", w / 1.5, 18, 64, 32, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
+				drawMultiLine( L(faction_table[ i ].Desc), "rolemenu_desc", w / 1.5, 18, 64, 32, color_black, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP )
 			
 			
 			end
+			local localmat = Material(faction_table[ i ].icon, "smooth noclamp")
 			class_modelpanel2.Paint = function( self, w, h )
 				surface.SetDrawColor( 255,255,255  )
-				surface.SetMaterial( Material(faction_table[ i ].icon) )
+				surface.SetMaterial( localmat )
 				surface.DrawTexturedRect( 0, 0, 100, 100 )
 			end
 			faction_title.Paint = function( self, w, h )
@@ -556,10 +800,40 @@ end
 
 					for i,cls in ipairs(v.roles) do
 						local isblack = math.random(1,3) == 1
+
+						if cls.name == "CI Spy" then
+							local values = BREACH.ChaosSpy_CanBe
+							local val = values[math.random(1, #values)]
+							local tab
+
+							for i, v in pairs(BREACH_ROLES.SECURITY.security.roles) do
+								if v.name == val then
+									tab = v
+								end
+							end
+
+							cls.weapons = tab.weapons
+							cls.headgear = tab.headgear
+							cls.head = tab.head
+							cls.walkspeed = tab.walkspeed
+							cls.runspeed = tab.runspeed
+							cls.jumppower = tab.jumppower
+							cls.keycard = tab.keycard
+							cls.usehead = tab.usehead
+							cls.randomizehead = tab.randomizehead
+							cls.randomizeface = tab.randomizeface
+							cls.ammo = tab.ammo
+							for i = 0, 9 do
+								cls["bodygroup"..i] = tab["bodygroup"..i]
+							end
+						end
+
 						if cls["white"] then isblack = false end
 						if cls["level"] > 100 then continue end
 						local headtext = PickFaceSkin(isblack)
 						local HeadModel = istable(cls["head"]) and table.Random(cls["head"]) or cls["head"]
+
+
 						if cls["usehead"] then
 							if cls["randomizehead"] then
 								HeadModel = PickHeadModel()
@@ -614,40 +888,52 @@ end
 						local player_level = LocalPlayer():GetNLevel()
 					  
 						local role_level = cls["level"]
-
-						--[[
-					  
-						head_mdl = vgui.Create( "DModelPanel", BREACH.FactionInformation.Roles.RoleIcon )
-						head_mdl:SetSize( 80, 80 )
-						head_mdl.LayoutEntity = function( ent )
-						end
-	
-						headgear_mdl = vgui.Create( "DModelPanel", BREACH.FactionInformation.Roles.RoleIcon )
-						headgear_mdl:SetSize( 80, 80 )
-						headgear_mdl.LayoutEntity = function( ent )
-						end
-	
-						hacker_hat = vgui.Create( "DModelPanel", BREACH.FactionInformation.Roles.RoleIcon )
-						hacker_hat:SetSize( 80, 80 )
-						hacker_hat.LayoutEntity = function( ent )
-						end
-	
-						headgearrandom_mdl = vgui.Create( "DModelPanel", BREACH.FactionInformation.Roles.RoleIcon )
-						headgearrandom_mdl:SetSize( 80, 80 )
-						headgearrandom_mdl.LayoutEntity = function( ent )
-						end
-						--]]
 	
 						BREACH.FactionInformation.Roles.FaceModel = vgui.Create( "DModelPanel", BREACH.FactionInformation.Roles.RoleIcon )
 						BREACH.FactionInformation.Roles.FaceModel:SetModel( table.Random(cls["models"]) || "models/player/Group01/male_01.mdl" )
 						BREACH.FactionInformation.Roles.FaceModel:SetSize( 80, 80 )
-						BREACH.FactionInformation.Roles.FaceModel.LayoutEntity = function( ent ) end
+						BREACH.FactionInformation.Roles.FaceModel.LayoutEntity = function( self, ent ) end
+
+						local h, s, v = gteams.GetColor(cls["team"]):ToHSV()
+
+						local tcolor = HSVToColor(h, s, 1)
+						local tcolor2 = HSVToColor(h, s, 0.4)
+						local col = HSVToColor(h, 0.3, 1)
+
+						local colors_shading = {
+							[BOX_TOP] = Color(50, 50, 50),
+							[BOX_BOTTOM] = Color(50, 50, 50),
+							[BOX_BACK] = Color(50, 50, 50),
+							[BOX_FRONT] = col,
+							[BOX_RIGHT] = tcolor,
+							[BOX_LEFT] = tcolor2,
+						}
+
+						for i, v in pairs(colors_shading) do
+							BREACH.FactionInformation.Roles.FaceModel:SetDirectionalLight(i, v)
+						end
 					  
 						local faceinfentity = BREACH.FactionInformation.Roles.FaceModel.Entity
 					  
-						local idle_seq = faceinfentity:LookupSequence( "MPF_itemhit" )
+						local idle_seq
 					  
 						local head = faceinfentity:LookupBone( "ValveBiped.Bip01_Head1" )
+
+						if small_box_adjust[cls["name"]] then
+							if small_box_adjust[cls["name"]].seq then
+								idle_seq = faceinfentity:LookupSequence( small_box_adjust[cls["name"]].seq )
+							end
+							faceinfentity:SetPos(faceinfentity:GetPos() + small_box_adjust[cls["name"]].pos)
+							faceinfentity:SetAngles(faceinfentity:GetAngles() + small_box_adjust[cls["name"]].ang)
+						end
+
+						if cls["name"] == "SCP-638" then
+							faceinfentity:ManipulateBoneAngles(9, Angle(15,0,80))
+						end
+
+						if idle_seq then
+							faceinfentity:ResetSequence(idle_seq)
+						end
 					  
 						if ( head ) then
 							if cls["name"] == SCP106 then return end
@@ -656,8 +942,25 @@ end
 							eyepos:Add( eye_offset )
 					  
 							BREACH.FactionInformation.Roles.FaceModel:SetLookAt( eyepos )
-							BREACH.FactionInformation.Roles.FaceModel:SetFOV(50)
-							BREACH.FactionInformation.Roles.FaceModel.Entity:SetAngles(Angle(-5,0,0))
+							BREACH.FactionInformation.Roles.FaceModel:SetFOV(40)
+							BREACH.FactionInformation.Roles.FaceModel.Entity:SetAngles(Angle(-5,math.Rand(25, 35),0))
+							BREACH.FactionInformation.Roles.FaceModel.Entity:SetPos(Vector(-5,math.Rand(2.5, 3),math.Rand(-0.25,0.25)))
+
+							BREACH.FactionInformation.Roles.FaceModel.Entity:ManipulateBoneAngles(head, Angle(math.Rand(-2, -7),5,math.Rand(-20, -10)))
+							if cls["name"] == role.UIU_Clocker then
+								BREACH.FactionInformation.Roles.FaceModel.Entity:ManipulateBoneAngles(head, Angle(math.Rand(-2, -7),-7,math.Rand(10, 15)))
+							end
+
+							if cls["team"] != TEAM_SCP then
+								local l1 = 10
+								local l2 = -10
+								if math.random(0,1) == 1 then
+									l1 = l2
+									l2 = 10
+								end
+								BREACH.FactionInformation.Roles.FaceModel.Entity:ManipulateBoneAngles(faceinfentity:LookupBone("ValveBiped.Bip01_L_Clavicle"), Angle(math.Rand(-10,10), math.Rand(0, l1), 0))
+								BREACH.FactionInformation.Roles.FaceModel.Entity:ManipulateBoneAngles(faceinfentity:LookupBone("ValveBiped.Bip01_R_Clavicle"), Angle(math.Rand(-10,10), math.Rand(0, l2), 0))
+							end
 
 							BREACH.FactionInformation.Roles.FaceModel:SetCamPos( eyepos - pos_offset )
 							faceinfentity:SetEyeTarget( eyepos - pos_offset )
@@ -670,85 +973,16 @@ end
 
 							if isblack and faceinfentity:GetModel():find("class_d") then faceinfentity:SetSkin(1) end
 	
-							if ( cls["bodygroup0"] ) then
-					  
-								faceinfentity:SetBodygroup( 0, cls["bodygroup0"] )
-						
+							for i = 0, 15 do
+								if ( cls["bodygroup"..i] ) then
+						  
+									faceinfentity:SetBodygroup( i, cls["bodygroup"..i] )
+							
+								end
 							end
-							if ( cls["bodygroup1"] ) then
-					  
-								faceinfentity:SetBodygroup( 1, cls["bodygroup1"] )
-						
-							end
-							if ( cls["bodygroup2"] ) then
-					  
-								faceinfentity:SetBodygroup( 2, cls["bodygroup2"] )
-						
-							end
-							if ( cls["bodygroup3"] ) then
-					  
-								faceinfentity:SetBodygroup( 3, cls["bodygroup3"] )
-						
-							end
-							if ( cls["bodygroup4"] ) then
-					  
-								faceinfentity:SetBodygroup( 4, cls["bodygroup4"] )
-						
-							end
-							if ( cls["bodygroup5"] ) then
-					  
-								faceinfentity:SetBodygroup( 5, cls["bodygroup5"] )
-						
-							end
-							if ( cls["bodygroup6"] ) then
-					  
-								faceinfentity:SetBodygroup( 6, cls["bodygroup6"] )
-						
-							end
-							if ( cls["bodygroup7"] ) then
-					  
-								faceinfentity:SetBodygroup( 7, cls["bodygroup7"] )
-						
-							end
-							if ( cls["bodygroup8"] ) then
-					  
-								faceinfentity:SetBodygroup( 8, cls["bodygroup8"] )
-						
-							end
-							if ( cls["bodygroup9"] ) then
-					  
-								faceinfentity:SetBodygroup( 9, cls["bodygroup9"] )
-						
-							end
-							if ( cls["bodygroup10"] ) then
-					  
-								faceinfentity:SetBodygroup( 10, cls["bodygroup10"] )
-						
-							end
-							if ( cls["bodygroup11"] ) then
-					  
-								faceinfentity:SetBodygroup( 11, cls["bodygroup11"] )
-						
-							end
-							if ( cls["bodygroup12"] ) then
-					  
-								faceinfentity:SetBodygroup( 12, cls["bodygroup12"] )
-						
-							end
-							if ( cls["bodygroup13"] ) then
-					  
-								faceinfentity:SetBodygroup( 13, cls["bodygroup13"] )
-						
-							end
-							if ( cls["bodygroup14"] ) then
-					  
-								faceinfentity:SetBodygroup( 14, cls["bodygroup14"] )
-						
-							end
-							if ( cls["bodygroup15"] ) then
-					  
-								faceinfentity:SetBodygroup( 15, cls["bodygroup15"] )
-						
+
+							if faceinfentity:GetModel():find("class_d") and !faceinfentity:GetModel():find("cleaner") and LocalPlayer():IsPremium() then
+								faceinfentity:SetBodygroup( 0, math.random(0,4) )
 							end
 	
 							if cls["head"] != nil or cls["usehead"] then
@@ -780,10 +1014,12 @@ end
 					  			if faceinfentity.BoneMergedEnts then
 					  				for i, v in pairs(faceinfentity.BoneMergedEnts) do
 					  					v:SetMaterial( "lights/white001" )
+					  					v:SetColor(color_black)
 					  				end
 					  			end
 								faceinfentity:SetMaterial( "lights/white001" )
-								BREACH.FactionInformation.Roles.FaceModel:SetColor( clr_white_gray )
+								faceinfentity:SetColor(color_black)
+							--	BREACH.FactionInformation.Roles.FaceModel:SetColor( clr_white_gray )
 					  
 							end
 	
@@ -791,6 +1027,41 @@ end
 						end
 					  
 						BREACH.FactionInformation.Roles.FaceModel.Closed = vgui.Create( "DButton", BREACH.FactionInformation.Roles.FaceModel )
+						if cls["team"] != TEAM_SCP and ( player_level >= ( role_level || 0 ) ) then
+
+								local anim_savepos = faceinfentity:GetPos()
+								local anim_svaeang = faceinfentity:GetAngles()
+
+								local aimang = Angle(-5,5,0)
+								local aimpos = Vector(-5,0.3,1)
+
+								local anim_origbones = {}
+
+								for i = 0, faceinfentity:GetBoneCount() - 1 do
+						        local ang = faceinfentity:GetManipulateBoneAngles(i)
+
+						        if ang != angle_zero then
+						        	anim_origbones[i] = ang
+						        end
+						    end
+
+						    BREACH.FactionInformation.Roles.FaceModel.Closed.PaintOver = function(self, w, h)
+						    	if self:IsHovered() then
+						    		faceinfentity:SetAngles(LerpAngle(math.min(0.5, FrameTime()*20), faceinfentity:GetAngles(), aimang))
+						    		faceinfentity:SetPos(LerpVector(math.min(0.5, FrameTime()*13), faceinfentity:GetPos(), aimpos))
+						    		for i, v in pairs(anim_origbones) do
+						    			faceinfentity:ManipulateBoneAngles(i, LerpAngle(math.min(0.5, FrameTime()*10), faceinfentity:GetManipulateBoneAngles(i), angle_zero))
+						    		end
+						    	else
+						    		faceinfentity:SetAngles(LerpAngle(math.min(0.5, FrameTime()*15), faceinfentity:GetAngles(), anim_svaeang))
+						    		faceinfentity:SetPos(LerpVector(math.min(0.5, FrameTime()*8), faceinfentity:GetPos(), anim_savepos))
+						    		for i, v in pairs(anim_origbones) do
+						    			faceinfentity:ManipulateBoneAngles(i, LerpAngle(math.min(0.5, FrameTime()*8), faceinfentity:GetManipulateBoneAngles(i), v))
+						    		end
+						    	end
+						  	end
+
+						end
 						BREACH.FactionInformation.Roles.FaceModel.Closed:SetText( "" )
 						BREACH.FactionInformation.Roles.FaceModel.Closed:SetSize( 80, 80 )
 						BREACH.FactionInformation.Roles.FaceModel.Closed.Paint = function( self, w, h )
@@ -824,6 +1095,13 @@ end
 						BREACH.FactionInformation.Roles.FaceModel.Closed.DoClick = function()
 
 							if cls["level"] > LocalPlayer():GetNLevel() then return end
+
+							reset_animation()
+
+							icon_SPEC:SetDirectionalLight(BOX_FRONT, colors_shading[BOX_FRONT])
+							icon_SPEC:SetDirectionalLight(BOX_RIGHT, Color(25,25,25))
+
+							icon_SPEC.lerp = 0
 	
 							BREACH.FactionInformation.Desc.Paint = function( self, w, h )
 	  
@@ -863,15 +1141,8 @@ end
 
 					  
 							end
-	
-							BREACH.FactionInformation.Desc.PlayerDescModel.Paint = function( self, w, h )
-	  
-								self.Box1x = math.Approach( self.Box1x, 24, FrameTime() * 312 )
-								self.Box2x = math.Approach( self.Box2x, w - 24, FrameTime() * 312 )
-								self.icon_Alpha = math.Approach( self.icon_Alpha, 160, FrameTime() * 128 )
-								DrawBlurPanel( self )
-						
-								local roles_icons = Material("nextoren/gui/roles_icon/scp.png")
+
+							local roles_icons = Material("nextoren/gui/roles_icon/scp.png")
 								if cls["team"] == TEAM_GUARD then
 									roles_icons = Material("nextoren/gui/roles_icon/mtf.png")
 								elseif cls["team"] == TEAM_SECURITY then
@@ -903,6 +1174,14 @@ end
 								elseif cls["team"] == TEAM_SCP then
 									roles_icons = Material("nextoren/gui/roles_icon/scp.png")
 								end
+	
+							BREACH.FactionInformation.Desc.PlayerDescModel.Paint = function( self, w, h )
+	  
+								self.Box1x = math.Approach( self.Box1x, 24, FrameTime() * 312 )
+								self.Box2x = math.Approach( self.Box2x, w - 24, FrameTime() * 312 )
+								self.icon_Alpha = math.Approach( self.icon_Alpha, 160, FrameTime() * 128 )
+								DrawBlurPanel( self )
+		
 								surface.SetDrawColor( ColorAlpha( color_white, self.icon_Alpha ) )
 								surface.SetMaterial( roles_icons )
 								surface.DrawTexturedRect( w / 2 - 64, h / 2 - 64, 128, 128 )
@@ -974,6 +1253,8 @@ end
 								icon_SPEC:SetModel("")
 							end
 
+							adjust_position(icon_SPEC, icon_SPEC:GetModel(), cls["name"])
+
 							if HairModel then
 								icon_SPEC:BoneMerged(HairModel)
 							end
@@ -992,85 +1273,29 @@ end
 					   
 							function icon_SPEC:LayoutEntity( Entity )
 								
-								local idle_seq = Entity:LookupSequence( "MPF_itemhit" )
+								local seq = "l4d_idle_calm_frying_pan"
 
-								local idle_seq2 = Entity:LookupSequence( "Idle_Upper_KNIFE" )
+								if self.customseq then seq = self.customseq end
 
-								local idle_seq3 = Entity:LookupSequence( "idle_melee" )
+								local idle_seq = Entity:LookupSequence( seq )
 
-								if icon_SPEC:GetModel() == "models/cultist/scp/scp638/scp_638.mdl" then
-									Entity:SetSequence(idle_seq2)
-								elseif icon_SPEC:GetModel() == "models/cultist/scp/scp_1027ru.mdl" then
-									Entity:SetSequence(idle_seq3)
-								else
-									Entity:SetSequence(idle_seq)
+								Entity:SetSequence(idle_seq)
+								self:RunAnimation()
+
+								if self.LayoutLocation then
+									self.LayoutLocation(self, Entity)
 								end
-								--[[
-								if cls["headgear"] != nil then
-								 icon_SPEC3.Entity:SetParent(Entity)
-								 icon_SPEC3.Entity:AddEffects(bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL))
-								end
-								if cls["headgearrandom"] != nil then
-								 icon_SPEC4.Entity:SetParent(Entity)
-								 icon_SPEC4.Entity:AddEffects(bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL))
-								end
-								if cls["hackerhat"] != nil then
-								 icon_SPEC5.Entity:SetParent(Entity)
-								 icon_SPEC5.Entity:AddEffects(bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL))
-								end
-								if cls["head"] != nil then
-								 icon_SPEC2.Entity:SetParent(Entity)
-								 icon_SPEC2.Entity:AddEffects(bit.bor(EF_BONEMERGE, EF_BONEMERGE_FASTCULL))
-								end
-								--]]
-								Entity:SetAngles(Angle(0,45,0))
-								if cls["bodygroup0"] != nil then
-								   Entity:SetBodygroup( 0, cls["bodygroup0"])
-								end
-								if cls["bodygroup1"] != nil then
-								   Entity:SetBodygroup( 1, cls["bodygroup1"])
-								end
-								if cls["bodygroup2"] != nil then
-								   Entity:SetBodygroup( 2, cls["bodygroup2"])
-								end
-								if cls["bodygroup3"] != nil then
-								   Entity:SetBodygroup( 3, cls["bodygroup3"])
-								end
-								if cls["bodygroup4"] != nil then
-								   Entity:SetBodygroup( 4, cls["bodygroup4"])
-								end
-								if cls["bodygroup5"] != nil then
-								   Entity:SetBodygroup( 5, cls["bodygroup5"])
-								end
-								if cls["bodygroup6"] != nil then
-								   Entity:SetBodygroup( 6, cls["bodygroup6"])
-								end
-								if cls["bodygroup7"] != nil then
-								   Entity:SetBodygroup( 7, cls["bodygroup7"])
-								end
-								if cls["bodygroup8"] != nil then
-								   Entity:SetBodygroup( 8, cls["bodygroup8"])
-								end
-								if cls["bodygroup9"] != nil then
-								   Entity:SetBodygroup( 9, cls["bodygroup9"])
-								end
-								if cls["bodygroup10"] != nil then
-								   Entity:SetBodygroup( 10, cls["bodygroup10"])
-								end
-								if cls["bodygroup11"] != nil then
-								   Entity:SetBodygroup( 11, cls["bodygroup11"])
-								end
-								if cls["bodygroup12"] != nil then
-								   Entity:SetBodygroup( 12, cls["bodygroup12"])
-								end
-								if cls["bodygroup13"] != nil then
-								   Entity:SetBodygroup( 13, cls["bodygroup13"])
-								end
-								if cls["skin"] != nil then
-								   Entity:SetSkin( cls["skin"] )
-								end
-								if isblack and Entity:GetModel():find("class_d") then Entity:SetSkin(1) end
+	
 							end
+
+							for i = 0, 13 do
+								icon_SPEC.Entity:SetBodygroup( i, faceinfentity:GetBodygroup(i))
+							end
+
+							if cls["skin"] != nil then
+								  icon_SPEC.Entity:SetSkin( cls["skin"] )
+							end
+							if isblack and ( icon_SPEC.Entity:GetModel():find("class_d") or icon_SPEC.Entity:GetModel():find("fbi_agent") ) then icon_SPEC.Entity:SetSkin(1) end
 
 							if cls["head"] != nil or cls["usehead"] then
 								if isblack and icon_SPEC.Entity:GetModel():find("class_d") then icon_SPEC.Entity:SetSkin(1) end

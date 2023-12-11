@@ -1,15 +1,3 @@
---[[
-Server Name: RXSEND Breach
-Server IP:   62.122.215.225:27015
-File Path:   gamemodes/breach/gamemode/modules/anim_base/cl_legs.lua
-		 __        __              __             ____     _                ____                __             __         
-   _____/ /_____  / /__  ____     / /_  __  __   / __/____(_)__  ____  ____/ / /_  __     _____/ /____  ____ _/ /__  _____
-  / ___/ __/ __ \/ / _ \/ __ \   / __ \/ / / /  / /_/ ___/ / _ \/ __ \/ __  / / / / /    / ___/ __/ _ \/ __ `/ / _ \/ ___/
- (__  ) /_/ /_/ / /  __/ / / /  / /_/ / /_/ /  / __/ /  / /  __/ / / / /_/ / / /_/ /    (__  ) /_/  __/ /_/ / /  __/ /    
-/____/\__/\____/_/\___/_/ /_/  /_.___/\__, /  /_/ /_/  /_/\___/_/ /_/\__,_/_/\__, /____/____/\__/\___/\__,_/_/\___/_/     
-                                     /____/                                 /____/_____/                                  
---]]
-
 Shaky_LEGS = Shaky_LEGS || {}
 
 Shaky_LEGS.legEnt = Shaky_LEGS.legEnt || nil
@@ -27,6 +15,7 @@ Shaky_LEGS.renderColor = { }
 Shaky_LEGS.clipVector = vector_up * -1
 Shaky_LEGS.forwardOffset = -20
 Shaky_LEGS.nextMatSet = CurTime( )
+Shaky_LEGS.lastRoleName = Shaky_LEGS.lastRoleName || 0
 Shaky_LEGS.lastCharName = Shaky_LEGS.lastCharName || 0
 
 local hiddenBones = {
@@ -87,7 +76,7 @@ function META:ShouldDrawLegs()
 
   return Shaky_LEGS.legEnt && Shaky_LEGS.legEnt:IsValid() && self:Alive()
   && !self:InVehicle() && self:GetViewEntity() == self
-  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && GetConVar("breach_config_draw_legs"):GetBool()
+  && !self:ShouldDrawLocalPlayer() && !self:GetNoDraw() && self:GetObserverTarget() == NULL && GetConVar("breach_config_draw_legs"):GetBool() && EyeAngles().p > 0
 
 end
 
@@ -116,6 +105,7 @@ function Shaky_LEGS:CreateLegs()
   legEnt.LastTick = 0
 
   self.lastCharName = ply:GetNamesurvivor() || "none"
+  self.lastRoleName = ply:GetRoleName() || "none"
 
   self.legEnt = legEnt
 
@@ -123,7 +113,7 @@ end
 
 local up_vector = Vector( 1, 1, 1 )
 local stay_vector = vector_origin
-local vector_manipulate = Vector( -10, -10, 0 )
+local vector_manipulate = Vector( 5, -10, 0 )
 
 function Shaky_LEGS:PlayerWeaponChanged( ply, weapon )
 
@@ -213,7 +203,7 @@ function Shaky_LEGS:LegsWork( ply, speed )
 
   if ( !( self.legEnt && self.legEnt:IsValid() ) ) then return end
 
-  if ( self.lastCharName != ply:GetNamesurvivor() ) then
+  if ( self.lastCharName != ply:GetNamesurvivor() or self.lastRoleName != ply:GetRoleName() ) then
 
     self.legEnt:Remove()
     self:CreateLegs()
@@ -382,6 +372,10 @@ local team_index_scp = TEAM_SCP
 local allowedscp = {
   ["SCP062DE"] = true,
   ["SCP2012"] = true,
+  ["SCP076"] = true,
+  ["SCP049"] = true,
+  ["SCP542"] = true,
+  ["SCP973"] = true,
 }
 
 local math = math
@@ -449,6 +443,8 @@ function Shaky_LEGS:RenderScreenspaceEffects()
         legEnt:SetRenderAngles( self.renderAngle )
 
       end
+
+
 
       legEnt:DrawModel()
       --legEnt:SetRenderOrigin()

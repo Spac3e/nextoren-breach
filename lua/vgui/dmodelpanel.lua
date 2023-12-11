@@ -1,23 +1,3 @@
---[[
-
-~ yuck, anti cheats! ~
-
-~ file stolen by ~
-                __  .__                          .__            __                 .__               
-  _____   _____/  |_|  |__ _____    _____ ______ |  |__   _____/  |______    _____ |__| ____   ____  
- /     \_/ __ \   __\  |  \\__  \  /     \\____ \|  |  \_/ __ \   __\__  \  /     \|  |/    \_/ __ \ 
-|  Y Y  \  ___/|  | |   Y  \/ __ \|  Y Y  \  |_> >   Y  \  ___/|  |  / __ \|  Y Y  \  |   |  \  ___/ 
-|__|_|  /\___  >__| |___|  (____  /__|_|  /   __/|___|  /\___  >__| (____  /__|_|  /__|___|  /\___  >
-      \/     \/          \/     \/      \/|__|        \/     \/          \/      \/        \/     \/ 
-
-~ purchase the superior cheating software at https://methamphetamine.solutions ~
-
-~ server ip: 46.174.48.132_27015 ~ 
-~ file: lua/vgui/dmodelpanel.lua ~
-
-]]
-
-
 local PANEL = {}
 
 AccessorFunc( PANEL, "m_fAnimSpeed",	"AnimSpeed" )
@@ -51,6 +31,11 @@ function PANEL:Init()
 
 	self:SetDirectionalLight( BOX_TOP, color_white )
 	self:SetDirectionalLight( BOX_FRONT, color_white )
+
+	self.startx = 0
+	self.starty = 0
+	self.endx = 0
+	self.endy = 0
 
 	self:SetColor( color_white )
 
@@ -243,7 +228,7 @@ function PANEL:DrawModel()
 		previous = curparent
 	end
 
-	render.SetScissorRect( leftx, topy, rightx, bottomy, true )
+	render.SetScissorRect( leftx + self.startx, topy + self.starty, rightx + self.endx, bottomy + self.endy, true )
 
 	local ret = self:PreDrawModel( self.Entity )
 

@@ -19,8 +19,8 @@ SWEP.PrimaryAttackDamageWindow = 0.1
 SWEP.PrimaryDamage = 45
 SWEP.SecondaryDamage = 80
 
-SWEP.PrimaryStamina = 2
-SWEP.SecondaryStamina = 10
+SWEP.PrimaryStamina = 15
+SWEP.SecondaryStamina = 15
 SWEP.DamageForce = 2
 
 
@@ -381,10 +381,9 @@ function SWEP:PrimaryAttack()
   local time = CurTime() + self.PrimaryAttackDelay
   self:SetNextPrimaryFire( time )
   self:SetNextSecondaryFire( time )
+  if CLIENT then
 
-  if ( self.Owner:GetStamina() ) then
-
-    self.Owner:SetStamina( math.Clamp(self.Owner:GetStamina() - self.PrimaryStamina, 0, 100))
+    UpdateStamina_Breach(self.Owner.Stamina - self.PrimaryStamina)
 
   end
 
@@ -413,9 +412,9 @@ function SWEP:SecondaryAttack()
   self:SetNextPrimaryFire( time )
   self:SetNextSecondaryFire( time )
 
-  if ( self.Owner:GetStamina() ) then
+  if CLIENT then
 
-    self.Owner:SetStamina( math.Clamp( self.Owner:GetStamina() - self.SecondaryStamina, 0, 100 ) )
+    UpdateStamina_Breach(self.Owner.Stamina - self.SecondaryStamina)
 
   end
 

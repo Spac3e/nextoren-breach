@@ -144,7 +144,12 @@ function SWEP:PrimaryAttack()
 			end
 			self.Owner.Vignette_Action = self.Owner.Vignette_Action || 0
 			self.Owner.Vignette_Action = math.Clamp(self.Owner.Vignette_Action + 0.25 * multiplier, 0, 1)
-			self:FireBullet(self.Damage, self.CurCone, self.ClumpSpread, self.Shots)
+			if self.Shots > 1 then
+				self:FireBullet(self.Damage, 0.03, 0.003, 1)
+				self:FireBullet(self.Damage, self.CurCone, self.ClumpSpread, self.Shots-1)
+			else
+				self:FireBullet(self.Damage, self.CurCone, self.ClumpSpread, self.Shots)
+			end
 			self:makeFireEffects()
 			self:MakeRecoil()
 		end

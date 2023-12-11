@@ -52,6 +52,8 @@ game.AddParticles( "particles/mephistopheles.pcf" )
 game.AddParticles( "particles/raygun.pcf" )
 game.AddParticles( "particles/boomer_fx.pcf" )
 
+PrecacheParticleSystem( "fire_big_01" )
+
 PrecacheParticleSystem( "blood_advisor_puncture_withdraw" )
 PrecacheParticleSystem( "dustwave_tracer" );
 PrecacheParticleSystem( "vman_nuke" );
@@ -137,6 +139,7 @@ PrecacheParticleSystem( "gas_explosion_main" )
 
 PrecacheParticleSystem( "smoke_gib_01"  )
 PrecacheParticleSystem( "fire_small_03" )
+PrecacheParticleSystem( "fire_small_01" )
 
 --[[ Special-Heal ]]--
 

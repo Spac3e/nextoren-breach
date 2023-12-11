@@ -1,8 +1,8 @@
 // Shared file
 GM.Name 	= "Breach"
-GM.Author 	= "NextOren/Monix"
+GM.Author 	= "NextOren/-Spac3"
 GM.Email 	= ""
-GM.Website 	= "https://discord.gg/monix"
+GM.Website 	= ""
 
 VERSION = "2.6.0"
 DATE = "16/07/2023"

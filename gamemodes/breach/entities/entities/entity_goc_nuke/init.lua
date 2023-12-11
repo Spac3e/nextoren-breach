@@ -62,7 +62,7 @@ function ENT:Use( activator )
           SetGlobalBool( "NukeTime", true )
           SetGlobalBool( "Evacuation_HUD", true )
           for k,v in pairs(player.GetAll()) do
-            v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:goc_nuke_start", Color(255, 255, 255))
+            v:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:goc_nuke_start", Color(255, 255, 255))
           end
           net.Start( "AlphaWarheadTimer_CLIENTSIDE" )
             net.WriteString( self:GetDeactivationTime() )
@@ -101,7 +101,7 @@ function ENT:Use( activator )
 
             end)
           for k,v in pairs(player.GetAll()) do
-            v:BrTip(0, "[VAULT Breach]", Color(255, 0, 0), "l:goc_nuke_start", Color(255, 255, 255))
+            v:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:goc_nuke_start", Color(255, 255, 255))
           end
             net.Start( "AlphaWarheadTimer_CLIENTSIDE" )
             net.WriteString( self:GetDeactivationTime() )

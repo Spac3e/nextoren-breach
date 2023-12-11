@@ -510,7 +510,7 @@ function SWEP:_attack(key)
 	if !self.KKINS2RCE then
 
 		if self.HasUsed_gren then
-			return
+			--return
 		end
 
 		self.HasUsed_gren = true

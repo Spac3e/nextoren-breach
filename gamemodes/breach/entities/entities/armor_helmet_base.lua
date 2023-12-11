@@ -47,12 +47,12 @@ function ENT:Use(ply)
 	if ply:GTeam() == TEAM_CLASSD or ply:GTeam() == TEAM_SCI or ply:GetRoleName() == "GOC Spy" or ply:GetRoleName() == "SH Spy" or ply:GetRoleName() == "UIU Spy" then 
 		if SERVER then
 			if ply:GetUsingHelmet() != "" then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:has_helmet_already", Color(255, 255, 255) )
+				ply:BrTip( 0, "[NextOren Breach]", Color(255, 0, 0), "l:has_helmet_already", Color(255, 255, 255) )
 				return
 			end
 
 			if ( ply:GetUsingCloth() != "armor_sci" and ply:GetUsingCloth() != "armor_medic" and ply:GetUsingCloth() != "" ) or ply:GetModel():find("goc.mdl") then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:take_off_uniform_to_wear_helmet", Color(255, 255, 255) )
+				ply:BrTip( 0, "[NextOren Breach]", Color(255, 0, 0), "l:take_off_uniform_to_wear_helmet", Color(255, 255, 255) )
 				return
 			end
 
@@ -62,7 +62,7 @@ function ENT:Use(ply)
 
 				ply.HeadResist = self.MaxHitsHelmet
 	
-				ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:put_on_helmet", Color(255, 255, 255))
+				ply:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:put_on_helmet", Color(255, 255, 255))
 		
 				ply:SetUsingHelmet(self:GetClass())
 
@@ -75,7 +75,7 @@ function ENT:Use(ply)
 		end
 	else
 		if SERVER then
-			ply:BrTip(0, "[VAULT]", Color(255, 0, 0), "l:you_cant_wear_helmet", Color(255, 255, 255) )
+			ply:BrTip(0, "[NextOren Breach]", Color(255, 0, 0), "l:you_cant_wear_helmet", Color(255, 255, 255) )
 		end
 	end
 end

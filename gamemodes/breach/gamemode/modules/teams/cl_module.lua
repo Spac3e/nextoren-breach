@@ -1513,7 +1513,7 @@ end )
 --timer.Create("ADVERT_NABOR_", 300, 0, function()
 
 	--[[if LocalPlayer().GTeam and LocalPlayer():GTeam() == TEAM_SPEC then
-		chat.AddText(Color(0,0,255), "[MONIX] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку")
+		chat.AddText(Color(0,0,255), "[NextOren] ", color_white, "Идет набор на админа, если желаете стать админом то напишите заявку")
 	end]]
 
 --end)
@@ -2911,11 +2911,6 @@ function DropCurrentVest()
 		net.SendToServer()
 	end
 end
-
-concommand.Add( "br_spectate", function( ply, cmd, args )
-	net.Start("SpectateMode")
-	net.SendToServer()
-end )
 
 concommand.Add( "br_dropuniform", function( ply, cmd, args )
 	DropCurrentVest()

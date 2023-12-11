@@ -797,29 +797,12 @@ for i = minSize, maxSize do
 	} )
 end
 
-for i = minSize, maxSize do
-	surface.CreateFont( "futura_"..i, {
-		font = "Futura New Book",
-		extended = true,
-		size = i,
-		weight = 300,
-	} )
-end
-
-for i = minSize, maxSize do
-	surface.CreateFont( "futuraLight_"..i, {
-		font = "Futura New Light",
-		extended = true,
-		size = i,
-		weight = 300,
-	} )
-end
-
-for i = minSize, maxSize do
-	surface.CreateFont( "futuraBold_"..i, {
-		font = "Futura New Bold",
-		extended = true,
-		size = i,
-		weight = 300,
-	} )
-end
+surface.CreateFont("ClassName", {font = "Trebuchet24",
+                                    size = 28,
+                                    weight = 1000})
+surface.CreateFont("TimeLeft",     {font = "Trebuchet24",
+                                    size = 24,
+                                    weight = 800})
+surface.CreateFont("HealthAmmo",   {font = "Trebuchet24",
+                                    size = 24,
+                                    weight = 750})

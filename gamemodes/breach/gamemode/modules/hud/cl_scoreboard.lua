@@ -251,7 +251,7 @@ function PANEL:PerformLayout()
 
   surface.SetFont( "ScoreboardHeader" )
 
-  local hname = "[MONIX] Breach 2.6.0"
+  local hname = "[NextOren] Breach 2.6.0"
   local tw, _ = surface.GetTextSize( hname )
 
   while ( tw > hw ) do
@@ -756,7 +756,7 @@ function PANEL:UpdatePlayerData()
 
     self.rank:SetImage( "nextoren_hud/scoreboard/shield.png" )
 
-  elseif MONIX_YOUTUBERS[ply:SteamID64()] then
+  elseif NEXTOREN_YOUTUBERS[ply:SteamID64()] then
 
     self.rank:SetImage( "icon16/user_red.png" )
 
@@ -942,9 +942,9 @@ function PANEL:DoRightClick()
     draw.DrawText(name, "HUDFont", 30, 2)
   end
 
-  if MONIX_YOUTUBERS[menu.Player:SteamID64()] then
+  if NEXTOREN_YOUTUBERS[menu.Player:SteamID64()] then
     menu:AddOption( "YouTube Channel", function()
-      gui.OpenURL(MONIX_YOUTUBERS[menu.Player:SteamID64()])
+      gui.OpenURL(NEXTOREN_YOUTUBERS[menu.Player:SteamID64()])
       surface.PlaySound("buttons/button9.wav")
     end):SetIcon("icon16/user_red.png")
   end

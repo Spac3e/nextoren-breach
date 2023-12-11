@@ -1,72 +1,8 @@
---if SERVER then
-
-local RunConsoleCommand = RunConsoleCommand;
-local tonumber = tonumber;
-local tostring = tostring;
-local CurTime = CurTime;
-local Entity = Entity;
-local unpack = unpack;
-local table = table;
-local pairs = pairs;
-local concommand = concommand;
-local timer = timer;
-local ents = ents;
-local hook = hook;
-local math = math;
-local pcall = pcall;
-local ErrorNoHalt = ErrorNoHalt;
-local DeriveGamemode = DeriveGamemode;
-local util = util
-local net = net
-local player = player
-
---else
-
-local surface = surface
-local Material = Material
-local draw = draw
-local DrawBloom = DrawBloom
-local DrawSharpen = DrawSharpen
-local DrawToyTown = DrawToyTown
-local Derma_StringRequest = Derma_StringRequest;
-local RunConsoleCommand = RunConsoleCommand;
-local tonumber = tonumber;
-local tostring = tostring;
-local CurTime = CurTime;
-local Entity = Entity;
-local unpack = unpack;
-local table = table;
-local pairs = pairs;
-local ScrW = ScrW;
-local ScrH = ScrH;
-local concommand = concommand;
-local timer = timer;
-local ents = ents;
-local hook = hook;
-local math = math;
-local draw = draw;
-local pcall = pcall;
-local ErrorNoHalt = ErrorNoHalt;
-local DeriveGamemode = DeriveGamemode;
-local vgui = vgui;
-local util = util
-local net = net
-local player = player
-local LocalPlayer = LocalPlayer
-local IsValid = IsValid
-local FrameTime = FrameTime
-local CurTime = CurTime
-local EyePos = EyePos
-local EyeAngles = EyeAngles
-local Lerp = Lerp
-
---end
-
 AddCSLuaFile()
 
 ENT.Base = "base_anim"
 ENT.Type = "anim"
-ENT.RenderGroup = RENDERGROUP_BOTH
+ENT.RenderGroup = RENDERGROUP_OPAQUE
 
 function ENT:SetupDataTables()
 
@@ -75,8 +11,6 @@ function ENT:SetupDataTables()
   self:SetInvisible( false )
 
 end
-
-if SERVER then
 
 function ENT:Think()
 
@@ -90,10 +24,7 @@ function ENT:Think()
     return
   end
 
-  local parenttable = parent:GetTable()
-
   local parent_nodraw = parent:GetNoDraw()
-  local parent_invisibility = parenttable.CommanderAbilityActive or false
   local self_nodraw = self:GetNoDraw()
 
   if ( parent_valid && parent_nodraw && !self_nodraw ) then
@@ -106,29 +37,50 @@ function ENT:Think()
 
   end
 
-  if parent_valid and parent_invisibility then
-    self:SetNoDraw(true)
-  end
-
-end
-
 end
 
 if ( SERVER ) then return end
 
-function ENT:Initialize()
-  self.PixVis = util.GetPixelVisibleHandle()
+function ENT:Draw()
+
+  if ( !self:GetInvisible() ) then
+
+    self:DrawModel()
+
+  end
+
 end
 
-local reg = debug.getregistry()
+function ENT:Think()
 
-local drawmodel = reg.Entity.DrawModel
+  local parent = self:GetParent()
+  local parent_valid = parent && parent:IsValid()
 
-local _util_PixelVisible = util.PixelVisible
+  if ( !parent_valid && self:EntIndex() == -1 ) then
 
-ENT.RenderGroup = RENDERGROUP_OPAQUE
-function ENT:Draw( flags )
-  if !self:GetInvisible() then
-      drawmodel(self, flags)
+    self:Remove()
+
+  elseif ( !parent_valid ) then
+
+    return
+
   end
+
+  if ( !parent:IsPlayer() ) then return end
+
+  local parent_nodraw = parent:GetNoDraw()
+  local self_nodraw = self:GetNoDraw()
+
+  if ( parent_valid && parent_nodraw && !self_nodraw ) then
+
+    self:SetNoDraw( true )
+    self.no_draw = true
+
+  elseif ( parent_valid && !parent_nodraw && self_nodraw ) then
+
+    self:SetNoDraw( false )
+    self.no_draw = false
+
+  end
+
 end

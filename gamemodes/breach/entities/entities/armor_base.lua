@@ -92,16 +92,16 @@ if self.Team and ply:GTeam() != self.Team and ply:GetRoleName() != role.ClassD_G
 		nextuse = CurTime() + delay
 		if SERVER then
 			if string.len(ply:GetUsingCloth()) > 0 then
-				ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:has_uniform_already", Color(255, 255, 255) )
+				ply:BrTip( 0, "[NextOren Breach]", Color(255, 0, 0), "l:has_uniform_already", Color(255, 255, 255) )
 				return
 			end
 			if self:GetClass() != "armor_sci" and self:GetClass() != "armor_medic" then
 				if ply:GetUsingArmor() != "" and ( self:GetClass() != "armor_sci" or self:GetClass() != "armor_medic" ) then
-					ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
+					ply:BrTip( 0, "[NextOren Breach]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
 					return
 				end
 				if ply:GetUsingHelmet() != "" and ( self:GetClass() != "armor_sci" or self:GetClass() != "armor_medic" ) then
-					ply:BrTip( 0, "[VAULT]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
+					ply:BrTip( 0, "[NextOren Breach]", Color(255, 0, 0), "l:take_off_armor_to_wear_uniform", Color(255, 255, 255) )
 					return
 				end
 			end
@@ -188,7 +188,7 @@ if self.Team and ply:GTeam() != self.Team and ply:GetRoleName() != role.ClassD_G
 				if isfunction(self.FuncOnPickup) then self.FuncOnPickup(ply) end
 				self:Remove() 
 			
-				ply:BrTip( 0, "[VAULT]", Color( 0, 210, 0, 180 ), "l:your_uniform_is "..self.PrintName, Color( 0, 255, 0, 180 ) )
+				ply:BrTip( 0, "[NextOren Breach]", Color( 0, 210, 0, 180 ), "l:your_uniform_is "..self.PrintName, Color( 0, 255, 0, 180 ) )
 				ply:SetupHands()
 				if self.ArmorSkin then
 					ply:GetHands():SetSkin(self.ArmorSkin)

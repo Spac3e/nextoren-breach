@@ -290,6 +290,7 @@ function SWEP:CalcView(ply, pos, ang, fov)
 
 	fov = math.Clamp(fov - self.CurFOVMod - self.BreathFOVModifier, 5, 100)
 
+	--[[
 	if self.Owner then
 		if self.ViewbobEnabled and self._vmCamAttach < 1 then
 			ws = self.Owner:GetWalkSpeed()
@@ -321,6 +322,14 @@ function SWEP:CalcView(ply, pos, ang, fov)
 				end
 			end
 		end
+	end]]
+	if self.MoveArmsAway and !self.BoneOffseted then
+		self.BoneOffseted = true
+		local bone1 = self.CW_VM:LookupBone("L UpperArm")
+		local bone2 = self.CW_VM:LookupBone("R UpperArm")
+
+		self.CW_VM:ManipulateBonePosition(bone1, -self.MoveArmsAway)
+		self.CW_VM:ManipulateBonePosition(bone2, self.MoveArmsAway)
 	end
 
 	fov = fov - self.FOVTarget

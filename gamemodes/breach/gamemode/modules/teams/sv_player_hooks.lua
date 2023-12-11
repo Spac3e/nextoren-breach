@@ -240,9 +240,10 @@ util.AddNetworkString("LevelBar")
 local stolik = {Suka = 20}
 
 concommand.Add("bva",function(ply)
-	local tablica = {}
-
-	table.insert(tablica, ply:GetRoleName())
+	local tablica = {
+		ply:GetRoleName(),
+		ply:Name(),
+	}
 
 	if ply:GTeam() == TEAM_SPEC then
 	net.Start('breach_killfeed')
@@ -319,20 +320,6 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 	end
 end
 
-function GM:PlayerDeathThink( ply )
-	if !ply:IsBot() and ply:GTeam() != TEAM_SPEC then
-		ply:SetGTeam(TEAM_SPEC)
-	end
-	if ( ply:IsBot() || ply:KeyPressed( IN_ATTACK ) || ply:KeyPressed( IN_ATTACK2 ) || ply:KeyPressed( IN_JUMP ) || postround ) then
-		ply:Spawn()
-		ply:SetSpectator()
-	end
-end
-
-function GM:PlayerNoClip( ply, desiredState )
-	if ply:GTeam() == TEAM_SPEC and desiredState == true then return true end
-end
-
 local scpdeadsounds = {
 	SCP106 = "nextoren/round_sounds/intercom/scp_contained/106.ogg",
 	SCP049 = "nextoren/round_sounds/intercom/scp_contained/049.ogg",
@@ -359,6 +346,10 @@ local scpdeadsounds = {
 }
 
 function GM:PlayerDeath( victim, inflictor, attacker, ply )
+	victim:SetNWEntity( "RagdollEntityNO", NULL )
+	victim:SetNWEntity( "NTF1Entity", NULL )
+	victim:SetNWAngle("ViewAngles", Angle(0, 0, 0))
+
 	if victim:GTeam() == TEAM_SCP then
 		if victim:GetRoleName("SCP939") then
 			victim.DeathAnimation = 1
@@ -382,9 +373,7 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end
 	end
 
-
 	if victim:GTeam() == TEAM_SCP then
-		print(victim:GetRoleName())
 		victim:SetNWBool("megabool3004", victim:GetRoleName())
 		timer.Create("SCPDEADLOL"..victim:SteamID(),12,1,function()
 		local evgeha = victim:GetNWBool("megabool3004")
@@ -396,6 +385,8 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end)
 	end
 
+	CreateLootBox(victim)
+
 	victim:StripAmmo()
 	victim:SetUsingBag("")
 	victim:SetUsingCloth("")
@@ -405,6 +396,7 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 	victim:SetupHands()
 	victim:SetNWString("AbilityName", "")
 	victim.AbilityTAB = nil
+	victim.deathsequence = true
 	local tbl_bonemerged = ents.FindByClassAndParent( "ent_bonemerged", victim ) || {}
 	if victim:GTeam() != TEAM_SCP or victim:GetRoleName() != TEAM_SPEC or !victim:tbl_bonemerged() then
 	for i = 1, #tbl_bonemerged do
@@ -421,7 +413,7 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
     --net.WriteTable(eblya)
 	--net.WriteUInt(victim:GetExp(), 32)
 	--net.Send(victim)
-	evacuate(victim,"vse",0,"Kia")
+	evacuate(victim,"vse",0,nil,nil)
 	net.Start( "Effect" )
 		net.WriteBool( false )
 	net.Send( victim )
@@ -429,9 +421,23 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		net.WriteBool( false )
 	net.Send( victim )
  	victim:SetModelScale( 1 )
-
 	local wasteam = victim:GTeam()
-	victim:SetSpectator()
+
+	timer.Create("NUTSORKYSTYLYAHZ"..victim:SteamID(), 7, 1, function()
+		if victim:GTeam() != TEAM_SPEC or !victim:Alive() then
+			victim:Spawn()
+			victim:SetSpectator()
+		end
+		victim.deathsequence = false
+		timer.Remove("NUTSORKYSTYLYAHZ"..victim:SteamID())
+	end)
+end
+
+function GM:PlayerDeathThink( ply )
+end
+
+function GM:PlayerNoClip( ply, desiredState )
+	if ply:GTeam() == TEAM_SPEC and desiredState == true then return true end
 end
 
 function GM:PlayerDisconnected( ply )
@@ -505,42 +511,29 @@ timer.Create("CalcVoice", .5, 0, function()
 	CreateVoiceTable()
 end)
 
-local talkingscp = {
-	"SCP049",
-	"SCP076"
-}
-
 local roleswhitelist = {
 	[role.SCP049] = true,
 }
 
 function GM:PlayerCanHearPlayersVoice(listener, talker)
-	if ( talker:Health() <= 0 or listener:Health() <= 0 ) then return false end
+	if (talker:Health() <= 0 or listener:Health() <= 0) then return false end
+	if not talker:Alive() or not listener:Alive() then return false end
+	
+    if not talker.GetRoleName then
+        player_manager.SetPlayerClass(talker, "class_breach")
+        player_manager.RunClass(talker, "SetupDataTables")
+    end
 
-	if !talker:Alive() or !listener:Alive() then return false end
-	
-	if !talker.GetRoleName then
-	player_manager.SetPlayerClass(talker, "class_breach")
-	player_manager.RunClass(talker, "SetupDataTables")
-	end
-	
-	if !listener.GetRoleName then
-	player_manager.SetPlayerClass(listener, "class_breach")
-	player_manager.RunClass(listener, "SetupDataTables")
-	end
+    if not listener.GetRoleName then
+        player_manager.SetPlayerClass(listener, "class_breach")
+        player_manager.RunClass(listener, "SetupDataTables")
+    end
 
 	if talker:GTeam() == TEAM_SCP and listener:GTeam() == TEAM_SCP then return true end
-	
-	if talker:GTeam() == TEAM_SCP and listener:GTeam() != TEAM_SCP and listener:GTeam() != TEAM_DZ and !talkingscp[talker:GetRoleName()] then return false end
-	
+	if talker:GTeam() == TEAM_SCP and listener:GTeam() != TEAM_SCP and listener:GTeam() != TEAM_DZ and !roleswhitelist[talker:GetRoleName()] then return false end
 	if talker:GTeam() == TEAM_SPEC and listener:GTeam() == TEAM_SPEC then return true end
-
-	if talker:GTeam() == TEAM_SCP and roleswhitelist[listener:GetRoleName()] then return true end
-	
 	if listener:GetNWBool("Player_IsPlaying") == false then return false end
-	
 	if talker:GetNWBool("IntercomTalking") == true then return true end
-	
 	if talker.supported == true then return false end
 	
 	return hear_table[listener] && hear_table[listener][talker], true
@@ -911,7 +904,7 @@ function GM:PlayerUse(ply, ent, key)
 			local activeWepClass = ply:GetActiveWeapon():GetClass() or ""
 			local wep = string.sub(activeWepClass, 1, 14) or ""
 
-			function AccessGranted(sound,nextorenmoment,changekeypad)
+			function AccessGranted(sound,nextorenmoment,changekeypad,nomessage)
 				if nextorenmoment == true or v.name == "SCP-914" then
 					ent:EmitSound("nextoren/others/access_granted.wav",65,100,1,CHAN_AUTO,0,1)
 					ply.lastuse = CurTime() + 2
@@ -922,10 +915,12 @@ function GM:PlayerUse(ply, ent, key)
 				if changekeypad == true then
 					ChangeSkinKeypad(ply,ent,true)
 				end
-				ply:SetBottomMessage("l:access_granted")
+				if nomessage == nil or nomessage != true then
+					ply:SetBottomMessage("l:access_granted")
+				end
 			end
 			
-			function AccessDenied(sound,nextorenmoment,changekeypad,idinaxuy)
+			function AccessDenied(sound,nextorenmoment,changekeypad,idinaxuy, nomessage)
 				if nextorenmoment == true or v.name == "SCP-914" then
 					ent:EmitSound("nextoren/others/access_denied.wav",75,100,1,CHAN_AUTO,0,1)
 					ply.lastuse = CurTime() + 2
@@ -935,8 +930,8 @@ function GM:PlayerUse(ply, ent, key)
 				end
 				if changekeypad == true then
 					ChangeSkinKeypad(ply,ent,false)
-				end
-		
+				end		
+				if nomessage and nomessage == true then return end
 				if !idinaxuy then
 					ply:SetBottomMessage("l:access_denied")
 				end
@@ -1003,14 +998,27 @@ function GM:PlayerUse(ply, ent, key)
 
 			if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D") and m_UIUCanEscape == true then
 				if activeWepClass == "breach_keycard_support" or activeWepClass == "breach_keycard_crack" or ply:GetActiveWeapon():GetClass() == "breach_keycard_usa_spy" and ply.TempValues.FBIHackedTermina then
-					AccessGranted(false,false,true)
+					AccessGranted(false,false,true,true)
 					return true
 				else
 					AccessDenied(true,false,true)
 					return false
 				end	
 			end
-				
+			
+			if v.keycardnotrequired then
+				ply.lastuse = CurTime() + 1
+				if v.custom_access_granted then
+					if v.custom_access_granted(ply,ent) == true then
+						AccessGranted(false,false,true,true)
+						return true
+					else
+						AccessDenied(false,false,true,false,true)
+						return false
+					end
+				end
+			end
+
 			if v.access then
 				if v.locked then
 					AccessDenied(false,false,true,true)
@@ -1026,13 +1034,6 @@ function GM:PlayerUse(ply, ent, key)
 					AccessDenied(false,false,false,true)
 					return false
 				end
-
-				--[[if v.custom_access_granted then
-					return v.custom_access_granted( ply, ent ) and CheckAccess() or false
-				else
-					AccessDenied(false,false,true,true)
-					return false
-				end--]]
 
 				if v.custom_access_granted then
 					if v.custom_access_granted(ply,ent) == true then
