@@ -15,7 +15,6 @@ function GM:Think()
 end
 
 ALLLANGUAGES = {}
-WEPLANG = {}
 BREACH = BREACH || {}
 
 russian = russian or {}

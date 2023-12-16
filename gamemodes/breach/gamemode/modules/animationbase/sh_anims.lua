@@ -71,7 +71,7 @@ BREACH.ChatGestures = {
 
 }
 
-function GM:DoChatGesture( ply, cmd, text )
+function DoChatGesture( ply, cmd, text )
 
   local t = utf8.len( text )
 
@@ -92,7 +92,7 @@ function GM:DoChatGesture( ply, cmd, text )
 
   if ( CLIENT ) then return end
 
-  net.Start( "GestureClientNetworking" )
+  net.Start( "GestureClientNetworking")
 
     net.WriteEntity( ply )
     net.WriteString( random_speechid )

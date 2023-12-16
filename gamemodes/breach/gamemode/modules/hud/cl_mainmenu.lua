@@ -968,11 +968,11 @@ function StartBreach( firsttime )
   creatorlist.Paint = function() end
   local spisok = {
     {defaultname = "-Spac3", id = "76561198797549224", who = BREACH.TranslateString"l:menu_dev"},
-    {defaultname = "Shaky", id = "76561198869328954", who = BREACH.TranslateString"RXSEND Developer"},
-    {defaultname = "Cyox", id = "76561198825698418", who = BREACH.TranslateString"RXSEND Developer"},
-    {defaultname = "Ghelid", id = "76561198019442318", who = BREACH.TranslateString"Лучше для мужчины нет!"},
-    {defaultname = "Cultist_Kun", id = "76561197987190249", who = BREACH.TranslateString"NextOren Developer"},
-    {defaultname = "BrownJourney", id = "76561198286190382", who = BREACH.TranslateString"NextOren Developer"},
+    {defaultname = "Shaky", id = "76561198869328954", who = BREACH.TranslateString"l:menu_dev RXSEND"},
+    {defaultname = "Cyox", id = "76561198825698418", who = BREACH.TranslateString"l:menu_dev RXSEND"},
+    {defaultname = "Ghelid", id = "76561198019442318", who = BREACH.TranslateString"l:menu_lead l:menu_dev NextOren"},
+    {defaultname = "Cultist_Kun", id = "76561197987190249", who = BREACH.TranslateString"l:menu_dev NextOren"},
+    {defaultname = "BrownJourney", id = "76561198286190382", who = BREACH.TranslateString"l:menu_dev NextOren"},
   }
 
   local sin, cos, rad = math.sin, math.cos, math.rad

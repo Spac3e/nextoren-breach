@@ -326,53 +326,58 @@ end
 timer.Create("CheckEscape", 1, 0, CheckEscape)
 --]]
 
-function CheckEscape() -- Интересный факт, таймер нагружает меньше чем Think или Tick что можно использовать в этом варианте выходов, я хз зачем Danx91 в 18 году запихал таймер а в сцп лк запихнул Tick
-	for k,v in pairs(ents.FindInSphere(POS_UIUTUNNEL, 15)) do -- Общий
-		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:GTeam() != TEAM_GOC then
-			if v:GTeam() == TEAM_USA and m_UIUCanEscape == false and GetGlobalBool("Evacuation") == false then
-				evacuate(v,"vse",-435,"l:ending_mission_failed")
-			elseif
-				 v:GTeam() == TEAM_USA and m_UIUCanEscape == true then
-					evacuate(v,"vse",950,"l:ending_mission_complete")
-				end
-			end
-			if v:IsPlayer() and v:Alive() and v:GTeam() == TEAM_CLASSD and v:CanEscapeFBI() then
-				evacuate(v,"vse",2000,"l:ending_escaped_site19_got_captured")
-			elseif v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_USA then
-				evacuate(v,"vse",2000,"l:ending_escaped_site19")
-			end
-		end
+function CheckEscape()
+    for _, v in pairs(ents.FindInSphere(POS_UIUTUNNEL, 15)) do
+        if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:GTeam() != TEAM_GOC then
+            if v:GTeam() == TEAM_USA and not m_UIUCanEscape and not GetGlobalBool("Evacuation") then
+                evacuate(v, "vse", -435, "l:ending_mission_failed")
+            elseif v:GTeam() == TEAM_USA and m_UIUCanEscape then
+                evacuate(v, "vse", 950, "l:ending_mission_complete")
+            end
+            if v:IsPlayer() and v:Alive() and v:GTeam() == TEAM_CLASSD and v:CanEscapeFBI() then
+                evacuate(v, "vse", 430, "l:ending_escaped_site19_got_captured")
+            elseif v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_USA then
+                evacuate(v, "vse", 540, "l:ending_escaped_site19")
+            end
+        end
     end
-	for k,v in pairs(ents.FindInSphere(POS_UNKNOWNTUNNEL, 47)) do -- РПХ
-		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeChaosRadio() and !v.escaping then
-			v.escaping = true
-			v:ConCommand("stopsound")
-			v:Freeze(true)
-			net.Start("StartCIScene")
-			net.Send(v)
-			timer.Simple(9, function()
-            evacuate(v,"vse",1200,"l:ending_captured_by_unknown")
-			v:Freeze(false)
-			v.escaping = false
-			end)
-		end
+
+    for k, v in pairs(ents.FindInSphere(POS_UNKNOWNTUNNEL, 50)) do
+        if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeChaosRadio() and not v.escaping then
+            v.escaping = true
+            v:ConCommand("stopsound")
+            v:Freeze(true)
+            net.Start("StartCIScene")
+            net.Send(v)
+            timer.Simple(9, function()
+                evacuate(v, "vse", 1200, "l:ending_captured_by_unknown")
+                v:Freeze(false)
+                v.escaping = false
+            end)
+        end
     end
-	for k,v in pairs(ents.FindInSphere(POS_ESCAPEALL, 35)) do -- Рука
-		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeHand() then
-        evacuate(v,"vse",730,"l:ending_escaped_site19")
-		end
+
+    for k, v in pairs(ents.FindInSphere(POS_ESCAPEALL, 75)) do
+        if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeHand() then
+            evacuate(v, "vse", 730, "l:ending_escaped_site19")
+        end
     end
-	for k,v in pairs(ents.FindInSphere(POS_CARESCAPE, 150)) do -- Машина
-		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeCar() and v:InVehicle() then
-			v:ExitVehicle()
-            evacuate(v,"vse",900,"l:ending_car")
-		end
-		if v:GetModel() == "models/scpcars/scpp_wrangler_fnf.mdl" then v:Remove() end
+
+    for k, v in pairs(ents.FindInSphere(POS_CARESCAPE, 355)) do
+        if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeCar() and v:InVehicle() then
+            v:ExitVehicle()
+            evacuate(v, "vse", 900, "l:ending_car")
+        end
+        if v:GetModel() == "models/scpcars/scpp_wrangler_fnf.mdl" then
+            v:Remove()
+        end
     end
-	for k,v in pairs(ents.FindInSphere(POS_O5EXIT, 75)) do -- Выход О5
-		if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeO5() then
-        evacuate(v,"vse",840,"l:ending_o5")
-	end
+
+    for k, v in pairs(ents.FindInSphere(POS_O5EXIT, 225)) do
+        if v:IsPlayer() and v:Alive() and v:GTeam() != TEAM_SPEC and v:CanEscapeO5() then
+            evacuate(v, "vse", 840, "l:ending_o5")
+        end
+    end
 end
 
 timer.Create("CheckEscape", 1, 0, CheckEscape)

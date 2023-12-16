@@ -1614,25 +1614,26 @@ net.Receive( "NightvisionOff", function()
 end )
 
 net.Receive( "GestureClientNetworking", function()
-
-  local gesture_ent = net.ReadEntity()
-
-  if ( !( gesture_ent && gesture_ent:IsValid() ) ) then return end
-
-  local gesture = net.ReadString()
-  local gesture_id = gesture_ent:LookupSequence(gesture)
-  local gesture_slot = net.ReadUInt( 3 )
-  local loop = net.ReadBool()
-  local cycle = net.ReadFloat()
-
-  gesture_ent:AnimResetGestureSlot( gesture_slot )
-  gesture_ent:AddVCDSequenceToGestureSlot( gesture_slot, gesture_id, cycle, loop )
-
-end )
-
-net.Receive( "StopGestureClientNetworking", function()
-
 	local gesture_ent = net.ReadEntity()
+  
+	if ( !( gesture_ent && gesture_ent:IsValid() ) ) then return end
+  
+	local gesture = net.ReadString()
+	local gesture_slot = net.ReadUInt( 3 )
+	local loop = net.ReadBool()
+	local cycle = net.ReadFloat()
+	local gesture_id = gesture_ent:LookupSequence(gesture)
+  
+	if gesture:StartWith("hg_") then
+		gesture_ent.talkedrecently = CurTime() + gesture_ent:SequenceDuration(gesture_id)
+	end
+  
+	gesture_ent:AnimResetGestureSlot( gesture_slot )
+	gesture_ent:AddVCDSequenceToGestureSlot( gesture_slot, gesture_id, cycle, loop )
+end)
+  
+net.Receive( "StopGestureClientNetworking", function()
+  local gesture_ent = net.ReadEntity()
 
   if ( !( gesture_ent && gesture_ent:IsValid() ) ) then return end
 
@@ -1686,16 +1687,6 @@ end
 
 CreateClientConVar("cvar_br_language", gmod_built_language, true, true, "Breach localization setting")
 langtouse = GetConVar("cvar_br_language"):GetString()
-
---[[
-local sv_lang = GetConVar( "br_defaultlanguage" )
-if sv_lang then
-	local sv_str = sv_lang:GetString()
-	if ALLLANGUAGES[sv_str] and WEPLANG[sv_str] then
-		GetConVar( "cvar_br_language" ):SetString( sv_str )
-		langtouse = sv_str
-	end
-end]]
 
 cvars.AddChangeCallback( "cvar_br_language", function( convar_name, value_old, value_new )
 	langtouse = value_new
@@ -2285,15 +2276,6 @@ function LoadLang( lang )
 	AddTables( finallang, ltu )
 	clang = finallang
 
-	local finalweplang = table.Copy( WEPLANG.english )
-	local wltu = {}
-	if WEPLANG[lang] then
-		wltu = WEPLANG[lang]
-	else
-		wltu = table.Copy( WEPLANG.english )
-	end
-	AddTables( finalweplang, wltu )
-	cwlang = finalweplang
 	endmessages = {
 		{
 			main = clang.lang_end1,

@@ -1036,12 +1036,19 @@ local pl = ply:GetTable()
 		return true
 	end
 
-	if ply:GetModel():find("goc") then
-		if SERVER then
+	if ply:GetModel():find("goc") and ply:GetRoleName() != "GOC Juggernaut" then
 			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", 75, math.random( 90, 110 ), volume * .8)
-		end
 		return true
 	end
+
+	if ply:GetModel():find("goc") and ply:GetRoleName() == "GOC Juggernaut" then
+		if vel > 22500 then
+			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", SNDLVL_180dB, math.random( 90, 110 ), volume * 10)
+		else
+			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", SNDLVL_105dB, math.random( 90, 110 ), volume * 1.5)
+		end
+		return true
+    end
 
 	if ply:GetRoleName() == "SCP973" then
 		if SERVER then

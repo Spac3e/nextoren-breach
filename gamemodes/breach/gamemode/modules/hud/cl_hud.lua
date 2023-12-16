@@ -1013,6 +1013,7 @@ function Death_Scene( ply )
 		PlayMusic("sound/no_new_music/death_"..tostring(math.random(1,2))..".ogg", 0)
 	end)
 end
+
 net.Receive("Death_Scene", Death_Scene)
 
 function ANGLE:CalculateVectorDot( vec )

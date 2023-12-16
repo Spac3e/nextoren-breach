@@ -603,12 +603,12 @@ if ( SERVER ) then
 
 		if ( self.OldGestureBool != play ) then
 
-			local gesture_id = play && 5250 || 5251
+			local gesture_id = play && "0_049_hand_up_gesture" || "0_049_hand_down_gesture"
 
 			net.Start( "GestureClientNetworking" )
 
 				net.WriteEntity( self.Owner )
-				net.WriteUInt( gesture_id, 13 )
+				net.WriteString( gesture_id, 13 )
 				net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
 				net.WriteBool( true )
 
@@ -621,7 +621,7 @@ if ( SERVER ) then
 					net.Start( "GestureClientNetworking" )
 
 						net.WriteEntity( self.Owner )
-						net.WriteUInt( 5252, 13 )
+						net.WriteString("0_049_hand_gesture")
 						net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
 						net.WriteBool( false )
 

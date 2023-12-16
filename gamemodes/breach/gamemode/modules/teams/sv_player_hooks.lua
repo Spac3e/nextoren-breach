@@ -346,10 +346,6 @@ local scpdeadsounds = {
 }
 
 function GM:PlayerDeath( victim, inflictor, attacker, ply )
-	victim:SetNWEntity( "RagdollEntityNO", NULL )
-	victim:SetNWEntity( "NTF1Entity", NULL )
-	victim:SetNWAngle("ViewAngles", Angle(0, 0, 0))
-
 	if victim:GTeam() == TEAM_SCP then
 		if victim:GetRoleName("SCP939") then
 			victim.DeathAnimation = 1
@@ -384,6 +380,10 @@ function GM:PlayerDeath( victim, inflictor, attacker, ply )
 		end)
 		end)
 	end
+
+	victim:SetNWEntity( "RagdollEntityNO", NULL)
+	victim:SetNWEntity( "NTF1Entity", NULL)
+	victim:SetNWAngle("ViewAngles", Angle(0,0,0))
 
 	CreateLootBox(victim)
 
@@ -540,50 +540,6 @@ function GM:PlayerCanHearPlayersVoice(listener, talker)
 end
 
 function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
-	if activevote and ( text == "!forgive" or text == "!punish" ) then
-		local votemsg = false
-		if talker.voted == true or talker:SteamID64() == activesuspect then
-			if !talker.timeout then talker.timeout = 0 end
-			if talker.timeout < CurTime() then
-				talker.timeout = CurTime() + 0.5
-				net.Start( "ShowText" )
-					net.WriteString( "vote_fail" )
-				net.Send( talker )
-			end
-			return
-		end
-		if text == "!forgive" then
-			if talker:SteamID64() == activevictim then
-				voteforgive = voteforgive + 5
-			elseif talker:GTeam() == TEAM_SPEC then
-				specforgive = specforgive + 1
-			else
-				voteforgive = voteforgive + 1
-			end
-			talker.voted = true
-			votemsg = true
-			talker.timeout = CurTime() + 0.5
-		elseif text == "!punish" then
-			if talker:SteamID64() == activevictim then
-				votepunish = votepunish + 5
-			elseif talker:GTeam() == TEAM_SPEC then
-				specpunish = specpunish + 1
-			else
-				votepunish = votepunish + 1
-			end
-			talker.voted = true
-			votemsg = true
-			talker.timeout = CurTime() + 0.5
-		end
-		if votemsg then
-			if listener:IsSuperAdmin() then
-				return true
-			else
-				return false
-			end
-		end
-	end
-
 	if !talker.GetRoleName or !listener.GetRoleName then
 		player_manager.SetPlayerClass( ply, "class_breach" )
 		player_manager.RunClass( ply, "SetupDataTables" )
@@ -618,25 +574,6 @@ function GM:PlayerCanSeePlayersChat( text, teamOnly, listener, talker )
 	return (talker:GetPos():Distance(listener:GetPos()) < 750)
 end
 
-hook.Add( "PlayerSay", "SCPPenaltyShow", function( ply, msg, teamonly )
-	if string.lower( msg ) == "!scp" then
-		if !ply.nscpcmdcheck or ply.nscpcmdcheck < CurTime() then
-			ply.nscpcmdcheck = CurTime() + 10
-
-			local r = tonumber( ply:GetPData( "scp_penalty", 0 ) ) - 1
-			r = math.max( r, 0 )
-
-			if r == 0 then
-				ply:PrintTranslatedMessage( "scpready#50,200,50" )
-			else
-				ply:PrintTranslatedMessage( "scpwait".."$"..r.."#200,50,50" )
-			end
-		end
-
-		return ""
-	end
-end )
-
 hook.Add("PlayerSay", "no_support_chat", function(ply, text, teamChat)
 	if ply.supported == true then
 		return ""
@@ -653,6 +590,8 @@ hook.Add("PlayerSay", "Radio_thing", function(ply, text, teamChat)
     local check2 = text == "/r" or text == "!r" or text == "" or string.find(text, "/R") or string.find(text, "!R") 
 	local freq = tonumber( string.sub( tostring( freq ), 1, 5 ) )
 	
+	--if string.find(text, "l:") then return false end -- фикс легендарного краша через чат, гойда.
+
     if check1 then
         if !radio then
             ply:RXSENDNotify("l:no_radio")
@@ -709,14 +648,21 @@ do
             weapon:SetClip1(savedammo)
         end
 
-		--[[
-		if is_cw then
-			for key, data in pairs(wepent.Attachments) do
-				print("Xxx")
-			end
+		if wepent and is_cw then
+			--[[for name, status in pairs( wepent.ActiveAttachments ) do
+				for id, table in pairs( wepent.Attachments ) do
+					for i = 1, #table.atts do
+						local attach_name = table.atts[ i ]
+						timer.Simple(1, function()
+						if ( name == attach_name ) then
+							weapon:_attach( id, i )
+						end
+					end)
+					end
+				end
+			end-]] -- ябал я ваш кеве 20
 		end
-	    --]]
-
+	
 		if wepent and wepent:GetClass("weapon_special_gaus") then
 			if wepent.CanCharge != true then
 				weapon.CanCharge = false
@@ -845,7 +791,7 @@ function GM:PlayerUse(ply, ent, key)
 	local blockeddoors_scp = {499,1338,2229,1448,1396}
 	
 	-- SCP OPEN UP!
-	if ply:GTeam() == TEAM_SCP and IsValid(ent) and ent:GetClass() == "func_button" and !table.HasValue(blockeddoors_scp, ent:EntIndex()) then
+	if ply:GTeam() == TEAM_SCP and IsValid(ent) and ent:GetClass() == "func_button" and !table.HasValue(blockeddoors_scp, ent:EntIndex()) and SCPLockDownHasStarted == true then
 		timer.Simple(1, function()
 			thisisdoor(ply)
 		end)
@@ -976,20 +922,6 @@ function GM:PlayerUse(ply, ent, key)
 				end
 			end
 
-			if v.name == "Побег О5" then
-				if v.custom_access_granted and v.custom_access_granted(ply, ent) then
-					ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
-					ply:SetBottomMessage("l:access_granted")
-					ChangeSkinKeypad(ply, ent, true)
-					return true
-				else
-					ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
-					ply:SetBottomMessage("l:access_denied")
-					ChangeSkinKeypad(ply, ent, false)
-					return false					
-				end
-			end
-
 			if (v.name == "Ворота A" or v.name == "Ворота B" or v.name == "Ворота C" or v.name == "Ворота D" or v.name == "КПП #1" or v.name == "КПП #2" or v.name == "КПП #3" or v.name == "КПП #4") and GetGlobalBool("Evacuation") == true and !m_UIUCanEscape == true then
 				AccessGranted(false,false,true)
 				return true
@@ -1034,6 +966,20 @@ function GM:PlayerUse(ply, ent, key)
 					return false
 				end
 
+				if v.name == "Побег О5" or v.name == "Вертолетная Площадка" then
+					if v.custom_access_granted and v.custom_access_granted(ply, ent) then
+						ply:EmitSound("nextoren/weapons/keycard/keycarduse_1.ogg")
+						ply:SetBottomMessage("l:access_granted")
+						ChangeSkinKeypad(ply, ent, true)
+						return true
+					else
+						ply:EmitSound("nextoren/weapons/keycard/keycarduse_2.ogg")
+						ply:SetBottomMessage("l:access_denied")
+						ChangeSkinKeypad(ply, ent, false)
+						return false					
+					end
+				end
+
 				if v.custom_access_granted then
 					if v.custom_access_granted(ply,ent) == true then
 						CheckAccess()
@@ -1068,7 +1014,6 @@ function GM:PlayerUse(ply, ent, key)
 			end
 		end
 	end
-	ChangeSkinKeypad(ply, ent, true)
 end
 	
 function GM:CanPlayerSuicide( ply )

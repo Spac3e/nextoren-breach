@@ -258,7 +258,10 @@ end)
 hook.Add("ScalePlayerDamage", "Megadamage", function(ply,hitgroup,dmginfo)
     local attacker = dmginfo:GetAttacker()
     local dmgtype = dmginfo:GetDamageType()
-    local wep = attacker:GetActiveWeapon()
+	
+	if attacker:IsPlayer() then
+		local wep = attacker:GetActiveWeapon()
+	end
 
 	--damagedrop = math.Clamp(math.ceil(distsqr * 0.000009) - 1, 0, 15)
 
@@ -322,11 +325,11 @@ hook.Add("ScalePlayerDamage", "Megadamage", function(ply,hitgroup,dmginfo)
         end
     end
 
-	if attacker:GetRoleName() == "UIU Spy" and attacker:GetActiveWeapon("cw_kk_ins2_arse_usp") and ply:GetNWBool("Have_Docs") == false then
+	if attacker:IsPlayer() and attacker:GetRoleName() == "UIU Spy" and attacker:GetActiveWeapon("cw_kk_ins2_arse_usp") and ply:GetNWBool("Have_Docs") == false then
 		dmginfo:SetDamage(0.8)
 	end
 
-    if ( attacker:GTeam() == TEAM_GOC && ( wep && wep:IsValid() ) && wep.Primary && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP ) then
+    if ( attacker:IsPlayer() and attacker:GTeam() == TEAM_GOC && ( wep && wep:IsValid() ) && wep.Primary && wep.Primary.Ammo == "GOC" && ply:GTeam() == TEAM_SCP ) then
         dmginfo:SetDamage( dmginfo:GetDamage() * 1.25 )
     end
 
@@ -493,8 +496,6 @@ function DestroyAll()
 end
 
 function BREACH.Round.SpawnLoot()
-    local spawnTable = SPAWN_UNIFORMS
-
 	local function RandomItem(list)
 		local totalWeight = 0
 	
@@ -513,32 +514,30 @@ function BREACH.Round.SpawnLoot()
 		end
 	
 		return nil
-	end
-	
+	end	
     -- Loot
-	local function makaka_super_new_loot()
+	local function SpawnLoot()
 		for area, spawnData in pairs(SPAWN_ITEMS) do
 			local spawns = table.Copy(spawnData.spawns)
 			local spawnedItems = {} 
 		
-				local amountToSpawn = math.min(spawnData.amount, #spawns)
-				for i = 1, amountToSpawn do
-					local spawnIndex = math.random(1, #spawns)
-					local selectedEntity = RandomItem(spawnData.ents)
-		
-					local newItem = ents.Create(selectedEntity)
-					if IsValid(newItem) then
-						newItem:SetPos(spawns[spawnIndex])
-						newItem:Spawn()
-					end
-		
-					table.remove(spawns, spawnIndex)
+			local amountToSpawn = math.min(spawnData.amount, #spawns)
+			for i = 1, amountToSpawn do
+				local spawnIndex = math.random(1, #spawns)
+				local selectedEntity = RandomItem(spawnData.ents)
+
+				local newItem = ents.Create(selectedEntity)
+				if IsValid(newItem) then
+					newItem:SetPos(spawns[spawnIndex])
+					newItem:Spawn()
 				end
+				table.remove(spawns, spawnIndex)
 			end
 		end
+	end
 
-	-- SCPs
-	local function makaka_new_scps()
+	-- SCPItems
+	local function SpawnSCPItems()
 		local spawnData = SPAWN_SCP_OBJECT
 		local spawns = table.Copy(spawnData.spawns)
 		local spawnedItems = {} 
@@ -563,49 +562,43 @@ function BREACH.Round.SpawnLoot()
 	end
 
 	-- Tesla
-	local function makaka_tesla()
-		for area, spawnData in pairs(SPAWN_TESLA) do
-			local spawns = table.Copy(spawnData.spawns)
-			local availableSpawns = table.Copy(spawnData.spawns)
-	
-			local amountToSpawn = math.min(spawnData.amount, #spawns)
-			for i = 1, amountToSpawn do
-				local spawnIndex = math.random(1, #availableSpawns)
-				local tesla = ents.Create("test_entity_tesla")
-				if IsValid(tesla) then
-					tesla:SetPos(availableSpawns[spawnIndex])
+    local function SpawnTesla()
+        for area, spawnData in pairs(SPAWN_TESLA) do
+            local spawns = table.Copy(spawnData.spawns)
+            local availableSpawns = table.Copy(spawnData.spawns)
 
-					local spawnposit = availableSpawns[spawnIndex]
+            local amountToSpawn = math.min(spawnData.amount, #spawns)
+            for i = 1, amountToSpawn do
+                local spawnIndex = math.random(1, #availableSpawns)
+                local tesla = ents.Create("test_entity_tesla")
+                if IsValid(tesla) then
+                    tesla:SetPos(availableSpawns[spawnIndex])
 
-					if spawnposit == Vector(8814.4169921875, -366.80648803711, 129.061483383179) then
-						tesla:SetAngles(Angle(0,0,0))
-					end					
-	
-					if spawnposit == Vector(6282.9453125, 1177.1953125, 129.061498641968) then
-						tesla:SetAngles(Angle(0,90,0))
-					end
+                    local spawnPos = availableSpawns[spawnIndex]
 
-					if spawnposit == Vector(3522.5834960938, 4021.2414550781, 129.061498641968) or spawnposit == Vector(4158.148926, 1878.148560, 129.361298) or spawnposit == Vector(4157.9526367188, -932.20758056641, 129.061511993408) or spawnposit == Vector(8168.5478515625, 336.69119262695, 129.061496734619) then
-						tesla:SetAngles(Angle(0,-90,0))
-					end
+                    if spawnPos == Vector(8814.4169921875, -366.80648803711, 129.061483383179) then
+                        tesla:SetAngles(Angle(0, 0, 0))
+                    elseif spawnPos == Vector(6282.9453125, 1177.1953125, 129.061498641968) then
+                        tesla:SetAngles(Angle(0, 90, 0))
+                    elseif spawnPos == Vector(3522.5834960938, 4021.2414550781, 129.061498641968) or
+                           spawnPos == Vector(4158.148926, 1878.148560, 129.361298) or
+                           spawnPos == Vector(4157.9526367188, -932.20758056641, 129.061511993408) or
+                           spawnPos == Vector(8168.5478515625, 336.69119262695, 129.061496734619) then
+                        tesla:SetAngles(Angle(0, -90, 0))
+                    end
 
-					if spawnposit == Vector(4157.9526367188, -932.20758056641, 129.061511993408) then
-						--tesla:SetAngles(Angle(0,-90,0))
-					end
+                    tesla:Spawn()
+                    table.remove(availableSpawns, spawnIndex)
+                end
+            end
+        end
+    end
 
-					tesla:Spawn()
-	
-					table.remove(availableSpawns, spawnIndex)
-				end
-			end
-		end
-	end
-	
-
-    -- Uniform
-	local function makaka_uniforms()
+	-- Uniform
+	local function SpawnUniforms()
 		local spawnCount
-		if math.random(0, 1) == 1 then
+
+		if IsBigRound() == true then
 			spawnCount = math.random(SPAWN_UNIFORMS.bigroundamount[1], SPAWN_UNIFORMS.bigroundamount[2])
 		else
 			spawnCount = math.random(SPAWN_UNIFORMS.smallroundamount[1], SPAWN_UNIFORMS.smallroundamount[2])
@@ -632,7 +625,7 @@ function BREACH.Round.SpawnLoot()
 	}
 
 	-- Other
-	local function super_mega_car_from_makaka_zavod()
+	local function SpawnCar()
 		for k, v in ipairs(SPAWN_VEHICLE) do
 			local car = ents.Create("prop_vehicle_jeep")
 			car:SetModel("models/scpcars/scpp_wrangler_fnf.mdl")
@@ -644,10 +637,9 @@ function BREACH.Round.SpawnLoot()
 			WakeEntity( car )
 		end
 	end
-	
-	
+
 	-- Entities
-	local function makaka_ents()
+	local function SpawnEntities()
 		for _, entity in ipairs(ENTITY_SPAWN_LIST) do
 			local class = entity.Class
 			local spawns = entity.Spawns
@@ -662,7 +654,7 @@ function BREACH.Round.SpawnLoot()
 		end
 	end
 
-	local function makaka_weps()
+	local function SpawnWeapons()
 		for k, v in pairs(SPAWN_AMMONEW) do
 			local spawns = table.Copy(v.spawns)
 			local dices = {}
@@ -702,7 +694,7 @@ function BREACH.Round.SpawnLoot()
 		end
 	end
 
-	local function makaka_generators()
+	local function SpawnGenerators()
 		local maxGenerators = 5
 		
 		for i = 1, maxGenerators do
@@ -723,7 +715,7 @@ function BREACH.Round.SpawnLoot()
 		end
 	end
 
-	local function spawn_armor_goc(num)
+	local function SpawnArmorGoc(num)
 		for i = 1, num do
 			local index = math.random(1, #SPAWN_GOC_UNIFORMS)
 			local spawnpos = SPAWN_GOC_UNIFORMS[index]
@@ -734,18 +726,13 @@ function BREACH.Round.SpawnLoot()
 		end
 	end
 
-
-	-- Tree
-	local function spawn_tree()
+	-- Other Entities
+	local function SpawnOtherEntities()
 		local tree = ents.Create("scptree")
 		if tree then
 			tree:SetPos(SPAWN_SCPTREE)
 			tree:Spawn()
 		end
-	end
-	
-	-- Gauss
-	local function spawn_funny_gauss()
 		local gauss = ents.Create("weapon_special_gaus")
 		if gauss then
 			gauss:SetPos(SPAWN_GAUSS)
@@ -753,18 +740,16 @@ function BREACH.Round.SpawnLoot()
 		end
 	end
 
-	makaka_super_new_loot()
-	makaka_weps()
-	makaka_ents()
-	makaka_uniforms()
-	makaka_generators()	
-	makaka_tesla()
-	spawn_funny_gauss()
-	super_mega_car_from_makaka_zavod()
-	spawn_armor_goc(2)
-	makaka_new_scps()
-	spawn_tree()
-
+	SpawnLoot()
+	SpawnWeapons()
+	SpawnEntities()
+	SpawnUniforms()
+	SpawnGenerators()	
+	SpawnTesla()
+	SpawnOtherEntities()
+	SpawnCar()
+	SpawnArmorGoc(2)
+	SpawnSCPItems()
 end
 
 net.Receive( "GRUCommander_peac", function()
@@ -1482,9 +1467,10 @@ function BroadcastDetection( ply, tab )
 end
 
 function GM:GetFallDamage(player,speed)
-	player:EmitSound("nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1,2)..".wav")
-	--return math.max((velocity - 464) * 0.4, 0)
 	local dmg = (speed / 8)
+
+	player:EmitSound("nextoren/charactersounds/hurtsounds/fall/pldm_fallpain0"..math.random(1,2)..".wav")
+
 	return dmg
 end
 
@@ -1895,17 +1881,17 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
             exptoget = exptoget + 700
         end
 
-        if (personal:GTeam() == TEAM_NTF or personal:GTeam() == TEAM_GUARD) and asic_evac ~= 0 then
+        if (personal:GTeam() == TEAM_NTF or personal:GTeam() == TEAM_GUARD) and asic_evac != 0 then
             table.insert(eblya, {reason = "l:sci_evac", value = (asic_evac * 250)})
             exptoget = exptoget + (asic_evac * 250)
         end
 
-        if personal:GTeam() == TEAM_CHAOS and fat_evac ~= 0 and fat_evac ~= nil then
+        if personal:GTeam() == TEAM_CHAOS and fat_evac != 0 and fat_evac != nil then
             table.insert(eblya, {reason = "l:ci_classd_evac", value = (fat_evac * 250)})
             exptoget = exptoget + (fat_evac * 250)
         end
 
-        if personal.kills ~= 0 then 
+        if personal.kills != 0 then 
             table.insert(eblya, {reason = "l:enemykill", value = (personal.kills * 25)})
             exptoget = exptoget + (personal.kills * 25)
         else
@@ -1913,7 +1899,7 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
             exptoget = exptoget + 100
         end
 
-        if personal.teamkills ~= 0 then 
+        if personal.teamkills != 0 then 
             table.insert(eblya, {reason = "l:teamkill", value = (personal.teamkills * -250)})
             exptoget = exptoget + (personal.teamkills * -25)
         end
@@ -1925,8 +1911,8 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
     end
 
     if IsValid(personal) and personal:Alive() then
-        if roles_for_evac ~= "vse" then
-            if personal:GTeam() ~= TEAM_SPEC then
+        if roles_for_evac != "vse" then
+            if personal:GTeam() != TEAM_SPEC then
                 if personal:GTeam() == roles_for_evac then
                     personal:ScreenFade(SCREENFADE.IN, Color(0, 0, 0, 255), 5, 10)
 					if personal:GTeam() != TEAM_USA then
@@ -1953,7 +1939,7 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
                 end
             end
         else
-            if personal:GTeam() ~= TEAM_SPEC then
+            if personal:GTeam() != TEAM_SPEC then
                 personal:ScreenFade(SCREENFADE.IN, Color(0, 0, 0, 255), 5, 10)
 				if personal:GTeam() != TEAM_USA then
                     net.Start("OnEscaped")
@@ -1980,7 +1966,7 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
         end
     else
         local rtime = timer.TimeLeft("RoundTime")
-        if rtime ~= nil then
+        if rtime != nil then
             exptoget = 1000
             exptoget = (CurTime() - rtime) * 0.05
             --exptoget = math.Round(math.Clamp(exptoget, 1000, 10000))
@@ -1992,7 +1978,7 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
             {reason = "l:survival_bonus", value = exptoget},
         }
 
-        if personal.kills ~= 0 then 
+        if personal.kills != 0 then 
             table.insert(survival_bonus, {reason = "l:enemykill", value = (personal.kills * 25)})
             exptoget = exptoget + (personal.kills * 25)
         else
@@ -2000,7 +1986,7 @@ function evacuate(personal, roles_for_evac, give_score, desc, corpsed)
             exptoget = exptoget + 100
         end
 
-        if personal.teamkills ~= 0 then 
+        if personal.teamkills != 0 then 
             table.insert(survival_bonus, {reason = "l:teamkill", value = (personal.teamkills * -250)})
             exptoget = exptoget + (personal.teamkills * -25)
         end
@@ -2142,6 +2128,28 @@ function BREACH.PowerfulUIUSupport()
 	PlayAnnouncer("nextoren/round_sounds/intercom/support/onpzahod.ogg")
 end
 
+local DoorClasses = {
+	["func_door"] = true,
+	["func_door_rotating"] = true,
+	["prop_dynamic"] = true,
+	["func_button"] = true
+}
+
+function DoorIsOpen( door )
+	local doorClass = door:GetClass()
+	if ( doorClass == "func_door" or doorClass == "func_door_rotating" ) then
+		return door:GetInternalVariable( "m_toggle_state" ) == 0
+	elseif ( doorClass == "prop_door_rotating" ) then
+		return door:GetInternalVariable( "m_eDoorState" ) ~= 0
+	else
+		return false
+	end
+end
+
+function IsDoorLocked( entity )
+	return ( entity:GetInternalVariable( "m_bLocked" ) )
+end
+
 hook.Add("AcceptInput", "AutoCloseDoor", function(ent, name, activator, caller, data)
     local idi_gulay = {228,1799,1797,1660,1661}
     local timerokdayname = "дверкащаприкроется_" .. ent:EntIndex()
@@ -2173,6 +2181,11 @@ hook.Add("AcceptInput", "AutoCloseDoor", function(ent, name, activator, caller, 
             ent:SetKeyValue("Skin", 0)
         end
     end)
+ 
+	-- Вообще, весь код открытия дверей лежит в playeruse, но я бы его перенес сюда ибо из-за пинга и т.д факторов двери иногда не хотят открываться, но пусть пока что будет так
+	if DoorClasses[ent:GetClass()] and activator:IsPlayer() and !DoorIsOpen(ent) and !IsDoorLocked(ent) then
+	    ChangeSkinKeypad(activator, ent, true)
+    end
 end)
 
 function table_contains(table, element)
@@ -2281,5 +2294,121 @@ function CreatePlayerTimer(player, timerName, delay, repetitions, callback)
     timer.Create(timerName, delay, 1, TimerCallback)
 end
 
-function CreateLoot(type,count,pos,table)
-end
+concommand.Add("gg", function(player, yes)
+	local body_origin = Vector(-5782.422852, 2421.731445, 2104.031250)
+	if yes then
+		player:SetPos(body_origin)
+	end
+	player.Dimension_TouchEntity = ents.Create( "touch_entity" )
+    player.Dimension_TouchEntity:SetModel( player:GetModel() )
+    player.Dimension_TouchEntity:SetOwner( player )
+	local position_to_return = initial_pos
+	player.Dimension_TouchEntity.OwnerName = player:GetNamesurvivor()
+    player.Dimension_TouchEntity:SetPos( body_origin )
+    player.Dimension_TouchEntity:Spawn()
+    print( "touch entity has been created at vector ", body_origin )
+
+	player.Dimension_TouchEntity.Think = function( self )
+		local owner = self:GetOwner()
+		if ( !( owner && owner:IsValid() ) || owner:Health() <= 0 || owner:GetNamesurvivor() != self.OwnerName || owner:GetRoleName() == "Spectator" ) then
+			self:Remove()
+		end
+	end
+
+    player.Dimension_TouchEntity.TouchFunc = function( self, player )
+			net.Start( "DimensionSequence" )
+			net.Send( player )
+			player:Freeze( true )
+      player.canblink = nil
+			timer.Simple( .25, function()
+
+				if ( ( player && player:IsValid() ) && ( self && self:IsValid() ) ) then
+
+					player:ScreenFade( SCREENFADE.OUT, color_white, .1, 1.25 )
+
+					net.Start( "ForcePlaySound" )
+
+						net.WriteString( "nextoren/charactersounds/stun_in.wav" )
+
+					net.Send( player )
+
+					local unique_id = "TeleportMeAlready" .. player:SteamID64()
+
+					timer.Create( unique_id, 0, 0, function()
+
+						if ( player:GetPos():DistToSqr( position_to_return ) < 6400 ) then
+
+							timer.Remove( unique_id )
+
+							return
+						end
+
+						player:SetInDimension( false )
+						player:SetPos( position_to_return )
+
+					end )
+
+				end
+
+			end )
+
+      player:ScreenFade( SCREENFADE.IN, color_white, .6, 1.3 )
+
+      timer.Simple( .6, function()
+
+        if ( ( player && player:IsValid() ) && ( self && self:IsValid() ) ) then
+
+          player:SetForcedAnimation( "l4d_GetUpFrom_Incap_04", 5.2, function()
+
+            if ( player:IsFemale() ) then
+
+    					net.Start( "ForcePlaySound" )
+
+    						net.WriteString( "nextoren/charactersounds/breathing/breathing_female.wav" )
+
+    					net.Send( player )
+
+    				else
+
+    					net.Start( "ForcePlaySound" )
+
+    						net.WriteString( "nextoren/others/player_breathing_knockout01.wav" )
+
+    					net.Send( player )
+
+    				end
+
+            player:SetDSP( 16 )
+
+            player:Freeze( true )
+            player:SetNWEntity( "NTF1Entity", player )
+
+          end, function()
+
+            player:ScreenFade( SCREENFADE.IN, color_black, .1, .75 )
+
+            player:SetDSP( 1 )
+
+            player:Freeze( false )
+            player:SetNWEntity( "NTF1Entity", NULL )
+
+          end )
+
+          timer.Simple( 1, function()
+
+            if ( player && player:IsValid() ) then
+
+              player.canblink = true
+
+            end
+
+          end )
+
+          self:Remove()
+
+        end
+
+      end )
+
+    end
+end)

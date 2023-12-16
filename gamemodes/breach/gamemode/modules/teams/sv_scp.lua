@@ -39,28 +39,6 @@ net.Receive("SelectSCPClientside", function(len,ply)
 	end
 end)
 
-function UpdateDynamicVars()
-	print( "Updating SCPs dynamic vars" )
-	if !file.Exists( "breach", "DATA" ) then
-		file.CreateDir( "breach" )
-	end
-	if !file.Exists( "breach/scp.txt", "DATA" ) then
-		util.WriteINI( "breach/scp.txt", {} )
-	end
-
-	if lua_override then
-		print( "Dev mode is enabled! Overwritting INI values..." )
-	else
-		util.LoadINI( "breach/scp.txt", SCP_DYNAMIC_VARS )
-	end
-end
-
-UpdateDynamicVars()
-
-function SaveDynamicVars()
-	util.WriteINI( "breach/scp.txt", SCP_DYNAMIC_VARS )
-end
-
 function SendSCPList( ply )
 	net.Start( "SCPList" )
 		net.WriteTable( SCPS )	
@@ -266,7 +244,7 @@ function ObjectSCP:SetupPlayer( ply, ... )
 	ply:SetNoTarget( true )
 
 	if ply:IsPremium() and ply.alreadyselectedscp != true then net.Start("SCPSelect_Menu") net.WriteTable(SCPS) net.Send(ply) end
-    if ply:GetRoleName() == "SCP062DE" and !ply:IsPremium() then ply:BetterSendLua("SCP062de_Menu()") end
+    if ply:GetRoleName() == "SCP062DE" and !ply:IsPremium() then ply:bSendLua("SCP062de_Menu()") end
 	if ply:GetRoleName() == "SCP076" then ply.DamageModifier = 0.7 end
 	ply.BaseStats = nil
 	ply.UsingArmor = nil
@@ -292,7 +270,6 @@ setmetatable( ObjectSCP, { __call = ObjectSCP.Create } )
 
 timer.Simple( 0, function()
 	RegisterSCPList()
-	SaveDynamicVars()
 	--InitializeBreachULX()
 	SetupForceSCP()
 	for k, v in pairs( player.GetAll() ) do

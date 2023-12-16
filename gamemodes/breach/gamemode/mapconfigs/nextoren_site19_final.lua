@@ -1097,7 +1097,7 @@ SPAWN_ITEMS = {
 			{ "gold_coin", 26 },
 			{ "item_radio", 30 },
 			{ "gasmask", 30 },
-			{ "item_flashlight", 30 },
+			{ "weapon_flashlight", 30 },
 			{ "weapon_pass_sci", 23 },
 			{ "weapon_pass_medic", 23 },
 			{ "weapon_pass_guard", 23 },

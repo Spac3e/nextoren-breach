@@ -875,7 +875,7 @@ function SWEP:SecondaryAttack()
       net.Start( "GestureClientNetworking" )
 
         net.WriteEntity( self.Owner )
-        net.WriteUInt( 5305, 13 )
+        net.WriteString( "scp_2012_1h_block_fast" )
         net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
         net.WriteBool( true )
 
@@ -892,7 +892,7 @@ function SWEP:SecondaryAttack()
         net.Start( "GestureClientNetworking" )
 
           net.WriteEntity( self.Owner )
-          net.WriteUInt( 5308, 13 )
+          net.WriteString("scp_2012_1h_block_up_idle")
           net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
           net.WriteBool( false )
 
@@ -913,7 +913,7 @@ function SWEP:SecondaryAttack()
         net.Start( "GestureClientNetworking" )
 
           net.WriteEntity( self.Owner )
-          net.WriteUInt( 5306, 13 )
+          net.WriteString("scp_2012_1h_block_down")
           net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
           net.WriteBool( true )
 
@@ -925,7 +925,7 @@ function SWEP:SecondaryAttack()
 
       if ( SERVER ) then
 
-        timer.Simple( self.Owner:SequenceDuration( 5306 ) - .25, function()
+        timer.Simple( self.Owner:SequenceDuration( 50306 ) - .25, function()
 
           if ( !( self && self:IsValid() ) ) then return end
 

@@ -148,7 +148,7 @@ function SWEP:PrimaryAttack()
     net.Start( "GestureClientNetworking" )
 
       net.WriteEntity( self.Owner )
-      net.WriteUInt( 5201, 13 )
+      net.WriteString("l4d_coach_adrenaline_use")
       net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
       net.WriteBool( true )
 

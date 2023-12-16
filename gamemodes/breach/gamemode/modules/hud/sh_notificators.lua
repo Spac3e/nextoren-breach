@@ -110,20 +110,23 @@ if CLIENT then
 	function BREACH.Player:ChatPrint(bool1, bool2, ...)
 		RXSENDNotify({...})
 	end
-	
+
 	function RXSENDNotify(msg)
-		if isstring(msg) then msg = {msg} end
-		
+		if isstring(msg) then
+			msg = {msg}
+		end
+	
 		for k, v in ipairs(msg) do
-				if IsColor(v) then
-					continue
-				end
-				
-				if v:find("l:") or v:find("dont_translate:") then
-					msg[k] = BREACH.TranslateString(v)
-				end
+			if IsColor(v) then
+				continue
 			end
-			chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 255, 255), unpack(msg))
+	
+			if isstring(v) and (v:find("l:") or v:find("dont_translate:")) then
+				msg[k] = BREACH.TranslateString(v)
+			end
+		end
+	
+		chat.AddText(Color(230, 0, 0), "[NextOren Breach] ", Color(255, 255, 255), unpack(msg))
 	end
 	
 	function RXSENDWarning(message)

@@ -985,7 +985,7 @@ end)
 function MODULE:BulletApplyDamage( Ent, Index, Bullet, Mode ) -- apply damage
 
 	if CLIENT or !Ent or !Index or !Bullet then return end
-
+	
 	local force = Bullet.Force * Bullet.VelocityFraction
 
 	local dmg = DamageInfo( ) -- damage structure

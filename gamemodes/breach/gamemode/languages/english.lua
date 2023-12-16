@@ -980,7 +980,7 @@ english.menu_do_precache_or_nah = "Perform content precache?"
 english.menu_precache_hover = "During precache you will respawn anyway if it's possible"
 english.menu_no_precache_hover = "You should skip precache only if it takes more than 4 minutes and you're being kicked due to this.\nWARNING: Expect a lot of lags during the game"
 english.menu_quickchat = "Quick chat"
-russian.menu_hudstyle = "New HUD Design"
+english.menu_hudstyle = "New HUD Design"
 
 --TASKS
 english.tasks_evacuate_personnel_and_defend_comrades = "Evacuate personnel, support teammates"

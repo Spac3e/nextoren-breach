@@ -56,7 +56,7 @@ function SWEP:PrimaryAttack()
     net.Start( "GestureClientNetworking" )
 
       net.WriteEntity( self.Owner )
-      net.WriteUInt( 5172, 13 )
+      net.WriteString("l4d_Pills_Swallow_layer")
       net.WriteUInt( GESTURE_SLOT_CUSTOM, 3 )
       net.WriteBool( true )
 
