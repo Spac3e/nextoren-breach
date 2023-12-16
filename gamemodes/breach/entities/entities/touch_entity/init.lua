@@ -17,21 +17,18 @@ function ENT:Initialize()
     self:SetTrigger(true)
     self:UseTriggerBounds(true)
 
-    if self.Think then
-        self:Think()
-        self:NextThink(CurTime())
-        return true
-    end
-
     self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+end
+
+function ENT:Think()
+    self.Think()
+    
+	self:NextThink( CurTime() )
+
+	return true
 end
 
 function ENT:Touch(pEntity)
     if !pEntity:IsValid() or !pEntity:IsPlayer() then return end
-    if self.triggered and !self.noremove then return end
-    self.triggered = true
-    self.TouchFunc(entity,pEntity)
-    if !self.noremove then
-        self:Remove()
-    end
+    return self.TouchFunc(self,self:GetOwner())
 end

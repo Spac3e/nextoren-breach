@@ -1043,9 +1043,9 @@ local pl = ply:GetTable()
 
 	if ply:GetModel():find("goc") and ply:GetRoleName() == "GOC Juggernaut" then
 		if vel > 22500 then
-			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", SNDLVL_180dB, math.random( 90, 110 ), volume * 10)
+			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", 150, math.random( 90, 110 ), volume * 45)
 		else
-			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", SNDLVL_105dB, math.random( 90, 110 ), volume * 1.5)
+			ply:EmitSound( "^nextoren/charactersounds/foley_goc/gear"..math.random( 1, 6 )..".wav", 120, math.random( 90, 110 ), volume * 1.5)
 		end
 		return true
     end
