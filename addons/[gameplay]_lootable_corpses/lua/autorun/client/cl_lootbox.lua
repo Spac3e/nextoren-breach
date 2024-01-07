@@ -420,8 +420,10 @@ net.Receive("OpenLootMenu", function( len )
     OpenLootMenu(ply, ent, vtable.Weapons, vtable.Name)
 end)
 
-concommand.Add("TakeAllProps23", function()
-	for _, prop in ipairs(ents.FindByModel("models/hunter/blocks/cube025x025x025.mdl")) do
-		print("Vector("..prop:GetPos().x..","..prop:GetPos().y..","..prop:GetPos().z.."),")
-	end
+net.Receive("ParticleAttach", function()
+	local particle_name = net.ReadString()
+	local attach_entity = net.ReadEntity()
+	local bone_id = net.ReadUInt( 4 )
+
+	ParticleEffectAttach(particle_name, PATTACH_POINT_FOLLOW, attach_entity, bone_id || 3)
 end)
