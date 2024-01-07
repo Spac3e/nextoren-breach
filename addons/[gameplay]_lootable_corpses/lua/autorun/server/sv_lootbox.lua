@@ -356,7 +356,8 @@ function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 		end
 
 		timer.Simple( .25, function()
-			BroadcastLua("ParticleEffectAttach(\"br_blood_stream\", PATTACH_POINT_FOLLOW, Entity("..LootBox:EntIndex().."), Entity("..LootBox:EntIndex().."):LookupBone(\"ValveBiped.Bip01_Head1\"))")
+			local ef_data = { Name = "br_blood_stream", Entity = LootBox, bone_id = LootBox:LookupBone( "ValveBiped.Bip01_Head1" ) }
+			NetEffect( ef_data )
 			LootBox.HeadEnt:SetSkin( ply:GetSkin() )
 			LootBox.HeadEnt:SetBodygroup( 0, math.random( 1, 3 ) )
 		end )
@@ -615,4 +616,14 @@ function CreateLootBox( ply, inflictor, attacker, knockedout, dmginfo )
 			table.insert( LootBox.vtable.Weapons, weapon:GetClass() )
 		end
 	end
+end
+
+util.AddNetworkString("ParticleAttach")
+
+function NetEffect(data)
+    net.Start("ParticleAttach")
+    net.WriteString(data.Name)
+    net.WriteEntity(data.Entity)
+    net.WriteUInt(data.bone_id, 4)
+    net.Broadcast()
 end
